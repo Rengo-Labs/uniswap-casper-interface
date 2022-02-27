@@ -12,3 +12,5 @@ export const ActionsBar = ({ isAnchor, to, content, insideMessage }) => {
         </ActionsStyles>
     )
 }
+
+
