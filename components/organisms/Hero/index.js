@@ -1,12 +1,12 @@
 import React from 'react'
 import { MarkedTitle } from '../../molecules'
-
-export const Hero = () => {
+import { InfoBoxes } from '../InfoBoxes'
+export const Hero = ({HeroTitle,HeroMarkedword,InfoBoxArray}) => {
     return (
         <div>
-            <MarkedTitle title="message in a bottle" markedword="message" />
+            <MarkedTitle title={HeroTitle} markedword={HeroMarkedword} />
             <div></div>
-            <div></div>
+            <InfoBoxes InfoBoxArray={InfoBoxArray}/>
         </div>
     )
 }

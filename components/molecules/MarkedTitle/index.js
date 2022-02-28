@@ -8,8 +8,8 @@ export const MarkedTitle = ({ title, markedword }) => {
         <StyledContainer>
             {
                 titleBuilder.map(word => {
-                    if (word === markedword) return (<StyledMarkedTitle>{word}</StyledMarkedTitle>)
-                    return (<StyledTitle>{word}</StyledTitle>)
+                    if (word === markedword) return (<StyledMarkedTitle key={word}>{word}</StyledMarkedTitle>)
+                    return (<StyledTitle key={word}>{word}</StyledTitle>)
                 })
             }
         </StyledContainer>
