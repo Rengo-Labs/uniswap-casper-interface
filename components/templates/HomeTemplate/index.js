@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavBar, Hero } from '../../organisms'
 import { Container } from './styles'
-export const HomeTemplate = ({ title = 'inside title', url = 'https://via.placeholder.com/50', content = 'inside button', isAnchor = false, to = '/', insideMessage = "anchor" }) => {
+export const HomeTemplate = ({ title, url = 'https://via.placeholder.com/50', content, isAnchor = false, to = '/', insideMessage = "Analytics",handler }) => {
   const InfoBoxArrayCopy = [
     { infoBoxTitle: "$ 3.81", infoBoxSmall: "$CSPR Price" },
     { infoBoxTitle: "$ 2.04b", infoBoxSmall: "Total Liquidity" },
@@ -10,9 +10,8 @@ export const HomeTemplate = ({ title = 'inside title', url = 'https://via.placeh
   ]
   return (
     <Container>
-      <NavBar title={title} url={url} content={content} isAnchor={isAnchor} to={to} insideMessage={insideMessage} />
+      <NavBar title={title} url={url} content={content} isAnchor={isAnchor} to={to} insideMessage={insideMessage} handler={handler}/>
       <Hero HeroTitle={"Discover your DeFi treasure!"} HeroMarkedword="DeFi" InfoBoxArray={InfoBoxArrayCopy} />
-      <NavBar title={title} url={url} content={content} isAnchor={isAnchor} to={to} />
     </Container>
   )
 }

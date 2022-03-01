@@ -1,12 +1,17 @@
 import React from 'react'
+
 import { MarkedTitle } from '../../molecules'
 import { InfoBoxes } from '../InfoBoxes'
-export const Hero = ({HeroTitle,HeroMarkedword,InfoBoxArray}) => {
+
+import { HeroStyles, HeroIMGStyles } from './styles'
+
+export const Hero = ({ HeroTitle, HeroMarkedword, InfoBoxArray }) => {
+    const url = 'https://via.placeholder.com/350'
     return (
-        <div>
+        <HeroStyles>
             <MarkedTitle title={HeroTitle} markedword={HeroMarkedword} />
-            <div></div>
-            <InfoBoxes InfoBoxArray={InfoBoxArray}/>
-        </div>
+            <HeroIMGStyles src={url} />
+            <InfoBoxes InfoBoxArray={InfoBoxArray} />
+        </HeroStyles>
     )
 }

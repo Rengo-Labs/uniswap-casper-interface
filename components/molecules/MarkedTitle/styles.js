@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 export const StyledContainer = styled.h1`
+    margin:0;
     display: flex;
     justify-content: center;
     align-items: center;
