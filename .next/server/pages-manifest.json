@@ -1,6 +1,11 @@
 {
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
+  "/": "pages/index.html",
+  "/liquidity": "pages/liquidity.html",
+  "/pools": "pages/pools.html",
+  "/swap": "pages/swap.html",
+  "/tokens": "pages/tokens.html",
   "/_error": "pages/_error.js",
-  "/": "pages/index.js"
+  "/404": "pages/404.html"
 }

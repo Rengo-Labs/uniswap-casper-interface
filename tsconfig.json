@@ -23,7 +23,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "playwright.config.js"  ],
   "exclude": [
     "node_modules"
   ]
