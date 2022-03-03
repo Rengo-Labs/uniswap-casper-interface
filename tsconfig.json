@@ -28,3 +28,10 @@
     "node_modules"
   ]
 }
+
+// "baseUrl": ".",
+//     "paths": {
+//       "@/components/*": ["components/*"],
+//       "@/pages/*": ["pages/*"],
+//       "@/styles/*": ["styles/*"]
+//     }
