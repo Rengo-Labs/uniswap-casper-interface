@@ -14,7 +14,7 @@ const Swap = () => {
     
     return (
         <NavegableTemplate title={brandName} url={brandIMG} content={mainButton} handler={handleClick} listOfLinks={listOfLinks}>
-            <h1>SWAP [W.I.P]</h1>
+            <h1>Pools [W.I.P]</h1>
         </NavegableTemplate>
     )
 }
