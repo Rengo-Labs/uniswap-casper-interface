@@ -8,7 +8,7 @@ export const NavigationBar = ({ listOfLinks }) => {
       {
                 listOfLinks.map(link => {
                   const { to, insideMessage } = link
-                  return (<Anchor key={link} isAnchor={false} to={to} insideMessage={insideMessage} />)
+                  return (<Anchor key={link+1} isAnchor={false} to={to} insideMessage={insideMessage} />)
                 })
             }
     </NavigationBarStyled>

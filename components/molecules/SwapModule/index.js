@@ -1,5 +1,6 @@
 import React from 'react'
-import { SwapInput, SwapButton } from '../../atoms'
+import { SwapButton } from '../../atoms'
+import { SwapInput } from '../SwapInput'
 import { SwapModulesStyled } from './styles'
 import { AiOutlineSync } from "react-icons/ai";
 
