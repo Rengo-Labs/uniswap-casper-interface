@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 
 import { NavegableTemplate } from '../../components/templates/NavegableTemplate'
 import { CardContainer } from '../../components/atoms'
+import { SwapModule } from '../../components/molecules'
+
 import { usUS } from '../../components/i11n'
 const Swap = () => {
   const router = useRouter()
@@ -15,7 +17,9 @@ const Swap = () => {
 
   return (
     <NavegableTemplate title={brandName} url={brandIMG} content={mainButton} handler={handleClick} listOfLinks={listOfLinks}>
-      <CardContainer />
+      <CardContainer>
+        <SwapModule />
+      </CardContainer >
     </NavegableTemplate>
   )
 }

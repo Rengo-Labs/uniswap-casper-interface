@@ -1,13 +1,15 @@
 import React from 'react'
+import { AiOutlineStar } from "react-icons/ai";
+
 import { CardStyled, CardHeaderStyled } from './styles'
-export const CardContainer = () => {
+export const CardContainer = ({ children }) => {
     return (
         <CardStyled>
             <CardHeaderStyled>
-                <div>legend</div>
-                <div>icon</div>
+                <div>Swap</div>
+                <AiOutlineStar />
             </CardHeaderStyled>
-            <div>body</div>
+            {children}
         </CardStyled>
     )
 }
