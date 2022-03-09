@@ -1,17 +1,15 @@
 import styled from 'styled-components'
 
 export const CardStyled = styled.section`
-    width: 26%;
-    height: 60%;
-    margin: 3rem auto;
+    width: ${props => props.width};
+    margin: .5em auto;
     border-radius: 20px;
-    display: grid;
-    grid-template: auto 1fr / 1fr;
     background-color: ${props => props.theme.StrongColor3};
+    display: grid;
+    grid-template-rows: auto 1fr;
 `
 export const CardHeaderStyled = styled.section`
-    margin: .8rem auto;
-    width: 80%;
+    padding:1rem ;
     display: flex;
     justify-content: space-between;
 `

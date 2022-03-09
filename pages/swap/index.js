@@ -17,7 +17,7 @@ const Swap = () => {
 
   return (
     <NavegableTemplate title={brandName} url={brandIMG} content={mainButton} handler={handleClick} listOfLinks={listOfLinks}>
-      <CardContainer>
+      <CardContainer cardTitle="Swap">
         <SwapModule />
       </CardContainer >
     </NavegableTemplate>

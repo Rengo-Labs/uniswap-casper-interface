@@ -1,15 +1,12 @@
 import React from 'react'
 import { SwapButton,SwitchIcon } from '../../atoms'
-import { SwapInput } from '../SwapInput'
 import { SwapModulesStyled } from './styles'
 
-export const SwapModule = () => {
+export const LiquidityModule = () => {
     return (
         <SwapModulesStyled>
-            <SwapInput />
-            <SwitchIcon />
-            <SwapInput />
             <SwapButton content="Connect to Wallet"></SwapButton>
+            <p>If you staked your LP tokens in a farm,<br></br>unstake them to see them here.</p>
         </SwapModulesStyled>
     )
 }

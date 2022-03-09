@@ -18,6 +18,7 @@ export const GlobalStyles = createGlobalStyle`
     #__next{
         height: 100%;
         width: 100%;
+        color:${props => props.theme.PrimaryColor};
     }
     body{
         height: 100vh;
@@ -25,5 +26,6 @@ export const GlobalStyles = createGlobalStyle`
         margin: 0;
         box-sizing: border-box;
         color:${props => props.theme.PrimaryColor};
+        background-image: ${props => props.theme.backgroundColor} ;
     }
 `

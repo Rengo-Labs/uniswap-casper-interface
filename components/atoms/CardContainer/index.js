@@ -2,11 +2,11 @@ import React from 'react'
 import { AiOutlineStar } from "react-icons/ai";
 
 import { CardStyled, CardHeaderStyled } from './styles'
-export const CardContainer = ({ children }) => {
+export const CardContainer = ({ cardTitle, children, width = "26%" }) => {
     return (
-        <CardStyled>
+        <CardStyled width={width}>
             <CardHeaderStyled>
-                <div>Swap</div>
+                <div>{cardTitle}</div>
                 <AiOutlineStar />
             </CardHeaderStyled>
             {children}
