@@ -5,4 +5,5 @@ export const TRowStyled = styled.tr`
     width: 100%;
     display: flex;
     justify-content: space-between;
+    text-align: left;
 `
