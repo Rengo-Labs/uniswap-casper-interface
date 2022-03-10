@@ -1,6 +1,10 @@
+import logo from '../../assets/casperIcon.png';
+import hero from '../../assets/heroImage.png';
+
 export const usUS = {
   brandName: 'Casper Swap',
-  brandIMG: 'https://via.placeholder.com/50',
+  brandIMG: logo,
+  heroImage: hero,
   swap: 'Swap',
   liquidity: 'Liquidity',
   pools: 'Pools',

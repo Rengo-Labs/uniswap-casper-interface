@@ -6,4 +6,7 @@ export { CardContainer } from './CardContainer'
 export { SwapButton } from './SwapButton'
 export { SwitchIcon } from './SwitchIcon'
 export { TokenButton } from './TokenButton'
+export { IconRender } from './IconRender'
+export { PoolInputFilter } from './PoolInputFilter'
+export { TRow } from './TRow'
 

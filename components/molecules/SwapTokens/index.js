@@ -1,9 +1,9 @@
 import React from 'react'
 
-import casprIcon from '../../../public/swapIcons/casprIcon.png'
-import wcasprIcon from '../../../public/swapIcons/wcasprIcon.png'
-import wiseIcon from '../../../public/swapIcons/wiseIcon.png'
-import wethIcon from '../../../public/swapIcons/wethIcon.svg'
+import casprIcon from '../../../assets/swapIcons/casprIcon.png'
+import wcasprIcon from '../../../assets/swapIcons/wcasprIcon.png'
+import wiseIcon from '../../../assets/swapIcons/wiseIcon.png'
+import wethIcon from '../../../assets/swapIcons/wethIcon.svg'
 
 import { SwapToken } from '../SwapToken'
 

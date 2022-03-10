@@ -11,9 +11,9 @@ export function Home () {
     e.preventDefault()
     router.push('/swap')
   }
-  const { brandName, brandIMG, mainButton } = usUS
+  const { brandName, brandIMG, mainButton,heroImage } = usUS
 
   return (
-    <HomeTemplate title={brandName} url={brandIMG} content={mainButton} handler={handleClick} />
+    <HomeTemplate title={brandName} url={brandIMG} content={mainButton} handler={handleClick} heroImage={heroImage}/>
   )
 }

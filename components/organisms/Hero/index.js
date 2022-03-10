@@ -5,12 +5,11 @@ import { InfoBoxes } from '../InfoBoxes'
 
 import { HeroStyles, HeroIMGStyles } from './styles'
 
-export const Hero = ({ HeroTitle, HeroMarkedword, InfoBoxArray }) => {
-  const url = 'https://via.placeholder.com/350'
+export const Hero = ({ HeroTitle, HeroMarkedword, InfoBoxArray,heroImage }) => {
   return (
     <HeroStyles>
       <MarkedTitle title={HeroTitle} markedword={HeroMarkedword} />
-      <HeroIMGStyles src={url} />
+      <HeroIMGStyles src={heroImage.src} />
       <InfoBoxes InfoBoxArray={InfoBoxArray} />
     </HeroStyles>
   )
