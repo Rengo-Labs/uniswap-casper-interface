@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { TableStyled, TableData, TableRow } from './styles'
+import { TableStyled, TableData, TableHead, TableRow } from './styles'
 export const PoolTable = ({ headers, data }) => {
   //TODO: Split this part
   return (
@@ -9,10 +9,11 @@ export const PoolTable = ({ headers, data }) => {
       <tr>
         {
           headers.map((header, index) => {
-            return (<th key={index}>
-              {/*TODO: Isolate Component*/}
-              {header}
-            </th>)
+            return (
+              <TableHead key={index}>
+                {/*TODO: Isolate Component*/}
+                {header}
+              </TableHead>)
           })
         }
       </tr>

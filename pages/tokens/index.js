@@ -2,8 +2,11 @@ import React from 'react'
 import { useRouter } from 'next/router'
 
 import { NavegableTemplate } from '../../components/templates/NavegableTemplate'
+import { CardContainer } from '../../components/atoms'
+import { TokensModule } from '../../components/organisms'
+
 import { usUS } from '../../components/i11n'
-const Swap = () => {
+const Tokens = () => {
   const router = useRouter()
   const handleClick = (e) => {
     e.preventDefault()
@@ -14,9 +17,11 @@ const Swap = () => {
 
   return (
     <NavegableTemplate title={brandName} url={brandIMG} content={mainButton} handler={handleClick} listOfLinks={listOfLinks}>
-      <h1>Tokens [W.I.P]</h1>
+      <CardContainer cardTitle="Tokens" width="68%">
+        <TokensModule></TokensModule>
+      </CardContainer >
     </NavegableTemplate>
   )
 }
 
-export default Swap
+export default Tokens

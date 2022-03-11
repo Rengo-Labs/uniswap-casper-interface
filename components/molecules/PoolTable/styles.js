@@ -14,5 +14,9 @@ export const TableRow = styled.tr`
 export const TableData = styled.td`
     box-sizing: border-box;
     padding:.6rem .7rem .6rem 0;
-    
+`
+
+export const TableHead = styled.th`
+    box-sizing: border-box;
+    padding:.6rem .7rem .6rem 0;
 `

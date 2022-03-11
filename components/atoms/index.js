@@ -9,4 +9,6 @@ export { TokenButton } from './TokenButton'
 export { IconRender } from './IconRender'
 export { PoolInputFilter } from './PoolInputFilter'
 export { TRow } from './TRow'
+export { PillowButton } from './PillowButton'
+export { RoundedButton } from './RoundedButton'
 
