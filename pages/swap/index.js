@@ -12,13 +12,14 @@ const Swap = () => {
     e.preventDefault()
     router.push('/swap')
   }
+  const tokenOne = router.query?.tokenOne
 
   const { brandName, brandIMG, mainButton, listOfLinks } = usUS
 
   return (
     <NavegableTemplate title={brandName} url={brandIMG} content={mainButton} handler={handleClick} listOfLinks={listOfLinks}>
       <CardContainer cardTitle="Swap">
-        <SwapModule />
+        <SwapModule tokenOne={tokenOne}/>
       </CardContainer >
     </NavegableTemplate>
   )

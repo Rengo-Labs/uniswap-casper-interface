@@ -13,7 +13,7 @@ export const TokensModule = () => {
         volume24h: "$21.88",
         marketCap: "$835.88",
         supply: "19M",
-        trade: "Trade",
+        symbol: "CSPR",
     }
     const data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(x => byte)
     return (
