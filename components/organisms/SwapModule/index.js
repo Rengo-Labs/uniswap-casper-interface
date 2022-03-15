@@ -7,18 +7,25 @@ import { TokenReadySwap } from '../../molecules/TokenReadySwap'
 import { SwapModulesStyled } from './styles'
 import { TokensProviderContext } from '../../../contexts/TokensContext'
 export const SwapModule = ({ tokenOne }) => {
-    const [activeModal, setActiveModal] = React.useState(false)
-    const [activeTokenOne, setActiveTokenOne] = React.useState(tokenOne)
-    const handleModal = () => {
-        setActiveModal(!activeModal)
+
+    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
+    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
+
+    const handleModalPrimary = () => {
+        setActiveModalPrimary(!activeModalPrimary)
     }
-    const tokens = React.useContext(TokensProviderContext)
+    const handleModalSecondary = () => {
+        setActiveModalSecondary(!activeModalSecondary)
+    }
+    const { tokens, primaryToken, secondaryToken, switchTokens, setPrimaryToken, setSecondaryToken } = React.useContext(TokensProviderContext)
+
     return (
         <SwapModulesStyled>
-            {tokenOne !== '' ? <SwapSelection onClickHandler={handleModal} token={tokens[0]} /> : <TokenReadySwap />}
-            {activeModal ? <SwapModal handleModal={handleModal} /> : "show"}
-            <SwitchIcon />
-            <SwapInput />
+            <SwapSelection onClickHandler={handleModalPrimary} token={primaryToken} />
+            {activeModalPrimary ? <SwapModal handleModal={handleModalPrimary} tokens={tokens} setToken={setPrimaryToken} /> : ""}
+            <SwitchIcon switchHandler={switchTokens} />
+            <SwapSelection onClickHandler={handleModalSecondary} token={secondaryToken} />
+            {activeModalSecondary ? <SwapModal handleModal={handleModalSecondary} tokens={tokens} setToken={setSecondaryToken} /> : ""}
             <SwapButton content="Connect to Wallet"></SwapButton>
         </SwapModulesStyled>
     )

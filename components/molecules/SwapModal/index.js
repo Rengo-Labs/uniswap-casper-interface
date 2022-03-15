@@ -4,7 +4,7 @@ import { SwapModalStyled, SwapContainerStyled, SwapHeaderStyled, SwapHeaderLineS
 import { SwapTokens } from '../SwapTokens'
 import { AiOutlineClose } from "react-icons/ai";
 
-export const SwapModal = ({ handleModal }) => {
+export const SwapModal = ({ handleModal,tokens,setToken }) => {
 
     return (
         <SwapModalStyled>
@@ -18,7 +18,7 @@ export const SwapModal = ({ handleModal }) => {
                     </SwapHeaderStyled>
                 </SwapHeaderLineStyled>
                 <main>
-                    <SwapTokens />
+                    <SwapTokens tokens={tokens} setToken={setToken} handleModal={handleModal}/>
                 </main>
             </SwapContainerStyled>
         </SwapModalStyled>

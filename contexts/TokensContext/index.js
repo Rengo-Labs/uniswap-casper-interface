@@ -42,8 +42,15 @@ export const TokensContext = ({ children }) => {
         amount: "0.0000"
       },
     ])
+
+  const [primaryToken, setPrimaryToken] = useState(tokens[0])
+  const [secondaryToken, setSecondaryToken] = useState(tokens[1])
+  const switchTokens = () => {
+    setPrimaryToken(secondaryToken)
+    setSecondaryToken(primaryToken)
+  }
   return (
-    <TokensProviderContext.Provider value={tokens}>
+    <TokensProviderContext.Provider value={{ tokens, primaryToken, secondaryToken, switchTokens,setPrimaryToken,setSecondaryToken }}>
       {children}
     </TokensProviderContext.Provider>
   )
