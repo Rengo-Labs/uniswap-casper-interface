@@ -15,10 +15,6 @@ export const darkTheme = {
 }
 
 export const GlobalStyles = createGlobalStyle`
-    @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
-    * {
-      font-family: 'Baloo 2', cursive;
-    }
     #__next{
         height: 100%;
         width: 100%;

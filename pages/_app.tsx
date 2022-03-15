@@ -1,8 +1,11 @@
 import { ThemeContext } from "../contexts/ThemeContext";
+import { TokensContext } from "../contexts/TokensContext";
 const MyApp = ({ Component, pageProps, auth }) => {
   return (
     <ThemeContext>
-      <Component {...pageProps} />
+      <TokensContext>
+        <Component {...pageProps} />
+      </TokensContext>
     </ThemeContext>
   );
 };

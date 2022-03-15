@@ -11,4 +11,7 @@ export { PoolInputFilter } from './PoolInputFilter'
 export { TRow } from './TRow'
 export { PillowButton } from './PillowButton'
 export { RoundedButton } from './RoundedButton'
+export { SwapContainer } from './SwapContainer'
+export { SwapTokenSelect } from './SwapTokenSelect'
+export { SwapTokenBalance } from './SwapTokenBalance'
 

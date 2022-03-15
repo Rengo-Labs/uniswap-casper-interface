@@ -10,7 +10,7 @@ const Liquidity = () => {
   const router = useRouter()
   const handleClick = (e) => {
     e.preventDefault()
-    router.push('/liquidity')
+    router.push('/swap')
   }
 
   const { brandName, brandIMG, mainButton, listOfLinks } = usUS
