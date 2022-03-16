@@ -5,7 +5,7 @@ export const SwapSelection = ({ onClickHandler,token }) => {
     return (
         <SwapContainer>
             <SwapTokenSelect onClickHandler={onClickHandler} token={token}></SwapTokenSelect>
-            <SwapTokenBalance></SwapTokenBalance>
+            <SwapTokenBalance />
         </SwapContainer>
     )
 }

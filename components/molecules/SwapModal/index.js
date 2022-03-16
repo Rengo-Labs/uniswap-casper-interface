@@ -1,25 +1,21 @@
 import React from 'react'
 
-import { SwapModalStyled, SwapContainerStyled, SwapHeaderStyled, SwapHeaderLineStyled } from './styles'
+import { SwapModalStyled, SwapContainerStyled, SwapHeaderStyled, CloseButtonStyled } from './styles'
 import { SwapTokens } from '../SwapTokens'
 import { AiOutlineClose } from "react-icons/ai";
 
-export const SwapModal = ({ handleModal,tokens,setToken }) => {
+export const SwapModal = ({ handleModal, tokens, setToken }) => {
 
     return (
         <SwapModalStyled>
             <SwapContainerStyled >
-                <SwapHeaderLineStyled>
-                    <SwapHeaderStyled>
-                        <h1>Select Token</h1>
-                        <button onClick={()=>{handleModal()}}>
-                            <AiOutlineClose />
-                        </button>
-                    </SwapHeaderStyled>
-                </SwapHeaderLineStyled>
-                <main>
-                    <SwapTokens tokens={tokens} setToken={setToken} handleModal={handleModal}/>
-                </main>
+                <SwapHeaderStyled>
+                    <h1>Select Token</h1>
+                    <CloseButtonStyled onClick={() => { handleModal() }}>
+                        <AiOutlineClose />
+                    </CloseButtonStyled>
+                </SwapHeaderStyled>
+                <SwapTokens tokens={tokens} setToken={setToken} handleModal={handleModal} />
             </SwapContainerStyled>
         </SwapModalStyled>
     )

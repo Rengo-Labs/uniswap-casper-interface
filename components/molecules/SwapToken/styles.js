@@ -2,15 +2,13 @@ import styled from 'styled-components'
 
 export const SwapTokenStyled = styled.section`
     border-radius: 10px;
-    padding: 10px;
+    padding: .2rem;
     display: grid;
     grid-template-columns: repeat(6,1fr);
     align-items: center;
-    border-style: outset;
-    border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+    background-color: ${props => props.theme.StrongColor3};
+    cursor: pointer;
 `
-
-
 export const SwapIconStyled = styled.section`
     grid-column:1/2;    
 `

@@ -21,4 +21,7 @@ export const SwapTokenBalanceStyled = styled.aside`
     display: flex;
     place-items: center;
 `
+export const SwapTokenRoundedImageStyled = styled.img`
+    border-radius: 50%;
+`
 

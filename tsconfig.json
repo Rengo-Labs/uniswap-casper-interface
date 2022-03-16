@@ -22,13 +22,31 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "playwright.config.js"  ],
+    "**/*.tsx",
+    "playwright.config.js"
+, "components/organisms/SwapModule/index.js"  ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "baseUrl": ".",
+  "paths": {
+    "@/atoms/*": [
+      "components/atoms/*"
+    ],
+    "@/molecules/*": [
+      "components/molecules/*"
+    ],
+    "@/organisms/*": [
+      "components/organisms/*"
+    ],
+    "@/templates/*": [
+      "components/templates/*"
+    ],
+    "@/pages/*": [
+      "components/pages/*"
+    ]
+  }
 }
-
 // "baseUrl": ".",
 //     "paths": {
 //       "@/components/*": ["components/*"],

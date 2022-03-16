@@ -1,11 +1,14 @@
 import React from 'react'
 
-import { SwapTokenBalanceStyled } from './styles'
+
+
+import { SwapTokenBalanceStyled,RoundedButtonStyled,InputStyled } from './styles'
+
 export const SwapTokenBalance = () => {
   return (
     <SwapTokenBalanceStyled>
-      <input placeholder="0.0001" />
-      <button>MAX</button>
+      <InputStyled type='number' placeholder="0.0001" />
+      <RoundedButtonStyled>MAX</RoundedButtonStyled>
     </SwapTokenBalanceStyled>
   )
 }
