@@ -9,10 +9,8 @@ export const SwapToken = ({ icon, token, amount,setToken,handleModal }) => {
                 <SwapIconImageStyled src={icon} width="50" height="50" />
             </SwapIconStyled>
             <SwapNamingStyled>
-                <p>{token.fullname.name}</p>
                 <p>{token.fullname.acron}</p>
             </SwapNamingStyled>
-            <SwapAmountStyled>{amount}</SwapAmountStyled>
         </SwapTokenStyled>
     )
 }

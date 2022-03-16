@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const SwapModalStyled = styled.div`
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     top: 0;
     left: 0;
     position: absolute;
@@ -35,7 +35,7 @@ export const SwapHeaderStyled = styled.aside`
 `
 export const CloseButtonStyled = styled.button`
     background-color: transparent;
-    color: ${prop => prop.theme.PrimaryColor};
+    color: ${prop => prop.theme.TertiaryColor};
     border-style: none;
     font-size: 1.5rem;
     cursor: pointer;

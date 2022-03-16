@@ -15,7 +15,7 @@ export const RoundedButtonStyled = styled.button`
     border-radius: 2rem;
     width: 50%;
     margin-left:auto;
-    border-style: double;
+    border-style: outset;
     color: #fff;
     border:1px solid ${props => props.theme.TertiaryColor};
     background-color: ${props => props.theme.StrongColor2};
@@ -26,6 +26,7 @@ export const RoundedButtonStyled = styled.button`
     }
     &:active {
         background-color: ${props => props.theme.TertiaryColor2};
+        border:1px inset ${props => props.theme.TertiaryColor2};
     }
 `
 export const InputStyled = styled.input`
@@ -41,6 +42,6 @@ export const InputStyled = styled.input`
         outline: none;
     }
     &::placeholder {
-        color:${props => props.theme.PrimaryColor};
+        color:${props => props.theme.PrimaryColor2};
     }
 `

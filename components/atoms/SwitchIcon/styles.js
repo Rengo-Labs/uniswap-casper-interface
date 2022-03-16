@@ -10,7 +10,11 @@ export const SwitchButton = styled.button`
     height: 3rem;
     display: grid;
     place-items: center;
+    transition: transform 1s;
     &:active {
         border-style:inset;
+    }
+    &:hover{
+        transform: rotate(180deg);
     }
 ` 

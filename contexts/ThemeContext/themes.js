@@ -2,6 +2,7 @@ import { createGlobalStyle } from 'styled-components'
 
 export const lightTheme = {
   PrimaryColor: 'rgba(255,255,255,1)',
+  PrimaryColor2: 'rgba(255,255,255,.5)',
   MainColor: 'rgba(0,62,145,1)',
   StrongColor: 'rgba(3,46,121,1)',
   StrongColor2: 'rgba(3,70,166,1)',
@@ -17,9 +18,8 @@ export const darkTheme = {
 }
 
 export const GlobalStyles = createGlobalStyle`
-    @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
     * {
-      font-family: 'Baloo 2', cursive;
+      font-family: 'Baloo 2', regular;
     }
     #__next{
         height: 100%;
@@ -27,8 +27,9 @@ export const GlobalStyles = createGlobalStyle`
         color:${props => props.theme.PrimaryColor};
     }
     body{
-        height: 100vh;
-        width: 100vw;
+        min-height: 100vh;
+        height: 100%;
+        width: 100%;
         margin: 0;
         box-sizing: border-box;
         color:${props => props.theme.PrimaryColor};

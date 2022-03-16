@@ -4,20 +4,22 @@ export const SwapTokenStyled = styled.section`
     border-radius: 10px;
     padding: .2rem;
     display: grid;
+    place-items: center;
     grid-template-columns: repeat(6,1fr);
-    align-items: center;
     background-color: ${props => props.theme.StrongColor3};
     cursor: pointer;
+    gap: .5rem;
 `
 export const SwapIconStyled = styled.section`
-    grid-column:1/2;    
+    grid-column:1/2;
+    display: grid;
+    place-items: center;
 `
 export const SwapIconImageStyled = styled.img`
-    border-radius: 50%;;    
+    border-radius: 50%;
+    
 `
 export const SwapNamingStyled = styled.section`
     grid-column:2/3;
-`
-export const SwapAmountStyled = styled.section`
-    grid-column:6/7;
+    justify-self:start;
 `
