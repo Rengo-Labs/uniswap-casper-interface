@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { PoolModulesStyled } from './styles'
-import { TokenSearch, PoolTable, PoolTData, PoolTHead } from '../../molecules'
-import { TRow } from '../../atoms'
+import { TokenSearch, TokenTable } from '../../molecules'
+
 export const TokensModule = () => {
     const headers = ["Name", "Price", "Change", "Price Chart", "Volume (24h)", "Market cap", "Supply", "Trade"]
     const byte = {
@@ -19,7 +19,7 @@ export const TokensModule = () => {
     return (
         <PoolModulesStyled>
             <TokenSearch />
-            <PoolTable headers={headers} data={data} />
+            <TokenTable headers={headers} data={data} />
         </PoolModulesStyled>
     )
 }

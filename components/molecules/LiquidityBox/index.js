@@ -2,7 +2,7 @@ import React from 'react'
 import { SwapButton,SwitchIcon } from '../../atoms'
 import { SwapModulesStyled } from './styles'
 
-export const LiquidityModule = () => {
+export const LiquidityBox = () => {
     return (
         <SwapModulesStyled>
             <SwapButton content="Connect to Wallet"></SwapButton>

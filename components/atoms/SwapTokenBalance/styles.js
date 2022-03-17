@@ -13,7 +13,7 @@ export const SwapTokenBalanceStyled = styled.aside`
 export const RoundedButtonStyled = styled.button`
     box-sizing: border-box;
     border-radius: 2rem;
-    width: 50%;
+    width: 30%;
     margin-left:auto;
     border-style: outset;
     color: #fff;

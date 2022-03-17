@@ -3,14 +3,14 @@ import React from 'react'
 import { TableStyled, TableData, TableRow } from './styles'
 
 import { TokenTableHead } from '../TokenTableHead'
-import { PoolTableRow } from '../PoolTableRow'
+import { TokenTableRow } from '../TokenTableRow'
 
-export const PoolTable = ({ headers, data }) => {
+export const TokenTable = ({ headers, data }) => {
   //TODO: Split this part
   return (
     <TableStyled>
       <TokenTableHead headers={headers} />
-      <PoolTableRow data={data} />
+      <TokenTableRow data={data} />
     </TableStyled>
 
   )

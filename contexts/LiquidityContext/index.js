@@ -4,8 +4,8 @@ import wcasprIcon from '../../assets/swapIcons/wcasprIcon.png'
 import wiseIcon from '../../assets/swapIcons/wiseIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 
-export const TokensProviderContext = createContext(null)
-export const TokensContext = ({ children }) => {
+export const LiquidityProviderContext = createContext(null)
+export const LiquidityContext = ({ children }) => {
 
   const [tokens, setTokens] = useState(
     [
@@ -52,8 +52,8 @@ export const TokensContext = ({ children }) => {
   const [filterCriteria,filterCriteriaSet] = useState("")
   const fileteredTokens = tokens.filter(token => token.fullname.acron.toLowerCase().includes(filterCriteria.toLowerCase()))
   return (
-    <TokensProviderContext.Provider value={{ tokens,fileteredTokens,filterCriteriaSet,filterCriteria, primaryToken, secondaryToken, switchTokens,setPrimaryToken,setSecondaryToken }}>
+    <LiquidityProviderContext.Provider value={{ tokens,fileteredTokens,filterCriteriaSet,filterCriteria, primaryToken, secondaryToken, switchTokens,setPrimaryToken,setSecondaryToken }}>
       {children}
-    </TokensProviderContext.Provider>
+    </LiquidityProviderContext.Provider>
   )
 }
