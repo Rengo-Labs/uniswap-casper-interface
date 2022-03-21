@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { TableStyled, TableData, TableRow } from './styles'
+import { TableStyled } from './styles'
 
 import { TokenTableHead } from '../TokenTableHead'
 import { PoolTableRow } from '../PoolTableRow'
