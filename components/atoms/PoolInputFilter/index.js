@@ -2,8 +2,13 @@ import React from 'react'
 
 import { InputStyled } from './styles'
 
-export const PoolInputFilter = () => {
+export const PoolInputFilter = ({ value, setValue, count, onChange }) => {
     return (
-        <InputStyled placeholder="Search by Token Symbol" />
+        <InputStyled value={value || ""}
+            onChange={e => {
+                setValue(e.target.value);
+                onChange(e.target.value);
+            }}
+            placeholder={`${count} records...`} />
     )
 }

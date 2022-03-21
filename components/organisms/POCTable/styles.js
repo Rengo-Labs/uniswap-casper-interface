@@ -5,6 +5,6 @@ export const POCTableStyled = styled.table`
     width: 100%;
     padding:.6rem .7rem;
     border-radius: 10px;
-    text-align: center;
+    text-align: right;
     border-collapse: collapse;
 `

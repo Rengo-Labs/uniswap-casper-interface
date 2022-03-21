@@ -1,27 +1,28 @@
 import React from 'react'
-
+import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
+import { THeadStyled, TRowStyled, THeadersStyled } from './styles'
 export const POCTHead = ({ headerGroups }) => {
     return (
-        <thead>
+        <THeadStyled>
             {headerGroups.map(headerGroup => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
+                <TRowStyled {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map(column => (
                         // Add the sorting props to control sorting. For this example
                         // we can add them into the header props
-                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                        <THeadersStyled {...column.getHeaderProps(column.getSortByToggleProps())}>
                             {column.render('Header')}
                             {/* Add a sort direction indicator */}
                             <span>
                                 {column.isSorted
                                     ? column.isSortedDesc
-                                        ? ' 🔽'
-                                        : ' 🔼'
-                                    : ''}
+                                        ? <AiOutlineCaretDown />
+                                        : <AiOutlineCaretUp />
+                                    : ' '}
                             </span>
-                        </th>
+                        </THeadersStyled>
                     ))}
-                </tr>
+                </TRowStyled>
             ))}
-        </thead>
+        </THeadStyled>
     )
 }

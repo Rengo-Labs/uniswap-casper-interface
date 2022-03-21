@@ -63,19 +63,18 @@ export const PoolsContext = ({ children }) => {
   const headers = [
     {
       Header: 'Icon',
-      accessor: 'tokeIcon', // accessor is the "key" in the data
-      disableFilters: true,
+      accessor: 'tokeIcon',
       Cell: tableProps => (
         <img
           src={tableProps.row.original.tokeIcon}
           width={25}
-          alt='Player'
+          alt='Token Icon'
         />
       )
     },
     {
       Header: 'Name',
-      accessor: 'tokeName', // accessor is the "key" in the data
+      accessor: 'tokeName',
     },
     {
       Header: 'Liquidity',
