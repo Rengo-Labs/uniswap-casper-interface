@@ -1,7 +1,7 @@
 import React from 'react'
 import { TBodyStyled,TRowStyled } from './styles'
 
-export const POCTBody = ({ getTableBodyProps, rows, prepareRow }) => {
+export const POCTBody2 = ({ getTableBodyProps, rows, prepareRow }) => {
     return (
         <TBodyStyled {...getTableBodyProps()}>
             {// Loop over the table rows

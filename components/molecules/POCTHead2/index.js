@@ -1,7 +1,7 @@
 import React from 'react'
 import { AiOutlineCaretDown, AiOutlineCaretUp,AiOutlineGold } from "react-icons/ai";
 import { THeadStyled, TRowStyled, THeadersStyled } from './styles'
-export const POCTHead = ({ headerGroups }) => {
+export const POCTHead2 = ({ headerGroups }) => {
     return (
         <THeadStyled>
             {headerGroups.map(headerGroup => (

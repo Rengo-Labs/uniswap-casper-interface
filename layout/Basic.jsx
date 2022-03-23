@@ -1,5 +1,5 @@
 import { NavegableTemplate } from '../components/templates/NavegableTemplate'
-import { usUS } from '../components/i11n'
+import { usUS } from '../i18n'
 import { useRouter } from 'next/router'
 export const BasicLayout = ({ children }) => {
   const router = useRouter()

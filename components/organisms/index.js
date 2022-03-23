@@ -6,4 +6,5 @@ export { TokensModule } from './TokensModule'
 export { SwapModule } from './SwapModule'
 export { LiquidityModule } from './LiquidityModule'
 export { POCTable } from './POCTable'
+export { POCTable2 } from './POCTable2'
 

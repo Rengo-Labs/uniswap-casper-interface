@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 // import { Container, NavBarArea, NavBarContainer, NavBarConnect, MainArea, FooterArea, FooterContainer, FooterBox } from './styles'
 
 import { HomeTemplate } from '../../templates/HomeTemplate'
-import { usUS } from '../../i11n'
+import { usUS } from '../../../i18n'
 export function Home () {
   const router = useRouter()
   const handleClick = (e) => {

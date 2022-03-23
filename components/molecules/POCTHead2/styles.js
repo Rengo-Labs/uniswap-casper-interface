@@ -8,7 +8,7 @@ export const THeadStyled = styled.thead`
 
 export const TRowStyled = styled.tr`
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     place-items: center;
 `
 export const THeadersStyled = styled.th`

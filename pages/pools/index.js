@@ -9,7 +9,7 @@ const Swap = () => {
   return (
     <BasicLayout>
       <CardContainer cardTitle="Top Pools" width="68%">
-        <PoolModule></PoolModule>
+        <PoolModule />
       </CardContainer >
     </BasicLayout>
   )

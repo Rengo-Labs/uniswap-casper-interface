@@ -1,25 +1,19 @@
 import React from 'react'
+import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 
 import { PoolModulesStyled } from './styles'
-import { TokenSearch, TokenTable } from '../../molecules'
+import { POCSearch2 } from '../../molecules'
+import { TokensProviderContext2 } from '../../../contexts/TokenContext2'
+import { POCTable2 } from '../../organisms'
 
 export const TokensModule = () => {
-    const headers = ["Name", "Price", "Change", "Price Chart", "Volume (24h)", "Market cap", "Supply", "Trade"]
-    const byte = {
-        name: "ABC-DFG",
-        price: "$78,438,726.23",
-        change: "+4.89%",
-        priceChart: "[WIP]",
-        volume24h: "$21.88",
-        marketCap: "$835.88",
-        supply: "19M",
-        symbol: "CSPR",
-    }
-    const data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(x => byte)
+    const { columns, data } = React.useContext(TokensProviderContext2)
+    const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
+    const { preGlobalFilteredRows, setGlobalFilter, state } = tableInstance
     return (
         <PoolModulesStyled>
-            <TokenSearch />
-            <TokenTable headers={headers} data={data} />
+            <POCSearch2 preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />
+            <POCTable2 {...tableInstance} />
         </PoolModulesStyled>
     )
 }
