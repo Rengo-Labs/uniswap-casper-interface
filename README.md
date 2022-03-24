@@ -37,6 +37,9 @@
 
 ## Swap
 
+![alt text](readmeimage/swapPage.png)
+
+
 ### Items
 
 * Navigation bar
@@ -69,6 +72,8 @@ example: if user select token 1 cspr, the option cspr should be disable for inpu
 
 ## Liquidity
 
+![alt text](readmeimage/liquidityPage.png)
+
 ### Items
 
 * Your Liquidity
@@ -81,6 +86,8 @@ What is the next step if the user connects the wallet?
 
 ## Pool
 
+![alt text](readmeimage/poolPage.png)
+
 ### Items
 
 * Pairs
@@ -90,6 +97,8 @@ What is the next step if the user connects the wallet?
 the data came from?
 
 ## Tokens
+
+![alt text](readmeimage/tokensPage.png)
 
 ### Items
 
