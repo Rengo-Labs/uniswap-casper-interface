@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "lib": [
       "dom",
       "dom.iterable",
@@ -23,8 +23,10 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "playwright.config.js"
-, "components/organisms/SwapModule/index.js"  ],
+    "playwright.config.js",
+    "components/organisms/SwapModule/index.js",
+    "components/atoms/Button/index.js"
+  ],
   "exclude": [
     "node_modules"
   ],
@@ -47,9 +49,3 @@
     ]
   }
 }
-// "baseUrl": ".",
-//     "paths": {
-//       "@/components/*": ["components/*"],
-//       "@/pages/*": ["pages/*"],
-//       "@/styles/*": ["styles/*"]
-//     }
