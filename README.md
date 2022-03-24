@@ -1,72 +1,105 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# questions about usability inside of swap
 
-## Available Scripts
+## Landing
 
-In the project directory, you can run:
+![alt text](readmeimage/landing.png)
 
-### `npm Install`
+### Items
 
-installs the necessary node_modules to run this project.<br />
+* Brand image + Brand name
 
-### `npm start`
+*Interaction*: when button is pressed go landing page "/"
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+* Analitycs
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+*Interaction*: #TODO idk url to redirect
 
-### `npm test`
+* Launch App
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+*Interaction*: when button is pressed go landing page "/swap"
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* Hero title
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+*No interaction*
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* Hero image
 
-### `npm run eject`
+*No interaction*
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+#TODO vectorice please
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+* Stadistics Row
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+*No interaction* 
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+#TODO came from backend? coingecko maybe?
 
-## Learn More
+## Swap
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Items
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+* Navigation bar
 
-### Code Splitting
+*Interaction*: when button is pressed move around the site
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+#TODO: add floor when nav is active
 
-### Analyzing the Bundle Size
+* Launch app button
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+*Interaction*: 
 
-### Making a Progressive Web App
+#TODO if wallet is not connected switch to connect to wallet
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+* Swap module
 
-### Advanced Configuration
+*Interaction*: load token from ??
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+*Interaction*: load token balance from wallet
 
-### Deployment
+*Interaction*: connect to wallet button switch to another button if wallet is connected
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+What is the next step if the user connects the wallet?
 
-### `npm run build` fails to minify
+**Restriction**:
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+#TODO don't duplicate token when user should select
+
+example: if user select token 1 cspr, the option cspr should be disable for input 2
+
+## Liquidity
+
+### Items
+
+* Your Liquidity
+
+*Interaction*: 
+
+#TODO load token wallet
+
+What is the next step if the user connects the wallet?
+
+## Pool
+
+### Items
+
+* Pairs
+
+*Interaction*: Sort by in every column
+
+the data came from?
+
+## Tokens
+
+### Items
+
+* Pairs
+
+*Interaction*: Sort by in every column
+
+the data came from?
+
+*Interaction*: Trade button push "/swap?tokenOne=${nameToken}
+
+
+
