@@ -24,8 +24,8 @@
     "**/*.ts",
     "**/*.tsx",
     "playwright.config.js",
-    "components/organisms/SwapModule/index.js",
-    "components/atoms/Button/index.js"
+    "components/organisms/SwapModule/index.tsx",
+    "components/atoms/Button/index.tsx"
   ],
   "exclude": [
     "node_modules"

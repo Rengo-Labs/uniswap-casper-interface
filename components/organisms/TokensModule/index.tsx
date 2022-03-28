@@ -4,7 +4,7 @@ import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import { PoolModulesStyled } from './styles'
 import { POCSearch2 } from '../../molecules'
 import { TokensProviderContext2 } from '../../../contexts/TokenContext2'
-import { POCTable2 } from '../../organisms'
+import { POCTable2 } from '..'
 
 export const TokensModule = () => {
     const { columns, data } = React.useContext(TokensProviderContext2)
