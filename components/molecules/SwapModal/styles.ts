@@ -1,6 +1,10 @@
 import styled from 'styled-components'
 
-export const SwapModalStyled = styled.div`
+interface SwapModalStyledInterface { 
+    isActive?: any
+}
+
+export const SwapModalStyled = styled.div<SwapModalStyledInterface>`
     width: 100vw;
     height: 100%;
     top: 0;
@@ -13,7 +17,7 @@ export const SwapModalStyled = styled.div`
     
 `
 
-export const SwapContainerStyled = styled.section`
+export const SwapContainerStyled = styled.section<any>`
     box-sizing: border-box;
     padding: .5rem;
     width:30%;

@@ -4,7 +4,7 @@ import { AiOutlineCaretDown } from "react-icons/ai";
 
 import { TokenButtonStyled } from './styles'
 
-export const TokenButton = ({ handlerFunction }) => {
+export const TokenButton = ({ handlerFunction }: any) => {
     return (
         <>
             <TokenButtonStyled onClick={handlerFunction}>

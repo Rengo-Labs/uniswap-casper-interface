@@ -10,4 +10,7 @@ export const ButtonStyle = styled.button`
     &:hover{
         cursor: pointer;
     }
+    &:active{
+        background-color: ${props => props.theme.TertiaryColor2};
+    }
 `

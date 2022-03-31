@@ -4,7 +4,10 @@ import { SwapModalStyled, SwapContainerStyled, SwapHeaderStyled, CloseButtonStyl
 import { SwapTokens } from '../SwapTokens'
 import { AiOutlineClose } from "react-icons/ai";
 import { useAtom } from 'jotai'
-export const SwapModal = ({ handleModal, tokens, setToken,filterCriteriaSet,filterCriteria }) => {
+
+interface SwapModalInterface{ handleModal?:any; tokens?:any; setToken?:any;filterCriteriaSet?:any;filterCriteria?:any; }
+
+export const SwapModal = ({ handleModal, tokens, setToken,filterCriteriaSet,filterCriteria }:SwapModalInterface) => {
 
     return (
             <SwapModalStyled>

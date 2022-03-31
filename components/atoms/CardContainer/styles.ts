@@ -1,6 +1,10 @@
 import styled from 'styled-components'
 
-export const CardStyled = styled.section`
+interface CardStyledInterface { 
+    width?: string;
+}
+
+export const CardStyled = styled.section<CardStyledInterface>`
     width: ${props => props.width};
     margin: .5em auto;
     border-radius: 20px;

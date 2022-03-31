@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { SwapTokenStyled, SwapAmountStyled, SwapIconStyled, SwapNamingStyled, SwapIconImageStyled } from './styles'
+import { SwapTokenStyled, SwapIconStyled, SwapNamingStyled, SwapIconImageStyled } from './styles'
 
 export const SwapToken = ({ icon, token, amount,setToken,handleModal }) => {
     return (

@@ -7,7 +7,7 @@ import { TokenReadySwap } from '../../molecules/TokenReadySwap'
 import { SwapModulesStyled } from './styles'
 import { LiquidityProviderContext } from '../../../contexts/LiquidityContext'
 
-export const LiquidityModule = ({ tokenOne }) => {
+export const LiquidityModule = ({ tokenOne }:any) => {
 
     const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
     const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)

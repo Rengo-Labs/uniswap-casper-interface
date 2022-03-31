@@ -1,4 +1,5 @@
 import { NavegableTemplate } from '../components/templates/NavegableTemplate'
+import { ConfigModal } from '../components/molecules'
 import { usUS } from '../i18n'
 import { useRouter } from 'next/router'
 export const BasicLayout = ({ children }) => {
@@ -12,6 +13,7 @@ export const BasicLayout = ({ children }) => {
   return (
     <NavegableTemplate title={brandName} url={brandIMG} content={mainButton} handler={handleClick} listOfLinks={listOfLinks}>
       {children}
+      <ConfigModal></ConfigModal>
     </NavegableTemplate>
   );
 };

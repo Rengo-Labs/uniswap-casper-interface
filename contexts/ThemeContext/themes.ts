@@ -1,5 +1,20 @@
 import { createGlobalStyle } from 'styled-components'
 
+interface LightThemeInterface {
+  PrimaryColor: string;
+  PrimaryColor2:string;
+  MainColor: string;
+  StrongColor: string;
+  StrongColor2: string;
+  StrongColor3: string;
+  StrongColor4: string;
+  StrongColor5: string;
+  SecondaryColor: string;
+  TertiaryColor: string;
+  TertiaryColor2: string;
+  backgroundColor: string;
+}
+
 export const lightTheme = {
   PrimaryColor: 'rgba(255,255,255,1)',
   PrimaryColor2: 'rgba(255,255,255,.5)',
@@ -8,16 +23,17 @@ export const lightTheme = {
   StrongColor2: 'rgba(3,70,166,1)',
   StrongColor3: 'rgba(3,52,138,1)',
   StrongColor4: 'rgba(3,52,138,.3)',
+  StrongColor5: 'rgba(3,52,138,.8)',
   SecondaryColor: 'rgba(0,187,233,1)',
   TertiaryColor: 'rgba(255,204,0,1)',
-  TertiaryColor2: 'rgba(255,204,0,.5)',
+  TertiaryColor2: 'rgba(255,204,0,.8)',
   backgroundColor: 'linear-gradient(to bottom, rgba(0,187,233,.8), rgba(0,62,145,1))'
 }
 export const darkTheme = {
   PrimaryColor: 'rgba(255,255,255,1)'
 }
 
-export const GlobalStyles = createGlobalStyle`
+export const GlobalStyles = createGlobalStyle<{theme:LightThemeInterface}>`
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)

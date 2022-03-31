@@ -6,9 +6,9 @@ export const InfoBoxes = ({ InfoBoxArray }) => {
   return (
     <StyledInfoBoxes>
       {
-                InfoBoxArray.map(Infobox => {
+                InfoBoxArray.map((Infobox,index) => {
                   return (
-                    <InfoBox key={Infobox} infoBoxTitle={Infobox.infoBoxTitle} infoBoxSmall={Infobox.infoBoxSmall} />
+                    <InfoBox key={index} infoBoxTitle={Infobox.infoBoxTitle} infoBoxSmall={Infobox.infoBoxSmall} />
                   )
                 })
             }
