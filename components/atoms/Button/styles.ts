@@ -6,6 +6,8 @@ export const ButtonStyle = styled.button`
     padding:10px;
     border-radius: 10px;
     border:none;
+    display: grid;
+    place-items: center;
     box-shadow: 0 0 1rem .2rem rgba(0,0,0,.3);
     &:hover{
         cursor: pointer;

@@ -1,5 +1,5 @@
 import React from 'react'
-import { AiFillSliders } from "react-icons/ai";
+import { AiFillSetting } from "react-icons/ai";
 import { useAtom } from 'jotai'
 import { Button, Anchor } from '../../atoms'
 
@@ -14,7 +14,7 @@ export const ActionsBar = ({ isAnchor, to, content, insideMessage, handler }) =>
     <ActionsStyles>
       <Anchor isAnchor={isAnchor} to={to} insideMessage={insideMessage} />
       <Button content={content} handler={handler} />
-      <button onClick={() => { setConfigAtomSet() }}> <AiFillSliders /></button>
+      <Button handler={setConfigAtomSet} content={<AiFillSetting size="1.5em"/>} />
     </ActionsStyles>
   )
 }
