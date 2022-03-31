@@ -20,7 +20,7 @@ import {
 } from './styles'
 
 import { setConfig } from '../../../contexts/ConfigAtom'
-import { AiOutlineUser } from "react-icons/ai";
+import { AiOutlineUser,AiOutlineCloseCircle } from "react-icons/ai";
 
 
 export const ConfigModal = ({ children }: { children?}) => {
@@ -31,9 +31,9 @@ export const ConfigModal = ({ children }: { children?}) => {
             <ContainerStyled>
                 <ContentStyled>
                     <HeaderStyled>
-                        <AiOutlineUser></AiOutlineUser>
+                        <AiOutlineUser />
                         <ButtonStyle >Connect Wallet</ButtonStyle>
-                        <ButtonCloseStyle onClick={() => { openModalSet() }}>X</ButtonCloseStyle>
+                        <ButtonCloseStyle onClick={() => { openModalSet() }}><AiOutlineCloseCircle/></ButtonCloseStyle>
                     </HeaderStyled>
                     <MainStyled>
                         <h1>Settings</h1>
