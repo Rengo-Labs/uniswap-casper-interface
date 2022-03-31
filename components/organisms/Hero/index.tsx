@@ -11,7 +11,7 @@ export const Hero = ({ HeroTitle, HeroMarkedword, InfoBoxArray, heroImage }) => 
       <MarkedTitle title={HeroTitle} markedword={HeroMarkedword} />
       <HeroIMGStyles src={heroImage.src} />
       <InfoBoxes InfoBoxArray={InfoBoxArray} />
-      <ConfigModal>GO DADDY GO</ConfigModal>
+      <ConfigModal></ConfigModal>
     </HeroStyles>
   )
 }

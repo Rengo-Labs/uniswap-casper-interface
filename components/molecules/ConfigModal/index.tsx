@@ -54,13 +54,21 @@ export const ConfigModal = ({ children }: { children?}) => {
                             Visual Mode
                         </PillowStyled>
                         <PillowStyled>
-                            Splippage Tolerance
+                            Slippage Tolerance
                         </PillowStyled>
                         <PillowStyled>
                             Transaction Speed
                         </PillowStyled>
                     </MainStyled>
-
+                    <MainStyled>
+                        <h1>Favorites</h1>
+                        <PillowStyled>
+                            <WalletSelectionStyled>
+                                <WalletSelectionImageStyled src={casperWallet.src} alt="" />
+                                <h2>Casper</h2>
+                            </WalletSelectionStyled>
+                        </PillowStyled>
+                    </MainStyled>
                     {children}
                 </ContentStyled>
             </ContainerStyled>
