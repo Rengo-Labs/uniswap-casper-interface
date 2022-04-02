@@ -8,13 +8,11 @@ import { setConfig } from '../../../contexts/ConfigAtom'
 import { ActionsStyles } from './styles'
 
 
-export const ActionsBar = ({ isAnchor, to, content, insideMessage, handler }) => {
+export const ActionsBar = ({ children }) => {
   const [, setConfigAtomSet] = useAtom(setConfig)
   return (
     <ActionsStyles>
-      <Anchor isAnchor={isAnchor} to={to} insideMessage={insideMessage} />
-      <Button content={content} handler={handler} />
-      <Button handler={setConfigAtomSet} content={<AiFillSetting size="1.5em"/>} />
+      { children }
     </ActionsStyles>
   )
 }

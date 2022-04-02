@@ -11,7 +11,7 @@ export const StyledInfoBox = styled.section`
 `
 export const StyledInfoBoxTitle = styled.h1`
     margin:0;
-    font-size:3rem;
+    font-size:2rem;
 `
 export const StyledInfoBoxSmall = styled.h2`
     margin:0;
