@@ -42,6 +42,16 @@ export async function connectToSigner() {
     }
 }
 
+export const disconnectWallet = atom(() => { }, async (get, set) => {
+    try {
+        await Signer.disconnectFromSite();
+        const connection = await Signer.isConnected()
+        set(signerConnected, connection)
+    }
+    catch {
+    }
+})
+
 export const setSignerLocked = atom(() => { }, async (get, set, { isUnlocked }) => {
     set(signerLocked, !isUnlocked)
 })
@@ -52,45 +62,47 @@ export const AddressAtomSetter = atom((get) => { }, (get, set, { activeKey }) =>
     set(AddressAtom, activeKey)
 })
 
-const [, setSignerLockedSetter] = useAtom(setSignerLocked)
-const [, setSignerConnectedSetter] = useAtom(setSignerConnected)
-const [, AddressAtomSetterSetter] = useAtom(AddressAtomSetter)
+export const func = () => {
+    const [, setSignerLockedSetter] = useAtom(setSignerLocked)
+    const [, setSignerConnectedSetter] = useAtom(setSignerConnected)
+    const [, AddressAtomSetterSetter] = useAtom(AddressAtomSetter)
+    window.addEventListener('signer:connected', (msg: any) => {
+        setSignerLockedSetter(!msg.detail.isUnlocked)
+        setSignerConnectedSetter(true)
+        AddressAtomSetterSetter(msg.detail.activeKey)
+    });
 
-window.addEventListener('signer:connected', (msg: any) => {
-    setSignerLockedSetter(!msg.detail.isUnlocked)
-    setSignerConnectedSetter(true)
-    AddressAtomSetterSetter(msg.detail.activeKey)
-});
+    window.addEventListener('signer:disconnected', (msg: any) => {
+        setSignerLockedSetter(!msg.detail.isUnlocked)
+        setSignerConnectedSetter(false)
+        AddressAtomSetterSetter(msg.detail.activeKey)
+    });
 
-window.addEventListener('signer:disconnected', (msg: any) => {
-    setSignerLockedSetter(!msg.detail.isUnlocked)
-    setSignerConnectedSetter(false)
-    AddressAtomSetterSetter(msg.detail.activeKey)
-});
+    window.addEventListener('signer:tabUpdated', (msg: any) => {
+        setSignerLockedSetter(!msg.detail.isUnlocked)
+        setSignerConnectedSetter(msg.detail.isConnected)
+        AddressAtomSetterSetter(msg.detail.activeKey)
+    });
 
-window.addEventListener('signer:tabUpdated', (msg: any) => {
-    setSignerLockedSetter(!msg.detail.isUnlocked)
-    setSignerConnectedSetter(msg.detail.isConnected)
-    AddressAtomSetterSetter(msg.detail.activeKey)
-});
+    window.addEventListener('signer:activeKeyChanged', (msg: any) => {
+        AddressAtomSetterSetter(msg.detail.activeKey)
+    });
 
-window.addEventListener('signer:activeKeyChanged', (msg: any) => {
-    AddressAtomSetterSetter(msg.detail.activeKey)
-});
+    window.addEventListener('signer:locked', (msg: any) => {
+        setSignerLockedSetter(!msg.detail.isUnlocked);
+        AddressAtomSetterSetter(msg.detail.activeKey)
+    });
 
-window.addEventListener('signer:locked', (msg: any) => {
-    setSignerLockedSetter(!msg.detail.isUnlocked);
-    AddressAtomSetterSetter(msg.detail.activeKey)
-});
+    window.addEventListener('signer:unlocked', (msg: any) => {
+        setSignerLockedSetter(!msg.detail.isUnlocked)
+        setSignerConnectedSetter(msg.detail.isConnected)
+        AddressAtomSetterSetter(msg.detail.activeKey)
+    });
 
-window.addEventListener('signer:unlocked', (msg: any) => {
-    setSignerLockedSetter(!msg.detail.isUnlocked)
-    setSignerConnectedSetter(msg.detail.isConnected)
-    AddressAtomSetterSetter(msg.detail.activeKey)
-});
+    window.addEventListener('signer:initialState', (msg: any) => {
+        setSignerLockedSetter(!msg.detail.isUnlocked)
+        setSignerConnectedSetter(msg.detail.isConnected)
+        AddressAtomSetterSetter(msg.detail.activeKey)
+    });
+}
 
-window.addEventListener('signer:initialState', (msg: any) => {
-    setSignerLockedSetter(!msg.detail.isUnlocked)
-    setSignerConnectedSetter(msg.detail.isConnected)
-    AddressAtomSetterSetter(msg.detail.activeKey)
-});

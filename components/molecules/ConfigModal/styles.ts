@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 type ConfigModalType = {
     openModal?: boolean | Boolean;
 }
@@ -45,7 +45,7 @@ export const HeaderStyled = styled.header`
     font-size: 2rem;
 `
 
-export const ButtonStyle = styled.button`
+export const ButtonStyle = styled.button<any>`
     color: ${props => props.theme.StrongColor};
     background-color: ${props => props.theme.TertiaryColor};
     padding:10px;
@@ -59,6 +59,11 @@ export const ButtonStyle = styled.button`
     &:active{
         background-color: ${props => props.theme.TertiaryColor2};
     }
+
+    ${props => props.isSelected && css`
+    color: red;
+    background: white;
+    `}
 `
 export const ButtonCloseStyle = styled.button`
     color: ${props => props.theme.StrongColor};
@@ -95,7 +100,7 @@ export const PillowStyled = styled.div`
     gap: 10px;
     justify-content: space-evenly;
 `
-export const WalletSelectionStyled = styled.div`
+export const WalletSelectionStyled = styled.div<any>`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -109,6 +114,11 @@ export const WalletSelectionStyled = styled.div`
     &:active{
         background-color: ${props => props.theme.StrongColor3};
     }
+    
+    ${props => props.isSelected && css`
+    color: red;
+    background: white;
+    `}
 `
 export const WalletSelectionImageStyled = styled.img`
     width: 50px;

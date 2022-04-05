@@ -1,114 +1,31 @@
-# questions about usability inside of swap
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Landing
+## Getting Started
 
-![alt text](readmeimage/landing.png)
+First, run the development server:
 
-### Items
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-* Brand image + Brand name
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-*Interaction*: when button is pressed go landing page "/"
+You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-* Analitycs
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
-*Interaction*: #TODO idk url to redirect
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-* Launch App
+## Deploy on Vercel
 
-*Interaction*: when button is pressed go landing page "/swap"
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+```bash
+npm run build
+# or
+yarn build
+```
 
-* Hero title
-
-*No interaction*
-
-* Hero image
-
-*No interaction*
-
-#TODO vectorice please
-
-* Stadistics Row
-
-*No interaction* 
-
-#TODO came from backend? coingecko maybe?
-
-## Swap
-
-![alt text](readmeimage/swapPage.png)
-
-
-### Items
-
-* Navigation bar
-
-*Interaction*: when button is pressed move around the site
-
-#TODO: add floor when nav is active
-
-* Launch app button
-
-*Interaction*: 
-
-#TODO if wallet is not connected switch to connect to wallet
-
-* Swap module
-
-*Interaction*: load token from ??
-
-*Interaction*: load token balance from wallet
-
-*Interaction*: connect to wallet button switch to another button if wallet is connected
-
-What is the next step if the user connects the wallet?
-
-**Restriction**:
-
-#TODO don't duplicate token when user should select
-
-example: if user select token 1 cspr, the option cspr should be disable for input 2
-
-## Liquidity
-
-![alt text](readmeimage/liquidityPage.png)
-
-### Items
-
-* Your Liquidity
-
-*Interaction*: 
-
-#TODO load token wallet
-
-What is the next step if the user connects the wallet?
-
-## Pool
-
-![alt text](readmeimage/poolPage.png)
-
-### Items
-
-* Pairs
-
-*Interaction*: Sort by in every column
-
-the data came from?
-
-## Tokens
-
-![alt text](readmeimage/tokensPage.png)
-
-### Items
-
-* Pairs
-
-*Interaction*: Sort by in every column
-
-the data came from?
-
-*Interaction*: Trade button push "/swap?tokenOne=${nameToken}
-
-
-
+the entry point to the app will be "out/index.js" 

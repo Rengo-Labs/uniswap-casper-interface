@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useAtom } from 'jotai'
 
 import { Button } from '../../atoms'
@@ -19,12 +19,23 @@ import {
     ButtonCloseStyle
 } from './styles'
 
-import { setConfig } from '../../../contexts/ConfigAtom'
-import { AiOutlineUser,AiOutlineCloseCircle } from "react-icons/ai";
+import { setConfig, walletAtom, } from '../../../contexts/ConfigAtom'
+import { connectToSigner, signerConnected, checkConnection, disconnectWallet } from '../../../contexts/CasperAtoms'
+import { AiOutlineUser, AiOutlineCloseCircle } from "react-icons/ai";
 
 
 export const ConfigModal = ({ children }: { children?}) => {
+    const [, checkConnectionSetter] = useAtom(checkConnection)
+    const [isConnected,isConnectedSetter] = useAtom(signerConnected)
+    const [, disconnectWalletSetter] = useAtom(disconnectWallet)
+
+    useEffect(() => {
+        checkConnectionSetter()
+    }, [])
+
     const [openModal, openModalSet] = useAtom(setConfig)
+    const [walletSelected, walletSelectedSet] = useAtom(walletAtom)
+
 
     return (
         <ModalStyled openModal={openModal}>
@@ -32,17 +43,17 @@ export const ConfigModal = ({ children }: { children?}) => {
                 <ContentStyled>
                     <HeaderStyled>
                         <AiOutlineUser />
-                        <ButtonStyle >Connect Wallet</ButtonStyle>
-                        <ButtonCloseStyle onClick={() => { openModalSet() }}><AiOutlineCloseCircle/></ButtonCloseStyle>
+                        {isConnected ? <ButtonStyle isSelected={isConnected} onClick={async () => { await disconnectWalletSetter(),isConnectedSetter(false) }}>Disconnect Wallet</ButtonStyle> : <ButtonStyle isSelected={isConnected} onClick={async () => { await connectToSigner(),isConnectedSetter(true) }}>Connect Wallet</ButtonStyle>}
+                        <ButtonCloseStyle onClick={() => { openModalSet() }}><AiOutlineCloseCircle /></ButtonCloseStyle>
                     </HeaderStyled>
                     <MainStyled>
                         <h1>Settings</h1>
                         <PillowStyled>
-                            <WalletSelectionStyled>
+                            <WalletSelectionStyled isSelected={walletSelected === "casper" ? true : false} onClick={() => walletSelectedSet("casper")}>
                                 <WalletSelectionImageStyled src={casperWallet.src} alt="" />
                                 <h2>Casper Wallet</h2>
                             </WalletSelectionStyled>
-                            <WalletSelectionStyled>
+                            <WalletSelectionStyled isSelected={walletSelected === "torus" ? true : false} onClick={() => walletSelectedSet("torus")}>
                                 <WalletSelectionImageStyled src={torusWallet.src} alt="" />
                                 <h2>Torus Wallet</h2>
                             </WalletSelectionStyled>
