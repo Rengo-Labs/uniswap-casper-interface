@@ -1,108 +1,29 @@
-import {
-    Signer
-} from 'casper-js-sdk';
 import { atomWithStorage } from 'jotai/utils'
-import { atom, useAtom } from 'jotai'
+import { atom } from 'jotai'
 
-export const signerConnected = atomWithStorage<Boolean>("signerConnected", false)
-export const walletSignerConnected = atomWithStorage<Boolean>("walletSignerConnected", false)
-export const AddressAtom = atomWithStorage<String>("Address", null)
-export const signerLocked = atomWithStorage<Boolean>("signerLocked", false)
-// if (signerConnectedAtom) {
-//     let res = getActiveKeyFromSigner()
-//     localStorage.setItem("Address", res)
-//     props.setActivePublicKey(res)
-// }
+import { disconnectFromSite, isConnected, getActivePublicKey } from '@commons/controllers/casperController'
 
-export const getActiveKeyFromSigner = atom(() => { }, async (get, set) => {
-    try {
-        const address = await Signer.getActivePublicKey()
-        set(AddressAtom, address)
-    }
-    catch {
-        set(AddressAtom, null)
-    }
+
+export const isConnectedAtom = atomWithStorage<Boolean>("isConnected", false)
+export const activePublicKeyAtom = atomWithStorage<string | Boolean>("getActivePublicKey", false)
+
+
+export const disconnectFromSiteAtom = atom(() => { }, async (get, set, { Signer }) => {
+    await disconnectFromSite(Signer)
+    set(isConnectedAtom, false)
 })
 
-export const checkConnection = atom(() => { }, async (get, set) => {
-    try {
-        const connection = await Signer.isConnected()
-        set(signerConnected, connection)
-    }
-    catch {
-        set(signerConnected, false)
-    }
+export const checkConnectionAtom = atom(() => { }, async (get, set, { Signer }) => {
+    const res = await isConnected(Signer)
+    set(isConnectedAtom, res)
 })
 
-export async function connectToSigner() {
-    try {
-        return await Signer.sendConnectionRequest();
+export const connectAtom = atom(() => { }, async (get, set, { Signer }) => {
+    const publicKey = await getActivePublicKey(Signer)
+    if (!publicKey) {
+        set(isConnectedAtom, false)
+        set(activePublicKeyAtom, false)
     }
-    catch {
-    }
-}
-
-export const disconnectWallet = atom(() => { }, async (get, set) => {
-    try {
-        await Signer.disconnectFromSite();
-        const connection = await Signer.isConnected()
-        set(signerConnected, connection)
-    }
-    catch {
-    }
+    set(isConnectedAtom, true)
+    set(activePublicKeyAtom, publicKey)
 })
-
-export const setSignerLocked = atom(() => { }, async (get, set, { isUnlocked }) => {
-    set(signerLocked, !isUnlocked)
-})
-export const setSignerConnected = atom(() => { }, async (get, set, { connected }) => {
-    set(signerConnected, connected)
-})
-export const AddressAtomSetter = atom((get) => { }, (get, set, { activeKey }) => {
-    set(AddressAtom, activeKey)
-})
-
-export const func = () => {
-    const [, setSignerLockedSetter] = useAtom(setSignerLocked)
-    const [, setSignerConnectedSetter] = useAtom(setSignerConnected)
-    const [, AddressAtomSetterSetter] = useAtom(AddressAtomSetter)
-    window.addEventListener('signer:connected', (msg: any) => {
-        setSignerLockedSetter(!msg.detail.isUnlocked)
-        setSignerConnectedSetter(true)
-        AddressAtomSetterSetter(msg.detail.activeKey)
-    });
-
-    window.addEventListener('signer:disconnected', (msg: any) => {
-        setSignerLockedSetter(!msg.detail.isUnlocked)
-        setSignerConnectedSetter(false)
-        AddressAtomSetterSetter(msg.detail.activeKey)
-    });
-
-    window.addEventListener('signer:tabUpdated', (msg: any) => {
-        setSignerLockedSetter(!msg.detail.isUnlocked)
-        setSignerConnectedSetter(msg.detail.isConnected)
-        AddressAtomSetterSetter(msg.detail.activeKey)
-    });
-
-    window.addEventListener('signer:activeKeyChanged', (msg: any) => {
-        AddressAtomSetterSetter(msg.detail.activeKey)
-    });
-
-    window.addEventListener('signer:locked', (msg: any) => {
-        setSignerLockedSetter(!msg.detail.isUnlocked);
-        AddressAtomSetterSetter(msg.detail.activeKey)
-    });
-
-    window.addEventListener('signer:unlocked', (msg: any) => {
-        setSignerLockedSetter(!msg.detail.isUnlocked)
-        setSignerConnectedSetter(msg.detail.isConnected)
-        AddressAtomSetterSetter(msg.detail.activeKey)
-    });
-
-    window.addEventListener('signer:initialState', (msg: any) => {
-        setSignerLockedSetter(!msg.detail.isUnlocked)
-        setSignerConnectedSetter(msg.detail.isConnected)
-        AddressAtomSetterSetter(msg.detail.activeKey)
-    });
-}
-

@@ -37,6 +37,12 @@
       ],
       "@context/*": [
         "context/*"
+      ],
+      "@commons/*": [
+        "commons/*"
+      ],
+      "@customHooks/*": [
+        "customHooks/*"
       ]
     }
   },

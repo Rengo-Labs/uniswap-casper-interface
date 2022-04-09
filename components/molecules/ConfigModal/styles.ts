@@ -14,6 +14,7 @@ export const ModalStyled = styled.section<Partial<ConfigModalType>>`
     justify-content:flex-end;
 `
 export const ContainerStyled = styled.section<Partial<ConfigModalType>>`
+    position: fixed;
     width: 30%;
     height: 100%;
     background-color: ${props => props.theme.StrongColor3};
@@ -60,7 +61,7 @@ export const ButtonStyle = styled.button<any>`
         background-color: ${props => props.theme.TertiaryColor2};
     }
 
-    ${props => props.isSelected && css`
+    ${props => props.isSelected && `
     color: red;
     background: white;
     `}
@@ -115,7 +116,7 @@ export const WalletSelectionStyled = styled.div<any>`
         background-color: ${props => props.theme.StrongColor3};
     }
     
-    ${props => props.isSelected && css`
+    ${props => props.isSelected && `
     color: red;
     background: white;
     `}
