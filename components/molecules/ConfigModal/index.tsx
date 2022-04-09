@@ -101,7 +101,7 @@ export const ConfigModal = ({ children }: { children?}) => {
         if (isConnected) {
             await disconnectToSigner()
         } else {
-            const signer = await connectToSigner()
+            await getActiveKeyFromSigner()
             console.log(activePublicKey)
         }
     }
