@@ -42,54 +42,54 @@ export const ConfigModal = ({ children }: { children?}) => {
 
     useEffect(() => {
 
-        // ['signer:connected', 'signer:disconnected', 'signer:tabUpdated', 'signer:activeKeyChanged', 'signer:locked', 'signer:unlocked', 'signer:initialState']
-        //     .map((x) => {
-        //         window.addEventListener(x, function (event) {
-        //             event.stopImmediatePropagation();
-        //         }, true);
-        //     })
+        ['signer:connected', 'signer:disconnected', 'signer:tabUpdated', 'signer:activeKeyChanged', 'signer:locked', 'signer:unlocked', 'signer:initialState']
+            .map((x) => {
+                window.addEventListener(x, function (event) {
+                    event.stopImmediatePropagation();
+                }, true);
+            })
         // shortcut to erase events
 
-        window.addEventListener('signer:connected', (msg: any) => {
-            console.log('signer:connected')
-            signerLockedSetter(!msg.detail.isUnlocked)
-            signerConnectedSetter(true)
-            activePublicKeySetter(msg.detail.activeKey)
-        });
+        // window.addEventListener('signer:connected', (msg: any) => {
+        //     console.log('signer:connected')
+        //     signerLockedSetter(!msg.detail.isUnlocked)
+        //     signerConnectedSetter(true)
+        //     activePublicKeySetter(msg.detail.activeKey)
+        // });
 
-        window.addEventListener('signer:disconnected', (msg: any) => {
-            console.log('signer:disconnected')
-            signerLockedSetter(!msg.detail.isUnlocked)
-            signerConnectedSetter(false)
-            activePublicKeySetter(msg.detail.activeKey)
-        })
-        window.addEventListener('signer:tabUpdated', (msg: any) => {
-            console.log('signer:tabUpdated')
-            signerLockedSetter(!msg.detail.isUnlocked)
-            signerConnectedSetter(msg.detail.isConnected)
-            activePublicKeySetter(msg.detail.activeKey)
-        })
-        window.addEventListener('signer:activeKeyChanged', (msg: any) => {
-            console.log('signer:activeKeyChanged')
-            activePublicKeySetter(msg.detail.activeKey)
-        });
-        window.addEventListener('signer:locked', (msg: any) => {
-            console.log('signer:locked')
-            signerLockedSetter(!msg.detail.isUnlocked);
-            activePublicKeySetter(msg.detail.activeKey)
-        });
-        window.addEventListener('signer:unlocked', (msg: any) => {
-            console.log('signer:unlocked')
-            signerLockedSetter(!msg.detail.isUnlocked)
-            signerConnectedSetter(msg.detail.isConnected)
-            activePublicKeySetter(msg.detail.activeKey)
-        });
-        window.addEventListener('signer:initialState', (msg: any) => {
-            console.log("Initial State: ", msg.detail);
-            signerLockedSetter(!msg.detail.isUnlocked)
-            signerConnectedSetter(msg.detail.isConnected)
-            activePublicKeySetter(msg.detail.activeKey)
-        });
+        // window.addEventListener('signer:disconnected', (msg: any) => {
+        //     console.log('signer:disconnected')
+        //     signerLockedSetter(!msg.detail.isUnlocked)
+        //     signerConnectedSetter(false)
+        //     activePublicKeySetter(msg.detail.activeKey)
+        // })
+        // window.addEventListener('signer:tabUpdated', (msg: any) => {
+        //     console.log('signer:tabUpdated')
+        //     signerLockedSetter(!msg.detail.isUnlocked)
+        //     signerConnectedSetter(msg.detail.isConnected)
+        //     activePublicKeySetter(msg.detail.activeKey)
+        // })
+        // window.addEventListener('signer:activeKeyChanged', (msg: any) => {
+        //     console.log('signer:activeKeyChanged')
+        //     activePublicKeySetter(msg.detail.activeKey)
+        // });
+        // window.addEventListener('signer:locked', (msg: any) => {
+        //     console.log('signer:locked')
+        //     signerLockedSetter(!msg.detail.isUnlocked);
+        //     activePublicKeySetter(msg.detail.activeKey)
+        // });
+        // window.addEventListener('signer:unlocked', (msg: any) => {
+        //     console.log('signer:unlocked')
+        //     signerLockedSetter(!msg.detail.isUnlocked)
+        //     signerConnectedSetter(msg.detail.isConnected)
+        //     activePublicKeySetter(msg.detail.activeKey)
+        // });
+        // window.addEventListener('signer:initialState', (msg: any) => {
+        //     console.log("Initial State: ", msg.detail);
+        //     signerLockedSetter(!msg.detail.isUnlocked)
+        //     signerConnectedSetter(msg.detail.isConnected)
+        //     activePublicKeySetter(msg.detail.activeKey)
+        // });
     }, []);
 
 
