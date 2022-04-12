@@ -3,64 +3,74 @@ import { useAtom } from 'jotai'
 
 import { Signer } from 'casper-js-sdk';
 
-export const signerLockedAtom = atomWithStorage<Boolean>("signerLockedAtom", false)
+export const signerUnlockedAtom = atomWithStorage<Boolean>("signerUnlockedAtom", false)
 export const signerConnectedAtom = atomWithStorage<Boolean>("signerConnectedAtom", false)
 export const activePublicKeyAtom = atomWithStorage<string | Boolean>("getActivePublicKey", false)
 
 export function useCasper() {
 
-    const [signerLocked, signerLockedSetter] = useAtom(signerLockedAtom)
+    const [signerUnlocked, signerUnlockedSetter] = useAtom(signerUnlockedAtom)
     const [signerConnected, signerConnectedSetter] = useAtom(signerConnectedAtom)
     const [activePublicKey, activePublicKeySetter] = useAtom(activePublicKeyAtom)
-  
 
-    async function getActiveKeyFromSigner() {
-        try {
-            activePublicKeySetter(await Signer.getActivePublicKey())
-        }
-        catch {
-            let variant: any = "error";
-        }
-    }
-
-    async function checkConnection() {
-        try {
-            const isConnected = await Signer.isConnected()
-            signerConnectedSetter(isConnected)
-            return isConnected;
-        }
-        catch {
-            let variant: any = "error";
-        }
-    }
     async function connectToSigner() {
         try {
-            await Signer.sendConnectionRequest();
-        }
-        catch {
-            let variant: any = "error";
+            if (signerUnlocked) {
+                console.log("wallet unlocked")
+                await Signer.sendConnectionRequest()
+                const publicKey = await Signer.getActivePublicKey().catch(err => { console.log(err) })
+                activePublicKeySetter(typeof publicKey === "string" ? publicKey : false)
+                signerUnlockedSetter(true)
+
+            }
+            else {
+                console.log("wallet locked")
+                await Signer.sendConnectionRequest()
+                signerUnlockedSetter(true)
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
     async function disconnectToSigner() {
         try {
-            await Signer.disconnectFromSite();
+            if (signerConnected && signerUnlocked) {
+                await Signer.disconnectFromSite();
+                signerConnectedSetter(false)
+                signerUnlockedSetter(false)
+            }
+            else {
+                await Signer.sendConnectionRequest()
+                await Signer.disconnectFromSite();
+                signerConnectedSetter(false)
+                signerUnlockedSetter(false)
+            }
+
         }
-        catch {
-            let variant: any = "error";
+        catch (err) {
+            console.log(err)
+        }
+
+    }
+
+    async function checkConnection() {
+        try {
+            return await Signer.isConnected()
+        } catch (error) {
+            return false
         }
     }
 
     return {
-        signerLocked,
-        signerLockedSetter,
+        signerUnlocked,
+        signerUnlockedSetter,
         signerConnected,
         signerConnectedSetter,
         activePublicKey,
         activePublicKeySetter,
-        getActiveKeyFromSigner,
-        checkConnection,
         connectToSigner,
-        disconnectToSigner
+        disconnectToSigner,
+        checkConnection
     }
 }

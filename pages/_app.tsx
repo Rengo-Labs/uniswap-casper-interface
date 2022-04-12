@@ -5,9 +5,16 @@ import { LiquidityContext } from "../contexts/LiquidityContext";
 import { PoolsContext } from "../contexts/PoolsContext";
 import { CasperContext } from "../contexts/CasperContext";
 import { Provider as JotaiProvider } from 'jotai'
+
+import { getLibrary } from '../config/web3'
+import { Web3ReactProvider } from '@web3-react/core'
+
 import Head from 'next/head';
+
+
 const MyApp = ({ Component, pageProps, auth }) => {
   return (
+    <Web3ReactProvider getLibrary={getLibrary}>
       <ThemeContext>
         <PoolsContext>
           <LiquidityContext>
@@ -28,6 +35,7 @@ const MyApp = ({ Component, pageProps, auth }) => {
           </LiquidityContext>
         </PoolsContext>
       </ThemeContext>
+    </Web3ReactProvider>
   );
 };
 export default MyApp;

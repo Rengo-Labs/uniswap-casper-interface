@@ -7,10 +7,6 @@ export const CasperProviderContext = createContext<any>("")
 
 
 export const CasperContext = ({ children }) => {
-    let [menuOpenedClass, setMenuOpenedClass] = useState();
-    let [signerLocked, setSignerLocked] = useState()
-    let [signerConnected, setSignerConnected] = useState(false)
-    let [isLoading] = useState(false);
 
     return (
         <CasperProviderContext.Provider value={{ checkConnection, getActiveKeyFromSigner, connectToSigner }}>
