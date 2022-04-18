@@ -7,9 +7,4 @@ export const HeroStyles = styled.section`
     flex-direction: column;
 `
 
-export const HeroIMGStyles = styled.img`
-    margin: auto;
-    width: 350px;
-    height: 200px;
-    padding: 10px;
-`
+

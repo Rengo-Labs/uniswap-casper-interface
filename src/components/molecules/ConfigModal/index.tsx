@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { ReactNode, useCallback, useEffect, useState } from 'react'
 import { useAtom } from 'jotai'
 
 import casperWallet from '../../../assets/walletIcons/casper.png';
@@ -22,12 +22,9 @@ import { setConfig, walletAtom, } from '../../../contexts/ConfigAtom'
 import { ConfigModalHeader } from '@molecules/ConfigModalHeader';
 import { ButtonClose } from '@atoms/ButtonClose';
 import { ButtonConnection } from '@atoms/ButtonConnection';
-import { torusLogin, web3Obj } from './torus';
-import { publicAddressAtom } from 'contexts/TorusAtoms';
-import Torus from "@toruslabs/casper-embed";
 
 
-export const ConfigModal = ({ children }: { children?}) => {
+export const ConfigModal = ({ children }: { children?:ReactNode}) => {
 
 
     const [openModal, openModalSet] = useAtom(setConfig)

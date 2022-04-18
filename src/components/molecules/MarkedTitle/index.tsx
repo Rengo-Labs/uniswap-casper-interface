@@ -1,7 +1,9 @@
 import React from 'react'
 import { StyledContainer, StyledTitle, StyledMarkedTitle } from './styles'
 
-export const MarkedTitle = ({ title, markedword }) => {
+interface MarkedTittleInterfaceProp { title: string, markedword: string }
+
+export const MarkedTitle = ({ title, markedword }: MarkedTittleInterfaceProp) => {
   const titleBuilder = title.split(' ')
 
   return (

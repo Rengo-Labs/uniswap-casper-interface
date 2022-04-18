@@ -14,4 +14,7 @@ export { RoundedButton } from './RoundedButton'
 export { SwapContainer } from './SwapContainer'
 export { SwapTokenSelect } from './SwapTokenSelect'
 export { SwapTokenBalance } from './SwapTokenBalance'
+export { HeroImage } from './HeroImage'
+export { PillowDiv } from './PillowDiv'
+export { WalletSelectionDiv } from './WalletSelectionDiv'
 

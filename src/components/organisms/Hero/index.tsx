@@ -1,17 +1,11 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 
-import { MarkedTitle, ConfigModal } from '../../molecules'
-import { InfoBoxes } from '../InfoBoxes'
+import { HeroStyles } from './styles'
 
-import { HeroStyles, HeroIMGStyles } from './styles'
-
-export const Hero = ({ HeroTitle, HeroMarkedword, InfoBoxArray, heroImage }) => {
+export const Hero = ({ children }:{children:ReactNode}) => {
   return (
     <HeroStyles>
-      <MarkedTitle title={HeroTitle} markedword={HeroMarkedword} />
-      <HeroIMGStyles src={heroImage.src} />
-      <InfoBoxes InfoBoxArray={InfoBoxArray} />
-      <ConfigModal></ConfigModal>
+      { children }
     </HeroStyles>
   )
 }
