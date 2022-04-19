@@ -16,6 +16,7 @@ dist-ssr
 .vscode/*
 .next/
 .backup/
+./src/e2e/
 !.vscode/extensions.json
 .idea
 .DS_Store
