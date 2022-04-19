@@ -10,7 +10,7 @@ import { POCTable } from '..'
 export const PoolModule = () => {
     const { columns, data } = React.useContext(PoolsProviderContext)
     const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
-    const { preGlobalFilteredRows, setGlobalFilter, state } = tableInstance
+    const { preGlobalFilteredRows, setGlobalFilter, state }:any = tableInstance
     return (
         <PoolModulesStyled>
             <POCSearch preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />

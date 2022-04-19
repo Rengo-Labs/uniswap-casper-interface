@@ -1,12 +1,12 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, ReactNode, useState } from 'react'
 import casprIcon from '../../assets/swapIcons/casprIcon.png'
 
-export const PoolsProviderContext = createContext(null)
-export const PoolsContext = ({ children }) => {
+export const PoolsProviderContext = createContext<any>({})
+export const PoolsContext = ({ children }:{children:ReactNode}) => {
 
   const [tokens, setTokens] = useState([
     {
-      tokeIcon: casprIcon.src,
+      tokeIcon: casprIcon,
       tokeName: "CSPR-WETH",
       tokenLiquidity: "$78.438.726.23",
       volume24h: "$11.645.726.23",
@@ -15,7 +15,7 @@ export const PoolsContext = ({ children }) => {
       oneYFees: "13.19%",
     },
     {
-      tokeIcon: casprIcon.src,
+      tokeIcon: casprIcon,
       tokeName: "WCSPR-WETH",
       tokenLiquidity: "$60.438.726.23",
       volume24h: "$20.645.726.23",
@@ -24,7 +24,7 @@ export const PoolsContext = ({ children }) => {
       oneYFees: "20.19%",
     },
     {
-      tokeIcon: casprIcon.src,
+      tokeIcon: casprIcon,
       tokeName: "CSPR-WISER",
       tokenLiquidity: "$96.258.741.99",
       volume24h: "$60.258.852.64",
@@ -33,7 +33,7 @@ export const PoolsContext = ({ children }) => {
       oneYFees: "47.0%",
     },
     {
-      tokeIcon: casprIcon.src,
+      tokeIcon: casprIcon,
       tokeName: "WISER-WCSPR",
       tokenLiquidity: "$50.320.147.23",
       volume24h: "$41.184.286.40",
@@ -42,7 +42,7 @@ export const PoolsContext = ({ children }) => {
       oneYFees: "33.47%",
     },
     {
-      tokeIcon: casprIcon.src,
+      tokeIcon: casprIcon,
       tokeName: "WETH-WISER",
       tokenLiquidity: "$78.438.726.23",
       volume24h: "$22.848.464.14",
@@ -51,7 +51,7 @@ export const PoolsContext = ({ children }) => {
       oneYFees: "15.0%",
     },
     {
-      tokeIcon: casprIcon.src,
+      tokeIcon: casprIcon,
       tokeName: "CSPR-USDC",
       tokenLiquidity: "$100.438.726.23",
       volume24h: "$84.456.654.23",
@@ -64,7 +64,7 @@ export const PoolsContext = ({ children }) => {
     {
       Header: 'Icon',
       accessor: 'tokeIcon',
-      Cell: tableProps => (
+      Cell: (tableProps:any) => (
         <img
           src={tableProps.row.original.tokeIcon}
           width={25}

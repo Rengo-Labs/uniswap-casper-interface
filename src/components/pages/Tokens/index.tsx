@@ -5,7 +5,7 @@ import { TokensModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
 
-const Tokens = () => {
+export const Tokens = () => {
 
   return (
     <BasicLayout>
@@ -15,5 +15,3 @@ const Tokens = () => {
     </BasicLayout>
   )
 }
-
-export default Tokens

@@ -1,11 +1,11 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, ReactNode, useState } from 'react'
 import casprIcon from '../../assets/swapIcons/casprIcon.png'
 import wcasprIcon from '../../assets/swapIcons/wcasprIcon.png'
 import wiseIcon from '../../assets/swapIcons/wiseIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 
-export const TokensProviderContext = createContext(null)
-export const TokensContext = ({ children }) => {
+export const TokensProviderContext = createContext<any>({})
+export const TokensContext = ({ children }:{children:ReactNode}) => {
 
   const [tokens, setTokens] = useState(
     [

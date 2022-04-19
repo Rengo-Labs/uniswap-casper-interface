@@ -1,8 +1,8 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, ReactNode, useState } from 'react'
 import casprIcon from '../../assets/swapIcons/casprIcon.png'
 
-export const TokensProviderContext2 = createContext(null)
-export const TokensContext2 = ({ children }) => {
+export const TokensProviderContext2 = createContext<any>({})
+export const TokensContext2 = ({ children }:{children:ReactNode}) => {
 
   const [tokens, setTokens] = useState([
     {

@@ -20,9 +20,3 @@ export const WalletSelectionStyled = styled.div<any>`
     background: white;
     `}
 `
-
-export const WalletSelectionImageStyled = styled.img`
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-`

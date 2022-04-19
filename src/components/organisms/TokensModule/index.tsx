@@ -9,7 +9,7 @@ import { POCTable2 } from '..'
 export const TokensModule = () => {
     const { columns, data } = React.useContext(TokensProviderContext2)
     const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
-    const { preGlobalFilteredRows, setGlobalFilter, state } = tableInstance
+    const { preGlobalFilteredRows, setGlobalFilter, state }:any = tableInstance
     return (
         <PoolModulesStyled>
             <POCSearch2 preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />

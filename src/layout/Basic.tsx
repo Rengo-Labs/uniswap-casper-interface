@@ -1,12 +1,16 @@
+import { ReactNode } from 'react';
+
 import { NavegableTemplate } from '../components/templates/NavegableTemplate'
 import { ConfigModal } from '../components/molecules'
 import { usUS } from '../i18n'
-import { useRouter } from 'next/router'
-export const BasicLayout = ({ children }) => {
-  const router = useRouter()
-  const handleClick = (e) => {
+import { useNavigate } from 'react-router-dom'
+
+
+export const BasicLayout = ({ children }: { children: ReactNode }) => {
+  const router = useNavigate()
+  const handleClick = (e: any) => {
     e.preventDefault()
-    router.push('/swap')
+    router('/')
   }
   const { brandName, brandIMG, mainButton, listOfLinks } = usUS
 

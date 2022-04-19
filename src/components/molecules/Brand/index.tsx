@@ -1,17 +1,18 @@
-import React from 'react'
-import { Title, ImgRender } from '../../atoms'
+import React, { ReactNode } from 'react'
+
 import { BrandStyles } from './styles'
-import { useRouter } from 'next/router'
-export const Brand = ({ children }) => {
-  const router = useRouter()
-  const handleClick = (e) => {
+import { useNavigate } from 'react-router-dom'
+export const Brand = ({ children }: { children: ReactNode }) => {
+  
+  const router = useNavigate()
+  const handleClick = (e: any) => {
     e.preventDefault()
-    router.push('/')
+    router('/')
   }
 
   return (
     <BrandStyles onClick={handleClick}>
-      { children }
+      {children}
     </BrandStyles>
   )
 }

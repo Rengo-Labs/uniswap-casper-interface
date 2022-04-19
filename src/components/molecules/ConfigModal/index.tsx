@@ -8,9 +8,6 @@ import {
     ModalStyled,
     ContainerStyled,
     ContentStyled,
-    MainStyled,
-    PillowStyled,
-    WalletSelectionStyled,
     WalletSelectionImageStyled,
 } from './styles'
 import { AiOutlineUser, AiOutlineCloseCircle } from "react-icons/ai";
@@ -19,12 +16,11 @@ import { AiOutlineUser, AiOutlineCloseCircle } from "react-icons/ai";
 import { setConfig, walletAtom, } from '../../../contexts/ConfigAtom'
 
 
-import { ConfigModalHeader } from '@molecules/ConfigModalHeader';
-import { ButtonClose } from '@atoms/ButtonClose';
-import { ButtonConnection } from '@atoms/ButtonConnection';
+import { ConfigModalHeader } from '../../molecules';
+import { ButtonClose, ButtonConnection, ConfigModalBody, PillowDiv, WalletSelectionDiv } from '../../atoms';
 
 
-export const ConfigModal = ({ children }: { children?:ReactNode}) => {
+export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
 
     const [openModal, openModalSet] = useAtom(setConfig)
@@ -52,40 +48,40 @@ export const ConfigModal = ({ children }: { children?:ReactNode}) => {
                             <AiOutlineCloseCircle />
                         </ButtonClose>
                     </ConfigModalHeader>
-                    <MainStyled>
+                    <ConfigModalBody>
                         <h1>Settings</h1>
-                        <PillowStyled>
-                            <WalletSelectionStyled isSelected={walletSelected === "casper" ? true : false} onClick={() => walletSelectedSet("casper")}>
-                                <WalletSelectionImageStyled src={casperWallet.src} alt="" />
+                        <PillowDiv>
+                            <WalletSelectionDiv walletSelected={"walletSelected"} >
+                                <WalletSelectionImageStyled src={casperWallet} alt="" />
                                 <h2>Casper Wallet</h2>
-                            </WalletSelectionStyled>
-                            <WalletSelectionStyled isSelected={walletSelected === "torus" ? true : false} onClick={() => walletSelectedSet("torus")}>
-                                <WalletSelectionImageStyled src={torusWallet.src} alt="" />
+                            </WalletSelectionDiv>
+                            <WalletSelectionDiv walletSelected={"walletSelected"} >
+                                <WalletSelectionImageStyled src={casperWallet} alt="" />
                                 <h2>Torus Wallet</h2>
-                            </WalletSelectionStyled>
-                        </PillowStyled>
-                        <PillowStyled>
+                            </WalletSelectionDiv>
+                        </PillowDiv>
+                        <PillowDiv>
                             Language Selection
-                        </PillowStyled>
-                        <PillowStyled>
+                        </PillowDiv>
+                        <PillowDiv>
                             Visual Mode
-                        </PillowStyled>
-                        <PillowStyled>
+                        </PillowDiv>
+                        <PillowDiv>
                             Slippage Tolerance
-                        </PillowStyled>
-                        <PillowStyled>
+                        </PillowDiv>
+                        <PillowDiv>
                             Transaction Speed
-                        </PillowStyled>
-                    </MainStyled>
-                    <MainStyled>
+                        </PillowDiv>
+                    </ConfigModalBody>
+                    <ConfigModalBody>
                         <h1>Favorites</h1>
-                        <PillowStyled>
-                            <WalletSelectionStyled>
-                                <WalletSelectionImageStyled src={casperWallet.src} alt="" />
+                        <PillowDiv>
+                            <WalletSelectionDiv walletSelected={"walletSelected"} >
+                                <WalletSelectionImageStyled src={casperWallet} alt="" />
                                 <h2>Casper</h2>
-                            </WalletSelectionStyled>
-                        </PillowStyled>
-                    </MainStyled>
+                            </WalletSelectionDiv>
+                        </PillowDiv>
+                    </ConfigModalBody>
                     {children}
                 </ContentStyled>
             </ContainerStyled>

@@ -7,7 +7,7 @@ import { Brand, NavigationBar, ActionsBar, MarkedTitle, ConfigModal } from '../.
 import { NavBar, Hero, InfoBoxes } from '../../organisms'
 import { Container } from './styles'
 
-import { setConfig } from 'src/contexts/ConfigAtom';
+import { setConfig } from '../../../contexts/ConfigAtom';
 interface HomePropsInterface {
   title: any,
   url: any,
@@ -43,7 +43,7 @@ export const HomeTemplate = ({ title, url, content, isAnchor = false, to = '/', 
       </NavBar>
       <Hero>
         <MarkedTitle title='Discover your DeFi treasure!' markedword='DeFi' />
-        <HeroImage heroImage={heroImage.src} />
+        <HeroImage heroImage={heroImage} />
         <InfoBoxes InfoBoxArray={InfoBoxArrayCopy} />
       </Hero>
       <ConfigModal></ConfigModal>

@@ -3,7 +3,6 @@ import React from 'react'
 import { SwapModalStyled, SwapContainerStyled, SwapHeaderStyled, CloseButtonStyled, SearchSectionStyled, SearchInputStyled, HeaderModalStyled } from './styles'
 import { SwapTokens } from '../SwapTokens'
 import { AiOutlineClose } from "react-icons/ai";
-import { useAtom } from 'jotai'
 
 interface SwapModalInterface{ handleModal?:any; tokens?:any; setToken?:any;filterCriteriaSet?:any;filterCriteria?:any; }
 

@@ -4,7 +4,7 @@ import { CardContainer } from '../../atoms'
 import { PoolModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
-const Swap = () => {
+export const Pools = () => {
   
   return (
     <BasicLayout>
@@ -14,5 +14,3 @@ const Swap = () => {
     </BasicLayout>
   )
 }
-
-export default Swap

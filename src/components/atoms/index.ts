@@ -17,4 +17,12 @@ export { SwapTokenBalance } from './SwapTokenBalance'
 export { HeroImage } from './HeroImage'
 export { PillowDiv } from './PillowDiv'
 export { WalletSelectionDiv } from './WalletSelectionDiv'
+export { ButtonClose } from './ButtonClose'
+export { ButtonConnection } from './ButtonConnection'
+export { ConfigModalBody } from './ConfigModalBody'
+
+
+
+
+
 

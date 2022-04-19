@@ -1,17 +1,15 @@
-import React from 'react'
-import { WalletSelectionImageStyled, WalletSelectionStyled } from './styles'
+import React, { ReactNode } from 'react'
+import { WalletSelectionStyled } from './styles'
 
 interface WalletSelectionDivInterfaceProps {
     walletSelected: string,
-    walletImage: string,
-    walletSelectedSet: (walletSelected: string) => void,
+    children: ReactNode
 }
 
-export const WalletSelectionDiv = ({ walletSelected, walletImage, walletSelectedSet }: WalletSelectionDivInterfaceProps) => {
+export const WalletSelectionDiv = ({ walletSelected, children }: WalletSelectionDivInterfaceProps) => {
     return (
-        <WalletSelectionStyled isSelected={walletSelected === "casper" ? true : false} onClick={() => walletSelectedSet("casper")}>
-            <WalletSelectionImageStyled src={walletImage} alt="" />
-            <h2>Casper Wallet</h2>
+        <WalletSelectionStyled isSelected={walletSelected === "casper" ? true : false} >
+            {children}
         </WalletSelectionStyled>
     )
 }

@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { TableDataStyled } from './styles'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 
-export const TokenTableData = ({ name, price, change, priceChart, volume24h, marketCap, supply, symbol }) => {
+export const TokenTableData = ({ name, price, change, priceChart, volume24h, marketCap, supply, symbol }:any) => {
 
     return (
         <>
@@ -15,14 +15,7 @@ export const TokenTableData = ({ name, price, change, priceChart, volume24h, mar
             <TableDataStyled>{marketCap}</TableDataStyled>
             <TableDataStyled>{supply}</TableDataStyled>
             <TableDataStyled>
-                <Link
-                    href={
-                        {
-                            pathname: '/swap',
-                            query: { tokenOne: `${symbol}` },
-                        }
-                    }
-                >
+                <Link to="/swap">
                     <button>{symbol}</button>
                 </Link>
 

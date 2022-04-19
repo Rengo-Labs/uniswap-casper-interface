@@ -1,19 +1,22 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
-import { Home } from './components/pages/Home'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { Home, Swap, Pools, Tokens, Liquidity } from './components/pages'
+import { BigContext } from './contexts';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="swap" element={<App />} />
-        <Route path="liquidity" element={<App />} />
-        <Route path="pools" element={<App />} />
-        <Route path="tokens" element={<App />} />
-      </Routes>
-    </BrowserRouter>
+    <BigContext>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="swap" element={<Swap />} />
+          <Route path="liquidity" element={<Liquidity />} />
+          <Route path="pools" element={<Pools />} />
+          <Route path="tokens" element={<Tokens />} />
+        </Routes>
+      </BrowserRouter>
+    </BigContext>
   </React.StrictMode>
 )

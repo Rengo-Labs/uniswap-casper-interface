@@ -6,7 +6,7 @@ import { LiquidityModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
 
-const Liquidity = () => {
+export const Liquidity = () => {
 
   return (
     <BasicLayout>
@@ -19,5 +19,3 @@ const Liquidity = () => {
     </BasicLayout>
   )
 }
-
-export default Liquidity
