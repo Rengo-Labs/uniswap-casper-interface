@@ -8,6 +8,8 @@ import { NavBar, Hero, InfoBoxes } from '../../organisms'
 import { Container } from './styles'
 
 import { setConfig } from '../../../contexts/ConfigAtom';
+import { InitialProviderContext } from '../../../contexts/InitialContext';
+
 interface HomePropsInterface {
   title: any,
   url: any,
@@ -18,13 +20,9 @@ interface HomePropsInterface {
   handler: any,
   heroImage: any
 }
+
 export const HomeTemplate = ({ title, url, content, isAnchor = false, to = '/', insideMessage = 'Analytics', handler, heroImage }: HomePropsInterface) => {
-  const InfoBoxArrayCopy = [
-    { infoBoxTitle: '$ 3.81', infoBoxSmall: '$CSPR Price' },
-    { infoBoxTitle: '$ 2.04b', infoBoxSmall: 'Total Liquidity' },
-    { infoBoxTitle: '$ 171.15b', infoBoxSmall: 'Total Volume' },
-    { infoBoxTitle: '2,601', infoBoxSmall: 'Total Pairs' }
-  ]
+  const { InfoBoxArray } = useContext(InitialProviderContext)
   const [, setConfigAtomSet] = useAtom(setConfig)
   const listOfLinks: any[] = []
   return (
@@ -44,7 +42,7 @@ export const HomeTemplate = ({ title, url, content, isAnchor = false, to = '/', 
       <Hero>
         <MarkedTitle title='Discover your DeFi treasure!' markedword='DeFi' />
         <HeroImage heroImage={heroImage} />
-        <InfoBoxes InfoBoxArray={InfoBoxArrayCopy} />
+        <InfoBoxes InfoBoxArray={InfoBoxArray} />
       </Hero>
       <ConfigModal></ConfigModal>
     </Container>

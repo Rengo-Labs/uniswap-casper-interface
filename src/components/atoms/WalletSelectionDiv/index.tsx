@@ -8,7 +8,7 @@ interface WalletSelectionDivInterfaceProps {
 
 export const WalletSelectionDiv = ({ walletSelected, children }: WalletSelectionDivInterfaceProps) => {
     return (
-        <WalletSelectionStyled isSelected={walletSelected === "casper" ? true : false} >
+        <WalletSelectionStyled isSelected={walletSelected === "casper" ? false : false} >
             {children}
         </WalletSelectionStyled>
     )
