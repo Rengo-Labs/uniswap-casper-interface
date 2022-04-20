@@ -2,7 +2,7 @@ import React from 'react'
 
 import { POCTHead2, POCTBody2 } from '../../molecules'
 import { POCTableStyled } from './styles'
-export const POCTable2 = ({ getTableProps, headerGroups, getTableBodyProps, rows, prepareRow }) => {
+export const POCTable2 = ({ getTableProps, headerGroups, getTableBodyProps, rows, prepareRow }:any) => {
     return (
         <POCTableStyled {...getTableProps()}>
             <POCTHead2 headerGroups={headerGroups} />

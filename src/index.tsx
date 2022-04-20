@@ -1,11 +1,15 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Home, Swap, Pools, Tokens, Liquidity } from './components/pages'
 import { BigContext } from './contexts';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const root = ReactDOM.createRoot(
+  document.getElementById('root')
+);
+
+root.render(
   <React.StrictMode>
     <BigContext>
       <BrowserRouter>
