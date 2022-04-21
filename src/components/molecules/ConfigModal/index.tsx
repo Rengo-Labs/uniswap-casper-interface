@@ -25,25 +25,16 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
     const [openModal, openModalSet] = useAtom(setConfig)
     const [walletSelected, walletSelectedSet] = useAtom(walletAtom)
-    const { login } = useContext(TorusProviderContext)
-    // const [publicAddress, setPublicAddress] = useAtom(publicAddressAtom);
-
-    // useEffect(() => {
-    //     const initialize = async () => {
-    //         const torus = (await import("@toruslabs/solana-embed")).default;
-    //         web3Obj.torus = new Torus({});
-    //     }
-    //     initialize();
-    // }, [])
-
-
+    const { userState, torusLogin, torusLogout } = useContext(TorusProviderContext)
+    const { isUserLogged, walletAddress, profileImage } = userState
     return (
         <ModalStyled openModal={openModal}>
             <ContainerStyled>
                 <ContentStyled>
                     <ConfigModalHeader>
-                        <AiOutlineUser />
-                        <ButtonConnection isConnected={false} onConnect={login} onDisconnect={() => { console.log("disconnect") }} />
+                        {isUserLogged && <WalletSelectionImageStyled src={profileImage} />}
+                        {!isUserLogged && <AiOutlineUser />}
+                        <ButtonConnection isConnected={isUserLogged} onConnect={torusLogin} onDisconnect={torusLogout} Account={walletAddress}/>
                         <ButtonClose onClickHandler={openModalSet}>
                             <AiOutlineCloseCircle />
                         </ButtonClose>

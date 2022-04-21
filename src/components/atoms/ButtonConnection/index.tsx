@@ -7,7 +7,7 @@ export const ButtonConnection = ({ isConnected, onConnect, onDisconnect,Account=
   return (
     <>
       {!isConnected && <ButtonStyle isSelected={isConnected} onClick={() => { onConnect() }}>Connect Wallet</ButtonStyle> }
-      {isConnected && <ButtonStyle isSelected={isConnected} onClick={() => { onDisconnect() }}>{"..." + Account.substring(start,end)}</ButtonStyle> }
+      {isConnected && <ButtonStyle isSelected={isConnected} onClick={async () => { await onDisconnect() }}>{"..." + Account.substring(start,end)}</ButtonStyle> }
     </>
   )
 }
