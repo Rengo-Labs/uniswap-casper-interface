@@ -57,11 +57,6 @@ export const TorusContext = ({ children }: { children: ReactNode }) => {
     userStateSetter({ ...userState, isUserLogged: false })
   }
   let torus: Torus | null;
-  // const login = async ()=>{
-  //     torus = new Torus();
-  //     await torus.init();
-  //     await torus.login();
-  // }
   const torusLogin = async () => {
     try {
       torus = new Torus();
@@ -89,66 +84,3 @@ export const TorusContext = ({ children }: { children: ReactNode }) => {
     </TorusProviderContext.Provider>
   )
 }
-
-
-//         props.setTorus("");
-//         props.setSelectedWallet();
-//         localStorage.removeItem("Address")
-//         localStorage.removeItem("selectedWallet")
-//         await torus?.logout();
-//         window.location.reload();
-//       } catch (error) {
-//         console.log("logout error", error);
-//         let variant = "Error";
-//       }
-//     }
-//   };
-
-
-//   const login = async () => {
-//     try {
-//       setIsLoading(true);
-//       torus = new Torus();
-//       console.log("torus", torus);
-//       await torus.init({
-//         buildEnv: "testing",
-//         showTorusButton: true,
-//         network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-//       });
-//       const loginaccs = await torus?.login();
-//       props.setTorus(torus);
-//       localStorage.setItem("torus", JSON.stringify(torus));
-//       localStorage.setItem("Address", (loginaccs || [])[0]);
-//       props.setActivePublicKey((loginaccs || [])[0]);
-//       setAccount((loginaccs || [])[0] || "");
-//       handleCloseWalletModal();
-//     } catch (error) {
-//       console.error(error);
-//       await torus?.clearInit();
-//       let variant = "Error";
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-//   const logout = async () => {
-//     try {
-//       console.log("logout", torus);
-//       await torus?.logout();
-//       setAccount("");
-//       props.setTorus("");
-//       props.setSelectedWallet();
-//       localStorage.removeItem("Address");
-//       localStorage.removeItem("selectedWallet");
-//       window.location.reload();
-//     } catch (error) {
-//       console.log("logout error", error);
-//       let variant = "Error";
-//     }
-//   };
-
-//   return (
-//     <></>
-//   );
-// }
-
-// export default HeaderHome;

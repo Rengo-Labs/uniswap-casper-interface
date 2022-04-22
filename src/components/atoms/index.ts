@@ -20,6 +20,11 @@ export { WalletSelectionDiv } from './WalletSelectionDiv'
 export { ButtonClose } from './ButtonClose'
 export { ButtonConnection } from './ButtonConnection'
 export { ConfigModalBody } from './ConfigModalBody'
+export { SwapContainerAtom } from './SwapContainerAtom'
+export { SwapHeaderAtom } from './SwapHeaderAtom'
+export { HeaderModalAtom } from './HeaderModalAtom'
+export { CloseButtonAtom } from './CloseButtonAtom'
+export { SearchSectionAtom } from './SearchSectionAtom'
 
 
 

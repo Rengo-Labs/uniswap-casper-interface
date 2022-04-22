@@ -14,7 +14,7 @@ export const SwapInput = () => {
                 <label htmlFor="amount">From</label>
                 <InputStyled id="amount" placeholder="0.00" type="number" />
             </InputContainerStyled>
-            {activeModal ? <SwapModal handleModal={handleModal} /> : <TokenButton handlerFunction={handleModal}>Select Token</TokenButton>}
+            {/*activeModal ? "<SwapModal handleModal={handleModal} />" : <TokenButton handlerFunction={handleModal}>Select Token</TokenButton>*/}
 
         </SwapInputStyled>
     )

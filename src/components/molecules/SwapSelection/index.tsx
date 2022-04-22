@@ -1,14 +1,12 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 
-import { SwapContainer, SwapTokenSelect, SwapTokenBalance } from '../../atoms'
+import { SwapContainer } from '../../atoms'
 
-interface SwapSelectionPropsInterface { onClickHandler: () => void, token: string }
 
-export const SwapSelection = ({ onClickHandler, token }: SwapSelectionPropsInterface) => {
+export const SwapSelection = ({ children }: { children: ReactNode }) => {
     return (
         <SwapContainer>
-            <SwapTokenSelect onClickHandler={onClickHandler} token={token}></SwapTokenSelect>
-            <SwapTokenBalance />
+            {children}
         </SwapContainer>
     )
 }

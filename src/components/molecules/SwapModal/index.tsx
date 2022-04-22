@@ -1,31 +1,16 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 
 import { SwapModalStyled, SwapContainerStyled, SwapHeaderStyled, CloseButtonStyled, SearchSectionStyled, SearchInputStyled, HeaderModalStyled } from './styles'
 import { SwapTokens } from '../SwapTokens'
 import { AiOutlineClose } from "react-icons/ai";
+import { CloseButtonAtom, HeaderModalAtom, SearchSectionAtom, SwapContainerAtom, SwapHeaderAtom } from '../../atoms';
+import { SearchInputAtom } from '../../atoms/SearchInputAtom';
 
-interface SwapModalInterface{ handleModal?:any; tokens?:any; setToken?:any;filterCriteriaSet?:any;filterCriteria?:any; }
-
-export const SwapModal = ({ handleModal, tokens, setToken,filterCriteriaSet,filterCriteria }:SwapModalInterface) => {
+export const SwapModal = ({ children, onClick }: { children: ReactNode, onClick?: () => void }) => {
 
     return (
-            <SwapModalStyled>
-                <SwapContainerStyled >
-                    <SwapHeaderStyled>
-                        <HeaderModalStyled>Select Token</HeaderModalStyled>
-                        <CloseButtonStyled onClick={() => { handleModal() }}>
-                            <AiOutlineClose />
-                        </CloseButtonStyled>
-                    </SwapHeaderStyled>
-                    <SearchSectionStyled>
-                        <SearchInputStyled
-                            placeholder="Search name"
-                            value={filterCriteria}
-                            onChange={(e) => {{filterCriteriaSet(e.target.value)}} }
-                            />
-                    </SearchSectionStyled>
-                    <SwapTokens tokens={tokens} setToken={setToken} handleModal={handleModal} />
-                </SwapContainerStyled>
-            </SwapModalStyled>
+        <SwapModalStyled>
+            {children}
+        </SwapModalStyled>
     )
 }
