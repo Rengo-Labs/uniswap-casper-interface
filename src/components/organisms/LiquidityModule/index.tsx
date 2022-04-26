@@ -47,10 +47,12 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                             />
                         </SearchSectionAtom>
                         <SwapTokens >
-                            {
-                                fileteredTokens.map((token: any) => {
-                                    return <SwapToken key={token} icon={token.icon} token={token} amount={token.amount} setToken={() => { }} handleModal={handleModalSecondary} />
-                                })
+                            {/**
+                                Object.keys(tokens)
+                                    .map((key) => {
+                                        return <SwapToken key={key} token={tokens[key]} setToken={dispatch("SELECT_FIRST_TOKEN")} handleModal={handleModalPrimary} />
+                                    })
+                                     */
                             }
                         </SwapTokens>
                     </SwapContainerAtom>
@@ -77,11 +79,11 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                             />
                         </SearchSectionAtom>
                         <SwapTokens >
-                            {
+                            {/**
                                 fileteredTokens.map((token: any) => {
                                     return <SwapToken key={token} icon={token.icon} token={token} amount={token.amount} setToken={() => { }} handleModal={handleModalSecondary} />
                                 })
-                            }
+                             */}
                         </SwapTokens>
                     </SwapContainerAtom>
                 </SwapModal>

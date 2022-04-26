@@ -3,6 +3,16 @@ import wcasprIcon from '../../assets/swapIcons/wcasprIcon.png'
 import wiseIcon from '../../assets/swapIcons/wiseIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 
+interface FullnameInterface {
+    name: string,
+    acron: string
+}
+export interface TokensInterface {
+    icon: string,
+    fullname: FullnameInterface,
+    amount: string
+}
+
 export const initialStateToken = {
     tokens: {
         "CSPR": {
@@ -38,8 +48,22 @@ export const initialStateToken = {
             amount: "0.0000"
         },
     },
-    firstTokenSelected: "",
-    secondTokenSelected: ""
+    firstTokenSelected: {
+        icon: casprIcon,
+        fullname: {
+            name: "Casper",
+            acron: "CSPR"
+        },
+        amount: "0.0000"
+    },
+    secondTokenSelected: {
+        icon: wethIcon,
+        fullname: {
+            name: "Wrapped Ether",
+            acron: "WETH"
+        },
+        amount: "0.0000"
+    }
 };
 
 export function TokenReducer(state, action) {
@@ -49,7 +73,7 @@ export function TokenReducer(state, action) {
         case 'SELECT_SECOND_TOKEN':
             return { ...state, secondTokenSelected: action.payload };
         case 'SWITCH_TOKENS':
-            return { ...state, firstTokenSelected: state.secondTokenSelected, secondTokenSelected: state.firstTokenSelected };
+            return { ...state, firstTokenSelected: action.payload.secondTokenSelected, secondTokenSelected: action.payload.firstTokenSelected };
         default:
             return state;
     }

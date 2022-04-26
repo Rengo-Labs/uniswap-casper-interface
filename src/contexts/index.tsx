@@ -6,23 +6,26 @@ import { TokensContext2 } from './TokenContext2'
 import { TokensContext } from './TokensContext'
 import { InitialContext } from './InitialContext'
 import { TorusContext } from './TorusContext'
+import { SwapContext } from './SwapContext'
 
 export const BigContext = ({ children }: { children: ReactNode }) => {
     return (
-        <TorusContext>
-            <InitialContext>
-                <ThemeContext>
-                    <TokensContext2>
-                        <PoolsContext>
-                            <LiquidityContext>
-                                <TokensContext>
-                                    {children}
-                                </TokensContext>
-                            </LiquidityContext>
-                        </PoolsContext>
-                    </TokensContext2>
-                </ThemeContext>
-            </InitialContext>
-        </TorusContext>
+        <SwapContext>
+            <TorusContext>
+                <InitialContext>
+                    <ThemeContext>
+                        <TokensContext2>
+                            <PoolsContext>
+                                <LiquidityContext>
+                                    <TokensContext>
+                                        {children}
+                                    </TokensContext>
+                                </LiquidityContext>
+                            </PoolsContext>
+                        </TokensContext2>
+                    </ThemeContext>
+                </InitialContext>
+            </TorusContext>
+        </SwapContext>
     )
 }

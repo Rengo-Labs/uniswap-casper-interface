@@ -3,6 +3,6 @@ import { SwapContainerStyled } from './styles'
 
 export const SwapContainerAtom = ({ children }: { children: ReactNode }) => {
     return (
-        <SwapContainerStyled>SwapContainerAtom</SwapContainerStyled>
+        <SwapContainerStyled>{ children }</SwapContainerStyled>
     )
 }

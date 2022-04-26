@@ -18,15 +18,29 @@ import { TorusProviderContext } from '../../../contexts/TorusContext';
 
 import { ButtonClose, ButtonConnection, ConfigModalBody, PillowDiv, WalletSelectionDiv } from '../../atoms';
 import { ConfigModalHeader } from '../../molecules';
+import { SwapProviderContext } from '../../../contexts/SwapContext';
 
 
 export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
 
     const [openModal, openModalSet] = useAtom(setConfig)
-    const [walletSelected, walletSelectedSet] = useAtom(walletAtom)
-    const { userState, torusLogin, torusLogout } = useContext(TorusProviderContext)
-    const { isUserLogged, walletAddress, profileImage } = userState
+    const { state, dispatch } = useContext(SwapProviderContext)
+
+    const { isUserLogged, walletAddress, profileImage } = state
+
+    async function onConnect() {
+        console.log("on Connect")
+        console.log(state)
+        dispatch({ type: 'LOGIN' })
+        console.log(state)
+
+    }
+
+    function onDisconnect() {
+        dispatch("LOGOUT")
+    }
+
     return (
         <ModalStyled openModal={openModal}>
             <ContainerStyled>
@@ -34,7 +48,7 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                     <ConfigModalHeader>
                         {isUserLogged && <WalletSelectionImageStyled src={profileImage} />}
                         {!isUserLogged && <AiOutlineUser />}
-                        <ButtonConnection isConnected={isUserLogged} onConnect={torusLogin} onDisconnect={torusLogout} Account={walletAddress}/>
+                        <ButtonConnection isConnected={isUserLogged} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
                         <ButtonClose onClickHandler={openModalSet}>
                             <AiOutlineCloseCircle />
                         </ButtonClose>

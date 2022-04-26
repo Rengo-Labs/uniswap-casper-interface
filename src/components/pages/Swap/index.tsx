@@ -10,6 +10,8 @@ import { TokensProviderContext } from '../../../contexts/TokensContext'
 import { AiOutlineClose } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
 import { SwapToken } from '../../molecules/SwapToken'
+import { TokensInterface } from '../../../reducers/TokenReducers'
+import Torus from '@toruslabs/casper-embed'
 
 function useQuery() {
   const { search } = useLocation();
@@ -37,11 +39,11 @@ export const Swap = () => {
       <CardContainer cardTitle="Swap">
         <SwapModule >
           <SwapContainer>
-            <SwapTokenSelect onClickHandler={handleModalPrimary} token={tokens["CSPR"]}></SwapTokenSelect>
+            <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
             <SwapTokenBalance />
           </SwapContainer>
           {
-            /*activeModalPrimary &&
+            activeModalPrimary &&
             <SwapModal >
               <SwapContainerAtom >
                 <SwapHeaderAtom>
@@ -57,23 +59,24 @@ export const Swap = () => {
                 </SearchSectionAtom>
                 <SwapTokens >
                   {
-                    tokens.map((token: any) => {
-                      return <SwapToken key={token} icon={token.icon} token={token} amount={token.amount} setToken={dispatch("SELECT_FIRST_TOKEN")} handleModal={handleModalPrimary} />
-                    })
+                    Object.keys(tokens)
+                      .map((key) => {
+                        const handleToken=() => { dispatch({type: 'SELECT_FIRST_TOKEN', payload:tokens[key]}),handleModalPrimary()}
+
+                        return <SwapToken key={key} token={tokens[key]} handleToken={handleToken} />
+                      })
                   }
                 </SwapTokens>
+
               </SwapContainerAtom>
-            </SwapModal>*/
+            </SwapModal>
           }
-          {/*
-          <SwitchIcon switchHandler={dispatch("SWITCH_TOKENS")} />
+          <SwitchIcon switchHandler={dispatch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
             <SwapTokenBalance />
           </SwapContainer>
-          */}
           {
-            /*
             activeModalSecondary &&
             <SwapModal >
               <SwapContainerAtom >
@@ -90,18 +93,27 @@ export const Swap = () => {
                 </SearchSectionAtom>
                 <SwapTokens >
                   {
-                    tokens.map((token: any) => {
-                      return <SwapToken key={token} icon={token.icon} token={token} amount={token.amount} setToken={dispatch("SELECT_SECOND_TOKEN")} handleModal={handleModalSecondary} />
-                    })
+                    Object.keys(tokens)
+                      .map((key) => {
+                        const filter = new RegExp(firstTokenSelected.fullname.acron)
+                        if(filter.test(key)){return}
+                        const handleToken=() => { dispatch({type: 'SELECT_SECOND_TOKEN', payload:tokens[key]}),handleModalSecondary()}
+                        return <SwapToken key={key} token={tokens[key]} handleToken={handleToken} />
+                      })
                   }
                 </SwapTokens>
               </SwapContainerAtom>
             </SwapModal>
-            */
           }
-          {/**
-           * <SwapButton content="Connect to Wallet"></SwapButton>
-           */}
+          <SwapButton content="Connect to Wallet" handler={async ()=>{
+            const torus = new Torus();
+            const message = Buffer.from("Test Signing Message ", "utf8");
+            const signed_message = await torus.signMessage({
+              message: "message",
+              from: "string"
+          });
+          }}></SwapButton>
+
         </SwapModule>
       </CardContainer >
     </BasicLayout>
