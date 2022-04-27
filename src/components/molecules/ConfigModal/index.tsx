@@ -1,6 +1,5 @@
-import React, { ReactNode, useCallback, useContext, useEffect, useState } from 'react'
+import React, { ReactNode, useCallback, useContext, useEffect, useReducer, useState } from 'react'
 import { useAtom } from 'jotai'
-
 import casperWallet from '../../../assets/walletIcons/casper.png';
 import torusWallet from '../../../assets/walletIcons/torus-icon-blue-3.svg';
 
@@ -14,31 +13,27 @@ import { AiOutlineUser, AiOutlineCloseCircle } from "react-icons/ai";
 
 
 import { setConfig, walletAtom, } from '../../../contexts/ConfigAtom'
-import { TorusProviderContext } from '../../../contexts/TorusContext';
 
 import { ButtonClose, ButtonConnection, ConfigModalBody, PillowDiv, WalletSelectionDiv } from '../../atoms';
 import { ConfigModalHeader } from '../../molecules';
 import { SwapProviderContext } from '../../../contexts/SwapContext';
+import { torusLogin, torusLogout } from '../../../reducers/WalletReducers/functions';
 
 
 export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
 
     const [openModal, openModalSet] = useAtom(setConfig)
-    const { state, dispatch } = useContext(SwapProviderContext)
-
-    const { isUserLogged, walletAddress, profileImage } = state
+    const { swapState, swapDispatch } = useContext(SwapProviderContext)
+    const { isUserLogged, walletAddress, profileImage } = swapState
 
     async function onConnect() {
-        console.log("on Connect")
-        console.log(state)
-        dispatch({ type: 'LOGIN' })
-        console.log(state)
-
+        const { torus, walletAddress, profileImage } = await torusLogin()
+        swapDispatch({ type: 'LOGIN', payload: { torus, walletAddress, profileImage } })
     }
 
     function onDisconnect() {
-        dispatch("LOGOUT")
+        swapDispatch({ type: 'LOGOUT' })
     }
 
     return (

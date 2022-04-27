@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { CardContainer, CloseButtonAtom, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
@@ -10,8 +10,8 @@ import { TokensProviderContext } from '../../../contexts/TokensContext'
 import { AiOutlineClose } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
 import { SwapToken } from '../../molecules/SwapToken'
-import { TokensInterface } from '../../../reducers/TokenReducers'
-import Torus from '@toruslabs/casper-embed'
+import { SwapProviderContext } from '../../../contexts/SwapContext'
+import { torusLogin } from '../../../reducers/WalletReducers/functions'
 
 function useQuery() {
   const { search } = useLocation();
@@ -32,8 +32,25 @@ export const Swap = () => {
   const handleModalSecondary = () => {
     setActiveModalSecondary(!activeModalSecondary)
   }
-  const { state, dispatch } = React.useContext(TokensProviderContext)
-  const { tokens, firstTokenSelected, secondTokenSelected } = state
+  const { tokenState, tokenDispatch } = useContext(TokensProviderContext)
+  const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
+
+  const { swapState, swapDispatch } = useContext(SwapProviderContext)
+  const { isUserLogged, torus } = swapState
+
+  async function onConnect() {
+    const { torus, walletAddress, profileImage } = await torusLogin()
+    swapDispatch({ type: 'LOGIN', payload: { torus, walletAddress, profileImage } })
+  }
+
+  async function onSign() {
+    const message = Buffer.from("Test Signing Message ", "utf8");
+    const signed_message = await torus.signMessage({
+      message: "message",
+      from: "string"
+    });
+  }
+
   return (
     <BasicLayout>
       <CardContainer cardTitle="Swap">
@@ -61,7 +78,7 @@ export const Swap = () => {
                   {
                     Object.keys(tokens)
                       .map((key) => {
-                        const handleToken=() => { dispatch({type: 'SELECT_FIRST_TOKEN', payload:tokens[key]}),handleModalPrimary()}
+                        const handleToken = () => { tokenDispatch({ type: 'SELECT_FIRST_TOKEN', payload: tokens[key] }), handleModalPrimary() }
 
                         return <SwapToken key={key} token={tokens[key]} handleToken={handleToken} />
                       })
@@ -71,7 +88,7 @@ export const Swap = () => {
               </SwapContainerAtom>
             </SwapModal>
           }
-          <SwitchIcon switchHandler={dispatch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
+          <SwitchIcon switchHandler={tokenDispatch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
             <SwapTokenBalance />
@@ -96,8 +113,8 @@ export const Swap = () => {
                     Object.keys(tokens)
                       .map((key) => {
                         const filter = new RegExp(firstTokenSelected.fullname.acron)
-                        if(filter.test(key)){return}
-                        const handleToken=() => { dispatch({type: 'SELECT_SECOND_TOKEN', payload:tokens[key]}),handleModalSecondary()}
+                        if (filter.test(key)) { return }
+                        const handleToken = () => { tokenDispatch({ type: 'SELECT_SECOND_TOKEN', payload: tokens[key] }), handleModalSecondary() }
                         return <SwapToken key={key} token={tokens[key]} handleToken={handleToken} />
                       })
                   }
@@ -105,14 +122,9 @@ export const Swap = () => {
               </SwapContainerAtom>
             </SwapModal>
           }
-          <SwapButton content="Connect to Wallet" handler={async ()=>{
-            const torus = new Torus();
-            const message = Buffer.from("Test Signing Message ", "utf8");
-            const signed_message = await torus.signMessage({
-              message: "message",
-              from: "string"
-          });
-          }}></SwapButton>
+          {!isUserLogged && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
+          {isUserLogged && <SwapButton content="Sign Message" handler={async ()=>{await onSign()}}/>}
+
 
         </SwapModule>
       </CardContainer >

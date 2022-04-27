@@ -1,5 +1,3 @@
-import { torusLogin, torusLogout } from "./functions"
-
 export const initialStateWallet: any = {
     isUserLogged: false,
     walletAddress: '',
@@ -7,36 +5,24 @@ export const initialStateWallet: any = {
     torus: null,
 }
 
-export async function reducerWallet(state, action: any) {
-    console.log("reducer")
+export function reducerWallet(state, action) {
     switch (action.type) {
         case "LOGIN":
-            console.log("login")
-            torusLogin()
-                .then(({ torus, walletAddress, profileImage }) => {
-                    console.log("login success")
-                    return {
-                        ...state,
-                        isUserLogged: true,
-                        walletAddress: "walletAddress",
-                        profileImage: "profileImage",
-                        torus: "torus"
-                    }
-                })
-                .catch(err => { })
-            break;
-        case "LOGOUT":
-            async () => {
-                await torusLogout(state.torus)
-                return {
-                    ...state,
-                    isUserLogged: false,
-                    walletAddress: "",
-                    profileImage: "",
-                    torus: null
-                }
+            return {
+                ...state,
+                isUserLogged: true,
+                walletAddress: action.payload.walletAddress,
+                profileImage: action.payload.profileImage,
+                torus: action.payload.torus
             }
-            break;
+        case "LOGOUT":
+            return {
+                ...state,
+                isUserLogged: false,
+                walletAddress: "",
+                profileImage: "",
+                torus: null
+            }
         default:
             return state
     }

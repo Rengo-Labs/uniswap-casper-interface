@@ -9,7 +9,7 @@ export const TokensContext = ({ children }: { children: ReactNode }) => {
   //const [filterCriteria, filterCriteriaSet] = useState("")
   //const fileteredTokens = tokens.filter(token => token.fullname.acron.toLowerCase().includes(filterCriteria.toLowerCase()))
   return (
-    <TokensProviderContext.Provider value={{ state, dispatch }}>
+    <TokensProviderContext.Provider value={{ tokenState:state, tokenDispatch:dispatch }}>
       {children}
     </TokensProviderContext.Provider>
   )
