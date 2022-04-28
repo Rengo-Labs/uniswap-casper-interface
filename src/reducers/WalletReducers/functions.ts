@@ -1,4 +1,5 @@
 import Torus from "@toruslabs/casper-embed";
+import { CasperServiceByJsonRPC } from "casper-js-sdk";
 
 const CHAINS = {
     CASPER_MAINNET: "casper",
@@ -64,5 +65,14 @@ export async function torusLogin() {
         const torus = new Torus();
         await torus?.clearInit();
         console.error(error);
+    }
+};
+
+export const getStateRootHash = async (client) => {
+    const { block } = await client.getLatestBlockInfo();
+    if (block) {
+        return block.header.state_root_hash;
+    } else {
+        throw Error("Problem when calling getLatestBlockInfo");
     }
 };
