@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { CardContainer, CloseButtonAtom, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
@@ -19,7 +19,8 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs } from 'casper-js-sdk';
+import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
+import { clientDispatcher, signerLogIn } from '../../../reducers/WalletReducers/signerFunctions'
 //const casperService = new CasperServiceByJsonRPC(torus?.provider);
 
 
@@ -28,7 +29,6 @@ export const Swap = () => {
   //const tokenOne = query.get("tokenOne")
   const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
   const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
-  const [casperService, casperServiceSetter] = React.useState(null)
 
 
   const handleModalPrimary = () => {
@@ -42,11 +42,12 @@ export const Swap = () => {
 
   const { swapState, swapDispatch } = useContext(SwapProviderContext)
   const { isUserLogged, torus, walletAddress } = swapState
+  const [casperService, casperServiceSetter] = useState<any>()
 
   async function onConnect() {
-    const { torus, walletAddress, profileImage } = await torusLogin()
-    swapDispatch({ type: 'LOGIN', payload: { torus, walletAddress, profileImage } })
-    casperServiceSetter(new CasperServiceByJsonRPC(torus?.provider));
+    const walletAddress = await signerLogIn(Signer)
+    swapDispatch({ type: 'LOGIN', payload: { walletAddress } })
+    casperServiceSetter(clientDispatcher())
   }
 
   async function getStatus() {
@@ -54,18 +55,17 @@ export const Swap = () => {
     //const stateRootHash = await getStateRootHash(casperService)
 
     const stateRootHash = await casperService.getStateRootHash();
-    console.log(stateRootHash)
-    const clKey = new CLKey(CLPublicKey.fromHex(walletAddress))
-    console.log("isAccount",clKey.isAccount())
-    console.log("isCLValue",clKey.isCLValue)
-    console.log("isHash",clKey.isHash())
-    console.log("isURef",clKey.isURef())
-    // const algo = await casperService.getBlockState(
-    //   lastBlock,
-    //   CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
-    //   []
-    // )
-    // const algo = await casperService.getAccountBalance(stateRootHash,CLPublicKey.fromHex(walletAddress).toAccountHashStr())
+    console.log("walletAddress", walletAddress)
+    const result = await casperService.getBlockState(
+      stateRootHash,
+      CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
+      []
+    )
+    const balance = await casperService.getAccountBalance(
+      stateRootHash,
+      result.Account.mainPurse
+    )
+    console.log(balance.toString())
     // .catch(err => {console.log(err)})
     // const algo = await casperService.getBlockState(
     //   stateRootHash,

@@ -18,19 +18,24 @@ import { ButtonClose, ButtonConnection, ConfigModalBody, PillowDiv, WalletSelect
 import { ConfigModalHeader } from '../../molecules';
 import { SwapProviderContext } from '../../../contexts/SwapContext';
 import { torusLogin, torusLogout } from '../../../reducers/WalletReducers/functions';
-
+import { Signer } from 'casper-js-sdk'
+import { clientDispatcher, signerLogIn } from '../../../reducers/WalletReducers/signerFunctions';
 
 export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
 
     const [openModal, openModalSet] = useAtom(setConfig)
+    const [client, clientSetter] = useState<any>()
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
-    const { isUserLogged, walletAddress, profileImage } = swapState
+    const { isUserLogged, walletAddress } = swapState
 
     async function onConnect() {
-        const { torus, walletAddress, profileImage } = await torusLogin()
-        swapDispatch({ type: 'LOGIN', payload: { torus, walletAddress, profileImage } })
+        const walletAddress = await signerLogIn(Signer)
+        swapDispatch({ type: 'LOGIN', payload: { walletAddress } })
+        clientSetter(clientDispatcher())
     }
+
+    
 
     function onDisconnect() {
         swapDispatch({ type: 'LOGOUT' })
@@ -41,8 +46,7 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
             <ContainerStyled>
                 <ContentStyled>
                     <ConfigModalHeader>
-                        {isUserLogged && <WalletSelectionImageStyled src={profileImage} />}
-                        {!isUserLogged && <AiOutlineUser />}
+                        <AiOutlineUser />
                         <ButtonConnection isConnected={isUserLogged} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
                         <ButtonClose onClickHandler={openModalSet}>
                             <AiOutlineCloseCircle />

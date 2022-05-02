@@ -1,8 +1,6 @@
 export const initialStateWallet: any = {
     isUserLogged: false,
     walletAddress: '',
-    profileImage: '',
-    torus: null,
 }
 
 export function reducerWallet(state, action) {
@@ -11,17 +9,13 @@ export function reducerWallet(state, action) {
             return {
                 ...state,
                 isUserLogged: true,
-                walletAddress: action.payload.walletAddress,
-                profileImage: action.payload.profileImage,
-                torus: action.payload.torus
+                walletAddress: action.payload.walletAddress
             }
         case "LOGOUT":
             return {
                 ...state,
                 isUserLogged: false,
                 walletAddress: "",
-                profileImage: "",
-                torus: null
             }
         default:
             return state
