@@ -1,6 +1,8 @@
 export const initialStateWallet: any = {
     isUserLogged: false,
     walletAddress: '',
+    casperService: '',
+    csprBalance: ''
 }
 
 export function reducerWallet(state, action) {
@@ -16,6 +18,17 @@ export function reducerWallet(state, action) {
                 ...state,
                 isUserLogged: false,
                 walletAddress: "",
+                casperService: ""
+            }
+        case "CASPER_SERVICE":
+            return {
+                ...state,
+                casperService: action.payload.casperService
+            }
+        case "CSPR_BALANCE":
+            return {
+                ...state,
+                csprBalance: action.payload.csprBalance
             }
         default:
             return state

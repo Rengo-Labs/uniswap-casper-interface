@@ -25,17 +25,15 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
 
     const [openModal, openModalSet] = useAtom(setConfig)
-    const [client, clientSetter] = useState<any>()
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
     const { isUserLogged, walletAddress } = swapState
 
     async function onConnect() {
         const walletAddress = await signerLogIn(Signer)
-        swapDispatch({ type: 'LOGIN', payload: { walletAddress } })
-        clientSetter(clientDispatcher())
+        swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
     }
 
-    
+
 
     function onDisconnect() {
         swapDispatch({ type: 'LOGOUT' })

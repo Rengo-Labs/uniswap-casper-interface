@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { CardContainer, CloseButtonAtom, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
@@ -42,21 +42,16 @@ export const Swap = () => {
   const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
 
   const { swapState, swapDispatch } = useContext(SwapProviderContext)
-  const { isUserLogged, torus, walletAddress } = swapState
-  const [casperService, casperServiceSetter] = useState<any>()
+  const { isUserLogged, torus, walletAddress, casperService } = swapState
 
   async function onConnect() {
     const walletAddress = await signerLogIn(Signer)
-    swapDispatch({ type: 'LOGIN', payload: { walletAddress } })
-    casperServiceSetter(clientDispatcher())
+    swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
+    setTimeout(async () => { await getStatus() }, 1500)
   }
 
   async function getStatus() {
-    //console.log(await casperService.getStatus())
-    //const stateRootHash = await getStateRootHash(casperService)
-
     const stateRootHash = await casperService.getStateRootHash();
-    console.log("walletAddress", walletAddress)
     const result = await casperService.getBlockState(
       stateRootHash,
       CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
@@ -66,14 +61,9 @@ export const Swap = () => {
       stateRootHash,
       result.Account.mainPurse
     )
-    console.log(balance.toString())
-    // .catch(err => {console.log(err)})
-    // const algo = await casperService.getBlockState(
-    //   stateRootHash,
-    //   CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
-    //   []
-    // )
-    // console.log(algo)
+    const real = balance / 10 ** 9
+    console.log("real", real)
+    return real.toString()
   }
 
   async function onSign() {
