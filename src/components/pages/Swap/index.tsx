@@ -12,6 +12,7 @@ import { SearchInputAtom } from '../../atoms/SearchInputAtom'
 import { SwapToken } from '../../molecules/SwapToken'
 import { SwapProviderContext } from '../../../contexts/SwapContext'
 import { getStateRootHash, torusLogin } from '../../../reducers/WalletReducers/functions'
+import { v4 as uuidv4 } from 'uuid';
 
 function useQuery() {
   const { search } = useLocation();
@@ -112,7 +113,7 @@ export const Swap = () => {
                       .map((key) => {
                         const handleToken = () => { tokenDispatch({ type: 'SELECT_FIRST_TOKEN', payload: tokens[key] }), handleModalPrimary() }
 
-                        return <SwapToken key={key} token={tokens[key]} handleToken={handleToken} />
+                        return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
                       })
                   }
                 </SwapTokens>
@@ -147,7 +148,7 @@ export const Swap = () => {
                         const filter = new RegExp(firstTokenSelected.fullname.acron)
                         if (filter.test(key)) { return }
                         const handleToken = () => { tokenDispatch({ type: 'SELECT_SECOND_TOKEN', payload: tokens[key] }), handleModalSecondary() }
-                        return <SwapToken key={key} token={tokens[key]} handleToken={handleToken} />
+                        return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
                       })
                   }
                 </SwapTokens>

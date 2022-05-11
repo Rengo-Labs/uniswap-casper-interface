@@ -26,7 +26,8 @@ export const lightTheme = {
   StrongColor5: 'rgba(3,52,138,.8)',
   SecondaryColor: 'rgba(0,187,233,1)',
   TertiaryColor: 'rgba(255,204,0,1)',
-  TertiaryColor2: 'rgba(255,204,0,.8)',
+  TertiaryColor2: 'rgba(255,204,0,.5)',
+  TertiaryColor3: 'rgba(255,204,0,.8)',
   backgroundColor: 'linear-gradient(to bottom, rgba(0,187,233,.8), rgba(0,62,145,1))'
 }
 export const darkTheme = {

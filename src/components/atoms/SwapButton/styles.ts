@@ -10,5 +10,9 @@ export const ButtonStyle = styled.button`
     box-shadow: 0 0 1rem .2rem rgba(0,0,0,.3);
     &:hover{
         cursor: pointer;
+        background-color: ${props => props.theme.TertiaryColor2};
+    }
+    &:active{
+        background-color: ${props => props.theme.TertiaryColor3};
     }
 `

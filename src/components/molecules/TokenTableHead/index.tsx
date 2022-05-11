@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { TableHeadStyled } from './styles'
+import { v4 as uuidv4 } from 'uuid';
 
 export const TokenTableHead = ({ headers }) => {
     return (
@@ -8,7 +9,7 @@ export const TokenTableHead = ({ headers }) => {
             {
                 headers.map((header, index) => {
                     return (
-                        <TableHeadStyled key={index}>
+                        <TableHeadStyled key={uuidv4()}>
                             {/*TODO: Isolate Component*/}
                             {header}
                         </TableHeadStyled>)

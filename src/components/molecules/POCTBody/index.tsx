@@ -1,5 +1,6 @@
 import React from 'react'
 import { TBodyStyled,TRowStyled } from './styles'
+import { v4 as uuidv4 } from 'uuid';
 
 export const POCTBody = ({ getTableBodyProps, rows, prepareRow }) => {
     return (
@@ -10,12 +11,12 @@ export const POCTBody = ({ getTableBodyProps, rows, prepareRow }) => {
                     prepareRow(row)
                     return (
                         // Apply the row props
-                        <TRowStyled {...row.getRowProps()}>
+                        <TRowStyled {...row.getRowProps()} key={uuidv4()}>
                             {// Loop over the rows cells
                                 row.cells.map(cell => {
                                     // Apply the cell props
                                     return (
-                                        <td {...cell.getCellProps()}>
+                                        <td {...cell.getCellProps()} key={uuidv4()}>
                                             {// Render the cell contents
                                                 cell.render('Cell')}
                                         </td>
