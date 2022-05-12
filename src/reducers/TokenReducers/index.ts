@@ -72,6 +72,21 @@ export function TokenReducer(state, action) {
             return { ...state, firstTokenSelected: action.payload };
         case 'SELECT_SECOND_TOKEN':
             return { ...state, secondTokenSelected: action.payload };
+        case 'LOAD_BALANCE':
+            return {
+                ...state,
+                tokens: {
+                    ...state.tokens,
+                    [action.payload.name]: {
+                        ...state.tokens[action.payload.name],
+                        amount: action.payload.data
+                    }
+                },
+                firstTokenSelected: {
+                    ...state.tokens[action.payload.name],
+                    amount: action.payload.data
+                }
+            };
         case 'SWITCH_TOKENS':
             return { ...state, firstTokenSelected: action.payload.secondTokenSelected, secondTokenSelected: action.payload.firstTokenSelected };
         default:

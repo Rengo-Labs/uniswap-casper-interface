@@ -11,7 +11,8 @@ export function reducerWallet(state, action) {
             return {
                 ...state,
                 isUserLogged: true,
-                walletAddress: action.payload.walletAddress
+                walletAddress: action.payload.walletAddress,
+                casperService: action.payload.casperService
             }
         case "LOGOUT":
             return {

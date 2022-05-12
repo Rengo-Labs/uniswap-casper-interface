@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { CardContainer, CloseButtonAtom, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
@@ -40,14 +40,25 @@ export const Swap = () => {
   }
   const { tokenState, tokenDispatch } = useContext(TokensProviderContext)
   const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
-
   const { swapState, swapDispatch } = useContext(SwapProviderContext)
   const { isUserLogged, torus, walletAddress, casperService } = swapState
+
+  useEffect(() => {
+    getStatus()
+      .then(balance => {
+        tokenDispatch({ type: 'LOAD_BALANCE', payload: { name: "CSPR", data: balance } })
+      })
+      .catch(err => console.log)
+  }, [casperService])
 
   async function onConnect() {
     const walletAddress = await signerLogIn(Signer)
     swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-    setTimeout(async () => { await getStatus() }, 1500)
+  }
+
+  function onDisconnect() {
+    swapDispatch({ type: 'LOGOUT' })
+
   }
 
   async function getStatus() {
@@ -62,7 +73,6 @@ export const Swap = () => {
       result.Account.mainPurse
     )
     const real = balance / 10 ** 9
-    console.log("real", real)
     return real.toString()
   }
 
@@ -80,7 +90,7 @@ export const Swap = () => {
         <SwapModule >
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance />
+            <SwapTokenBalance token={firstTokenSelected} />
           </SwapContainer>
           {
             activeModalPrimary &&
@@ -114,7 +124,7 @@ export const Swap = () => {
           <SwitchIcon switchHandler={tokenDispatch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance />
+            <SwapTokenBalance token={secondTokenSelected} />
           </SwapContainer>
           {
             activeModalSecondary &&
@@ -146,8 +156,7 @@ export const Swap = () => {
             </SwapModal>
           }
           {!isUserLogged && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
-          {isUserLogged && <SwapButton content="Sign Message" handler={async () => { await onSign() }} />}
-          <button onClick={getStatus}>status</button>
+          {isUserLogged && <SwapButton content="Disconnect wallet" handler={async () => { onDisconnect() }} />}
 
 
         </SwapModule>
