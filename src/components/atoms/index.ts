@@ -25,6 +25,7 @@ export { SwapHeaderAtom } from './SwapHeaderAtom'
 export { HeaderModalAtom } from './HeaderModalAtom'
 export { CloseButtonAtom } from './CloseButtonAtom'
 export { SearchSectionAtom } from './SearchSectionAtom'
+export { ConfirmSwapButton } from './ConfirmSwapButton'
 
 
 

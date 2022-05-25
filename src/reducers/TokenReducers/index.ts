@@ -13,61 +13,56 @@ export interface TokensInterface {
     amount: string
 }
 
+export interface TokensListInterface {
+    name: string,
+    chainId: number,
+    symbol: string,
+    decimals: number,
+    contractHash: string,
+    packageHash: string,
+    logoURI: string,
+    amount: string,
+}
+
 export const initialStateToken = {
     tokens: {
         "CSPR": {
-            icon: casprIcon,
-            fullname: {
-                name: "Casper",
-                acron: "CSPR"
-            },
+            name: "Casper",
+            chainId: 1,
+            symbol: "CSPR",
+            decimals: 9,
+            contractHash: "",
+            packageHash: "",
+            logoURI: casprIcon,
             amount: "0.0000"
-        },
-        "WCSPR": {
-            icon: wcasprIcon,
-            fullname: {
-                name: "Wrapped Casper",
-                acron: "WCSPR"
-            },
-            amount: "0.0000"
-        },
-        "WISER": {
-            icon: wiseIcon,
-            fullname: {
-                name: "WISE-R",
-                acron: "WISER"
-            },
-            amount: "0.0000"
-        },
-        "WETH": {
-            icon: wethIcon,
-            fullname: {
-                name: "Wrapped Ether",
-                acron: "WETH"
-            },
-            amount: "0.0000"
-        },
+        }
     },
     firstTokenSelected: {
-        icon: casprIcon,
-        fullname: {
-            name: "Casper",
-            acron: "CSPR"
-        },
+        name: "Casper",
+        chainId: 1,
+        symbol: "CSPR",
+        decimals: 9,
+        contractHash: "",
+        packageHash: "",
+        logoURI: casprIcon,
         amount: "0.0000"
     },
     secondTokenSelected: {
-        icon: wethIcon,
-        fullname: {
-            name: "Wrapped Ether",
-            acron: "WETH"
-        },
+        name: "Casper",
+        chainId: 1,
+        symbol: "CSPR",
+        decimals: 9,
+        contractHash: "",
+        packageHash: "",
+        logoURI: casprIcon,
         amount: "0.0000"
     }
 };
 
 export function TokenReducer(state, action) {
     switch (action.type) {
+        case 'UPDATE_TOKENS':
+            return { ...state, tokens: { ...state.tokens, ...action.payload.tokens } };
         case 'SELECT_FIRST_TOKEN':
             return { ...state, firstTokenSelected: action.payload };
         case 'SELECT_SECOND_TOKEN':

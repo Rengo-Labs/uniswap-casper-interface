@@ -54,8 +54,8 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                         <h1>Settings</h1>
                         <PillowDiv>
                             <WalletSelectionDiv walletSelected={"walletSelected"} >
-                                <WalletSelectionImageStyled src={torusWallet} alt="" />
-                                <h2>Torus Wallet</h2>
+                                <WalletSelectionImageStyled src={casperWallet} alt="" />
+                                <h2>Signer Wallet</h2>
                             </WalletSelectionDiv>
                         </PillowDiv>
                         <PillowDiv>

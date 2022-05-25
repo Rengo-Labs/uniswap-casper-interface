@@ -7,9 +7,9 @@ export const StyledContainer = styled.h1`
     align-items: center;
     gap:.5em;
 `
-export const StyledTitle = styled.h1`
+export const StyledTitle = styled.span`
     color:${props => props.theme.PrimaryColor};
 `
-export const StyledMarkedTitle = styled.h1`
+export const StyledMarkedTitle = styled.span`
     color:${props => props.theme.TertiaryColor};
 `

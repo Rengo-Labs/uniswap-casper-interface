@@ -7,8 +7,8 @@ export const SwapTokenSelect = ({ onClickHandler, token }:any) => {
   return (
     <SwapTokenSelectStyled>
       <SwapTokenChoiseStyled onClick={onClickHandler}>
-        <SwapTokenRoundedImageStyled src={token.icon} width="30" height="30" alt=""/>
-        <p>{token.fullname.acron}</p>
+        <SwapTokenRoundedImageStyled src={token.logoURI} width="30" height="30" alt=""/>
+        <p>{token.symbol}</p>
         <AiOutlineCaretDown />
       </SwapTokenChoiseStyled>
       <SwapTokenBalanceStyled>

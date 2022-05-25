@@ -6,10 +6,10 @@ export const SwapToken = ({ token, handleToken }) => {
     return (
         <SwapTokenStyled onClick={()=>{handleToken()}}>
             <SwapIconStyled>
-                <SwapIconImageStyled src={token.icon} width="50" height="50" />
+                <SwapIconImageStyled src={token.logoURI} width="50" height="50" />
             </SwapIconStyled>
             <SwapNamingStyled>
-                <p>{token.fullname.acron}</p>
+                <p>{token.symbol}</p>
             </SwapNamingStyled>
         </SwapTokenStyled>
     )

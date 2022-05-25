@@ -8,7 +8,7 @@ export const SwapTokenBalance = ({token}) => {
   const [max,maxSetter] = useState("")
   return (
     <SwapTokenBalanceStyled>
-      <InputStyled type='number' placeholder="0.0001" value={max}/>
+      <InputStyled type='number' placeholder="0.0001" defaultValue={max}/>
       <RoundedButtonStyled onClick={()=>{maxSetter(token.amount)}}>MAX</RoundedButtonStyled>
     </SwapTokenBalanceStyled>
   )

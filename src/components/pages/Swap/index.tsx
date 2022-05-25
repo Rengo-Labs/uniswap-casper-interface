@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { CardContainer, CloseButtonAtom, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
+import { CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
 import { SwapModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
@@ -30,6 +30,7 @@ export const Swap = () => {
   //const tokenOne = query.get("tokenOne")
   const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
   const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
+  const [activeModalSwap, setActiveModalSwap] = React.useState(false)
 
 
   const handleModalPrimary = () => {
@@ -145,7 +146,7 @@ export const Swap = () => {
                   {
                     Object.keys(tokens)
                       .map((key) => {
-                        const filter = new RegExp(firstTokenSelected.fullname.acron)
+                        const filter = new RegExp(firstTokenSelected.symbol)
                         if (filter.test(key)) { return }
                         const handleToken = () => { tokenDispatch({ type: 'SELECT_SECOND_TOKEN', payload: tokens[key] }), handleModalSecondary() }
                         return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
@@ -157,8 +158,48 @@ export const Swap = () => {
           }
           {!isUserLogged && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
           {isUserLogged && <p>Slippage Tolerance: 0.5%</p>}
-          {isUserLogged && <SwapButton content="Swap" handler={async () => { onDisconnect() }} />}
+          {isUserLogged && <SwapButton content="Swap" handler={async () => { setActiveModalSwap(true) }} />}
+          {
+            activeModalSwap &&
+            <SwapModal >
+              <SwapContainerAtom >
+                <SwapHeaderAtom>
+                  <HeaderModalAtom>Confirm Swap</HeaderModalAtom>
+                  <CloseButtonAtom onClick={() => { setActiveModalSwap(false) }}>
+                    <AiOutlineClose />
+                  </CloseButtonAtom>
+                </SwapHeaderAtom>
+                <div>
+                  <div>
+                    <div>
+                      <div>
+                        <img src={firstTokenSelected.logoURI} width="50" height="50" />
+                        <p>10000</p>
+                      </div>
+                      <p>{firstTokenSelected.name} </p>
+                    </div>
+                    <span>flecha</span>
+                    <div>
+                      <div>
+                        <img src={secondTokenSelected.logoURI} width="50" height="50" />
+                        <p>10000</p>
+                      </div>
+                      <p>{secondTokenSelected.name} </p>
+                    </div>
+                  </div>
+                  <div>output is estimated. you will receive at least 6.92697 CSPR or the transaction will revert</div>
+                  <div>
+                    <div>
+                      <p>Price</p>
+                      <p>{`67.6765 ${firstTokenSelected.symbol}/${secondTokenSelected.symbol}`}</p>
+                    </div>
+                  </div>
+                  <ConfirmSwapButton content="Confirm Swap" handler={async () => { setActiveModalSwap(false) }} />
+                </div>
 
+              </SwapContainerAtom>
+            </SwapModal>
+          }
 
         </SwapModule>
       </CardContainer >
