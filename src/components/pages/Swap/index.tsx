@@ -156,7 +156,8 @@ export const Swap = () => {
             </SwapModal>
           }
           {!isUserLogged && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
-          {isUserLogged && <SwapButton content="Disconnect wallet" handler={async () => { onDisconnect() }} />}
+          {isUserLogged && <p>Slippage Tolerance: 0.5%</p>}
+          {isUserLogged && <SwapButton content="Swap" handler={async () => { onDisconnect() }} />}
 
 
         </SwapModule>
