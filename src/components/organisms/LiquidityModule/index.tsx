@@ -29,7 +29,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         <SwapModulesStyled>
             <SwapContainer>
                 <SwapTokenSelect onClickHandler={handleModalPrimary} token={primaryToken}></SwapTokenSelect>
-                <SwapTokenBalance token={primaryToken} />
+                {/*<SwapTokenBalance token={primaryToken} />*/}
             </SwapContainer>
             {
                 activeModalPrimary &&
@@ -61,7 +61,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
             <SwitchIcon switchHandler={switchTokens} />
             <SwapContainer>
                 <SwapTokenSelect onClickHandler={() => { handleModalPrimary() }} token={primaryToken}></SwapTokenSelect>
-                <SwapTokenBalance token={primaryToken} />
+                                {/*<SwapTokenBalance token={primaryToken} />*/}
+
             </SwapContainer>
             {
                 activeModalSecondary &&

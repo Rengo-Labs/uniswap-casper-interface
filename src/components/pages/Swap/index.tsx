@@ -31,7 +31,8 @@ export const Swap = () => {
   const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
   const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
   const [activeModalSwap, setActiveModalSwap] = React.useState(false)
-
+  const [amoutSwapTokenA, amoutSwapTokenASetter] = useState(0)
+  const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState(0)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
@@ -42,26 +43,7 @@ export const Swap = () => {
   const { tokenState, tokenDispatch } = useContext(TokensProviderContext)
   const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
   const { swapState, swapDispatch } = useContext(SwapProviderContext)
-  const { isUserLogged, torus, walletAddress, casperService,slippageTolerance } = swapState
-
-  useEffect(() => {
-    getStatus()
-      .then(balance => {
-        tokenDispatch({ type: 'LOAD_BALANCE', payload: { name: "CSPR", data: balance } })
-      })
-      .catch(err => console.log)
-  }, [casperService])
-
-  async function onConnect() {
-    const walletAddress = await signerLogIn(Signer)
-    swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-  }
-
-  function onDisconnect() {
-    swapDispatch({ type: 'LOGOUT' })
-
-  }
-
+  const { isUserLogged, torus, walletAddress, casperService, slippageTolerance } = swapState
   async function getStatus() {
     const stateRootHash = await casperService.getStateRootHash();
     const result = await casperService.getBlockState(
@@ -76,14 +58,20 @@ export const Swap = () => {
     const real = balance / 10 ** 9
     return real.toString()
   }
+  useEffect(() => {
+    getStatus()
+      .then(balance => {
+        tokenDispatch({ type: 'LOAD_BALANCE', payload: { name: "CSPR", data: balance } })
+      })
+      .catch(err => console.log)
+  }, [casperService])
 
-  async function onSign() {
-    const message = Buffer.from("Test Signing Message ", "utf8");
-    const signed_message = await torus.signMessage({
-      message: "message",
-      from: "string"
-    });
+  async function onConnect() {
+    const walletAddress = await signerLogIn(Signer)
+    swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
   }
+
+
 
   return (
     <BasicLayout>
@@ -91,7 +79,7 @@ export const Swap = () => {
         <SwapModule >
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance token={firstTokenSelected} />
+            <SwapTokenBalance token={firstTokenSelected} amoutSwapTokenSetter={amoutSwapTokenASetter} />
           </SwapContainer>
           {
             activeModalPrimary &&
@@ -125,7 +113,7 @@ export const Swap = () => {
           <SwitchIcon switchHandler={tokenDispatch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance token={secondTokenSelected} />
+            <SwapTokenBalance token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} />
           </SwapContainer>
           {
             activeModalSecondary &&

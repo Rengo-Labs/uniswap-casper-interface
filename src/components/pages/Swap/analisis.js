@@ -35,16 +35,31 @@ export async function makeDeployWasm(publicKey, runtimeArgs, paymentAmount) {
     );
     return deploy
 }
+export function createRuntimeArgs(amount_in,ROUTER_PACKAGE_HASH,amount_out_min,slippage,_paths,publicKey,mainPurse,deadline){
+    return RuntimeArgs.fromMap({
+        amount: CLValueBuilder.u512(convertToStr(amount_in)),
+        destination_entrypoint: CLValueBuilder.string("swap_exact_cspr_for_tokens"),
+        router_hash: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))),
+        amount_in: CLValueBuilder.u256(convertToStr(amount_in)),
+        amount_out_min: CLValueBuilder.u256(
+            convertToStr(amount_out_min - (amount_out_min * slippage) / 100)
+        ),
+        path: new CLList(_paths),
+        to: createRecipientAddress(publicKey),
+        purse: CLValueBuilder.uref(
+            Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+            AccessRights.READ_ADD_WRITE
+        ),
+        deadline: CLValueBuilder.u256(deadline),
+    })
+}
+
 
 export async function signdeploywithcaspersigner(deploy, publicKeyHex) {
     let deployJSON = DeployUtil.deployToJson(deploy);
-    console.log("deployJSON: ", deployJSON);
-    
+    console.log("deployJSON: ", deployJSON);    
     let signedDeployJSON = await Signer.sign(deployJSON, publicKeyHex, publicKeyHex);
-    console.log("signedDeployJSON: ", signedDeployJSON);
     let signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
-
-    console.log("signed deploy: ", signedDeploy);
     return signedDeploy;
 }
 
@@ -58,7 +73,7 @@ async function swapMakeDeploy() {
         publicKeyHex !== undefined
     ) {
         const deadline = 1739598100811;
-        const paymentAmount = 10000000000;
+        const paymentAmount = 10_000_000_000;
         if (inputSelection === "tokenA") {
             if (tokenA.name === "Casper") {
                 console.log("swap_exact_cspr_for_token");
@@ -77,22 +92,7 @@ async function swapMakeDeploy() {
                 }
                 console.log("_paths", _paths);
                 try {
-                    const runtimeArgs = RuntimeArgs.fromMap({
-                        amount: CLValueBuilder.u512(convertToStr(amount_in)),
-                        destination_entrypoint: CLValueBuilder.string("swap_exact_cspr_for_tokens"),
-                        router_hash: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))),
-                        amount_in: CLValueBuilder.u256(convertToStr(amount_in)),
-                        amount_out_min: CLValueBuilder.u256(
-                            convertToStr(amount_out_min - (amount_out_min * slippage) / 100)
-                        ),
-                        path: new CLList(_paths),
-                        to: createRecipientAddress(publicKey),
-                        purse: CLValueBuilder.uref(
-                            Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-                            AccessRights.READ_ADD_WRITE
-                        ),
-                        deadline: CLValueBuilder.u256(deadline),
-                    });
+                    const runtimeArgs = createRuntimeArgs(amount_in,ROUTER_PACKAGE_HASH,amount_out_min,slippage,publicKey,deadline)
 
                     let deploy = await makeDeployWasm(
                         publicKey,
