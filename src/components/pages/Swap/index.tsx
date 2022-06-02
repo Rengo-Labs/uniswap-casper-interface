@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-
+import axios from 'axios'
 import { CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
 import { SwapModule } from '../../organisms'
 
@@ -22,6 +22,8 @@ function useQuery() {
 
 import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
 import { clientDispatcher, signerLogIn } from '../../../reducers/WalletReducers/signerFunctions'
+import { swapMakeDeploy } from '../../../commons/swap'
+import { BASE_URL, DEADLINE, PAYMENT_AMOUNT } from '../../../constant'
 //const casperService = new CasperServiceByJsonRPC(torus?.provider);
 
 
@@ -44,6 +46,8 @@ export const Swap = () => {
   const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
   const { swapState, swapDispatch } = useContext(SwapProviderContext)
   const { isUserLogged, torus, walletAddress, casperService, slippageTolerance } = swapState
+  let [mainPurse, setMainPurse] = useState();
+
   async function getStatus() {
     const stateRootHash = await casperService.getStateRootHash();
     const result = await casperService.getBlockState(
@@ -51,6 +55,7 @@ export const Swap = () => {
       CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
       []
     )
+    setMainPurse(result.Account.mainPurse);
     const balance = await casperService.getAccountBalance(
       stateRootHash,
       result.Account.mainPurse
@@ -69,6 +74,19 @@ export const Swap = () => {
   async function onConnect() {
     const walletAddress = await signerLogIn(Signer)
     swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
+  }
+
+  async function onConfirmSwap() {
+    const algo = await swapMakeDeploy(walletAddress,
+      DEADLINE,
+      PAYMENT_AMOUNT,
+      10,
+      10,
+      "WCSPR",
+      "WETH",
+      0.5,
+      mainPurse,axios);
+    setActiveModalSwap(false);
   }
 
 
@@ -182,7 +200,7 @@ export const Swap = () => {
                       <p>{`67.6765 ${firstTokenSelected.symbol}/${secondTokenSelected.symbol}`}</p>
                     </div>
                   </div>
-                  <ConfirmSwapButton content="Confirm Swap" handler={async () => { setActiveModalSwap(false) }} />
+                  <ConfirmSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
                 </div>
 
               </SwapContainerAtom>
