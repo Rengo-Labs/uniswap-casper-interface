@@ -109,7 +109,6 @@ async function getswapPath(tokenASymbol, tokenBSymbol, axios) {
 }
 export async function signdeploywithcaspersigner(deploy, publicKeyHex) {
   let deployJSON = DeployUtil.deployToJson(deploy);
-  console.log("deployJSON: ", deployJSON);
 
   let signedDeployJSON = await Signer.sign(
     deployJSON,
