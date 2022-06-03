@@ -46,14 +46,9 @@ export async function makeDeployWasm(
   publicKey,
   runtimeArgs,
   paymentAmount,
-  fetch
+  axios
 ) {
-  let wasmData = await fetch.get("/getWasmData");
-  console.log("wasmData.data.wasmData", wasmData.data.wasmData.data);
-  console.log(
-    "new Uint8Array(wasmData.data.wasmData.data)",
-    new Uint8Array(wasmData.data.wasmData.data)
-  );
+  let wasmData = await axios.get(`${BASE_URL}/getWasmData`);
   let deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
     DeployUtil.ExecutableDeployItem.newModuleBytes(
@@ -88,7 +83,7 @@ export function createRuntimeArgs(
       ),
       amount_in: CLValueBuilder.u256(amount_in.toString()),
       amount_out_min: CLValueBuilder.u256(
-        convertToStr(amount_out_min - (amount_out_min * slippage) / 100)
+        convertToStr("10")
       ),
       path: new CLList(_paths),
       to: createRecipientAddress(publicKey),
@@ -196,7 +191,7 @@ export async function swapMakeDeploy(
     publicKey,
     runtimeArgs,
     paymentAmount,
-    fetch
+    axios
   );
 
   let signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);

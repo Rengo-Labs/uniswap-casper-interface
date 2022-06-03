@@ -85,7 +85,8 @@ export const Swap = () => {
       "WCSPR",
       "WETH",
       0.5,
-      mainPurse,axios);
+      mainPurse,
+      axios);
     setActiveModalSwap(false);
   }
 
