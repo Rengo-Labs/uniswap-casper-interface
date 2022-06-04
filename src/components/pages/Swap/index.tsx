@@ -82,8 +82,8 @@ export const Swap = () => {
       PAYMENT_AMOUNT,
       10,
       10,
-      "WCSPR",
-      "WETH",
+      firstTokenSelected.symbolPair,
+      secondTokenSelected.symbolPair,
       0.5,
       mainPurse,
       axios);

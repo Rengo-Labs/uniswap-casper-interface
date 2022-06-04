@@ -30,6 +30,7 @@ export const initialStateToken = {
       name: "Casper",
       chainId: 1,
       symbol: "CSPR",
+      symbolPair: "WCSPR",
       decimals: 9,
       contractHash: "",
       packageHash: "",
@@ -40,6 +41,7 @@ export const initialStateToken = {
       name: "Coinstox",
       chainId: 1,
       symbol: "CSX",
+      symbolPair: "CSX",
       decimals: 9,
       contractHash:
         "hash-5240db456a1a2cb63cabcdebb86a5177d0e9ceddab7a737b3bd90caeae33e80e",
@@ -51,6 +53,7 @@ export const initialStateToken = {
       name: "Wrapper Ether",
       chainId: 1,
       symbol: "WETH",
+      symbolPair: "WETH",
       decimals: 9,
       contractHash:
         "hash-9aef66efbac45daf71f92f3446422a00fd3adaaf206a1c29d80f26bc513c105d",
@@ -62,6 +65,7 @@ export const initialStateToken = {
       name: "Wrapper Casper",
       chainId: 1,
       symbol: "WCSPR",
+      symbolPair: "WCSPR",
       decimals: 9,
       contractHash:
         "hash-238834bc76aed9e18ad0260e65d2ef751999c97c13da92dee83bd511e31e2d2d",
@@ -74,6 +78,7 @@ export const initialStateToken = {
     name: "Casper",
     chainId: 1,
     symbol: "CSPR",
+    symbolPair: "WCSPR",
     decimals: 9,
     contractHash: "",
     packageHash: "",
@@ -81,17 +86,18 @@ export const initialStateToken = {
     amount: "0.0000",
   },
   secondTokenSelected: {
-    name: "Coinstox",
+    name: "Wrapper Ether",
     chainId: 1,
-    symbol: "CSX",
+    symbol: "WETH",
+    symbolPair: "WETH",
     decimals: 9,
     contractHash:
-      "hash-5240db456a1a2cb63cabcdebb86a5177d0e9ceddab7a737b3bd90caeae33e80e",
+      "hash-9aef66efbac45daf71f92f3446422a00fd3adaaf206a1c29d80f26bc513c105d",
     packageHash:
-      "hash-bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
-    logoURI: "https://static.coincost.net/logo/cryptocurrency/coinstox.png",
+      "hash-03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
+    logoURI: "https://www.gemini.com/images/currencies/icons/default/eth.svg",
     amount: "0.0000",
-  },
+  }
 };
 
 export function TokenReducer(state, action) {
