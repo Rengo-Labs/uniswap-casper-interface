@@ -21,7 +21,7 @@ function useQuery() {
 }
 
 import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
-import { clientDispatcher, signerLogIn } from '../../../reducers/WalletReducers/signerFunctions'
+import { clientDispatcher, getActivePublicKey, signerLogIn } from '../../../reducers/WalletReducers/signerFunctions'
 import { swapMakeDeploy } from '../../../commons/swap'
 import { BASE_URL, DEADLINE, PAYMENT_AMOUNT } from '../../../constant'
 //const casperService = new CasperServiceByJsonRPC(torus?.provider);
@@ -72,9 +72,10 @@ export const Swap = () => {
   }, [casperService])
 
   async function onConnect() {
-    const walletAddress = await signerLogIn(Signer)
+    await signerLogIn(Signer)
+    const walletAddress = await getActivePublicKey(Signer)
     swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-  }
+}
 
   async function onConfirmSwap() {
     const algo = await swapMakeDeploy(walletAddress,
@@ -132,7 +133,7 @@ export const Swap = () => {
           <SwitchIcon switchHandler={tokenDispatch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} />
+            <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} />
           </SwapContainer>
           {
             activeModalSecondary &&

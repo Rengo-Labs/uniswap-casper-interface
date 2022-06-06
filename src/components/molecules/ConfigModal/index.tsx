@@ -19,7 +19,7 @@ import { ConfigModalHeader } from '../../molecules';
 import { SwapProviderContext } from '../../../contexts/SwapContext';
 import { torusLogin, torusLogout } from '../../../reducers/WalletReducers/functions';
 import { Signer } from 'casper-js-sdk'
-import { clientDispatcher, signerLogIn } from '../../../reducers/WalletReducers/signerFunctions';
+import { clientDispatcher, signerLogIn,getActivePublicKey } from '../../../reducers/WalletReducers/signerFunctions';
 
 export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
@@ -29,7 +29,8 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
     const { isUserLogged, walletAddress, slippageTolerance } = swapState
 
     async function onConnect() {
-        const walletAddress = await signerLogIn(Signer)
+        await signerLogIn(Signer)
+        const walletAddress = await getActivePublicKey(Signer)
         swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
     }
 
