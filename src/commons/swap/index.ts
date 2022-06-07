@@ -83,7 +83,8 @@ export function createRuntimeArgs(
       ),
       amount_in: CLValueBuilder.u256(amount_in.toString()),
       amount_out_min: CLValueBuilder.u256(
-        convertToStr("10")
+        //convertToStr(amount_out_min - (amount_out_min * 0.5) / 100)
+        convertToStr(10)
       ),
       path: new CLList(_paths),
       to: createRecipientAddress(publicKey),

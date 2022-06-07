@@ -33,8 +33,8 @@ export const Swap = () => {
   const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
   const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
   const [activeModalSwap, setActiveModalSwap] = React.useState(false)
-  const [amoutSwapTokenA, amoutSwapTokenASetter] = useState(0)
-  const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState(0)
+  const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
+  const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
@@ -45,7 +45,7 @@ export const Swap = () => {
   const { tokenState, tokenDispatch } = useContext(TokensProviderContext)
   const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
   const { swapState, swapDispatch } = useContext(SwapProviderContext)
-  const { isUserLogged, torus, walletAddress, casperService, slippageTolerance } = swapState
+  const { isUserLogged, walletAddress, casperService, slippageTolerance } = swapState
   let [mainPurse, setMainPurse] = useState();
 
   async function getStatus() {
@@ -74,15 +74,42 @@ export const Swap = () => {
   async function onConnect() {
     await signerLogIn(Signer)
     const walletAddress = await getActivePublicKey(Signer)
+    updateBalances(walletAddress)
     swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-}
+  }
+
+  function updateBalances(walletAddress) {
+    Object.keys(tokens).map(x => {
+      if (tokens[`${x}`].contractHash.length > 0) {
+        const param = {
+          contractHash: tokens[`${x}`].contractHash.slice(5),
+          user: Buffer.from(CLPublicKey.fromHex(walletAddress).toAccountHash()).toString("hex")
+        }
+        axios
+          .post(`${BASE_URL}/balanceagainstuser`, param)
+          .then((res) => {
+            //console.log('balanceagainstuser', res)
+            console.log("resdata",res.data)
+            //holdArr[i].balance = res.data.balance;
+            // setTokenBBalance(res.data.balance)
+
+          })
+          .catch((error) => {
+            console.log(error)
+            console.log(error.response)
+          })
+      }
+
+    })
+
+  }
 
   async function onConfirmSwap() {
     const algo = await swapMakeDeploy(walletAddress,
       DEADLINE,
-      PAYMENT_AMOUNT,
-      10,
-      10,
+      10_000_000_000,
+      11_000_000_000,
+      10_000_000_000,
       firstTokenSelected.symbolPair,
       secondTokenSelected.symbolPair,
       0.5,
@@ -91,6 +118,23 @@ export const Swap = () => {
     setActiveModalSwap(false);
   }
 
+  function calculateReserves(value) {
+    axios.post(`${BASE_URL}/getpathreserves`, {
+      path: [
+        firstTokenSelected.symbolPair,
+        secondTokenSelected.symbolPair,
+      ]
+    }).then(response => {
+      if (response.data.success) {
+        amoutSwapTokenBSetter(value * parseFloat(response.data.reserve0))
+      }
+    })
+  }
+
+  function onChangeValueToken(value) {
+    amoutSwapTokenASetter(value)
+    calculateReserves(value)
+  }
 
 
   return (
@@ -99,7 +143,7 @@ export const Swap = () => {
         <SwapModule >
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance token={firstTokenSelected} amoutSwapTokenSetter={amoutSwapTokenASetter} />
+            <SwapTokenBalance token={firstTokenSelected} amoutSwapTokenSetter={onChangeValueToken} />
           </SwapContainer>
           {
             activeModalPrimary &&
@@ -133,7 +177,7 @@ export const Swap = () => {
           <SwitchIcon switchHandler={tokenDispatch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} />
+            <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} amoutSwapToken={amoutSwapTokenB} />
           </SwapContainer>
           {
             activeModalSecondary &&

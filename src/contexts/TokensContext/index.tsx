@@ -15,7 +15,8 @@ export const TokensContext = ({ children }: { children: ReactNode }) => {
       return {
         ...acc, [token.symbol]: {
           ...token,
-          amount: "0.0000"
+          amount: "0.0000",
+          symbolPair:token.symbol
         }
       };
     }, {})
