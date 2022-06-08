@@ -10,22 +10,22 @@ import { SwapContext } from './SwapContext'
 
 export const BigContext = ({ children }: { children: ReactNode }) => {
     return (
-        <SwapContext>
-            <TorusContext>
-                <InitialContext>
-                    <ThemeContext>
-                        <TokensContext2>
-                            <PoolsContext>
-                                <LiquidityContext>
-                                    <TokensContext>
-                                        {children}
-                                    </TokensContext>
-                                </LiquidityContext>
-                            </PoolsContext>
-                        </TokensContext2>
-                    </ThemeContext>
-                </InitialContext>
-            </TorusContext>
-        </SwapContext>
+            <SwapContext>
+                <TorusContext>
+                    <InitialContext>
+                        <ThemeContext>
+                            <TokensContext2>
+                                <PoolsContext>
+                                    <LiquidityContext>
+                                        <TokensContext>
+                                            {children}
+                                        </TokensContext>
+                                    </LiquidityContext>
+                                </PoolsContext>
+                            </TokensContext2>
+                        </ThemeContext>
+                    </InitialContext>
+                </TorusContext>
+            </SwapContext>
     )
 }

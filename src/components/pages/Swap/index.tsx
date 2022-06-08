@@ -62,6 +62,7 @@ export const Swap = () => {
     )
     const real = balance / 10 ** 9
     return real.toString()
+    
   }
   useEffect(() => {
     getStatus()
