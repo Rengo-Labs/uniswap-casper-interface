@@ -5,7 +5,7 @@ import { CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, Sea
 import { SwapModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
-import { SwapModal, SwapSelection, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapModal, SwapSelection, SwapTokens } from '../../molecules'
 import { TokensProviderContext } from '../../../contexts/TokensContext'
 import { AiOutlineClose } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
@@ -48,9 +48,9 @@ export const Swap = () => {
   const { isUserLogged, walletAddress, casperService, slippageTolerance } = swapState
   let [mainPurse, setMainPurse] = useState();
 
-  
+
   useEffect(() => {
-    getStatus(casperService,walletAddress,setMainPurse)
+    getStatus(casperService, walletAddress, setMainPurse)
       .then(balance => {
         tokenDispatch({ type: 'LOAD_BALANCE', payload: { name: "CSPR", data: balance } })
       })
@@ -60,11 +60,11 @@ export const Swap = () => {
   async function onConnect() {
     await signerLogIn(Signer)
     const walletAddress = await getActivePublicKey(Signer)
-    updateBalances(walletAddress,tokens,axios)
+    updateBalances(walletAddress, tokens, axios)
     swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
   }
 
-  
+
 
   async function onConfirmSwap() {
     const algo = await swapMakeDeploy(walletAddress,
@@ -80,7 +80,7 @@ export const Swap = () => {
     setActiveModalSwap(false);
   }
 
-  function calculateReserves(value) {
+  async function calculateReserves(value) {
     axios.post(`${BASE_URL}/getpathreserves`, {
       path: [
         firstTokenSelected.symbolPair,
@@ -183,33 +183,14 @@ export const Swap = () => {
                     <AiOutlineClose />
                   </CloseButtonAtom>
                 </SwapHeaderAtom>
-                <div>
-                  <div>
-                    <div>
-                      <div>
-                        <img src={firstTokenSelected.logoURI} width="50" height="50" />
-                        <p>10000</p>
-                      </div>
-                      <p>{firstTokenSelected.name} </p>
-                    </div>
-                    <span>flecha</span>
-                    <div>
-                      <div>
-                        <img src={secondTokenSelected.logoURI} width="50" height="50" />
-                        <p>10000</p>
-                      </div>
-                      <p>{secondTokenSelected.name} </p>
-                    </div>
-                  </div>
-                  <div>output is estimated. you will receive at least 6.92697 CSPR or the transaction will revert</div>
-                  <div>
-                    <div>
-                      <p>Price</p>
-                      <p>{`67.6765 ${firstTokenSelected.symbol}/${secondTokenSelected.symbol}`}</p>
-                    </div>
-                  </div>
+                <SwapConfirmAtom
+                firstTokenSelected={firstTokenSelected}
+                secondTokenSelected={secondTokenSelected}
+                amoutSwapTokenA={amoutSwapTokenA}
+                amoutSwapTokenB={amoutSwapTokenB}
+                >
                   <ConfirmSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
-                </div>
+                </SwapConfirmAtom>
 
               </SwapContainerAtom>
             </SwapModal>
