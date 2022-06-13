@@ -7,9 +7,11 @@ import { TokensContext } from './TokensContext'
 import { InitialContext } from './InitialContext'
 import { TorusContext } from './TorusContext'
 import { SwapContext } from './SwapContext'
+import { NotificationContext } from './NotificationContext'
 
 export const BigContext = ({ children }: { children: ReactNode }) => {
     return (
+        <NotificationContext>
             <SwapContext>
                 <TorusContext>
                     <InitialContext>
@@ -27,5 +29,6 @@ export const BigContext = ({ children }: { children: ReactNode }) => {
                     </InitialContext>
                 </TorusContext>
             </SwapContext>
+        </NotificationContext>
     )
 }

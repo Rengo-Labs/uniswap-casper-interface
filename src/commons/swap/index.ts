@@ -197,3 +197,46 @@ export async function swapMakeDeploy(
   let signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);
   let result = await putdeploy(signedDeploy);
 }
+
+export function updateBalances(walletAddress,tokens,axios) {
+  Object.keys(tokens).map(x => {
+    if (tokens[`${x}`].contractHash.length > 0) {
+      const param = {
+        contractHash: tokens[`${x}`].contractHash.slice(5),
+        user: Buffer.from(CLPublicKey.fromHex(walletAddress).toAccountHash()).toString("hex")
+      }
+      axios
+        .post(`${BASE_URL}/balanceagainstuser`, param)
+        .then((res) => {
+          //console.log('balanceagainstuser', res)
+          console.log("resdata",res.data)
+          //holdArr[i].balance = res.data.balance;
+          // setTokenBBalance(res.data.balance)
+
+        })
+        .catch((error) => {
+          console.log(error)
+          console.log(error.response)
+        })
+    }
+
+  })
+
+}
+
+export async function getStatus(casperService,walletAddress,setMainPurse) {
+  const stateRootHash = await casperService.getStateRootHash();
+  const result = await casperService.getBlockState(
+    stateRootHash,
+    CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
+    []
+  )
+  setMainPurse(result.Account.mainPurse);
+  const balance = await casperService.getAccountBalance(
+    stateRootHash,
+    result.Account.mainPurse
+  )
+  const real = balance / 10 ** 9
+  return real.toString()
+  
+}

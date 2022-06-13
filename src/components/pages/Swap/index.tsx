@@ -22,7 +22,7 @@ function useQuery() {
 
 import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
 import { clientDispatcher, getActivePublicKey, signerLogIn } from '../../../reducers/WalletReducers/signerFunctions'
-import { swapMakeDeploy } from '../../../commons/swap'
+import { getStatus, swapMakeDeploy, updateBalances } from '../../../commons/swap'
 import { BASE_URL, DEADLINE, PAYMENT_AMOUNT } from '../../../constant'
 //const casperService = new CasperServiceByJsonRPC(torus?.provider);
 
@@ -48,24 +48,9 @@ export const Swap = () => {
   const { isUserLogged, walletAddress, casperService, slippageTolerance } = swapState
   let [mainPurse, setMainPurse] = useState();
 
-  async function getStatus() {
-    const stateRootHash = await casperService.getStateRootHash();
-    const result = await casperService.getBlockState(
-      stateRootHash,
-      CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
-      []
-    )
-    setMainPurse(result.Account.mainPurse);
-    const balance = await casperService.getAccountBalance(
-      stateRootHash,
-      result.Account.mainPurse
-    )
-    const real = balance / 10 ** 9
-    return real.toString()
-    
-  }
+  
   useEffect(() => {
-    getStatus()
+    getStatus(casperService,walletAddress,setMainPurse)
       .then(balance => {
         tokenDispatch({ type: 'LOAD_BALANCE', payload: { name: "CSPR", data: balance } })
       })
@@ -75,35 +60,11 @@ export const Swap = () => {
   async function onConnect() {
     await signerLogIn(Signer)
     const walletAddress = await getActivePublicKey(Signer)
-    updateBalances(walletAddress)
+    updateBalances(walletAddress,tokens,axios)
     swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
   }
 
-  function updateBalances(walletAddress) {
-    Object.keys(tokens).map(x => {
-      if (tokens[`${x}`].contractHash.length > 0) {
-        const param = {
-          contractHash: tokens[`${x}`].contractHash.slice(5),
-          user: Buffer.from(CLPublicKey.fromHex(walletAddress).toAccountHash()).toString("hex")
-        }
-        axios
-          .post(`${BASE_URL}/balanceagainstuser`, param)
-          .then((res) => {
-            //console.log('balanceagainstuser', res)
-            console.log("resdata",res.data)
-            //holdArr[i].balance = res.data.balance;
-            // setTokenBBalance(res.data.balance)
-
-          })
-          .catch((error) => {
-            console.log(error)
-            console.log(error.response)
-          })
-      }
-
-    })
-
-  }
+  
 
   async function onConfirmSwap() {
     const algo = await swapMakeDeploy(walletAddress,
