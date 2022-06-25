@@ -7,7 +7,6 @@ import { LiquidityProviderContext } from '../../../contexts/LiquidityContext'
 import { AiOutlineClose } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
 import { SwapTokens } from '../../molecules'
-import { SwapToken } from '../../molecules/SwapToken'
 
 export const LiquidityModule = ({ tokenOne }: any) => {
 
@@ -22,7 +21,10 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         setActiveModalSecondary(!activeModalSecondary)
         filterCriteriaSet("")
     }
-    const { fileteredTokens, filterCriteriaSet, filterCriteria, primaryToken, secondaryToken, switchTokens, setPrimaryToken, setSecondaryToken } = React.useContext(LiquidityProviderContext)
+    const { fileteredTokens, 
+        filterCriteriaSet, filterCriteria,
+         primaryToken, secondaryToken, switchTokens, 
+         setPrimaryToken, setSecondaryToken } = React.useContext(LiquidityProviderContext)
 
 
     return (
