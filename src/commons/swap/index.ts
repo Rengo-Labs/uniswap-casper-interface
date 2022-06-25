@@ -14,6 +14,7 @@ import {
   Signer,
 } from "casper-js-sdk";
 import { BASE_URL, NODE_ADDRESS, ROUTER_PACKAGE_HASH } from "../../constant";
+import toast from "react-hot-toast";
 
 const convertToStr = (e) => e.toString();
 export function createRecipientAddress(recipient) {
@@ -64,15 +65,16 @@ export function createRuntimeArgs(
   amount_in,
   ROUTER_PACKAGE_HASH,
   amount_out_min,
-  slippage,
+  slippSwapToken,
   _paths,
   publicKey,
   mainPurse,
   deadline
 ) {
   try {
+    const amount = convertToStr(parseFloat(amount_in) * 10 ** 9);
     return RuntimeArgs.fromMap({
-      amount: CLValueBuilder.u512(amount_in.toString()),
+      amount: CLValueBuilder.u512(amount),
       destination_entrypoint: CLValueBuilder.string(
         "swap_exact_cspr_for_tokens"
       ),
@@ -81,9 +83,9 @@ export function createRuntimeArgs(
           Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
         )
       ),
-      amount_in: CLValueBuilder.u256(amount_in.toString()),
+      amount_in: CLValueBuilder.u256(amount),
       amount_out_min: CLValueBuilder.u256(
-        //convertToStr(amount_out_min - (amount_out_min * 0.5) / 100)
+        //convertToStr(parseFloat(slippSwapToken) * 10 ** 9)
         convertToStr(10)
       ),
       path: new CLList(_paths),
@@ -170,9 +172,11 @@ export async function swapMakeDeploy(
   amount_out_min,
   tokenASymbol,
   tokenBSymbol,
-  slippage,
+  slippSwapToken,
   mainPurse,
-  axios
+  axios,
+  toastLoading,
+  countSetter
 ) {
   const publicKey = CLPublicKey.fromHex(publicKeyHex);
   let _paths = await getswapPath(tokenASymbol, tokenBSymbol, axios);
@@ -180,7 +184,7 @@ export async function swapMakeDeploy(
     amount_in,
     ROUTER_PACKAGE_HASH,
     amount_out_min,
-    slippage,
+    slippSwapToken,
     _paths,
     publicKey,
     mainPurse,
@@ -195,48 +199,69 @@ export async function swapMakeDeploy(
   );
 
   let signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);
-  let result = await putdeploy(signedDeploy);
+  toast.dismiss(toastLoading);
+  const toastLoadingg = toast.loading("Waiting for deployment...");
+
+  putdeploy(signedDeploy)
+    .then((x) => {
+      toast.dismiss(toastLoadingg);
+      toast.success("Transaction has been successfully deployed");
+      countSetter(count=>count+1)
+    })
+    .catch((err) => {
+      toast.dismiss(toastLoadingg);
+      toast.error("Oops we have an error! try again");
+    });
 }
 
-export function updateBalances(walletAddress,tokens,axios) {
-  Object.keys(tokens).map(x => {
+export function updateBalances(
+  walletAddress,
+  tokens,
+  axios,
+  tokenDispatch,
+  toastSuccess,
+  secondTokenSelected
+) {
+  Object.keys(tokens).map((x) => {
     if (tokens[`${x}`].contractHash.length > 0) {
       const param = {
         contractHash: tokens[`${x}`].contractHash.slice(5),
-        user: Buffer.from(CLPublicKey.fromHex(walletAddress).toAccountHash()).toString("hex")
-      }
+        user: Buffer.from(
+          CLPublicKey.fromHex(walletAddress).toAccountHash()
+        ).toString("hex"),
+      };
       axios
         .post(`${BASE_URL}/balanceagainstuser`, param)
         .then((res) => {
-          //console.log('balanceagainstuser', res)
-          console.log("resdata",res.data)
-          //holdArr[i].balance = res.data.balance;
-          // setTokenBBalance(res.data.balance)
-
+          const balance = parseInt(res.data.balance) / 10 ** 9;
+          tokenDispatch({
+            type: "LOAD_BALANCE_TOKEN",
+            payload: { name: x, data: balance },
+          });
+          if (x === secondTokenSelected.symbol) {
+            tokenDispatch({ type: "BALANCE_SECOND_TOKEN", payload: balance });
+          }
         })
         .catch((error) => {
-          console.log(error)
-          console.log(error.response)
-        })
+          console.log(error);
+          console.log(error.response);
+        });
     }
-
-  })
-
+  });
 }
 
-export async function getStatus(casperService,walletAddress,setMainPurse) {
+export async function getStatus(casperService, walletAddress, setMainPurse) {
   const stateRootHash = await casperService.getStateRootHash();
   const result = await casperService.getBlockState(
     stateRootHash,
     CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
     []
-  )
+  );
   setMainPurse(result.Account.mainPurse);
   const balance = await casperService.getAccountBalance(
     stateRootHash,
     result.Account.mainPurse
-  )
-  const real = balance / 10 ** 9
-  return real.toString()
-  
+  );
+  const real = balance / 10 ** 9;
+  return real.toString();
 }

@@ -19,8 +19,28 @@ import { ConfigModalHeader } from '../../molecules';
 import { SwapProviderContext } from '../../../contexts/SwapContext';
 import { torusLogin, torusLogout } from '../../../reducers/WalletReducers/functions';
 import { Signer } from 'casper-js-sdk'
-import { clientDispatcher, signerLogIn,getActivePublicKey } from '../../../reducers/WalletReducers/signerFunctions';
+import { clientDispatcher, signerLogIn, getActivePublicKey } from '../../../reducers/WalletReducers/signerFunctions';
 
+
+import styled from "styled-components";
+
+export const ButtonStyle = styled.button<any>`
+    color: ${props => props.theme.StrongColor};
+    background-color: ${props => props.theme.TertiaryColor};
+    width: 100%;
+    border-radius: 10px;
+    border:none;
+    box-shadow: 0 0 1rem .2rem rgba(0,0,0,.3);
+    overflow:hidden; 
+    white-space:nowrap; 
+    text-overflow: ellipsis;
+    &:hover{
+        cursor: pointer;
+    }
+    &:active{
+        background-color: ${props => props.theme.TertiaryColor2};
+    }
+    `
 export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
 
@@ -28,10 +48,12 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
     const { isUserLogged, walletAddress, slippageTolerance } = swapState
 
-    async function onConnect() {
-        await signerLogIn(Signer)
-        const walletAddress = await getActivePublicKey(Signer)
-        swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
+    function onConnect() {
+        Signer.getActivePublicKey().then((walletAddress) => {
+            swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
+        }).catch(err => {
+            Signer.sendConnectionRequest()
+        })
     }
 
     function onSetSlippage(slippage) {
@@ -71,9 +93,9 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                         </PillowDiv>
                         <PillowDiv>
                             Slippage Tolerance
-                            <p style={{ backgroundColor: `${slippageTolerance === "0.1" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.1") }} >0.1%</p>
-                            <p style={{ backgroundColor: `${slippageTolerance === "0.5" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.5") }} >0.5%</p>
-                            <p style={{ backgroundColor: `${slippageTolerance === "1.0" ? "red" : ""}` }} onClick={() => { onSetSlippage("1.0") }} >1.0%</p>
+                            <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "0.1" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.1") }} >0.1%</ButtonStyle>
+                            <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "0.5" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.5") }} >0.5%</ButtonStyle>
+                            <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "1.0" ? "red" : ""}` }} onClick={() => { onSetSlippage("1.0") }} >1.0%</ButtonStyle>
                         </PillowDiv>
                         <PillowDiv>
                             Transaction Speed

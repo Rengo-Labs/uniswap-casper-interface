@@ -1,9 +1,9 @@
-import { CasperServiceByJsonRPC } from "casper-js-sdk";
+import { CasperServiceByJsonRPC,Signer} from "casper-js-sdk";
 import { NODE_ADDRESS } from "../../constant";
 
 export async function signerLogIn(signer) {
   try {
-    await signer.sendConnectionRequest();
+    await Signer.sendConnectionRequest();
   } catch (error) {
     console.log("sendConnectionRequest", error);
   }

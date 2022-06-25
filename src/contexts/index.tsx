@@ -8,27 +8,28 @@ import { InitialContext } from './InitialContext'
 import { TorusContext } from './TorusContext'
 import { SwapContext } from './SwapContext'
 import { NotificationContext } from './NotificationContext'
+import { Toaster } from 'react-hot-toast';
 
 export const BigContext = ({ children }: { children: ReactNode }) => {
     return (
-        <NotificationContext>
-            <SwapContext>
-                <TorusContext>
-                    <InitialContext>
-                        <ThemeContext>
-                            <TokensContext2>
-                                <PoolsContext>
-                                    <LiquidityContext>
-                                        <TokensContext>
-                                            {children}
-                                        </TokensContext>
-                                    </LiquidityContext>
-                                </PoolsContext>
-                            </TokensContext2>
-                        </ThemeContext>
-                    </InitialContext>
-                </TorusContext>
-            </SwapContext>
-        </NotificationContext>
+
+        <SwapContext>
+            <Toaster />
+            <TorusContext>
+                <InitialContext>
+                    <ThemeContext>
+                        <TokensContext2>
+                            <PoolsContext>
+                                <LiquidityContext>
+                                    <TokensContext>
+                                        {children}
+                                    </TokensContext>
+                                </LiquidityContext>
+                            </PoolsContext>
+                        </TokensContext2>
+                    </ThemeContext>
+                </InitialContext>
+            </TorusContext>
+        </SwapContext>
     )
 }

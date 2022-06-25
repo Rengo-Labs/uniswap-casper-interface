@@ -25,6 +25,10 @@ import { clientDispatcher, getActivePublicKey, signerLogIn } from '../../../redu
 import { getStatus, swapMakeDeploy, updateBalances } from '../../../commons/swap'
 import { BASE_URL, DEADLINE, PAYMENT_AMOUNT } from '../../../constant'
 //const casperService = new CasperServiceByJsonRPC(torus?.provider);
+import toast from 'react-hot-toast';
+const errorToast = (msg) => toast.error(msg);
+const successToast = (msg) => toast.success(msg);
+const loadingToast = (msg) => toast.loading(msg);
 
 
 export const Swap = () => {
@@ -35,7 +39,7 @@ export const Swap = () => {
   const [activeModalSwap, setActiveModalSwap] = React.useState(false)
   const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
   const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
-
+  const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
   }
@@ -47,36 +51,48 @@ export const Swap = () => {
   const { swapState, swapDispatch } = useContext(SwapProviderContext)
   const { isUserLogged, walletAddress, casperService, slippageTolerance } = swapState
   let [mainPurse, setMainPurse] = useState();
+  let [count, countSetter] = useState(0);
 
-
+  let balanceLoad;
   useEffect(() => {
     getStatus(casperService, walletAddress, setMainPurse)
       .then(balance => {
         tokenDispatch({ type: 'LOAD_BALANCE', payload: { name: "CSPR", data: balance } })
+        toast.dismiss(balanceLoad)
+        successToast("Balance load successfully")
+        updateBalances(walletAddress, tokens, axios, tokenDispatch, successToast, secondTokenSelected)
       })
       .catch(err => console.log)
-  }, [casperService])
+  }, [casperService,count])
 
-  async function onConnect() {
-    await signerLogIn(Signer)
-    const walletAddress = await getActivePublicKey(Signer)
-    updateBalances(walletAddress, tokens, axios)
-    swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
+  function onConnect() {
+    Signer.getActivePublicKey().then((walletAddress) => {
+      updateBalances(walletAddress, tokens, axios, tokenDispatch, successToast, secondTokenSelected)
+      swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
+      successToast("Wallet is connected")
+      balanceLoad = loadingToast("Your balance will be load...")
+    }).catch(err => {
+      errorToast("Allow the site or unlock your wallet first!")
+      Signer.sendConnectionRequest()
+    })
   }
 
 
 
   async function onConfirmSwap() {
+    const toastLoading = loadingToast("Waiting for confirmation...")
     const algo = await swapMakeDeploy(walletAddress,
       DEADLINE,
       10_000_000_000,
-      11_000_000_000,
-      10_000_000_000,
+      amoutSwapTokenA,
+      amoutSwapTokenB,
       firstTokenSelected.symbolPair,
       secondTokenSelected.symbolPair,
-      0.5,
+      slippSwapToken,
       mainPurse,
-      axios);
+      axios,
+      toastLoading,
+      countSetter);
     setActiveModalSwap(false);
   }
 
@@ -88,7 +104,10 @@ export const Swap = () => {
       ]
     }).then(response => {
       if (response.data.success) {
-        amoutSwapTokenBSetter(value * parseFloat(response.data.reserve0))
+        const tokenB = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 5))
+        const slip = (tokenB - (tokenB * 0.5) / 100).toString().slice(0, 5)
+        amoutSwapTokenBSetter(tokenB)
+        slippSwapTokenSetter(slip)
       }
     })
   }
@@ -97,7 +116,6 @@ export const Swap = () => {
     amoutSwapTokenASetter(value)
     calculateReserves(value)
   }
-
 
   return (
     <BasicLayout>
@@ -184,10 +202,11 @@ export const Swap = () => {
                   </CloseButtonAtom>
                 </SwapHeaderAtom>
                 <SwapConfirmAtom
-                firstTokenSelected={firstTokenSelected}
-                secondTokenSelected={secondTokenSelected}
-                amoutSwapTokenA={amoutSwapTokenA}
-                amoutSwapTokenB={amoutSwapTokenB}
+                  firstTokenSelected={firstTokenSelected}
+                  secondTokenSelected={secondTokenSelected}
+                  amoutSwapTokenA={amoutSwapTokenA}
+                  amoutSwapTokenB={amoutSwapTokenB}
+                  slippSwapToken={slippSwapToken}
                 >
                   <ConfirmSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
                 </SwapConfirmAtom>

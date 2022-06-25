@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Home, Swap, Pools, Tokens, Liquidity } from './components/pages'
 import { BigContext } from './contexts';
-
 const root = ReactDOM.createRoot(
   document.getElementById('root')
 );

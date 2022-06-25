@@ -97,7 +97,7 @@ export const initialStateToken = {
       "hash-03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
     logoURI: "https://www.gemini.com/images/currencies/icons/default/eth.svg",
     amount: "0.0000",
-  }
+  },
 };
 
 export function TokenReducer(state, action) {
@@ -111,7 +111,23 @@ export function TokenReducer(state, action) {
       return { ...state, firstTokenSelected: action.payload };
     case "SELECT_SECOND_TOKEN":
       return { ...state, secondTokenSelected: action.payload };
+    case "BALANCE_SECOND_TOKEN":
+      return {
+        ...state,
+        secondTokenSelected: {
+          ...state.secondTokenSelected,
+          amount: action.payload,
+        },
+      };
     case "LOAD_BALANCE":
+      return {
+        ...state,
+        firstTokenSelected: {
+          ...state.tokens[action.payload.name],
+          amount: action.payload.data,
+        },
+      };
+    case "LOAD_BALANCE_TOKEN":
       return {
         ...state,
         tokens: {
@@ -120,11 +136,7 @@ export function TokenReducer(state, action) {
             ...state.tokens[action.payload.name],
             amount: action.payload.data,
           },
-        },
-        firstTokenSelected: {
-          ...state.tokens[action.payload.name],
-          amount: action.payload.data,
-        },
+        }
       };
     case "SWITCH_TOKENS":
       return {
