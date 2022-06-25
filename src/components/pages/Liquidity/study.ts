@@ -119,7 +119,7 @@ function createRuntimeeArgsPool(
     ),
   });
 }
-async function addLiquidityMakeDeploy(
+export async function addLiquidityMakeDeploy(
   axios,
   activePublicKey,
   tokenA,

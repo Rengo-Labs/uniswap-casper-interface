@@ -3,6 +3,6 @@ import { CloseButtonStyled } from './styles'
 
 export const CloseButtonAtom = ({ children, onClick }: { children: ReactNode, onClick: () => void }) => {
     return (
-        <CloseButtonStyled onClick={onClick}>{children}</CloseButtonStyled>
+        <CloseButtonStyled onClick={()=>onClick()}>{children}</CloseButtonStyled>
     )
 }
