@@ -21,8 +21,11 @@ import { torusLogin, torusLogout } from '../../../reducers/WalletReducers/functi
 import { Signer } from 'casper-js-sdk'
 import { clientDispatcher, signerLogIn, getActivePublicKey } from '../../../reducers/WalletReducers/signerFunctions';
 
+import Torus from "@toruslabs/casper-embed";
+
 
 import styled from "styled-components";
+import { CHAINS, SUPPORTED_NETWORKS } from '../../../constant';
 
 export const ButtonStyle = styled.button<any>`
     color: ${props => props.theme.StrongColor};
@@ -43,11 +46,20 @@ export const ButtonStyle = styled.button<any>`
     `
 export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
-
     const [openModal, openModalSet] = useAtom(setConfig)
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
     const { isUserLogged, walletAddress, slippageTolerance } = swapState
-
+    const [walletSelect, walletSelectSetter] = useState('casper')
+    let torus;
+    function switchWallet(walletName) {
+        if (walletName === 'torus') {
+            //Signer.forceDisconnect()
+            walletSelectSetter(walletName)
+        } else {
+            //torus?.logout()
+            walletSelectSetter(walletName)
+        }
+    }
     function onConnect() {
         Signer.getActivePublicKey().then((walletAddress) => {
             swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
@@ -56,13 +68,31 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
         })
     }
 
+    async function onConnectTorus() {
+        try {
+            torus = new Torus();
+            await torus.init({
+                buildEnv: "testing",
+                showTorusButton: true,
+                network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+            });
+            const loginaccs = await torus?.login();
+        } catch (error) {
+            console.error(error);
+            await torus?.clearInit();
+            let variant = "Error";
+        }
+    }
+
     function onSetSlippage(slippage) {
         swapDispatch({ type: 'SLIPPAGE_TOLERANCE_SETTER', payload: { slippageTolerance: slippage } })
     }
 
-
-
     function onDisconnect() {
+        swapDispatch({ type: 'LOGOUT' })
+    }
+    function onDisconnectTorus() {
+        torus?.logout()
         swapDispatch({ type: 'LOGOUT' })
     }
 
@@ -72,7 +102,8 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                 <ContentStyled>
                     <ConfigModalHeader>
                         <AiOutlineUser />
-                        <ButtonConnection isConnected={isUserLogged} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                        {walletSelect === 'casper' && <ButtonConnection isConnected={isUserLogged} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />}
+                        {walletSelect === 'torus' && <ButtonConnection isConnected={isUserLogged} onConnect={onConnectTorus} onDisconnect={onDisconnectTorus} Account={walletAddress} />}
                         <ButtonClose onClickHandler={openModalSet}>
                             <AiOutlineCloseCircle />
                         </ButtonClose>
@@ -80,9 +111,13 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                     <ConfigModalBody>
                         <h1>Settings</h1>
                         <PillowDiv>
-                            <WalletSelectionDiv walletSelected={"walletSelected"} >
+                            <WalletSelectionDiv walletSelected={"walletSelected"} onClick={() => { switchWallet("casper") }}>
                                 <WalletSelectionImageStyled src={casperWallet} alt="" />
                                 <h2>Signer Wallet</h2>
+                            </WalletSelectionDiv>
+                            <WalletSelectionDiv walletSelected={"walletSelected"} onClick={() => { switchWallet("torus") }}>
+                                <WalletSelectionImageStyled src={torusWallet} alt="" />
+                                <h2>Torus Wallet</h2>
                             </WalletSelectionDiv>
                         </PillowDiv>
                         <PillowDiv>
@@ -104,7 +139,7 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                     <ConfigModalBody>
                         <h1>Favorites</h1>
                         <PillowDiv>
-                            <WalletSelectionDiv walletSelected={"walletSelected"} >
+                            <WalletSelectionDiv walletSelected={"walletSelected"} onClick={() => { switchWallet("casper") }}>
                                 <WalletSelectionImageStyled src={casperWallet} alt="" />
                                 <h2>Casper</h2>
                             </WalletSelectionDiv>
