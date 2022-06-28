@@ -9,14 +9,15 @@ import { SearchInputAtom } from '../../atoms/SearchInputAtom'
 import { SwapTokens } from '../../molecules'
 import casprIcon from '../../../assets/swapIcons/casprIcon.png'
 import { TokensProviderContext } from '../../../contexts/TokensContext'
-import { getStatus, updateBalances } from '../../../commons/swap'
+import { getStatus, putdeploy, signdeploywithcaspersigner, updateBalances } from '../../../commons/swap'
 import { SwapProviderContext } from '../../../contexts/SwapContext'
-import { Signer } from 'casper-js-sdk'
+import { CasperServiceByJsonRPC, Signer } from 'casper-js-sdk'
 import axios from 'axios'
 import toast from 'react-hot-toast';
 import { clientDispatcher } from '../../../reducers/WalletReducers/signerFunctions'
 import { addLiquidityMakeDeploy } from '../../pages/Liquidity/study'
-import { BASE_URL, ROUTER_PACKAGE_HASH } from '../../../constant'
+import { BASE_URL, CHAINS, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../../../constant'
+import Torus from '@toruslabs/casper-embed'
 
 const errorToast = (msg) => toast.error(msg);
 const successToast = (msg) => toast.success(msg);
@@ -39,7 +40,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
     const { isUserLogged, walletAddress, casperService, slippageTolerance } = swapState
-
+    let torus;
 
     const handleModalPrimary = () => {
         setActiveModalPrimary(!activeModalPrimary)
@@ -63,9 +64,9 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         })
     }
 
-    function onLiquidiy() {
+    async function onLiquidiy() {
         const toastLoading = loadingToast("Waiting for confirmation...")
-        addLiquidityMakeDeploy(
+        const deploy = addLiquidityMakeDeploy(
             axios,
             walletAddress,
             firstTokenSelected,
@@ -79,6 +80,43 @@ export const LiquidityModule = ({ tokenOne }: any) => {
             toastLoading,
             casperService
         )
+        let signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress);
+        let result = await putdeploy(signedDeploy);
+        countSetter((c) => c + 1);
+        toast.dismiss(toastLoading);
+
+    }
+
+    async function onLiquitityTorus() {
+        const toastLoading = loadingToast("Waiting for confirmation...")
+        torus = new Torus();
+        console.log("torus", torus);
+        await torus.init({
+            buildEnv: "testing",
+            showTorusButton: true,
+            network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+        });
+        console.log("Torus123", torus);
+        console.log("torus", torus.provider);
+        const casperService = new CasperServiceByJsonRPC(torus?.provider);
+        const deploy = addLiquidityMakeDeploy(
+            axios,
+            walletAddress,
+            firstTokenSelected,
+            secondTokenSelected,
+            10,
+            10,
+            slippageTolerance,
+            mainPurse,
+            ROUTER_PACKAGE_HASH,
+            countSetter,
+            toastLoading,
+            casperService
+        )
+        const deployRes = await casperService.deploy(deploy);
+        console.log("deployRes", deployRes.deploy_hash);
+        countSetter((c) => c + 1);
+        toast.dismiss(toastLoading);
     }
 
     async function calculateReserves(value) {
