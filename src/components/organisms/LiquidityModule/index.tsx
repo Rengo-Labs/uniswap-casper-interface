@@ -16,6 +16,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast';
 import { clientDispatcher } from '../../../reducers/WalletReducers/signerFunctions'
 import { addLiquidityMakeDeploy } from '../../pages/Liquidity/study'
+import { BASE_URL, ROUTER_PACKAGE_HASH } from '../../../constant'
 
 const errorToast = (msg) => toast.error(msg);
 const successToast = (msg) => toast.success(msg);
@@ -29,6 +30,9 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     let [mainPurse, setMainPurse] = useState();
     let [count, countSetter] = useState(0);
     const [activeModalSwap, setActiveModalSwap] = useState(false)
+    const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
+    const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
+    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
 
 
     const { tokenState, tokenDispatch } = useContext(TokensProviderContext)
@@ -59,9 +63,40 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         })
     }
 
-    function onLiquidiy(){
-        addLiquidityMakeDeploy(axios,walletAddress,firstTokenSelected,secondTokenSelected,10,10,slippageTolerance,mainPurse,)
+    function onLiquidiy() {
+        const toastLoading = loadingToast("Waiting for confirmation...")
+        addLiquidityMakeDeploy(
+            axios,
+            walletAddress,
+            firstTokenSelected,
+            secondTokenSelected,
+            10,
+            10,
+            slippageTolerance,
+            mainPurse,
+            ROUTER_PACKAGE_HASH,
+            countSetter,
+            toastLoading,
+            casperService
+        )
     }
+
+    async function calculateReserves(value) {
+        axios.post(`${BASE_URL}/getpathreserves`, {
+            path: [
+                firstTokenSelected.symbolPair,
+                secondTokenSelected.symbolPair,
+            ]
+        }).then(response => {
+            if (response.data.success) {
+                const tokenB = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 5))
+                const slip = (tokenB - (tokenB * 0.5) / 100).toString().slice(0, 5)
+                amoutSwapTokenBSetter(tokenB)
+                slippSwapTokenSetter(slip)
+            }
+        })
+    }
+
     useEffect(() => {
         getStatus(casperService, walletAddress, setMainPurse)
             .then(balance => {
@@ -72,11 +107,16 @@ export const LiquidityModule = ({ tokenOne }: any) => {
             })
             .catch(err => console.log)
     }, [casperService, count])
+    function onChangeValueToken(value) {
+        amoutSwapTokenASetter(value)
+        calculateReserves(value)
+    }
 
     return (
         <SwapModulesStyled>
             <SwapContainer>
                 <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
+                <SwapTokenBalance token={firstTokenSelected} amoutSwapTokenSetter={onChangeValueToken} />
                 {/*<SwapTokenBalance token={primaryToken} />*/}
             </SwapContainer>
             {
@@ -109,6 +149,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
             <SwitchIcon switchHandler={switchTokens} />
             <SwapContainer>
                 <SwapTokenSelect onClickHandler={() => { handleModalSecondary() }} token={secondTokenSelected}></SwapTokenSelect>
+                <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} amoutSwapToken={amoutSwapTokenB} />
+
                 {/*<SwapTokenBalance token={primaryToken} />*/}
 
             </SwapContainer>
@@ -139,7 +181,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
             }
             {!isUserLogged && <SwapButton content="Connect to Wallet" handler={() => { onConnect() }} />}
             {isUserLogged && <p>Slippage Tolerance: {slippageTolerance}%</p>}
-            {isUserLogged && <SwapButton content="Add Liquidity" handler={async () => { setActiveModalSwap(true) }} />}
+            {isUserLogged && <SwapButton content="Add Liquidity" handler={async () => { onLiquidiy(); setActiveModalSwap(true) }} />}
         </SwapModulesStyled>
     )
 }

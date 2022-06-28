@@ -11,8 +11,13 @@ import {
   Signer,
 } from "casper-js-sdk";
 import { createRecipientAddress } from "../../../commons/swap";
-import { NODE_ADDRESS, ROUTER_CONTRACT_HASH } from "../../../constant";
+import {
+  BASE_URL,
+  NODE_ADDRESS,
+  ROUTER_CONTRACT_HASH,
+} from "../../../constant";
 import { Some } from "ts-results";
+import toast from "react-hot-toast";
 
 function convertToStr(a) {
   return a.toString();
@@ -21,29 +26,33 @@ function convertToStr(a) {
 async function putdeploy(signedDeploy) {
   // Dispatch deploy to node.
   const client = new CasperClient(NODE_ADDRESS);
-  const installDeployHash = await client.putDeploy(signedDeploy);
-  console.log(`... Contract installation deployHash: ${installDeployHash}`);
-  const result = await getDeploy(NODE_ADDRESS, installDeployHash);
-  console.log(
-    `... Contract installed successfully.`,
-    JSON.parse(JSON.stringify(result))
-  );
-  return installDeployHash;
+  let installDeployHash1;
+  client
+    .putDeploy(signedDeploy)
+    .then((installDeployHash) => {
+      installDeployHash1 = installDeployHash;
+      return getDeploy(installDeployHash, client);
+    })
+    .then((result) => {
+      console.log("result", result);
+      console.log(JSON.parse(JSON.stringify(result)));
+      return installDeployHash1;
+    })
+    .catch((e) => console.log(e));
 }
 
-async function getDeploy(NODE_URL, deployHash) {
-  const client = new CasperClient(NODE_URL);
-  let i = 1000;
-  while (i !== 0) {
-    const [deploy, raw] = await client.getDeploy(deployHash);
-    if (raw.execution_results.length !== 0) {
-      // @ts-ignore
-      if (raw.execution_results[0].result.Success) {
-        return deploy;
+function getDeploy(deployHash, client) {
+  return client
+    .getDeploy(deployHash)
+    .then(([deploy, raw]) => {
+      if (raw.execution_results.length !== 0) {
+        if (raw.execution_results[0].result.Success) {
+          return deploy;
+        }
       }
-    }
-  }
-  throw Error("Timeout after " + i + "s. Something's wrong");
+      return deploy;
+    })
+    .catch((e) => e);
 }
 
 async function signdeploywithcaspersigner(deploy, publicKeyHex) {
@@ -63,7 +72,7 @@ async function signdeploywithcaspersigner(deploy, publicKeyHex) {
 }
 
 async function makeDeployWasm(publicKey, runtimeArgs, paymentAmount, axios) {
-  let wasmData = await axios.get("/getWasmData");
+  let wasmData = await axios.get(`${BASE_URL}/getWasmData`);
   console.log("wasmData.data.wasmData", wasmData.data.wasmData.data);
   console.log(
     "new Uint8Array(wasmData.data.wasmData.data)",
@@ -91,22 +100,16 @@ function createRuntimeeArgsPool(
   pair,
   ROUTER_PACKAGE_HASH
 ) {
+  const tokenA = 10_000_000_000;
+  const tokenB = 10_000_000_000;
   return RuntimeArgs.fromMap({
-    amount: CLValueBuilder.u512(convertToStr(token_AAmount)),
+    amount: CLValueBuilder.u512(convertToStr(tokenA)),
     destination_entrypoint: CLValueBuilder.string("add_liquidity_cspr"),
     token: new CLKey(_token_b),
-    amount_cspr_desired: CLValueBuilder.u256(convertToStr(token_AAmount)),
-    amount_token_desired: CLValueBuilder.u256(convertToStr(token_BAmount)),
-    amount_cspr_min: CLValueBuilder.u256(
-      convertToStr(
-        Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9)
-      )
-    ),
-    amount_token_min: CLValueBuilder.u256(
-      convertToStr(
-        Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9)
-      )
-    ),
+    amount_cspr_desired: CLValueBuilder.u256(convertToStr(tokenA)),
+    amount_token_desired: CLValueBuilder.u256(convertToStr(tokenB)),
+    amount_cspr_min: CLValueBuilder.u256(convertToStr(10)),
+    amount_token_min: CLValueBuilder.u256(convertToStr(10)),
     to: createRecipientAddress(publicKey),
     purse: CLValueBuilder.uref(
       Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
@@ -128,13 +131,14 @@ export async function addLiquidityMakeDeploy(
   tokenBAmount,
   slippage,
   mainPurse,
-  ROUTER_PACKAGE_HASH
+  ROUTER_PACKAGE_HASH,
+  countSetter,
+  toastLoading,
+  casperService
 ) {
   const publicKeyHex = activePublicKey;
   const selectedWallet = "Casper";
   const publicKey = CLPublicKey.fromHex(publicKeyHex);
-  const caller = ROUTER_CONTRACT_HASH;
-  const tokenAAddress = tokenA?.packageHash;
   const tokenBAddress = tokenB?.packageHash;
   const token_AAmount = tokenAAmount;
   const token_BAmount = tokenBAmount;
@@ -158,7 +162,6 @@ export async function addLiquidityMakeDeploy(
     pair,
     ROUTER_PACKAGE_HASH
   );
-  // Set contract installation deploy (unsigned).
   let deploy = await makeDeployWasm(
     publicKey,
     runtimeArgs,
@@ -168,5 +171,7 @@ export async function addLiquidityMakeDeploy(
   if (selectedWallet === "Casper") {
     let signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);
     let result = await putdeploy(signedDeploy);
+    countSetter((c) => c + 1);
+    toast.dismiss(toastLoading);
   }
 }

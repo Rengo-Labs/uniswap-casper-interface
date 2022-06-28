@@ -13,9 +13,6 @@ export const Liquidity = () => {
       <CardContainer cardTitle="Add Liquidity">
         <LiquidityModule />
       </CardContainer >
-      <CardContainer cardTitle="Your Liquidity">
-        <LiquidityBox />
-      </CardContainer >
     </BasicLayout>
   )
 }
