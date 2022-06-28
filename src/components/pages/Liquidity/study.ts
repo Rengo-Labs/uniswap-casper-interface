@@ -162,16 +162,11 @@ export async function addLiquidityMakeDeploy(
     pair,
     ROUTER_PACKAGE_HASH
   );
-  let deploy = await makeDeployWasm(
+  let deploy = makeDeployWasm(
     publicKey,
     runtimeArgs,
     paymentAmount,
     axios
   );
-  if (selectedWallet === "Casper") {
-    let signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);
-    let result = await putdeploy(signedDeploy);
-    countSetter((c) => c + 1);
-    toast.dismiss(toastLoading);
-  }
+  return deploy;
 }
