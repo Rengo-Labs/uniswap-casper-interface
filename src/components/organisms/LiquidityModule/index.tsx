@@ -66,7 +66,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
 
     async function onLiquidiy() {
         const toastLoading = loadingToast("Waiting for confirmation...")
-        const deploy = addLiquidityMakeDeploy(
+        const deploy = await addLiquidityMakeDeploy(
             axios,
             walletAddress,
             firstTokenSelected,
@@ -113,8 +113,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
             toastLoading,
             casperService
         )
-        const deployRes = await casperService.deploy(deploy);
-        console.log("deployRes", deployRes.deploy_hash);
+        //const deployRes = await casperService.deploy(deploy);
+        //console.log("deployRes", deployRes.deploy_hash);
         countSetter((c) => c + 1);
         toast.dismiss(toastLoading);
     }

@@ -74,10 +74,6 @@ async function signdeploywithcaspersigner(deploy, publicKeyHex) {
 async function makeDeployWasm(publicKey, runtimeArgs, paymentAmount, axios) {
   let wasmData = await axios.get(`${BASE_URL}/getWasmData`);
   console.log("wasmData.data.wasmData", wasmData.data.wasmData.data);
-  console.log(
-    "new Uint8Array(wasmData.data.wasmData.data)",
-    new Uint8Array(wasmData.data.wasmData.data)
-  );
   let deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
     DeployUtil.ExecutableDeployItem.newModuleBytes(
