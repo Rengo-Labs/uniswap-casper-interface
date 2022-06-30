@@ -2,7 +2,7 @@ import Torus from "@toruslabs/casper-embed";
 import { Signer } from "casper-js-sdk";
 import { CHAINS, SUPPORTED_NETWORKS } from "../../constant";
 
-enum ActiveWallet {
+export enum ActiveWallet {
   CASPER = "casper",
   TORUS = "torus",
 }
@@ -13,6 +13,7 @@ export class WalletController {
   walletAddress;
   constructor() {}
   switchWallet() {
+    console.log("switchWallet",this.activeWallet)
     if (this.activeWallet === ActiveWallet.CASPER) {
       this.activeWallet = ActiveWallet.TORUS;
     } else {
