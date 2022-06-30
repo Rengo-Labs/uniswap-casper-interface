@@ -26,6 +26,7 @@ import Torus from "@toruslabs/casper-embed";
 
 import styled from "styled-components";
 import { CHAINS, SUPPORTED_NETWORKS } from '../../../constant';
+import { WalletController } from '../../../commons';
 
 export const ButtonStyle = styled.button<any>`
     color: ${props => props.theme.StrongColor};
@@ -50,49 +51,24 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
     const { isUserLogged, walletAddress, slippageTolerance } = swapState
     const [walletSelect, walletSelectSetter] = useState('casper')
+    const walletSelector = new WalletController()
     let torus;
     function switchWallet(walletName) {
-        if (walletName === 'torus') {
-            //Signer.forceDisconnect()
-            walletSelectSetter(walletName)
-        } else {
-            //torus?.logout()
-            walletSelectSetter(walletName)
-        }
-    }
-    function onConnect() {
-        Signer.getActivePublicKey().then((walletAddress) => {
-            swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-        }).catch(err => {
-            Signer.sendConnectionRequest()
-        })
-    }
 
-    async function onConnectTorus() {
-        try {
-            torus = new Torus();
-            await torus.init({
-                buildEnv: "testing",
-                showTorusButton: true,
-                network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-            });
-            const loginaccs = await torus?.login();
-        } catch (error) {
-            console.error(error);
-            await torus?.clearInit();
-            let variant = "Error";
-        }
+        walletSelector.switchWallet()
+    }
+    async function onConnect() {
+        const walletAddress = await walletSelector.connect()
+        swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
+
     }
 
     function onSetSlippage(slippage) {
         swapDispatch({ type: 'SLIPPAGE_TOLERANCE_SETTER', payload: { slippageTolerance: slippage } })
     }
 
-    function onDisconnect() {
-        swapDispatch({ type: 'LOGOUT' })
-    }
-    function onDisconnectTorus() {
-        torus?.logout()
+    async function onDisconnect() {
+        await walletSelector.disconnect()
         swapDispatch({ type: 'LOGOUT' })
     }
 
@@ -102,8 +78,7 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                 <ContentStyled>
                     <ConfigModalHeader>
                         <AiOutlineUser />
-                        {walletSelect === 'casper' && <ButtonConnection isConnected={isUserLogged} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />}
-                        {walletSelect === 'torus' && <ButtonConnection isConnected={isUserLogged} onConnect={onConnectTorus} onDisconnect={onDisconnectTorus} Account={walletAddress} />}
+                        <ButtonConnection isConnected={isUserLogged} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
                         <ButtonClose onClickHandler={openModalSet}>
                             <AiOutlineCloseCircle />
                         </ButtonClose>
