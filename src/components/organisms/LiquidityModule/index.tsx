@@ -18,6 +18,7 @@ import { clientDispatcher } from '../../../reducers/WalletReducers/signerFunctio
 import { addLiquidityMakeDeploy } from '../../pages/Liquidity/study'
 import { BASE_URL, CHAINS, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../../../constant'
 import Torus from '@toruslabs/casper-embed'
+import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 
 const errorToast = (msg) => toast.error(msg);
 const successToast = (msg) => toast.success(msg);
@@ -52,16 +53,19 @@ export const LiquidityModule = ({ tokenOne }: any) => {
 
     }
     let balanceLoad;
+    const { onConnectConfig, configState } = useContext(ConfigProviderContext)
+
     function onConnect() {
-        Signer.getActivePublicKey().then((walletAddress) => {
-            updateBalances(walletAddress, tokens, axios, tokenDispatch, successToast, secondTokenSelected)
-            swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-            successToast("Wallet is connected")
-            balanceLoad = loadingToast("Your balance will be load...")
-        }).catch(err => {
-            errorToast("Allow the site or unlock your wallet first!")
-            Signer.sendConnectionRequest()
-        })
+        onConnectConfig()
+        // Signer.getActivePublicKey().then((walletAddress) => {
+        //     updateBalances(walletAddress, tokens, axios, tokenDispatch, successToast, secondTokenSelected)
+        //     swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
+        //     successToast("Wallet is connected")
+        //     balanceLoad = loadingToast("Your balance will be load...")
+        // }).catch(err => {
+        //     errorToast("Allow the site or unlock your wallet first!")
+        //     Signer.sendConnectionRequest()
+        // })
     }
 
     async function onLiquidiy() {
@@ -135,16 +139,6 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         })
     }
 
-    useEffect(() => {
-        getStatus(casperService, walletAddress, setMainPurse)
-            .then(balance => {
-                tokenDispatch({ type: 'LOAD_BALANCE', payload: { name: "CSPR", data: balance } })
-                toast.dismiss(balanceLoad)
-                successToast("Balance load successfully")
-                updateBalances(walletAddress, tokens, axios, tokenDispatch, successToast, secondTokenSelected)
-            })
-            .catch(err => console.log)
-    }, [casperService, count])
     function onChangeValueToken(value) {
         amoutSwapTokenASetter(value)
         calculateReserves(value)

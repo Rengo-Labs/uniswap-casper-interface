@@ -1,1 +1,1 @@
-export {initialConfigState,ConfigReducer} from './ConfigReducers';
+export {initialConfigState,ConfigReducer,ConfigActions} from './ConfigReducers';

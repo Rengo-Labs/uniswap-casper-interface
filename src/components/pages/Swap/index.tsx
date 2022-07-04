@@ -20,12 +20,11 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
-import { clientDispatcher, getActivePublicKey, signerLogIn } from '../../../reducers/WalletReducers/signerFunctions'
 import { getStatus, swapMakeDeploy, updateBalances } from '../../../commons/swap'
 import { BASE_URL, DEADLINE, PAYMENT_AMOUNT } from '../../../constant'
-//const casperService = new CasperServiceByJsonRPC(torus?.provider);
 import toast from 'react-hot-toast';
+
+import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 const errorToast = (msg) => toast.error(msg);
 const successToast = (msg) => toast.success(msg);
 const loadingToast = (msg) => toast.loading(msg);
@@ -46,54 +45,44 @@ export const Swap = () => {
   const handleModalSecondary = () => {
     setActiveModalSecondary(!activeModalSecondary)
   }
-  const { tokenState, tokenDispatch } = useContext(TokensProviderContext)
-  const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
   const { swapState, swapDispatch } = useContext(SwapProviderContext)
-  const { isUserLogged, walletAddress, casperService, slippageTolerance } = swapState
+  const { walletAddress, casperService, slippageTolerance } = swapState
   let [mainPurse, setMainPurse] = useState();
   let [count, countSetter] = useState(0);
-
-  let balanceLoad;
-  useEffect(() => {
-    getStatus(casperService, walletAddress, setMainPurse)
-      .then(balance => {
-        tokenDispatch({ type: 'LOAD_BALANCE', payload: { name: "CSPR", data: balance } })
-        toast.dismiss(balanceLoad)
-        successToast("Balance load successfully")
-        updateBalances(walletAddress, tokens, axios, tokenDispatch, successToast, secondTokenSelected)
-      })
-      .catch(err => console.log)
-  }, [casperService,count])
+  const {
+    onConnectConfig,
+    configState,
+    tokenState,
+    onSelectFirstToken,
+    onSelectSecondToken,
+    onSwitchTokens,
+    tokens,
+    firstTokenSelected,
+    secondTokenSelected,
+    isConnected,
+    onConfirmSwapConfig } = useContext(ConfigProviderContext)
 
   function onConnect() {
-    Signer.getActivePublicKey().then((walletAddress) => {
-      updateBalances(walletAddress, tokens, axios, tokenDispatch, successToast, secondTokenSelected)
-      swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-      successToast("Wallet is connected")
-      balanceLoad = loadingToast("Your balance will be load...")
-    }).catch(err => {
-      errorToast("Allow the site or unlock your wallet first!")
-      Signer.sendConnectionRequest()
-    })
+    onConnectConfig()
   }
 
-
-
   async function onConfirmSwap() {
-    const toastLoading = loadingToast("Waiting for confirmation...")
-    const algo = await swapMakeDeploy(walletAddress,
-      DEADLINE,
-      10_000_000_000,
-      amoutSwapTokenA,
-      amoutSwapTokenB,
-      firstTokenSelected.symbolPair,
-      secondTokenSelected.symbolPair,
-      slippSwapToken,
-      mainPurse,
-      axios,
-      toastLoading,
-      countSetter);
+    const waiting = await onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB)
+    amoutSwapTokenASetter(0)
     setActiveModalSwap(false);
+    // const algo = await swapMakeDeploy(walletAddress,
+    //   DEADLINE,
+    //   10_000_000_000,
+    //   amoutSwapTokenA,
+    //   amoutSwapTokenB,
+    //   firstTokenSelected.symbolPair,
+    //   secondTokenSelected.symbolPair,
+    //   slippSwapToken,
+    //   mainPurse,
+    //   axios,
+    //   toastLoading
+    // );
+
   }
 
   async function calculateReserves(value) {
@@ -144,7 +133,7 @@ export const Swap = () => {
                   {
                     Object.keys(tokens)
                       .map((key) => {
-                        const handleToken = () => { tokenDispatch({ type: 'SELECT_FIRST_TOKEN', payload: tokens[key] }), handleModalPrimary() }
+                        const handleToken = () => { onSelectFirstToken(tokens[key]), handleModalPrimary() }
 
                         return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
                       })
@@ -154,7 +143,7 @@ export const Swap = () => {
               </SwapContainerAtom>
             </SwapModal>
           }
-          <SwitchIcon switchHandler={tokenDispatch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
+          <SwitchIcon switchHandler={onSwitchTokens} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
             <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} amoutSwapToken={amoutSwapTokenB} />
@@ -180,7 +169,7 @@ export const Swap = () => {
                       .map((key) => {
                         const filter = new RegExp(firstTokenSelected.symbol)
                         if (filter.test(key)) { return }
-                        const handleToken = () => { tokenDispatch({ type: 'SELECT_SECOND_TOKEN', payload: tokens[key] }), handleModalSecondary() }
+                        const handleToken = () => { onSelectSecondToken(tokens[key]), handleModalSecondary() }
                         return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
                       })
                   }
@@ -188,9 +177,9 @@ export const Swap = () => {
               </SwapContainerAtom>
             </SwapModal>
           }
-          {!isUserLogged && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
-          {isUserLogged && <p>Slippage Tolerance: {slippageTolerance}%</p>}
-          {isUserLogged && <SwapButton content="Swap" handler={async () => { setActiveModalSwap(true) }} />}
+          {!isConnected && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
+          {isConnected && <p>Slippage Tolerance: {slippageTolerance}%</p>}
+          {isConnected && <SwapButton content="Swap" handler={async () => { setActiveModalSwap(true) }} />}
           {
             activeModalSwap &&
             <SwapModal >

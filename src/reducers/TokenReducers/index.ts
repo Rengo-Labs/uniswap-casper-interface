@@ -100,18 +100,28 @@ export const initialStateToken = {
   },
 };
 
+export enum tokenReducerEnum {
+  UPDATE_TOKENS = "UPDATE_TOKENS",
+  SELECT_FIRST_TOKEN = "SELECT_FIRST_TOKEN",
+  SELECT_SECOND_TOKEN = "SELECT_SECOND_TOKEN",
+  BALANCE_SECOND_TOKEN = "BALANCE_SECOND_TOKEN",
+  LOAD_BALANCE = "LOAD_BALANCE",
+  LOAD_BALANCE_TOKEN = "LOAD_BALANCE_TOKEN",
+  SWITCH_TOKENS = "SWITCH_TOKENS",
+}
+
 export function TokenReducer(state, action) {
   switch (action.type) {
-    case "UPDATE_TOKENS":
+    case tokenReducerEnum.UPDATE_TOKENS:
       return {
         ...state,
         tokens: { ...state.tokens, ...action.payload.tokens },
       };
-    case "SELECT_FIRST_TOKEN":
+    case tokenReducerEnum.SELECT_FIRST_TOKEN:
       return { ...state, firstTokenSelected: action.payload };
-    case "SELECT_SECOND_TOKEN":
+    case tokenReducerEnum.SELECT_SECOND_TOKEN:
       return { ...state, secondTokenSelected: action.payload };
-    case "BALANCE_SECOND_TOKEN":
+    case tokenReducerEnum.BALANCE_SECOND_TOKEN:
       return {
         ...state,
         secondTokenSelected: {
@@ -119,7 +129,7 @@ export function TokenReducer(state, action) {
           amount: action.payload,
         },
       };
-    case "LOAD_BALANCE":
+    case tokenReducerEnum.LOAD_BALANCE:
       return {
         ...state,
         firstTokenSelected: {
@@ -127,7 +137,7 @@ export function TokenReducer(state, action) {
           amount: action.payload.data,
         },
       };
-    case "LOAD_BALANCE_TOKEN":
+    case tokenReducerEnum.LOAD_BALANCE_TOKEN:
       return {
         ...state,
         tokens: {
@@ -136,9 +146,9 @@ export function TokenReducer(state, action) {
             ...state.tokens[action.payload.name],
             amount: action.payload.data,
           },
-        }
+        },
       };
-    case "SWITCH_TOKENS":
+    case tokenReducerEnum.SWITCH_TOKENS:
       return {
         ...state,
         firstTokenSelected: action.payload.secondTokenSelected,

@@ -28,6 +28,7 @@ import styled from "styled-components";
 import { CHAINS, SUPPORTED_NETWORKS } from '../../../constant';
 import { WalletController } from '../../../commons';
 import { ActiveWallet } from '../../../commons/controller';
+import { ConfigProviderContext } from '../../../contexts/ConfigContext';
 
 export const ButtonStyle = styled.button<any>`
     color: ${props => props.theme.StrongColor};
@@ -50,31 +51,36 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
     const [openModal, openModalSet] = useAtom(setConfig)
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
-    const { isUserLogged, walletAddress, slippageTolerance } = swapState
+    const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState } = useContext(ConfigProviderContext)
+    const {
+        isConnected,
+        walletAddress,
+        walletSelected,
+        languagesSelected,
+        visualModeSelected,
+        slippageToleranceSelected,
+        gasPriceSelected } = configState
+    const { isUserLogged, slippageTolerance } = swapState
     const [walletSelect, walletSelectSetter] = useState('casper')
     const walletSelector = new WalletController()
     const [activeWallet, activeWalletSetter] = useState(walletSelector.activeWallet)
 
     let torus;
     function switchWallet() {
-        walletSelector.switchWallet()
-        activeWalletSetter(walletSelector.activeWallet)
+        onChangeWallet()
     }
 
     async function onConnect() {
-        const walletAddress = await walletSelector.connect()
-        swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-
+        onConnectConfig()
     }
-
+    async function onDisconnect() {
+        onDisconnectWallet()
+    }
     function onSetSlippage(slippage) {
         swapDispatch({ type: 'SLIPPAGE_TOLERANCE_SETTER', payload: { slippageTolerance: slippage } })
     }
 
-    async function onDisconnect() {
-        await walletSelector.disconnect()
-        swapDispatch({ type: 'LOGOUT' })
-    }
+
 
     return (
         <ModalStyled openModal={openModal}>
@@ -82,7 +88,7 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                 <ContentStyled>
                     <ConfigModalHeader>
                         <AiOutlineUser />
-                        <ButtonConnection isConnected={isUserLogged} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                        <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
                         <ButtonClose onClickHandler={openModalSet}>
                             <AiOutlineCloseCircle />
                         </ButtonClose>
@@ -90,11 +96,11 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                     <ConfigModalBody>
                         <h1>Settings</h1>
                         <PillowDiv>
-                            <WalletSelectionDiv style={{ backgroundColor: `${activeWallet === ActiveWallet.CASPER ? "red" : ""}` }} walletSelected={"walletSelected"} onClick={() => { switchWallet() }}>
+                            <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === ActiveWallet.CASPER ? "red" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
                                 <WalletSelectionImageStyled src={casperWallet} alt="" />
                                 <h2>Signer Wallet</h2>
                             </WalletSelectionDiv>
-                            <WalletSelectionDiv style={{ backgroundColor: `${activeWallet === ActiveWallet.TORUS ? "red" : ""}` }} walletSelected={"walletSelected"} onClick={() => { switchWallet() }}>
+                            <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === ActiveWallet.TORUS ? "red" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
                                 <WalletSelectionImageStyled src={torusWallet} alt="" />
                                 <h2>Torus Wallet</h2>
                             </WalletSelectionDiv>

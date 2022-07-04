@@ -13,8 +13,16 @@ import {
   RuntimeArgs,
   Signer,
 } from "casper-js-sdk";
-import { BASE_URL, NODE_ADDRESS, ROUTER_PACKAGE_HASH } from "../../constant";
+import {
+  BASE_URL,
+  CHAINS,
+  NODE_ADDRESS,
+  ROUTER_PACKAGE_HASH,
+  SUPPORTED_NETWORKS,
+} from "../../constant";
 import toast from "react-hot-toast";
+import axios from "axios";
+import Torus from "@toruslabs/casper-embed";
 
 const convertToStr = (e) => e.toString();
 export function createRecipientAddress(recipient) {
@@ -43,12 +51,7 @@ export const getStateRootHash = async (nodeAddress, activePublicKey) => {
 //       //setMainPurse(result.Account.mainPurse)
 //     });
 //   })
-export async function makeDeployWasm(
-  publicKey,
-  runtimeArgs,
-  paymentAmount,
-  axios
-) {
+export async function makeDeployWasm(publicKey, runtimeArgs, paymentAmount) {
   let wasmData = await axios.get(`${BASE_URL}/getWasmData`);
   let deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
@@ -63,8 +66,6 @@ export async function makeDeployWasm(
 
 export function createRuntimeArgs(
   amount_in,
-  ROUTER_PACKAGE_HASH,
-  amount_out_min,
   slippSwapToken,
   _paths,
   publicKey,
@@ -100,7 +101,7 @@ export function createRuntimeArgs(
     console.log(error);
   }
 }
-async function getswapPath(tokenASymbol, tokenBSymbol, axios) {
+export async function getswapPath(tokenASymbol, tokenBSymbol) {
   const complete = `${BASE_URL}/getpath`;
   const request = await axios.post(complete, {
     tokenASymbol: "WCSPR",
@@ -110,28 +111,94 @@ async function getswapPath(tokenASymbol, tokenBSymbol, axios) {
     return new CLString("hash-".concat(x));
   });
 }
+export async function signDeployWithTorus(deploy) {
+  try {
+    const torus = new Torus();
+    await torus.init({
+      buildEnv: "testing",
+      showTorusButton: true,
+      network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+    });
+    const casperService = new CasperServiceByJsonRPC(torus?.provider);
+    return await casperService.deploy(deploy);
+  } catch (error) {
+    console.log("signDeployWithTorus");
+    console.log(error);
+    return false;
+  }
+}
+
 export async function signdeploywithcaspersigner(deploy, publicKeyHex) {
-  let deployJSON = DeployUtil.deployToJson(deploy);
+  try {
+    let deployJSON = DeployUtil.deployToJson(deploy);
+    let signedDeployJSON = await Signer.sign(deployJSON, publicKeyHex, publicKeyHex);
+    console.log("signedDeployJSON: ", signedDeployJSON);
+    let signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
 
-  let signedDeployJSON = await Signer.sign(
-    deployJSON,
-    publicKeyHex,
-    publicKeyHex
-  );
-  console.log("signedDeployJSON: ", signedDeployJSON);
-  let signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
-
-  console.log("signed deploy: ", signedDeploy);
-  return signedDeploy;
+    console.log("signed deploy: ", signedDeploy);
+    return signedDeploy;
+  } catch (error) {
+    console.log("signdeploywithcaspersigner", error);
+    throw Error(error);
+  }
 }
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-export async function getDeploy(NODE_URL, deployHash) {
-  const client = new CasperClient(NODE_URL);
+
+export async function putdeploySigner(signedDeploy) {
+  // Dispatch deploy to node.
+  try {
+    const client = new CasperClient(NODE_ADDRESS);
+    const installDeployHash = await client.putDeploy(signedDeploy);
+    console.log(`... Contract installation deployHash: ${installDeployHash}`);
+    const result = await getDeploySigner(installDeployHash);
+    console.log(
+      `... Contract installed successfully.`,
+      JSON.parse(JSON.stringify(result))
+    );
+    return installDeployHash;
+  } catch (error) {
+    console.log("putdeploySigner", error);
+    throw Error(error);
+  }
+}
+
+export async function getDeploySigner(deployHash) {
+  try {
+    const client = new CasperClient(NODE_ADDRESS);
+    let i = 1000;
+    while (i !== 0) {
+      const [deploy, raw] = await client.getDeploy(deployHash);
+      if (raw.execution_results.length !== 0) {
+        // @ts-ignore
+        if (raw.execution_results[0].result.Success) {
+          return deploy;
+        } else {
+          // @ts-ignore
+          let variant = "error";
+          throw Error(
+            "Contract execution: " +
+              raw.execution_results[0].result.Failure.error_message
+          );
+        }
+      } else {
+        i--;
+        await sleep(1000);
+        continue;
+      }
+    }
+    throw Error("Timeout after " + i + "s. Something's wrong");
+  } catch (error) {
+    console.log("getDeploySigner", error);
+    throw Error(error);
+  }
+}
+export async function getDeploy(deployHash) {
+  const client = new CasperClient(NODE_ADDRESS);
   let i = 1000;
   while (i !== 0) {
-    console.log("try ",i)
+    console.log("try ", i);
     const [deploy, raw] = await client.getDeploy(deployHash);
     if (raw.execution_results.length !== 0) {
       // @ts-ignore
@@ -158,7 +225,7 @@ export async function putdeploy(signedDeploy) {
   const client = new CasperClient(NODE_ADDRESS);
   const installDeployHash = await client.putDeploy(signedDeploy);
   console.log(`... Contract installation deployHash: ${installDeployHash}`);
-  const result = await getDeploy(NODE_ADDRESS, installDeployHash);
+  const result = await getDeploy(installDeployHash);
   console.log(
     `... Contract installed successfully.`,
     JSON.parse(JSON.stringify(result))
@@ -175,16 +242,13 @@ export async function swapMakeDeploy(
   tokenBSymbol,
   slippSwapToken,
   mainPurse,
-  axios,
   toastLoading,
   countSetter
 ) {
   const publicKey = CLPublicKey.fromHex(publicKeyHex);
-  let _paths = await getswapPath(tokenASymbol, tokenBSymbol, axios);
+  let _paths = await getswapPath(tokenASymbol, tokenBSymbol);
   const runtimeArgs = createRuntimeArgs(
     amount_in,
-    ROUTER_PACKAGE_HASH,
-    amount_out_min,
     slippSwapToken,
     _paths,
     publicKey,
@@ -192,12 +256,7 @@ export async function swapMakeDeploy(
     deadline
   );
 
-  let deploy = await makeDeployWasm(
-    publicKey,
-    runtimeArgs,
-    paymentAmount,
-    axios
-  );
+  let deploy = await makeDeployWasm(publicKey, runtimeArgs, paymentAmount);
 
   let signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);
   toast.dismiss(toastLoading);
@@ -207,7 +266,7 @@ export async function swapMakeDeploy(
     .then((x) => {
       toast.dismiss(toastLoadingg);
       toast.success("Transaction has been successfully deployed");
-      countSetter(count=>count+1)
+      countSetter((count) => count + 1);
     })
     .catch((err) => {
       toast.dismiss(toastLoadingg);
@@ -218,9 +277,7 @@ export async function swapMakeDeploy(
 export function updateBalances(
   walletAddress,
   tokens,
-  axios,
   tokenDispatch,
-  toastSuccess,
   secondTokenSelected
 ) {
   Object.keys(tokens).map((x) => {
