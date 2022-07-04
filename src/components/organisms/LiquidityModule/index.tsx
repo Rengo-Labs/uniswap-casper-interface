@@ -29,18 +29,13 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     const [activeModalPrimary, setActiveModalPrimary] = useState(false)
     const [activeModalSecondary, setActiveModalSecondary] = useState(false)
 
-    let [mainPurse, setMainPurse] = useState();
-    let [count, countSetter] = useState(0);
+
     const [activeModalSwap, setActiveModalSwap] = useState(false)
     const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
     const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
 
 
-    const { tokenState, tokenDispatch } = useContext(TokensProviderContext)
-    const { tokens, firstTokenSelected, secondTokenSelected } = tokenState
-    const { swapState, swapDispatch } = useContext(SwapProviderContext)
-    const { isUserLogged, walletAddress, casperService, slippageTolerance } = swapState
     let torus;
 
     const handleModalPrimary = () => {
@@ -53,40 +48,46 @@ export const LiquidityModule = ({ tokenOne }: any) => {
 
     }
     let balanceLoad;
-    const { onConnectConfig, configState } = useContext(ConfigProviderContext)
+    const {
+        onConnectConfig,
+        configState,
+        tokenState,
+        onSelectFirstToken,
+        onSelectSecondToken,
+        onSwitchTokens,
+        tokens,
+        firstTokenSelected,
+        secondTokenSelected,
+        isConnected,
+        onConfirmSwapConfig,
+        slippageToleranceSelected,
+        onCalculateReserves
+    } = useContext(ConfigProviderContext)
 
+    const { walletAddress, mainPurse } = configState
     function onConnect() {
         onConnectConfig()
-        // Signer.getActivePublicKey().then((walletAddress) => {
-        //     updateBalances(walletAddress, tokens, axios, tokenDispatch, successToast, secondTokenSelected)
-        //     swapDispatch({ type: 'LOGIN', payload: { walletAddress, casperService: clientDispatcher() } })
-        //     successToast("Wallet is connected")
-        //     balanceLoad = loadingToast("Your balance will be load...")
-        // }).catch(err => {
-        //     errorToast("Allow the site or unlock your wallet first!")
-        //     Signer.sendConnectionRequest()
-        // })
     }
 
     async function onLiquidiy() {
         const toastLoading = loadingToast("Waiting for confirmation...")
-        const deploy = await addLiquidityMakeDeploy(
-            axios,
-            walletAddress,
-            firstTokenSelected,
-            secondTokenSelected,
-            10,
-            10,
-            slippageTolerance,
-            mainPurse,
-            ROUTER_PACKAGE_HASH,
-            countSetter,
-            toastLoading,
-            casperService
-        )
-        let signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress);
-        let result = await putdeploy(signedDeploy);
-        countSetter((c) => c + 1);
+        // const deploy = await addLiquidityMakeDeploy(
+        //     axios,
+        //     walletAddress,
+        //     firstTokenSelected,
+        //     secondTokenSelected,
+        //     10,
+        //     10,
+        //     slippageTolerance,
+        //     mainPurse,
+        //     ROUTER_PACKAGE_HASH,
+        //     countSetter,
+        //     toastLoading,
+        //     casperService
+        // )
+        // let signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress);
+        // let result = await putdeploy(signedDeploy);
+        // countSetter((c) => c + 1);
         toast.dismiss(toastLoading);
 
     }
@@ -103,45 +104,32 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         console.log("Torus123", torus);
         console.log("torus", torus.provider);
         const casperService = new CasperServiceByJsonRPC(torus?.provider);
-        const deploy = addLiquidityMakeDeploy(
-            axios,
-            walletAddress,
-            firstTokenSelected,
-            secondTokenSelected,
-            10,
-            10,
-            slippageTolerance,
-            mainPurse,
-            ROUTER_PACKAGE_HASH,
-            countSetter,
-            toastLoading,
-            casperService
-        )
-        //const deployRes = await casperService.deploy(deploy);
-        //console.log("deployRes", deployRes.deploy_hash);
-        countSetter((c) => c + 1);
+        // const deploy = addLiquidityMakeDeploy(
+        //     axios,
+        //     walletAddress,
+        //     firstTokenSelected,
+        //     secondTokenSelected,
+        //     10,
+        //     10,
+        //     slippageToleranceSelected,
+        //     mainPurse,
+        //     ROUTER_PACKAGE_HASH,
+        //     countSetter,
+        //     toastLoading,
+        //     casperService
+        // )
+        // //const deployRes = await casperService.deploy(deploy);
+        // //console.log("deployRes", deployRes.deploy_hash);
+        // countSetter((c) => c + 1);
         toast.dismiss(toastLoading);
     }
 
-    async function calculateReserves(value) {
-        axios.post(`${BASE_URL}/getpathreserves`, {
-            path: [
-                firstTokenSelected.symbolPair,
-                secondTokenSelected.symbolPair,
-            ]
-        }).then(response => {
-            if (response.data.success) {
-                const tokenB = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 5))
-                const slip = (tokenB - (tokenB * 0.5) / 100).toString().slice(0, 5)
-                amoutSwapTokenBSetter(tokenB)
-                slippSwapTokenSetter(slip)
-            }
-        })
-    }
 
-    function onChangeValueToken(value) {
+    async function onChangeValueToken(value) {
         amoutSwapTokenASetter(value)
-        calculateReserves(value)
+        const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
+        amoutSwapTokenBSetter(secondTokenReturn)
+        slippSwapTokenSetter(minAmountReturn)
     }
 
     return (
@@ -211,9 +199,9 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                     </SwapContainerAtom>
                 </SwapModal>
             }
-            {!isUserLogged && <SwapButton content="Connect to Wallet" handler={() => { onConnect() }} />}
-            {isUserLogged && <p>Slippage Tolerance: {slippageTolerance}%</p>}
-            {isUserLogged && <SwapButton content="Add Liquidity" handler={async () => { onLiquidiy(); setActiveModalSwap(true) }} />}
+            {!isConnected && <SwapButton content="Connect to Wallet" handler={() => { onConnect() }} />}
+            {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
+            {isConnected && <SwapButton content="Add Liquidity" handler={async () => { onLiquidiy(); setActiveModalSwap(true) }} />}
         </SwapModulesStyled>
     )
 }

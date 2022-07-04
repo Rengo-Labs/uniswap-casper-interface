@@ -1,9 +1,10 @@
 import Torus from '@toruslabs/casper-embed';
-import { CasperServiceByJsonRPC, CLPublicKey, Signer } from 'casper-js-sdk';
+import axios from 'axios';
+import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
-import { createRuntimeArgs, getDeploy, getswapPath, makeDeployWasm, putdeploySigner, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
-import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../../constant';
+import { convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeployLiquidity, makeDeployWasm, putdeploy, putdeploySigner, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
 import { initialStateToken, TokenReducer, tokenReducerEnum } from '../../reducers/TokenReducers';
@@ -94,21 +95,52 @@ async function swapMakeDeploy(
     }
 }
 
-// async function calculateReserves(value,axios,firstTokenSelected, secondTokenSelected) {
-//     axios.post(`${BASE_URL}/getpathreserves`, {
-//         path: [
-//             firstTokenSelected.symbolPair,
-//             secondTokenSelected.symbolPair,
-//         ]
-//     }).then(response => {
-//         if (response.data.success) {
-//             const tokenB = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 5))
-//             const slip = (tokenB - (tokenB * 0.5) / 100).toString().slice(0, 5)
-//             amoutSwapTokenBSetter(tokenB)
-//             slippSwapTokenSetter(slip)
-//         }
-//     })
-// }
+async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
+    try {
+        const response = await axios.post(`${BASE_URL}/getpathreserves`, {
+            path: [
+                firstTokenSelected.symbolPair,
+                secondTokenSelected.symbolPair,
+            ]
+        })
+        if (response.data.success) {
+            const secondTokenReturn = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 10))
+            const minAmountReturn = (secondTokenReturn - (secondTokenReturn * 0.5) / 100).toString().slice(0, 5)
+            return { secondTokenReturn, minAmountReturn }
+        }
+        throw Error()
+    } catch (error) {
+        console.log(__filename, "onCalculateReserves", error)
+        return { secondTokenReturn: 0, minAmountReturn: 0 }
+    }
+}
+
+async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
+    const publicKeyHex = activePublicKey;
+    const publicKey = CLPublicKey.fromHex(publicKeyHex);
+    const spender = ROUTER_PACKAGE_HASH;
+    const spenderByteArray = new CLByteArray(
+        Uint8Array.from(Buffer.from(spender, "hex"))
+    );
+    const paymentAmount = 5_000_000_000;
+    const runtimeArgs = RuntimeArgs.fromMap({
+        spender: createRecipientAddress(spenderByteArray),
+        amount: CLValueBuilder.u256(convertToString(amount)),
+    });
+    let contractHashAsByteArray = Uint8Array.from(
+        Buffer.from(contractHash.slice(5), "hex")
+    );
+    let entryPoint = increase ? "increase_allowance" : "decrease_allowance";
+    // Set contract installation deploy (unsigned).
+    let deploy = await makeDeployLiquidity(
+        publicKey,
+        contractHashAsByteArray,
+        entryPoint,
+        runtimeArgs,
+        paymentAmount
+    );
+    return deploy
+}
 
 export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) => {
     const [state, dispatch] = useReducer(ConfigReducer, initialConfigState)
@@ -183,7 +215,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         tokenDispatch({ type: tokenReducerEnum.SWITCH_TOKENS, payload: { secondTokenSelected, firstTokenSelected } })
     }
 
-    async function onConfirmSwapConfig(amoutSwapTokenA,amoutSwapTokenB) {
+    async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB) {
         const loadingToast = toast.loading("let me try to swap! be patient!")
         try {
             const deploy = await swapMakeDeploy(walletAddress,
@@ -198,7 +230,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             );
             if (walletSelected === 'torus') {
                 const signedDeploy = await signDeployWithTorus(deploy)
-                console.log("deploy_hash",signedDeploy.deploy_hash)
+                console.log("deploy_hash", signedDeploy.deploy_hash)
                 let result = await getDeploy(signedDeploy.deploy_hash);
                 toast.dismiss(loadingToast)
                 toast.success("Got it! take your swap!")
@@ -207,7 +239,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
             if (walletSelected === 'casper') {
                 console.log("ahora estamos aca")
-                const signedDeploy = await signdeploywithcaspersigner(deploy,walletAddress)
+                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
                 let result = await putdeploySigner(signedDeploy);
                 toast.dismiss(loadingToast)
                 toast.success("Got it! take your swap!")
@@ -245,6 +277,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
+    async function onCalculateReserves(value) {
+        try {
+            return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
+        } catch (error) {
+            console.log(__filename, "onCalculateReserves", error)
+            return { secondTokenReturn: 0, minAmountReturn: 0 }
+        }
+    }
     return (
         <ConfigProviderContext.Provider value={{
             onConnectConfig,
@@ -256,11 +296,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSelectFirstToken,
             onSelectSecondToken,
             onSwitchTokens,
+            onCalculateReserves,
             tokens,
             firstTokenSelected,
             secondTokenSelected,
             isConnected,
-            onConfirmSwapConfig
+            onConfirmSwapConfig,
+            slippageToleranceSelected
         }}>
             {children}
         </ConfigProviderContext.Provider>

@@ -6,12 +6,10 @@ import { SwapModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
 import { SwapConfirmAtom, SwapModal, SwapSelection, SwapTokens } from '../../molecules'
-import { TokensProviderContext } from '../../../contexts/TokensContext'
 import { AiOutlineClose } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
 import { SwapToken } from '../../molecules/SwapToken'
 import { SwapProviderContext } from '../../../contexts/SwapContext'
-import { getStateRootHash, torusLogin } from '../../../reducers/WalletReducers/functions'
 import { v4 as uuidv4 } from 'uuid';
 
 function useQuery() {
@@ -20,14 +18,9 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-import { getStatus, swapMakeDeploy, updateBalances } from '../../../commons/swap'
 import { BASE_URL, DEADLINE, PAYMENT_AMOUNT } from '../../../constant'
-import toast from 'react-hot-toast';
 
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
-const errorToast = (msg) => toast.error(msg);
-const successToast = (msg) => toast.success(msg);
-const loadingToast = (msg) => toast.loading(msg);
 
 
 export const Swap = () => {
@@ -39,16 +32,14 @@ export const Swap = () => {
   const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
   const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
   const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
+
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
   }
   const handleModalSecondary = () => {
     setActiveModalSecondary(!activeModalSecondary)
   }
-  const { swapState, swapDispatch } = useContext(SwapProviderContext)
-  const { walletAddress, casperService, slippageTolerance } = swapState
-  let [mainPurse, setMainPurse] = useState();
-  let [count, countSetter] = useState(0);
+
   const {
     onConnectConfig,
     configState,
@@ -60,7 +51,9 @@ export const Swap = () => {
     firstTokenSelected,
     secondTokenSelected,
     isConnected,
-    onConfirmSwapConfig } = useContext(ConfigProviderContext)
+    onConfirmSwapConfig,
+    slippageToleranceSelected,
+    onCalculateReserves } = useContext(ConfigProviderContext)
 
   function onConnect() {
     onConnectConfig()
@@ -85,25 +78,13 @@ export const Swap = () => {
 
   }
 
-  async function calculateReserves(value) {
-    axios.post(`${BASE_URL}/getpathreserves`, {
-      path: [
-        firstTokenSelected.symbolPair,
-        secondTokenSelected.symbolPair,
-      ]
-    }).then(response => {
-      if (response.data.success) {
-        const tokenB = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 5))
-        const slip = (tokenB - (tokenB * 0.5) / 100).toString().slice(0, 5)
-        amoutSwapTokenBSetter(tokenB)
-        slippSwapTokenSetter(slip)
-      }
-    })
-  }
 
-  function onChangeValueToken(value) {
+
+  async function onChangeValueToken(value) {
     amoutSwapTokenASetter(value)
-    calculateReserves(value)
+    const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
+    amoutSwapTokenBSetter(secondTokenReturn)
+    slippSwapTokenSetter(minAmountReturn)
   }
 
   return (
@@ -178,7 +159,7 @@ export const Swap = () => {
             </SwapModal>
           }
           {!isConnected && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
-          {isConnected && <p>Slippage Tolerance: {slippageTolerance}%</p>}
+          {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
           {isConnected && <SwapButton content="Swap" handler={async () => { setActiveModalSwap(true) }} />}
           {
             activeModalSwap &&

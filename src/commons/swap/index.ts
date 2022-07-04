@@ -6,6 +6,7 @@ import {
   CLByteArray,
   CLKey,
   CLList,
+  CLOption,
   CLPublicKey,
   CLString,
   CLValueBuilder,
@@ -17,12 +18,14 @@ import {
   BASE_URL,
   CHAINS,
   NODE_ADDRESS,
+  ROUTER_CONTRACT_HASH,
   ROUTER_PACKAGE_HASH,
   SUPPORTED_NETWORKS,
 } from "../../constant";
 import toast from "react-hot-toast";
 import axios from "axios";
 import Torus from "@toruslabs/casper-embed";
+import { Some } from "ts-results";
 
 const convertToStr = (e) => e.toString();
 export function createRecipientAddress(recipient) {
@@ -111,6 +114,70 @@ export async function getswapPath(tokenASymbol, tokenBSymbol) {
     return new CLString("hash-".concat(x));
   });
 }
+
+export async function makeDeployLiquidity(publicKey, contractHashAsByteArray, entryPoint, runtimeArgs, paymentAmount) {
+    let deploy = DeployUtil.makeDeploy(
+        new DeployUtil.DeployParams(
+            publicKey,
+            'casper-test'
+        ),
+        DeployUtil.ExecutableDeployItem.newStoredContractByHash(
+            contractHashAsByteArray,
+            entryPoint,
+            runtimeArgs
+        ),
+        DeployUtil.standardPayment(
+            paymentAmount
+        )
+    );
+    return deploy
+}
+
+async function addLiquidityMakeDeployLiquidityV2(activePublicKey, tokenA, tokenB, tokenAAmount, tokenBAmount, mainPurse,slippage) {
+  const publicKeyHex = activePublicKey;
+
+  const publicKey = CLPublicKey.fromHex(publicKeyHex);
+  const caller = ROUTER_CONTRACT_HASH;
+  const tokenAAddress = tokenA?.packageHash;
+  const tokenBAddress = tokenB?.packageHash;
+  const token_AAmount = tokenAAmount;
+  const token_BAmount = tokenBAmount;
+  const deadline = 1739598100811;
+  const paymentAmount = 10000000000;
+  const _token_b = new CLByteArray(
+      Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
+  );
+  const pair = new CLByteArray(
+      Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
+  );
+  const runtimeArgs = RuntimeArgs.fromMap({
+      amount: CLValueBuilder.u512(convertToString(token_AAmount)),
+      destination_entrypoint: CLValueBuilder.string("add_liquidity_cspr"),
+      token: new CLKey(_token_b),
+      amount_cspr_desired: CLValueBuilder.u256(convertToString(token_AAmount)),
+      amount_token_desired: CLValueBuilder.u256(convertToString(token_BAmount)),
+      amount_cspr_min: CLValueBuilder.u256(convertToString(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
+      amount_token_min: CLValueBuilder.u256(convertToString(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
+      to: createRecipientAddress(publicKey),
+      purse: CLValueBuilder.uref(
+          Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+          AccessRights.READ_ADD_WRITE
+      ),
+      deadline: CLValueBuilder.u256(deadline),
+      pair: new CLOption(Some(new CLKey(pair))),
+      router_hash: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))),
+  });
+  // Set contract installation deploy (unsigned).
+  let deploy = await makeDeployWasm(
+      publicKey,
+      runtimeArgs,
+      paymentAmount
+  );
+  return deploy
+}
+
+export function convertToString(e){return e.toString()}
+
 export async function signDeployWithTorus(deploy) {
   try {
     const torus = new Torus();
