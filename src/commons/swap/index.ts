@@ -115,25 +115,56 @@ export async function getswapPath(tokenASymbol, tokenBSymbol) {
   });
 }
 
-export async function makeDeployLiquidity(publicKey, contractHashAsByteArray, entryPoint, runtimeArgs, paymentAmount) {
-    let deploy = DeployUtil.makeDeploy(
-        new DeployUtil.DeployParams(
-            publicKey,
-            'casper-test'
-        ),
-        DeployUtil.ExecutableDeployItem.newStoredContractByHash(
-            contractHashAsByteArray,
-            entryPoint,
-            runtimeArgs
-        ),
-        DeployUtil.standardPayment(
-            paymentAmount
-        )
-    );
-    return deploy
+export async function makeDeployLiquidity(
+  publicKey,
+  contractHashAsByteArray,
+  entryPoint,
+  runtimeArgs,
+  paymentAmount
+) {
+  let deploy = DeployUtil.makeDeploy(
+    new DeployUtil.DeployParams(publicKey, "casper-test"),
+    DeployUtil.ExecutableDeployItem.newStoredContractByHash(
+      contractHashAsByteArray,
+      entryPoint,
+      runtimeArgs
+    ),
+    DeployUtil.standardPayment(paymentAmount)
+  );
+  return deploy;
 }
 
-async function addLiquidityMakeDeployLiquidityV2(activePublicKey, tokenA, tokenB, tokenAAmount, tokenBAmount, mainPurse,slippage) {
+export async function makeDeployLiquidityWasm(
+  publicKey,
+  runtimeArgs,
+  paymentAmount
+) {
+  let wasmData = await axios.get(`${BASE_URL}/getWasmData`);
+  console.log("wasmData.data.wasmData", wasmData.data.wasmData.data);
+  console.log(
+    "new Uint8Array(wasmData.data.wasmData.data)",
+    new Uint8Array(wasmData.data.wasmData.data)
+  );
+  let deploy = DeployUtil.makeDeploy(
+    new DeployUtil.DeployParams(publicKey, "casper-test"),
+    DeployUtil.ExecutableDeployItem.newModuleBytes(
+      new Uint8Array(wasmData.data.wasmData.data),
+      runtimeArgs
+    ),
+    DeployUtil.standardPayment(paymentAmount)
+  );
+  return deploy;
+}
+
+async function addLiquidityMakeDeployLiquidityV2(
+  activePublicKey,
+  tokenA,
+  tokenB,
+  tokenAAmount,
+  tokenBAmount,
+  mainPurse,
+  slippage
+) {
   const publicKeyHex = activePublicKey;
 
   const publicKey = CLPublicKey.fromHex(publicKeyHex);
@@ -145,38 +176,46 @@ async function addLiquidityMakeDeployLiquidityV2(activePublicKey, tokenA, tokenB
   const deadline = 1739598100811;
   const paymentAmount = 10000000000;
   const _token_b = new CLByteArray(
-      Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
+    Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
   );
   const pair = new CLByteArray(
-      Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
+    Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
   );
   const runtimeArgs = RuntimeArgs.fromMap({
-      amount: CLValueBuilder.u512(convertToString(token_AAmount)),
-      destination_entrypoint: CLValueBuilder.string("add_liquidity_cspr"),
-      token: new CLKey(_token_b),
-      amount_cspr_desired: CLValueBuilder.u256(convertToString(token_AAmount)),
-      amount_token_desired: CLValueBuilder.u256(convertToString(token_BAmount)),
-      amount_cspr_min: CLValueBuilder.u256(convertToString(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
-      amount_token_min: CLValueBuilder.u256(convertToString(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
-      to: createRecipientAddress(publicKey),
-      purse: CLValueBuilder.uref(
-          Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-          AccessRights.READ_ADD_WRITE
-      ),
-      deadline: CLValueBuilder.u256(deadline),
-      pair: new CLOption(Some(new CLKey(pair))),
-      router_hash: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))),
+    amount: CLValueBuilder.u512(convertToString(token_AAmount)),
+    destination_entrypoint: CLValueBuilder.string("add_liquidity_cspr"),
+    token: new CLKey(_token_b),
+    amount_cspr_desired: CLValueBuilder.u256(convertToString(token_AAmount)),
+    amount_token_desired: CLValueBuilder.u256(convertToString(token_BAmount)),
+    amount_cspr_min: CLValueBuilder.u256(
+      convertToString(
+        Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9)
+      )
+    ),
+    amount_token_min: CLValueBuilder.u256(
+      convertToString(
+        Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9)
+      )
+    ),
+    to: createRecipientAddress(publicKey),
+    purse: CLValueBuilder.uref(
+      Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+      AccessRights.READ_ADD_WRITE
+    ),
+    deadline: CLValueBuilder.u256(deadline),
+    pair: new CLOption(Some(new CLKey(pair))),
+    router_hash: new CLKey(
+      new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))
+    ),
   });
   // Set contract installation deploy (unsigned).
-  let deploy = await makeDeployWasm(
-      publicKey,
-      runtimeArgs,
-      paymentAmount
-  );
-  return deploy
+  let deploy = await makeDeployWasm(publicKey, runtimeArgs, paymentAmount);
+  return deploy;
 }
 
-export function convertToString(e){return e.toString()}
+export function convertToString(e) {
+  return e.toString();
+}
 
 export async function signDeployWithTorus(deploy) {
   try {
@@ -198,7 +237,11 @@ export async function signDeployWithTorus(deploy) {
 export async function signdeploywithcaspersigner(deploy, publicKeyHex) {
   try {
     let deployJSON = DeployUtil.deployToJson(deploy);
-    let signedDeployJSON = await Signer.sign(deployJSON, publicKeyHex, publicKeyHex);
+    let signedDeployJSON = await Signer.sign(
+      deployJSON,
+      publicKeyHex,
+      publicKeyHex
+    );
     console.log("signedDeployJSON: ", signedDeployJSON);
     let signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
 
@@ -227,7 +270,7 @@ export async function putdeploySigner(signedDeploy) {
     return installDeployHash;
   } catch (error) {
     console.log("putdeploySigner", error);
-    throw Error(error);
+    throw Error(error.message);
   }
 }
 

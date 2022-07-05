@@ -85,7 +85,7 @@ async function makeDeployWasm(publicKey, runtimeArgs, paymentAmount, axios) {
   return deploy;
 }
 
-function createRuntimeeArgsPool(
+export function createRuntimeeArgsPool(
   token_AAmount,
   _token_b,
   token_BAmount,

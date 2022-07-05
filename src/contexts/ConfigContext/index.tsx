@@ -3,7 +3,8 @@ import axios from 'axios';
 import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
-import { convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeployLiquidity, makeDeployWasm, putdeploy, putdeploySigner, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import { convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
@@ -132,11 +133,6 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
         );
         let entryPoint = increase ? "increase_allowance" : "decrease_allowance";
         // Set contract installation deploy (unsigned).
-        console.log("publicKey",publicKey)
-        console.log("contractHashAsByteArray",contractHashAsByteArray)
-        console.log("entryPoint",entryPoint)
-        console.log("runtimeArgs",runtimeArgs)
-        console.log("paymentAmount",paymentAmount)
         let deploy = await makeDeployLiquidity(
             publicKey,
             contractHashAsByteArray,
@@ -144,6 +140,8 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
             runtimeArgs,
             paymentAmount
         );
+
+        //const deploy = await makeDeployLiquidityWasm(publicKey, runtimeArgs, paymentAmount)
         return deploy
     } catch (error) {
         console.log(__filename, "increaseAndDecreaseAllowanceMakeDeploy", error);
@@ -151,6 +149,47 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
     }
 }
 
+async function addLiquidityMakeDeploy(
+    activePublicKey,
+    tokenB,
+    tokenAAmount,
+    tokenBAmount,
+    slippage,
+    mainPurse,
+) {
+    const publicKeyHex = activePublicKey;
+    const selectedWallet = "Casper";
+    const publicKey = CLPublicKey.fromHex(publicKeyHex);
+    const tokenBAddress = tokenB?.packageHash;
+    const token_AAmount = tokenAAmount;
+    const token_BAmount = tokenBAmount;
+    const deadline = 1739598100811;
+    const paymentAmount = 10000000000;
+
+    const _token_b = new CLByteArray(
+        Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
+    );
+    const pair = new CLByteArray(
+        Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
+    );
+    const runtimeArgs = createRuntimeeArgsPool(
+        token_AAmount,
+        _token_b,
+        token_BAmount,
+        slippage,
+        publicKey,
+        mainPurse,
+        deadline,
+        pair,
+        ROUTER_PACKAGE_HASH
+    );
+    let deploy = makeDeployWasm(
+        publicKey,
+        runtimeArgs,
+        paymentAmount
+    );
+    return deploy;
+}
 export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) => {
     const [state, dispatch] = useReducer(ConfigReducer, initialConfigState)
     const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
@@ -292,7 +331,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             const valueTotal = amount * 10 ** 9
             const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, firstTokenSelected.contractHash, valueTotal, true)
             if (walletSelected === 'casper') {
-                console.log("signing allow liquidity")
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
                 let result = await putdeploySigner(signedDeploy);
                 toast.dismiss(loadingToast)
@@ -302,7 +340,28 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
         } catch (error) {
             toast.dismiss(loadingToast)
-            console.log("onConfirmSwapConfig")
+            console.log("onIncreaseAllow")
+            toast.error("Ooops, we have a problem")
+            return false
+        }
+    }
+
+    async function onAddLiquidity(amountA, amountB) {
+        const loadingToast = toast.loading("let me try to add liquidity! be patient!")
+        try {
+            const deploy = await addLiquidityMakeDeploy(walletAddress, secondTokenSelected, amountA, amountB, slippageToleranceSelected, mainPurse)
+            if (walletSelected === 'casper') {
+                console.log("signing add liquidity")
+                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                let result = await putdeploySigner(signedDeploy);
+                toast.dismiss(loadingToast)
+                toast.success("Got it! take your swap!")
+                console.log(result)
+                return true
+            }
+        } catch (error) {
+            toast.dismiss(loadingToast)
+            console.log("onAddLiquidity")
             toast.error("Ooops, we have a problem")
             return false
         }
@@ -333,7 +392,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             isConnected,
             onConfirmSwapConfig,
             slippageToleranceSelected,
-            onIncreaseAllow
+            onIncreaseAllow,
+            onAddLiquidity
         }}>
             {children}
         </ConfigProviderContext.Provider>

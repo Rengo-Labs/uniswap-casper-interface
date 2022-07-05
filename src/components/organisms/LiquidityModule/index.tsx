@@ -62,7 +62,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         onConfirmSwapConfig,
         slippageToleranceSelected,
         onCalculateReserves,
-        onIncreaseAllow
+        onIncreaseAllow,
+        onAddLiquidity
     } = useContext(ConfigProviderContext)
 
     const { walletAddress, mainPurse } = configState
@@ -71,7 +72,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     }
 
     async function onLiquidiy() {
-        const algo = await onIncreaseAllow(10)
+        const algo = await onIncreaseAllow(10_000_000_000)
+        // const algo = await onAddLiquidity(10, 10)
     }
 
     async function onLiquitityTorus() {
