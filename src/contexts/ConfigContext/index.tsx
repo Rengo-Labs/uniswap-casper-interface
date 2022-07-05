@@ -116,30 +116,39 @@ async function calculateReserves(firstTokenSelected, secondTokenSelected, value)
 }
 
 async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
-    const publicKeyHex = activePublicKey;
-    const publicKey = CLPublicKey.fromHex(publicKeyHex);
-    const spender = ROUTER_PACKAGE_HASH;
-    const spenderByteArray = new CLByteArray(
-        Uint8Array.from(Buffer.from(spender, "hex"))
-    );
-    const paymentAmount = 5_000_000_000;
-    const runtimeArgs = RuntimeArgs.fromMap({
-        spender: createRecipientAddress(spenderByteArray),
-        amount: CLValueBuilder.u256(convertToString(amount)),
-    });
-    let contractHashAsByteArray = Uint8Array.from(
-        Buffer.from(contractHash.slice(5), "hex")
-    );
-    let entryPoint = increase ? "increase_allowance" : "decrease_allowance";
-    // Set contract installation deploy (unsigned).
-    let deploy = await makeDeployLiquidity(
-        publicKey,
-        contractHashAsByteArray,
-        entryPoint,
-        runtimeArgs,
-        paymentAmount
-    );
-    return deploy
+    try {
+        const publicKey = CLPublicKey.fromHex(activePublicKey);
+        const spender = ROUTER_PACKAGE_HASH;
+        const spenderByteArray = new CLByteArray(
+            Uint8Array.from(Buffer.from(spender, "hex"))
+        );
+        const paymentAmount = 5_000_000_000;
+        const runtimeArgs = RuntimeArgs.fromMap({
+            spender: createRecipientAddress(spenderByteArray),
+            amount: CLValueBuilder.u256(convertToString(amount)),
+        });
+        let contractHashAsByteArray = Uint8Array.from(
+            Buffer.from(contractHash.slice(5), "hex")
+        );
+        let entryPoint = increase ? "increase_allowance" : "decrease_allowance";
+        // Set contract installation deploy (unsigned).
+        console.log("publicKey",publicKey)
+        console.log("contractHashAsByteArray",contractHashAsByteArray)
+        console.log("entryPoint",entryPoint)
+        console.log("runtimeArgs",runtimeArgs)
+        console.log("paymentAmount",paymentAmount)
+        let deploy = await makeDeployLiquidity(
+            publicKey,
+            contractHashAsByteArray,
+            entryPoint,
+            runtimeArgs,
+            paymentAmount
+        );
+        return deploy
+    } catch (error) {
+        console.log(__filename, "increaseAndDecreaseAllowanceMakeDeploy", error);
+        throw Error()
+    }
 }
 
 export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) => {
@@ -277,6 +286,27 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
+    async function onIncreaseAllow(amount) {
+        const loadingToast = toast.loading("let me try to add liquidity! be patient!")
+        try {
+            const valueTotal = amount * 10 ** 9
+            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, firstTokenSelected.contractHash, valueTotal, true)
+            if (walletSelected === 'casper') {
+                console.log("signing allow liquidity")
+                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                let result = await putdeploySigner(signedDeploy);
+                toast.dismiss(loadingToast)
+                toast.success("Got it! take your swap!")
+                console.log(result)
+                return true
+            }
+        } catch (error) {
+            toast.dismiss(loadingToast)
+            console.log("onConfirmSwapConfig")
+            toast.error("Ooops, we have a problem")
+            return false
+        }
+    }
     async function onCalculateReserves(value) {
         try {
             return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
@@ -302,7 +332,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             secondTokenSelected,
             isConnected,
             onConfirmSwapConfig,
-            slippageToleranceSelected
+            slippageToleranceSelected,
+            onIncreaseAllow
         }}>
             {children}
         </ConfigProviderContext.Provider>

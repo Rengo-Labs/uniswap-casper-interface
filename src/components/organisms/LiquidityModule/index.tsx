@@ -61,7 +61,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         isConnected,
         onConfirmSwapConfig,
         slippageToleranceSelected,
-        onCalculateReserves
+        onCalculateReserves,
+        onIncreaseAllow
     } = useContext(ConfigProviderContext)
 
     const { walletAddress, mainPurse } = configState
@@ -70,26 +71,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     }
 
     async function onLiquidiy() {
-        const toastLoading = loadingToast("Waiting for confirmation...")
-        // const deploy = await addLiquidityMakeDeploy(
-        //     axios,
-        //     walletAddress,
-        //     firstTokenSelected,
-        //     secondTokenSelected,
-        //     10,
-        //     10,
-        //     slippageTolerance,
-        //     mainPurse,
-        //     ROUTER_PACKAGE_HASH,
-        //     countSetter,
-        //     toastLoading,
-        //     casperService
-        // )
-        // let signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress);
-        // let result = await putdeploy(signedDeploy);
-        // countSetter((c) => c + 1);
-        toast.dismiss(toastLoading);
-
+        const algo = await onIncreaseAllow(10)
     }
 
     async function onLiquitityTorus() {
