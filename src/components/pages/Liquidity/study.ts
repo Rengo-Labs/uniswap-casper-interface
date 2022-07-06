@@ -96,8 +96,8 @@ export function createRuntimeeArgsPool(
   pair,
   ROUTER_PACKAGE_HASH
 ) {
-  const tokenA = 10_000_000_000;
-  const tokenB = 10_000_000_000;
+  const tokenA = token_AAmount * 10 ** 9;
+  const tokenB = token_BAmount * 10 ** 9;
   return RuntimeArgs.fromMap({
     amount: CLValueBuilder.u512(convertToStr(tokenA)),
     destination_entrypoint: CLValueBuilder.string("add_liquidity_cspr"),
@@ -158,11 +158,6 @@ export async function addLiquidityMakeDeploy(
     pair,
     ROUTER_PACKAGE_HASH
   );
-  let deploy = makeDeployWasm(
-    publicKey,
-    runtimeArgs,
-    paymentAmount,
-    axios
-  );
+  let deploy = makeDeployWasm(publicKey, runtimeArgs, paymentAmount, axios);
   return deploy;
 }

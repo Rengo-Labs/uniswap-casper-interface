@@ -26,28 +26,6 @@ const loadingToast = (msg) => toast.loading(msg);
 
 export const LiquidityModule = ({ tokenOne }: any) => {
 
-    const [activeModalPrimary, setActiveModalPrimary] = useState(false)
-    const [activeModalSecondary, setActiveModalSecondary] = useState(false)
-
-
-    const [activeModalSwap, setActiveModalSwap] = useState(false)
-    const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
-    const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
-    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
-
-
-    let torus;
-
-    const handleModalPrimary = () => {
-        setActiveModalPrimary(!activeModalPrimary)
-    }
-    const handleModalSecondary = () => {
-        setActiveModalSecondary(!activeModalSecondary)
-    }
-    function switchTokens() {
-
-    }
-    let balanceLoad;
     const {
         onConnectConfig,
         configState,
@@ -63,17 +41,40 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         slippageToleranceSelected,
         onCalculateReserves,
         onIncreaseAllow,
-        onAddLiquidity
+        onAddLiquidity,
+        testingthing
     } = useContext(ConfigProviderContext)
 
-    const { walletAddress, mainPurse } = configState
+    const [activeModalPrimary, setActiveModalPrimary] = useState(false)
+    const [activeModalSecondary, setActiveModalSecondary] = useState(false)
+    const [activeModalSwap, setActiveModalSwap] = useState(false)
+    const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
+    const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
+    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
+
+    let torus;
+
+    useEffect(()=>{
+        testingthing()
+    },[])
+
+    const handleModalPrimary = () => {
+        setActiveModalPrimary(!activeModalPrimary)
+    }
+    const handleModalSecondary = () => {
+        setActiveModalSecondary(!activeModalSecondary)
+    }
+    function switchTokens() {
+    }
+
     function onConnect() {
         onConnectConfig()
     }
 
     async function onLiquidiy() {
-        const algo = await onIncreaseAllow(10_000_000_000)
-        // const algo = await onAddLiquidity(10, 10)
+        if (await onIncreaseAllow(amoutSwapTokenB)) {
+            await onAddLiquidity(amoutSwapTokenA, amoutSwapTokenB)
+        }
     }
 
     async function onLiquitityTorus() {
@@ -107,7 +108,6 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         // countSetter((c) => c + 1);
         toast.dismiss(toastLoading);
     }
-
 
     async function onChangeValueToken(value) {
         amoutSwapTokenASetter(value)

@@ -1,6 +1,7 @@
 export const NODE_ADDRESS =
   "https://casperlabs-proxy-server.herokuapp.com/http://159.65.118.250:7777/rpc";
 export const BASE_URL = `https://v2casperswapgraphqlbackend-env.eba-npfjx8q6.us-east-1.elasticbeanstalk.com`;
+export const EXPLORER_URL = 'https://testnet.cspr.live/deploy/'
 export const DEADLINE = 1739598100811;
 export const PAYMENT_AMOUNT = 10_000_000_000;
 export const FACTORY_CONTRACT =
