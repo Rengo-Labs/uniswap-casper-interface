@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { CloseButtonAtom, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
+import { CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
 import { SwapSelection } from '../../molecules/SwapSelection'
 import { SwapModal } from '../../molecules/SwapModal'
 import { SwapModulesStyled } from './styles'
 import { LiquidityProviderContext } from '../../../contexts/LiquidityContext'
 import { AiOutlineClose } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
-import { SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapTokens } from '../../molecules'
 import casprIcon from '../../../assets/swapIcons/casprIcon.png'
 import { TokensProviderContext } from '../../../contexts/TokensContext'
 import { getStatus, putdeploy, signdeploywithcaspersigner, updateBalances } from '../../../commons/swap'
@@ -42,7 +42,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         onCalculateReserves,
         onIncreaseAllow,
         onAddLiquidity,
-        testingthing
+        fillPairs
     } = useContext(ConfigProviderContext)
 
     const [activeModalPrimary, setActiveModalPrimary] = useState(false)
@@ -51,12 +51,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
     const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
-
-    let torus;
-
-    useEffect(()=>{
-        testingthing()
-    },[])
+    useEffect(() => {
+    }, [])
 
     const handleModalPrimary = () => {
         setActiveModalPrimary(!activeModalPrimary)
@@ -75,38 +71,6 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         if (await onIncreaseAllow(amoutSwapTokenB)) {
             await onAddLiquidity(amoutSwapTokenA, amoutSwapTokenB)
         }
-    }
-
-    async function onLiquitityTorus() {
-        const toastLoading = loadingToast("Waiting for confirmation...")
-        torus = new Torus();
-        console.log("torus", torus);
-        await torus.init({
-            buildEnv: "testing",
-            showTorusButton: true,
-            network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-        });
-        console.log("Torus123", torus);
-        console.log("torus", torus.provider);
-        const casperService = new CasperServiceByJsonRPC(torus?.provider);
-        // const deploy = addLiquidityMakeDeploy(
-        //     axios,
-        //     walletAddress,
-        //     firstTokenSelected,
-        //     secondTokenSelected,
-        //     10,
-        //     10,
-        //     slippageToleranceSelected,
-        //     mainPurse,
-        //     ROUTER_PACKAGE_HASH,
-        //     countSetter,
-        //     toastLoading,
-        //     casperService
-        // )
-        // //const deployRes = await casperService.deploy(deploy);
-        // //console.log("deployRes", deployRes.deploy_hash);
-        // countSetter((c) => c + 1);
-        toast.dismiss(toastLoading);
     }
 
     async function onChangeValueToken(value) {
@@ -184,8 +148,34 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                 </SwapModal>
             }
             {!isConnected && <SwapButton content="Connect to Wallet" handler={() => { onConnect() }} />}
+            {isConnected && amoutSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p>}
+            {isConnected && amoutSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p>}
             {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
-            {isConnected && <SwapButton content="Add Liquidity" handler={async () => { onLiquidiy(); setActiveModalSwap(true) }} />}
+            {isConnected && <SwapButton content="Add Liquidity" handler={async () => { setActiveModalSwap(true) }} />}
+            {
+                activeModalSwap &&
+                <SwapModal >
+                    <SwapContainerAtom >
+                        <SwapHeaderAtom>
+                            <HeaderModalAtom>Confirm Add Liquidity</HeaderModalAtom>
+                            <CloseButtonAtom onClick={() => { setActiveModalSwap(false) }}>
+                                <AiOutlineClose />
+                            </CloseButtonAtom>
+                        </SwapHeaderAtom>
+                        <SwapConfirmAtom
+                            firstTokenSelected={firstTokenSelected}
+                            secondTokenSelected={secondTokenSelected}
+                            amoutSwapTokenA={amoutSwapTokenA}
+                            amoutSwapTokenB={amoutSwapTokenB}
+                            slippSwapToken={slippSwapToken}
+                            liquidity={true}
+                        >
+                            <ConfirmSwapButton content="Confirm Add Liquidity" handler={async () => { await onLiquidiy();setActiveModalSwap(false) }} />
+                        </SwapConfirmAtom>
+
+                    </SwapContainerAtom>
+                </SwapModal>
+            }
         </SwapModulesStyled>
     )
 }

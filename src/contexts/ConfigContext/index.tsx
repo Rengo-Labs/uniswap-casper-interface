@@ -5,7 +5,7 @@ import React, { createContext, ReactNode, useCallback, useEffect, useReducer, us
 import toast from 'react-hot-toast';
 import { convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
-import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../../constant';
+import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
 import { initialPairsState, PairsReducer } from '../../reducers/PairsReducer';
@@ -13,7 +13,7 @@ import { initialStateToken, TokenReducer, tokenReducerEnum } from '../../reducer
 import { initialStateWallet, reducerWallet } from '../../reducers/WalletReducers';
 
 export const ConfigProviderContext = createContext<any>({})
-
+let torus;
 async function tryToConnectSigner() {
     try {
         return await Signer.getActivePublicKey()
@@ -197,8 +197,7 @@ async function liquidityAgainstUserAndPair(activePublicKey, pairId) {
         to: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex"),
         pairid: pairId
     }
-    const resp = await axios.post(`${BASE_URL}/liquidityagainstuserandpair`, param)
-    return resp
+    return await axios.post(`${BASE_URL}/liquidityagainstuserandpair`, param)
 }
 
 async function getPairAgainstUser(activePublicKey) {
@@ -227,7 +226,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [state, dispatch] = useReducer(ConfigReducer, initialConfigState)
     const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
     const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
-    const { pairList } = pairState
     const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
     const {
         isConnected,
@@ -242,22 +240,19 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         loadTokens(tokenDispatch)
     }, [])
 
-    async function testingthing() {
+    async function fillPairs(walletAddress) {
         try {
             // const respuesta = await getPairAgainstUser(walletAddress)
             // console.log("getPairAgainstUser", respuesta)
             // const otraresp = await getPathReserves(respuesta)
             // console.log("getPathReserves", otraresp)
-            if (walletAddress) {
-                for (let pair of pairList) {
-                    const ultima:any = await liquidityAgainstUserAndPair(walletAddress, pair.id)
-                    console.log("liquidityAgainstUserAndPair", JSON.stringify(ultima.liquidity))
-                }
+            const pairList = Object.keys(pairState).map(x => pairState[x])
+            for (let pair of pairList) {
+                const result: any = await liquidityAgainstUserAndPair(walletAddress, pair.id)
+                pairDispatch({ type: "ADD_BALANCE_TO_PAIR", payload: { pair: pair.name, balance: (result.data.liquidity / 10 ** 9).toString() } })
             }
-
-
         } catch (error) {
-            console.log("testingthing", error.message)
+            console.log("fillPairs", error.message)
         }
     }
 
@@ -279,11 +274,12 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 console.log("csprBalance", csprBalance)
                 dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
                 dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
+                fillPairs(walletAddress)
                 toast.dismiss(ToasLoading)
                 toast.success("your wallet is mounted and ready to ride!")
             }
         } else {
-            const torus = new Torus();
+            torus = new Torus();
             await torus.init({
                 buildEnv: "testing",
                 showTorusButton: true,
@@ -299,6 +295,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             console.log("csprBalance", csprBalance)
             dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
             dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
+            fillPairs(walletAddress)
             toast.dismiss(ToasLoading)
             toast.success("your wallet is mounted and ready to ride!")
         }
@@ -334,16 +331,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 console.log("deploy_hash", signedDeploy.deploy_hash)
                 let result = await getDeploy(signedDeploy.deploy_hash);
                 toast.dismiss(loadingToast)
-                toast.success("Got it! take your swap!")
+                toast.success(`Got it! take your swap!`)
                 console.log(result)
                 return true
             }
             if (walletSelected === 'casper') {
-                console.log("ahora estamos aca")
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
                 let result = await putdeploySigner(signedDeploy);
                 toast.dismiss(loadingToast)
-                toast.success("Got it! take your swap!")
+                toast.success(`Got it! take your swap!`)
                 console.log(result)
                 return true
             }
@@ -365,6 +361,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 toast.error("Ooops we have an error")
             }
         } else if (isConnected && walletSelected === "torus") {
+            await torus.logout();
             dispatch({ type: ConfigActions.DISCONNECT_WALLET })
             toast.success("your wallet is unmounted")
         }
@@ -390,6 +387,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 toast.success("Got it! token was allowed!")
                 return true
             }
+            if (walletSelected === 'torus') {
+                const signedDeploy = await signDeployWithTorus(deploy)
+                console.log("deploy_hash", signedDeploy.deploy_hash)
+                let result = await getDeploy(signedDeploy.deploy_hash);
+                toast.dismiss(loadingToast)
+                toast.success(`Got it! take your swap!`)
+                console.log(result)
+                return true
+            }
         } catch (error) {
             toast.dismiss(loadingToast)
             console.log("onIncreaseAllow")
@@ -408,6 +414,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 let result = await putdeploySigner(signedDeploy);
                 toast.dismiss(loadingToast)
                 toast.success("Got it! both token were added!!")
+                console.log(result)
+                return true
+            }
+            if (walletSelected === 'torus') {
+                const signedDeploy = await signDeployWithTorus(deploy)
+                console.log("deploy_hash", signedDeploy.deploy_hash)
+                let result = await getDeploy(signedDeploy.deploy_hash);
+                toast.dismiss(loadingToast)
+                toast.success(`Got it! take your swap!`)
                 console.log(result)
                 return true
             }
@@ -447,7 +462,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             slippageToleranceSelected,
             onIncreaseAllow,
             onAddLiquidity,
-            testingthing
+            fillPairs,
+            pairState
         }}>
             {children}
         </ConfigProviderContext.Provider>

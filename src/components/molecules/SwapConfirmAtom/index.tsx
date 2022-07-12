@@ -30,7 +30,7 @@ const InnerTokenStyled = styled.div`
     gap:10px;
 `
 
-export const SwapConfirmAtom = ({ firstTokenSelected, secondTokenSelected, children, amoutSwapTokenA, amoutSwapTokenB, slippSwapToken }) => {
+export const SwapConfirmAtom = ({ firstTokenSelected, secondTokenSelected, children, amoutSwapTokenA, amoutSwapTokenB, slippSwapToken,liquidity=false}) => {
     return (
         <ContainerStyled>
             <BorderStyled>
@@ -42,7 +42,8 @@ export const SwapConfirmAtom = ({ firstTokenSelected, secondTokenSelected, child
                     <Tokens Token={secondTokenSelected} amoutSwapToken={amoutSwapTokenB} />
                 </TokenStyled>
             </BorderStyled>
-            <div>output is estimated. you will receive at least {slippSwapToken} {secondTokenSelected.symbol} or the transaction will revert</div>
+            {!liquidity && <div>output is estimated. you will receive at least {slippSwapToken} {secondTokenSelected.symbol} or the transaction will revert</div>}
+            {liquidity && <div>you will receive at least {slippSwapToken} {secondTokenSelected.symbol}-{firstTokenSelected.symbol}-LP token or the transaction will revert</div>}
             <div style={{ marginLeft: "20%" }}>{children}</div>
 
         </ContainerStyled>

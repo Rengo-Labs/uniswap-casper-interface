@@ -21,6 +21,7 @@ import {
   ROUTER_CONTRACT_HASH,
   ROUTER_PACKAGE_HASH,
   SUPPORTED_NETWORKS,
+  URL_DEPLOY,
 } from "../../constant";
 import toast from "react-hot-toast";
 import axios from "axios";

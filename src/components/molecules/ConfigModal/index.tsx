@@ -51,7 +51,7 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
     const [openModal, openModalSet] = useAtom(setConfig)
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
-    const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState } = useContext(ConfigProviderContext)
+    const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
     const {
         isConnected,
         walletAddress,
@@ -65,7 +65,6 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
     const walletSelector = new WalletController()
     const [activeWallet, activeWalletSetter] = useState(walletSelector.activeWallet)
 
-    let torus;
     function switchWallet() {
         onChangeWallet()
     }
@@ -122,12 +121,17 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                         </PillowDiv>
                     </ConfigModalBody>
                     <ConfigModalBody>
-                        <h1>Favorites</h1>
+                        <h1>LP-Tokens</h1>
                         <PillowDiv>
-                            <WalletSelectionDiv walletSelected={"walletSelected"} onClick={() => { switchWallet() }} style={{ backgroundColor: `${walletSelector.activeWallet === ActiveWallet.CASPER ? "red" : ""}` }}>
-                                <WalletSelectionImageStyled src={casperWallet} alt="" />
-                                <h2>Casper</h2>
-                            </WalletSelectionDiv>
+                            <div style={{ display: "flex", flexDirection: "column",gap:"10px" }}>
+                                {Object.keys(pairState).map(x => {
+                                    return <div key={x.toString()}>
+                                        <ButtonStyle>{pairState[x].name + "-LP"}: {pairState[x].balance}</ButtonStyle>
+                                    </div>
+
+                                })}
+                            </div>
+
                         </PillowDiv>
                     </ConfigModalBody>
                     {children}

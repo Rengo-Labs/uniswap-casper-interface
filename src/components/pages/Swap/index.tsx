@@ -78,8 +78,6 @@ export const Swap = () => {
 
   }
 
-
-
   async function onChangeValueToken(value) {
     amoutSwapTokenASetter(value)
     const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)

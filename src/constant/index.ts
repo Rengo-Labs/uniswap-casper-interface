@@ -18,7 +18,7 @@ export const CHAINS = {
   CASPER_MAINNET: "casper",
   CASPER_TESTNET: "casper-test",
 };
-
+export const URL_DEPLOY = "https://testnet.cspr.live/deploy"
 export const SUPPORTED_NETWORKS = {
   [CHAINS.CASPER_MAINNET]: {
     blockExplorerUrl: "https://cspr.live",
