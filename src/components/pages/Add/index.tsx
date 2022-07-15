@@ -1,16 +1,17 @@
 import React from 'react'
 
 import { CardContainer } from '../../atoms'
+import { LiquidityBox } from '../../molecules'
+import { LiquidityModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
-import { LiquidityTemplate } from '../../templates/LiquidityTemplate'
 
-export const Liquidity = () => {
+export const Add = () => {
 
   return (
     <BasicLayout>
-      <CardContainer cardTitle="Liquidity">
-        <LiquidityTemplate />
+      <CardContainer cardTitle="Add Liquidity">
+        <LiquidityModule />
       </CardContainer >
     </BasicLayout>
   )

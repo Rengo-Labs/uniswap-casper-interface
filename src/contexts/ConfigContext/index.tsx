@@ -222,6 +222,18 @@ async function getPathReserves(resp) {
     }
 }
 
+function ObjectToArray(object) {
+    const array = []
+    Object.keys(object).map(x => {
+        array.push(object[x])
+    })
+    return array
+}
+
+function PairsWithBalance(pairs){
+    return ObjectToArray(pairs).filter(x=>x.balance > 0)
+}
+
 export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) => {
     const [state, dispatch] = useReducer(ConfigReducer, initialConfigState)
     const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
@@ -256,6 +268,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
+    function cleanPairs(){
+        return PairsWithBalance(pairState)
+    }
     async function onConnectConfig() {
         const ToasLoading = toast.loading("Try to connect your wallet")
         if (walletSelected === 'casper') {
@@ -418,11 +433,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 return true
             }
             if (walletSelected === 'torus') {
-                const signedDeploy = await signDeployWithTorus(deploy)
-                console.log("deploy_hash", signedDeploy.deploy_hash)
-                let result = await getDeploy(signedDeploy.deploy_hash);
+                console.log("signing add liquidity")
+                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                let result = await putdeploySigner(signedDeploy);
                 toast.dismiss(loadingToast)
-                toast.success(`Got it! take your swap!`)
+                toast.success("Got it! both token were added!!")
                 console.log(result)
                 return true
             }
@@ -463,7 +478,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onIncreaseAllow,
             onAddLiquidity,
             fillPairs,
-            pairState
+            pairState,
+            cleanPairs
         }}>
             {children}
         </ConfigProviderContext.Provider>

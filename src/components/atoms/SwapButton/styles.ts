@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const ButtonStyle = styled.button`
-    width: 105%;
+    width: 80%;
     color: ${props => props.theme.StrongColor};
     background-color: ${props => props.theme.TertiaryColor};
     padding:10px 0;
