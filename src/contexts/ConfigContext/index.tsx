@@ -117,6 +117,26 @@ async function calculateReserves(firstTokenSelected, secondTokenSelected, value)
     }
 }
 
+async function allowanceAgainstOwnerAndSpenderPaircontract(pair, activePublicKey) {
+    let allowanceParam = {
+        contractHash: pair,
+        owner: CLPublicKey.fromHex(activePublicKey)
+            .toAccountHashStr()
+            .slice(13),
+        spender: ROUTER_PACKAGE_HASH,
+    };
+    axios
+        .post(`${BASE_URL}/allowanceagainstownerandspenderpaircontract`, allowanceParam)
+        .then((res) => {
+            console.log("allowanceagainstownerandspenderpaircontract", res);
+            console.log(res.data);
+        })
+        .catch((error) => {
+            console.log(error);
+            console.log(error.response);
+        });
+}
+
 async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
     try {
         const publicKey = CLPublicKey.fromHex(activePublicKey);
@@ -230,8 +250,8 @@ function ObjectToArray(object) {
     return array
 }
 
-function PairsWithBalance(pairs){
-    return ObjectToArray(pairs).filter(x=>x.balance > 0)
+function PairsWithBalance(pairs) {
+    return ObjectToArray(pairs).filter(x => x.balance > 0)
 }
 
 export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) => {
@@ -268,7 +288,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    function cleanPairs(){
+    function cleanPairs() {
         return PairsWithBalance(pairState)
     }
     async function onConnectConfig() {
@@ -419,6 +439,35 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
+    async function onDecreaseAllow(amount) {
+        const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
+        try {
+            const valueTotal = amount * 10 ** 9
+            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, secondTokenSelected.contractHash, valueTotal, false)
+            if (walletSelected === 'casper') {
+                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                let result = await putdeploySigner(signedDeploy);
+                toast.dismiss(loadingToast)
+                toast.success("Got it! token was allowed!")
+                return true
+            }
+            if (walletSelected === 'torus') {
+                const signedDeploy = await signDeployWithTorus(deploy)
+                console.log("deploy_hash", signedDeploy.deploy_hash)
+                let result = await getDeploy(signedDeploy.deploy_hash);
+                toast.dismiss(loadingToast)
+                toast.success(`Got it! take your swap!`)
+                console.log(result)
+                return true
+            }
+        } catch (error) {
+            toast.dismiss(loadingToast)
+            console.log("onDecreaseAllow")
+            toast.error("Ooops, we have a problem")
+            return false
+        }
+    }
+
     async function onAddLiquidity(amountA, amountB) {
         const loadingToast = toast.loading("let me try to add liquidity! be patient!")
         try {
@@ -457,6 +506,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             return { secondTokenReturn: 0, minAmountReturn: 0 }
         }
     }
+
+    async function onAllowanceAgaintPair(pair) {
+        await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
+    }
     return (
         <ConfigProviderContext.Provider value={{
             onConnectConfig,
@@ -476,6 +529,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onConfirmSwapConfig,
             slippageToleranceSelected,
             onIncreaseAllow,
+            onDecreaseAllow,
+            onAllowanceAgaintPair,
             onAddLiquidity,
             fillPairs,
             pairState,

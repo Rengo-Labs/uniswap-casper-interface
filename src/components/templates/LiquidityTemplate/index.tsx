@@ -1,10 +1,11 @@
 import React, { useContext, useState } from 'react'
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { CloseButtonAtom, HeaderModalAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom } from '../../atoms';
+import { CloseButtonAtom, ConfigModalBody, HeaderModalAtom, PillowDiv, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, WalletSelectionDiv } from '../../atoms';
 import { ConfigProviderContext } from '../../../contexts/ConfigContext';
 import { SwapModal } from '../../molecules';
 import { AiOutlineClose } from 'react-icons/ai';
+import { WalletSelectionImageStyled } from '../../molecules/ConfigModal/styles';
 
 export const SwapModulesStyled = styled.section`
     margin:10px;
@@ -50,13 +51,20 @@ export const LiquidityCardFooterStyled = styled.div`
 export const LiquidityTemplate = () => {
     let navigate = useNavigate();
     const [activeModalSwap, activeModalSwapSetter] = useState(false)
-    const { onConnectConfig, isConnected, cleanPairs } = useContext(ConfigProviderContext)
+    const { onConnectConfig, isConnected, cleanPairs, onDecreaseAllow, onAllowanceAgaintPair,slippageTolerance,onSetSlippage,
+        onAddLiquidity, } = useContext(ConfigProviderContext)
+
 
     function onConnect() {
         onConnectConfig()
     }
 
-
+    async function onDecreaseModal(pair) {
+        //console.log(JSON.stringify(pair))
+        if (await onDecreaseAllow(1)) {
+            await onAllowanceAgaintPair(pair)
+        }
+    }
 
     return (
         <SwapModulesStyled>
@@ -65,7 +73,7 @@ export const LiquidityTemplate = () => {
                     <LiquidityCardHeadSectionStyled>
                         <LiquidityCardHeadTitleStyled>Your Liquidity</LiquidityCardHeadTitleStyled>
                         <LiquidityCardHeadCallToActionStyled>
-                            <LiquidityCardHeadButtonStyled>X</LiquidityCardHeadButtonStyled>
+                            <LiquidityCardHeadButtonStyled onClick={() => { activeModalSwapSetter(true) }}>X</LiquidityCardHeadButtonStyled>
                             <LiquidityCardHeadButtonStyled>Y</LiquidityCardHeadButtonStyled>
                         </LiquidityCardHeadCallToActionStyled>
                     </LiquidityCardHeadSectionStyled>
@@ -76,7 +84,7 @@ export const LiquidityTemplate = () => {
                 <SwapTokenBalanceStyled>
 
                     {!isConnected && <>Connect your wallet first</>}
-                    {isConnected && <RenderPairs pairs={cleanPairs()} callback={()=>{activeModalSwapSetter(true)}}/>}
+                    {isConnected && <RenderPairs pairs={cleanPairs()} callback={onDecreaseModal} />}
                 </SwapTokenBalanceStyled>
                 <LiquidityCardFooterStyled>
                     {!isConnected && <SwapButton content="Connect to Wallet" handler={() => { onConnect() }} />}
@@ -86,14 +94,28 @@ export const LiquidityTemplate = () => {
                     <SwapModal>
                         <SwapContainerAtom >
                             <SwapHeaderAtom>
-                                <HeaderModalAtom>Confirm Add Liquidity</HeaderModalAtom>
+                                <HeaderModalAtom>Transaction Settings</HeaderModalAtom>
                                 <CloseButtonAtom onClick={() => { activeModalSwapSetter(false) }}>
                                     <AiOutlineClose />
                                 </CloseButtonAtom>
                             </SwapHeaderAtom>
-                            <div>
-                                otra cosa
-                            </div>
+                            <ConfigModalBody>
+                                <PillowDiv>
+                                    Language Selection
+                                </PillowDiv>
+                                <PillowDiv>
+                                    Visual Mode
+                                </PillowDiv>
+                                <PillowDiv>
+                                    Slippage Tolerance
+                                    <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "0.1" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.1") }} >0.1%</ButtonStyle>
+                                    <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "0.5" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.5") }} >0.5%</ButtonStyle>
+                                    <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "1.0" ? "red" : ""}` }} onClick={() => { onSetSlippage("1.0") }} >1.0%</ButtonStyle>
+                                </PillowDiv>
+                                <PillowDiv>
+                                    Transaction Speed
+                                </PillowDiv>
+                            </ConfigModalBody>
 
                         </SwapContainerAtom>
                     </SwapModal>}
@@ -103,11 +125,11 @@ export const LiquidityTemplate = () => {
 }
 
 
-const RenderPairs = ({ pairs,callback }: any) => {
+const RenderPairs = ({ pairs, callback }: any) => {
     if (pairs.length > 0) {
         return (
             <>
-                {pairs.map(x => <ButtonPair key={x.toString()} pair={x} callback={()=>{callback()}}/>)}
+                {pairs.map(x => <ButtonPair key={x.toString()} pair={x} callback={callback} />)}
             </>
         )
     } else {
@@ -158,7 +180,7 @@ const ButtonPair = ({ pair, callback }: any) => {
                 <div>Name: {pair.name}</div>
                 <div>Balance: {pair.balance}</div>
             </ShowPairStyled>
-            <ButtonStyle onClick={()=>{callback()}}>- Remove Liquidity</ButtonStyle>
+            <ButtonStyle onClick={() => { callback(pair.id) }}>- Remove Liquidity</ButtonStyle>
         </ContainerStyled>
     )
 }
