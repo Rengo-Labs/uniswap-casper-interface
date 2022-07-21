@@ -52,7 +52,7 @@ export const LiquidityTemplate = () => {
     let navigate = useNavigate();
     const [activeModalSwap, activeModalSwapSetter] = useState(false)
     const { onConnectConfig, isConnected, cleanPairs, onDecreaseAllow, onAllowanceAgaintPair,slippageTolerance,onSetSlippage,
-        onAddLiquidity, } = useContext(ConfigProviderContext)
+        onAddLiquidity,onRemoveLiquidity } = useContext(ConfigProviderContext)
 
 
     function onConnect() {
@@ -62,7 +62,7 @@ export const LiquidityTemplate = () => {
     async function onDecreaseModal(pair) {
         //console.log(JSON.stringify(pair))
         if (await onDecreaseAllow(1)) {
-            await onAllowanceAgaintPair(pair)
+            await onRemoveLiquidity(pair)
         }
     }
 

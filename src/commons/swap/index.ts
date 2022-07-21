@@ -218,6 +218,87 @@ export function convertToString(e) {
   return e.toString();
 }
 
+export async function removeLiquidityPutDeploy(signedDeploy, activePublicKey) {
+  // Dispatch deploy to node.
+  const client = new CasperClient(NODE_ADDRESS);
+  const installDeployHash = await client.putDeploy(signedDeploy);
+  let param = {
+    user: Buffer.from(
+      CLPublicKey.fromHex(activePublicKey).toAccountHash()
+    ).toString("hex"),
+    deployHash: installDeployHash,
+  };
+  console.log(`... Contract installation deployHash: ${installDeployHash}`);
+  await axios
+    .post(`${BASE_URL}/setUserForRemoveLiquidityCSPR`, param)
+    .then(async (res) => {
+      console.log("setUserForRemoveLiquidityCSPR", res);
+      const result = await getDeploy(installDeployHash);
+      console.log(
+        `... Contract installed successfully.`,
+        JSON.parse(JSON.stringify(result))
+      );
+    })
+    .catch((error) => {
+      console.log(error);
+      console.log(error.response);
+    });
+
+  return installDeployHash;
+}
+
+export function removeLiquidityArgs(
+  _token_a,
+  _token_b,
+  liquidity,
+  value,
+  token_AAmount,
+  slippage,
+  token_BAmount,
+  publicKey,
+  deadline
+) {
+  try {
+    return RuntimeArgs.fromMap({
+      token_a: new CLKey(_token_a),
+      token_b: new CLKey(_token_b),
+      liquidity: CLValueBuilder.u256(convertToStr((liquidity * value) / 100)),
+      amount_a_min: CLValueBuilder.u256(
+        convertToStr(
+          Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9)
+        )
+      ),
+      amount_b_min: CLValueBuilder.u256(
+        convertToStr(
+          Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9)
+        )
+      ),
+      to: createRecipientAddress(publicKey),
+      deadline: CLValueBuilder.u256(deadline),
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+export async function makeDeploy(
+  publicKey,
+  contractHashAsByteArray,
+  entryPoint,
+  runtimeArgs,
+  paymentAmount
+) {
+  let deploy = DeployUtil.makeDeploy(
+    new DeployUtil.DeployParams(publicKey, "casper-test"),
+    DeployUtil.ExecutableDeployItem.newStoredContractByHash(
+      contractHashAsByteArray,
+      entryPoint,
+      runtimeArgs
+    ),
+    DeployUtil.standardPayment(paymentAmount)
+  );
+  return deploy;
+}
+
 export async function signDeployWithTorus(deploy) {
   try {
     const torus = new Torus();

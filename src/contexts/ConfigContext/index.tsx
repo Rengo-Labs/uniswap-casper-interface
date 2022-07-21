@@ -3,7 +3,8 @@ import axios from 'axios';
 import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
-import { convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import { convertToStr } from '../../app/components/ConvertToString/ConvertToString';
+import { convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
@@ -137,6 +138,90 @@ async function allowanceAgainstOwnerAndSpenderPaircontract(pair, activePublicKey
         });
 }
 
+async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAddress, tokenBAddress, tokenAAmountPercent, tokenBAmountPercent, liquidity, value, slippage) {
+    const publicKey = CLPublicKey.fromHex(publicKeyHex);
+    const caller = ROUTER_CONTRACT_HASH;
+    const token_AAmount = (1/100).toFixed(9)//tokenAAmountPercent.toFixed(9);
+    const token_BAmount = (1/100).toFixed(9)//tokenBAmountPercent.toFixed(9);
+    const deadline = 1739598100811;
+    const paymentAmount = 5_000_000_000;
+
+    const _token_a = new CLByteArray(
+        Uint8Array.from(Buffer.from(tokenAAddress.slice(5), "hex"))
+    );
+    const _token_b = new CLByteArray(
+        Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
+    );
+
+    const runtimeArgs = removeLiquidityArgs(_token_a,
+        _token_b,
+        liquidity,
+        value,
+        token_AAmount,
+        slippage,
+        token_BAmount,
+        publicKey,
+        deadline)
+    let contractHashAsByteArray = Uint8Array.from(Buffer.from(caller, "hex"));
+    let entryPoint = "remove_liquidity_js_client";
+
+    // Set contract installation deploy (unsigned).
+    return await makeDeploy(
+        publicKey,
+        contractHashAsByteArray,
+        entryPoint,
+        runtimeArgs,
+        paymentAmount
+    );
+}
+async function RemoveLiquidityCSPRMakeDeploy(publicKeyHex, tokenA, tokenB, tokenAAmountPercent, tokenBAmountPercent, liquidity, slippage, value) {
+    const publicKey = CLPublicKey.fromHex(publicKeyHex);
+    let token;
+    let cspr_Amount;
+    let token_Amount;
+    if (tokenA.symbol === "WCSPR") {
+        token = tokenB.packageHash;
+        cspr_Amount = tokenAAmountPercent.toFixed(9);
+        token_Amount = tokenBAmountPercent.toFixed(9);
+    } else {
+        token = tokenA.packageHash;
+        cspr_Amount = tokenBAmountPercent.toFixed(9);
+        token_Amount = tokenAAmountPercent.toFixed(9);
+    }
+    const deadline = 1739598100811;
+    const paymentAmount = 8000000000;
+
+    const _token = new CLByteArray(
+        Uint8Array.from(Buffer.from(token.slice(5), "hex"))
+    );
+
+    const runtimeArgs = RuntimeArgs.fromMap({
+        amount: CLValueBuilder.u512(convertToStr(Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9))),
+        destination_entrypoint: CLValueBuilder.string("remove_liquidity_cspr"),
+        router_hash: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))),
+        token: new CLKey(_token),
+        liquidity: CLValueBuilder.u256(convertToStr((liquidity * value) / 100)),
+        amount_cspr_min: CLValueBuilder.u256(
+            convertToStr(
+                Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9)
+            )
+        ),
+        amount_token_min: CLValueBuilder.u256(
+            convertToStr(
+                Number(token_Amount - (token_Amount * slippage) / 100).toFixed(9)
+            )
+        ),
+        to: createRecipientAddress(publicKey),
+        deadline: CLValueBuilder.u256(deadline),
+    });
+
+    return await makeDeployWasm(
+        publicKey,
+        runtimeArgs,
+        paymentAmount
+    );
+}
+
 async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
     try {
         const publicKey = CLPublicKey.fromHex(activePublicKey);
@@ -179,7 +264,6 @@ async function addLiquidityMakeDeploy(
     mainPurse,
 ) {
     const publicKeyHex = activePublicKey;
-    const selectedWallet = "Casper";
     const publicKey = CLPublicKey.fromHex(publicKeyHex);
     const tokenBAddress = tokenB?.packageHash;
     const token_AAmount = tokenAAmount;
@@ -440,7 +524,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     async function onDecreaseAllow(amount) {
-        const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
+        const loadingToast = toast.loading("let me try to remove liquidity! be patient!")
         try {
             const valueTotal = amount * 10 ** 9
             const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, secondTokenSelected.contractHash, valueTotal, false)
@@ -498,6 +582,36 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
+    async function onRemoveLiquidity(amountA, amountB) {
+        const loadingToast = toast.loading("let me try to remove liquidity! be patient!")
+        try {
+            const deploy = await RemoveLiquidityMakeDeploy(walletAddress, firstTokenSelected.contractHash,secondTokenSelected.contractHash, 0.1, 0.1, 1, 10*10**9,slippageToleranceSelected)
+            if (walletSelected === 'casper') {
+                console.log("signing add liquidity")
+                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                let result = await removeLiquidityPutDeploy(signedDeploy,walletAddress);
+                toast.dismiss(loadingToast)
+                toast.success("Got it! both token were added!!")
+                console.log(result)
+                return true
+            }
+            if (walletSelected === 'torus') {
+                console.log("signing add liquidity")
+                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                let result = await putdeploySigner(signedDeploy);
+                toast.dismiss(loadingToast)
+                toast.success("Got it! both token were added!!")
+                console.log(result)
+                return true
+            }
+        } catch (error) {
+            toast.dismiss(loadingToast)
+            console.log("onRemoveLiquidity")
+            toast.error("Ooops, we have a problem")
+            return false
+        }
+    }
+
     async function onCalculateReserves(value) {
         try {
             return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
@@ -534,7 +648,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onAddLiquidity,
             fillPairs,
             pairState,
-            cleanPairs
+            cleanPairs,
+            onRemoveLiquidity
         }}>
             {children}
         </ConfigProviderContext.Provider>
