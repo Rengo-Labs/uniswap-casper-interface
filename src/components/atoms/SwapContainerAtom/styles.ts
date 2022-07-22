@@ -12,5 +12,6 @@ export const SwapContainerStyled = styled.section<any>`
     gap:1rem;
     display:${prop => prop.isActive};
     flex-direction: column;
+    align-items: center;
     border-radius:10px;
 `

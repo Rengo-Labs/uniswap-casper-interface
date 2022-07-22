@@ -51,8 +51,10 @@ export const LiquidityCardFooterStyled = styled.div`
 export const LiquidityTemplate = () => {
     let navigate = useNavigate();
     const [activeModalSwap, activeModalSwapSetter] = useState(false)
-    const { onConnectConfig, isConnected, cleanPairs, onDecreaseAllow, onAllowanceAgaintPair,slippageTolerance,onSetSlippage,
-        onAddLiquidity,onRemoveLiquidity } = useContext(ConfigProviderContext)
+    const [activeModalLiquidity, activeModalLiquiditySetter] = useState(false)
+    const [activePair, activePairSetter] = useState({ name: "", balance: "" })
+    const { onConnectConfig, isConnected, cleanPairs, onDecreaseAllow, onAllowanceAgaintPair, slippageTolerance, onSetSlippage,
+        onAddLiquidity, onRemoveLiquidity } = useContext(ConfigProviderContext)
 
 
     function onConnect() {
@@ -60,10 +62,12 @@ export const LiquidityTemplate = () => {
     }
 
     async function onDecreaseModal(pair) {
+        activePairSetter(pair)
         //console.log(JSON.stringify(pair))
-        if (await onDecreaseAllow(1)) {
-            await onRemoveLiquidity(pair)
-        }
+        activeModalLiquiditySetter(true)
+        // if (await onDecreaseAllow(1)) {
+        //     await onRemoveLiquidity(pair)
+        // }
     }
 
     return (
@@ -119,11 +123,125 @@ export const LiquidityTemplate = () => {
 
                         </SwapContainerAtom>
                     </SwapModal>}
+                {activeModalLiquidity &&
+                    <SwapModal>
+                        <SwapContainerAtom >
+                            <SwapHeaderAtom>
+                                <HeaderModalAtom>Remove {activePair.name} liquidity </HeaderModalAtom>
+                                <CloseButtonAtom onClick={() => { activeModalLiquiditySetter(false) }}>
+                                    <AiOutlineClose />
+                                </CloseButtonAtom>
+                            </SwapHeaderAtom>
+                            <ConfigModalBody>
+                                <PillowDiv>
+                                    <LiquidityHandler>
+                                        <LiquidityHeader>
+                                            <p>amount</p>
+                                            <p>you have: {activePair.balance}</p>
+                                        </LiquidityHeader>
+                                        <LiquidityBarSection>
+                                            <ProgressBar max={activePair.balance}> 32% </ProgressBar>
+                                            <LiquidityButtons>
+                                                <SwapButton content="25%" handler={() => { }} />
+                                                <SwapButton content="50%" handler={() => { }} />
+                                                <SwapButton content="75%" handler={() => { }} />
+                                                <SwapButton content="MAX" handler={() => { }} />
+                                            </LiquidityButtons>
+                                        </LiquidityBarSection>
+                                    </LiquidityHandler>
+                                </PillowDiv>
+                            </ConfigModalBody>
+                            <ConfigModalBody>
+                                <PillowDiv>
+                                    <LiquidityHandler>
+                                        <p>Receive</p>
+                                        <div>
+                                            <CallToAction>
+                                                <p>WCSPR:</p>
+                                                <p>0.1</p>
+                                            </CallToAction>
+                                            <CallToAction>
+                                                <p>WETH:</p>
+                                                <p>0.1</p>
+                                            </CallToAction>
+                                        </div>
+                                    </LiquidityHandler>
+                                </PillowDiv>
+                            </ConfigModalBody>
+                            <ConfigModalBody>
+                                <PillowDiv>
+                                    <LiquidityHandler>
+                                        <p>Slippage Tolerance: {slippageTolerance}</p>
+                                        <LiquidityButtons>
+                                            <SwapButton content="Enable" handler={() => { }} />
+                                            <SwapButton content="Remove" handler={() => { }} />
+                                        </LiquidityButtons>
+                                    </LiquidityHandler>
+                                </PillowDiv>
+                            </ConfigModalBody>
+                        </SwapContainerAtom>
+                    </SwapModal>}
             </SwapContainer>
         </SwapModulesStyled>
     )
 }
 
+function CallToAction({ children }) {
+    return (<CallToActionStyled>{children}</CallToActionStyled>)
+}
+
+const CallToActionStyled = styled.div`
+    width: 100%;
+    display:flex;
+    justify-content: space-between;
+`
+
+function LiquidityHandler({ children }) {
+    return (<LiquidityHandlerStyled>{children}</LiquidityHandlerStyled>)
+}
+
+const LiquidityHandlerStyled = styled.div`
+    width: 100%;
+    display:grid;
+    gap:10px;
+`
+
+function LiquidityHeader({ children }) {
+    return (<LiquidityHeaderStyled>{children}</LiquidityHeaderStyled>)
+}
+
+const LiquidityHeaderStyled = styled.div`
+    display:flex;
+    justify-content: space-between;
+`
+function ProgressBar({ children, max }) {
+    return (<ProgressBarStyled type="range" max={max} />)
+}
+
+const ProgressBarStyled = styled.input`
+    width: 100%;
+`
+
+function LiquidityButtons({ children }) {
+    return (<LiquidityButtonsStyled>{children}</LiquidityButtonsStyled>)
+}
+
+const LiquidityButtonsStyled = styled.div`
+    display:flex;
+    justify-content: space-between;
+    gap:10px;
+`
+
+function LiquidityBarSection({ children }) {
+    return (<LiquidityBarSectionStyled>{children}</LiquidityBarSectionStyled>)
+}
+
+const LiquidityBarSectionStyled = styled.div`
+    padding:0 10px;
+    display:flex;
+    flex-direction: column;
+    gap:10px;
+`
 
 const RenderPairs = ({ pairs, callback }: any) => {
     if (pairs.length > 0) {
@@ -147,7 +265,6 @@ const ContainerStyled = styled.div`
     border-radius:10px;
     padding:.4rem;
     background-color: ${props => props.theme.StrongColor3};
-
 `
 
 const ShowPairStyled = styled.div`
@@ -180,7 +297,7 @@ const ButtonPair = ({ pair, callback }: any) => {
                 <div>Name: {pair.name}</div>
                 <div>Balance: {pair.balance}</div>
             </ShowPairStyled>
-            <ButtonStyle onClick={() => { callback(pair.id) }}>- Remove Liquidity</ButtonStyle>
+            <ButtonStyle onClick={() => { callback(pair) }}>- Remove Liquidity</ButtonStyle>
         </ContainerStyled>
     )
 }
