@@ -15,4 +15,7 @@ export const ButtonStyle = styled.button`
     &:active{
         background-color: ${props => props.theme.TertiaryColor3};
     }
+    &:disabled{
+        background-color: ${props => props.theme.TertiaryColor2};
+    }
 `

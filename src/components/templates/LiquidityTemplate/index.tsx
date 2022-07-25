@@ -56,6 +56,7 @@ export const LiquidityTemplate = () => {
     const { onConnectConfig, isConnected, cleanPairs, onDecreaseAllow, onAllowanceAgaintPair, slippageTolerance, onSetSlippage,
         onAddLiquidity, onRemoveLiquidity } = useContext(ConfigProviderContext)
     const [removeValue, removeValueSetter] = useState(0)
+    const [enableRemove, enableRemoveSetter] = useState(true)
 
     function onConnect() {
         onConnectConfig()
@@ -63,11 +64,19 @@ export const LiquidityTemplate = () => {
 
     async function onDecreaseModal(pair) {
         activePairSetter(pair)
-        //console.log(JSON.stringify(pair))
         activeModalLiquiditySetter(true)
-        // if (await onDecreaseAllow(1)) {
-        //     await onRemoveLiquidity(pair)
-        // }
+    }
+
+    async function onDecrease(pair) {
+        activePairSetter(pair)
+        await onRemoveLiquidity(pair)
+    }
+
+    async function onDescreaseEnable(pair) {
+        activePairSetter(pair)
+        if (await onDecreaseAllow(1)) {
+            enableRemoveSetter(false)
+        }
     }
 
     return (
@@ -140,7 +149,7 @@ export const LiquidityTemplate = () => {
                                             <p>you have: {activePair.balance}</p>
                                         </LiquidityHeader>
                                         <LiquidityBarSection>
-                                            <ProgressBar max={activePair.balance} value={removeValue} />
+                                            <ProgressBar max={activePair.balance} value={removeValue} onChange={(e) => { removeValueSetter(e.target.value) }} />
                                             <LiquidityButtons>
                                                 <SwapButton content="25%" handler={() => { removeValueSetter(parseInt(activePair.balance) * 0.25) }} />
                                                 <SwapButton content="50%" handler={() => { removeValueSetter(parseInt(activePair.balance) * 0.5) }} />
@@ -173,8 +182,8 @@ export const LiquidityTemplate = () => {
                                     <LiquidityHandler>
                                         <p>Slippage Tolerance: {slippageTolerance}</p>
                                         <LiquidityButtons>
-                                            <SwapButton content="Enable" handler={() => { }} />
-                                            <SwapButton content="Remove" handler={() => { }} />
+                                            <SwapButton content="Enable" handler={async () => { await onDescreaseEnable(1) }} />
+                                            <SwapButton content="Remove" handler={async () => { await onDecrease(1) }} disabled={enableRemove} />
                                         </LiquidityButtons>
                                     </LiquidityHandler>
                                 </PillowDiv>
@@ -214,8 +223,8 @@ const LiquidityHeaderStyled = styled.div`
     display:flex;
     justify-content: space-between;
 `
-function ProgressBar({ max, value }) {
-    return (<ProgressBarStyled type="range" min="0" max={parseInt(max)} value={value} />)
+function ProgressBar({ max, value, onChange }) {
+    return (<ProgressBarStyled type="range" min="0" max={parseInt(max)} value={value} step="0.1" onChange={onChange} />)
 }
 
 const ProgressBarStyled = styled.input`
