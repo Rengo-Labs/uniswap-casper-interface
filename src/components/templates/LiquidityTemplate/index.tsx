@@ -55,7 +55,7 @@ export const LiquidityTemplate = () => {
     const [activePair, activePairSetter] = useState({ name: "", balance: "" })
     const { onConnectConfig, isConnected, cleanPairs, onDecreaseAllow, onAllowanceAgaintPair, slippageTolerance, onSetSlippage,
         onAddLiquidity, onRemoveLiquidity } = useContext(ConfigProviderContext)
-
+    const [removeValue, removeValueSetter] = useState(0)
 
     function onConnect() {
         onConnectConfig()
@@ -140,12 +140,12 @@ export const LiquidityTemplate = () => {
                                             <p>you have: {activePair.balance}</p>
                                         </LiquidityHeader>
                                         <LiquidityBarSection>
-                                            <ProgressBar max={activePair.balance}> 32% </ProgressBar>
+                                            <ProgressBar max={activePair.balance} value={removeValue} />
                                             <LiquidityButtons>
-                                                <SwapButton content="25%" handler={() => { }} />
-                                                <SwapButton content="50%" handler={() => { }} />
-                                                <SwapButton content="75%" handler={() => { }} />
-                                                <SwapButton content="MAX" handler={() => { }} />
+                                                <SwapButton content="25%" handler={() => { removeValueSetter(parseInt(activePair.balance) * 0.25) }} />
+                                                <SwapButton content="50%" handler={() => { removeValueSetter(parseInt(activePair.balance) * 0.5) }} />
+                                                <SwapButton content="75%" handler={() => { removeValueSetter(parseInt(activePair.balance) * 0.75) }} />
+                                                <SwapButton content="MAX" handler={() => { removeValueSetter(parseInt(activePair.balance)) }} />
                                             </LiquidityButtons>
                                         </LiquidityBarSection>
                                     </LiquidityHandler>
@@ -158,11 +158,11 @@ export const LiquidityTemplate = () => {
                                         <div>
                                             <CallToAction>
                                                 <p>WCSPR:</p>
-                                                <p>0.1</p>
+                                                <p>{removeValue / 0.037762211852053015}</p>
                                             </CallToAction>
                                             <CallToAction>
                                                 <p>WETH:</p>
-                                                <p>0.1</p>
+                                                <p>{removeValue}</p>
                                             </CallToAction>
                                         </div>
                                     </LiquidityHandler>
@@ -214,8 +214,8 @@ const LiquidityHeaderStyled = styled.div`
     display:flex;
     justify-content: space-between;
 `
-function ProgressBar({ children, max }) {
-    return (<ProgressBarStyled type="range" max={max} />)
+function ProgressBar({ max, value }) {
+    return (<ProgressBarStyled type="range" min="0" max={parseInt(max)} value={value} />)
 }
 
 const ProgressBarStyled = styled.input`
