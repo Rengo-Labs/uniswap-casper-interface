@@ -247,17 +247,26 @@ export async function removeLiquidityPutDeploy(signedDeploy, activePublicKey) {
   return installDeployHash;
 }
 
+export function CLBArray(token) {
+  return new CLByteArray(Uint8Array.from(Buffer.from(token.slice(5), "hex")));
+}
+
 export function removeLiquidityArgs(
-  _token_a,
-  _token_b,
+  tokenAAddress,
+  tokenBAddress,
   liquidity,
   value,
-  token_AAmount,
   slippage,
-  token_BAmount,
-  publicKey,
-  deadline
+  token_AAmount_,
+  token_BAmount_,
+  publicKeyWallet
 ) {
+  const _token_a = CLBArray(tokenAAddress);
+  const _token_b = CLBArray(tokenBAddress);
+  const publicKey = CLPublicKey.fromHex(publicKeyWallet);
+  const deadline = 1739598100811;
+  const token_AAmount = (1 / 100).toFixed(9); //tokenAAmountPercent.toFixed(9);
+  const token_BAmount = (1 / 100).toFixed(9); //tokenBAmountPercent.toFixed(9);
   try {
     return RuntimeArgs.fromMap({
       token_a: new CLKey(_token_a),

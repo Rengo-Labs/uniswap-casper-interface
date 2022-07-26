@@ -4,7 +4,7 @@ import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLP
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
 import { convertToStr } from '../../app/components/ConvertToString/ConvertToString';
-import { convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
@@ -138,30 +138,12 @@ async function allowanceAgainstOwnerAndSpenderPaircontract(pair, activePublicKey
         });
 }
 
-async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAddress, tokenBAddress, tokenAAmountPercent, tokenBAmountPercent, liquidity, value, slippage) {
+async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, tokenBAmountPercent,runtimeArgs) {
     const publicKey = CLPublicKey.fromHex(publicKeyHex);
     const caller = ROUTER_CONTRACT_HASH;
-    const token_AAmount = (1/100).toFixed(9)//tokenAAmountPercent.toFixed(9);
-    const token_BAmount = (1/100).toFixed(9)//tokenBAmountPercent.toFixed(9);
-    const deadline = 1739598100811;
     const paymentAmount = 5_000_000_000;
 
-    const _token_a = new CLByteArray(
-        Uint8Array.from(Buffer.from(tokenAAddress.slice(5), "hex"))
-    );
-    const _token_b = new CLByteArray(
-        Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
-    );
 
-    const runtimeArgs = removeLiquidityArgs(_token_a,
-        _token_b,
-        liquidity,
-        value,
-        token_AAmount,
-        slippage,
-        token_BAmount,
-        publicKey,
-        deadline)
     let contractHashAsByteArray = Uint8Array.from(Buffer.from(caller, "hex"));
     let entryPoint = "remove_liquidity_js_client";
 
@@ -585,11 +567,22 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     async function onRemoveLiquidity(amountA, amountB) {
         const loadingToast = toast.loading("let me try to remove liquidity! be patient!")
         try {
-            const deploy = await RemoveLiquidityMakeDeploy(walletAddress, firstTokenSelected.contractHash,secondTokenSelected.contractHash, 0.1, 0.1, 1, 10*10**9,slippageToleranceSelected)
+            const contractA = firstTokenSelected.contractHash
+            const contractB = secondTokenSelected.contractHash
+            const runtimeArgs = removeLiquidityArgs(contractA,
+                contractB,
+                1,
+                1,
+                slippageToleranceSelected,
+                1,
+                1,
+                walletAddress
+            )
+            const deploy = await RemoveLiquidityMakeDeploy(walletAddress, 0.1, 0.1,runtimeArgs)
             if (walletSelected === 'casper') {
                 console.log("signing add liquidity")
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
-                let result = await removeLiquidityPutDeploy(signedDeploy,walletAddress);
+                let result = await removeLiquidityPutDeploy(signedDeploy, walletAddress);
                 toast.dismiss(loadingToast)
                 toast.success("Got it! both token were added!!")
                 console.log(result)
