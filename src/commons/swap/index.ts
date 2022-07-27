@@ -108,8 +108,8 @@ export function createRuntimeArgs(
 export async function getswapPath(tokenASymbol, tokenBSymbol) {
   const complete = `${BASE_URL}/getpath`;
   const request = await axios.post(complete, {
-    tokenASymbol: "WCSPR",
-    tokenBSymbol: "WETH",
+    tokenASymbol: tokenASymbol,
+    tokenBSymbol: tokenBSymbol,
   });
   return request.data.pathwithcontractHash.map((x) => {
     return new CLString("hash-".concat(x));
@@ -274,12 +274,12 @@ export function removeLiquidityArgs(
       liquidity: CLValueBuilder.u256(convertToStr((liquidity * value) / 100)),
       amount_a_min: CLValueBuilder.u256(
         convertToStr(
-          Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9)
+          Number(token_AAmount_ - (token_AAmount_ * slippage) / 100).toFixed(9)
         )
       ),
       amount_b_min: CLValueBuilder.u256(
         convertToStr(
-          Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9)
+          Number(token_BAmount_ - (token_BAmount_ * slippage) / 100).toFixed(9)
         )
       ),
       to: createRecipientAddress(publicKey),
