@@ -4,7 +4,7 @@ import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLP
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
 import { convertToStr } from '../../app/components/ConvertToString/ConvertToString';
-import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, createSwapRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
@@ -79,20 +79,31 @@ async function swapMakeDeploy(
     try {
         const publicKey = CLPublicKey.fromHex(publicKeyHex);
         let _paths = await getswapPath(tokenASymbol, tokenBSymbol);
-        const runtimeArgs = createRuntimeArgs(
-            amount_in,
-            slippSwapToken,
-            _paths,
-            publicKey,
-            mainPurse,
-            deadline
-        );
+        if (tokenASymbol !== "WCSPR" && tokenBSymbol !== "WCSPR") {
+            return createSwapRuntimeArgs(
+                amount_in,
+                slippSwapToken,
+                _paths,
+                publicKey,
+                mainPurse,
+                deadline)
+        } else {
+            const runtimeArgs = createRuntimeArgs(
+                amount_in,
+                slippSwapToken,
+                _paths,
+                publicKey,
+                mainPurse,
+                deadline
+            );
 
-        return await makeDeployWasm(
-            publicKey,
-            runtimeArgs,
-            paymentAmount,
-        );
+            return await makeDeployWasm(
+                publicKey,
+                runtimeArgs,
+                paymentAmount,
+            );
+        }
+
     } catch (error) {
         return false
     }
@@ -138,7 +149,7 @@ async function allowanceAgainstOwnerAndSpenderPaircontract(pair, activePublicKey
         });
 }
 
-async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, tokenBAmountPercent,runtimeArgs) {
+async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, tokenBAmountPercent, runtimeArgs) {
     const publicKey = CLPublicKey.fromHex(publicKeyHex);
     const caller = ROUTER_CONTRACT_HASH;
     const paymentAmount = 5_000_000_000;
@@ -578,7 +589,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 1,
                 walletAddress
             )
-            const deploy = await RemoveLiquidityMakeDeploy(walletAddress, 0.1, 0.1,runtimeArgs)
+            const deploy = await RemoveLiquidityMakeDeploy(walletAddress, 0.1, 0.1, runtimeArgs)
             if (walletSelected === 'casper') {
                 console.log("signing add liquidity")
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)

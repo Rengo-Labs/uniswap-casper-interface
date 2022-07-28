@@ -105,6 +105,56 @@ export function createRuntimeArgs(
     console.log(error);
   }
 }
+
+export async function createSwapRuntimeArgs(
+  amount_in,
+  slippSwapToken,
+  _paths,
+  publicKey,
+  mainPurse,
+  deadline
+) {
+  const runtimeArgs = RuntimeArgs.fromMap({
+    amount_in: CLValueBuilder.u256(convertToStr(amount_in)),
+    amount_out_min: CLValueBuilder.u256(
+      convertToStr(10)//amount_out_min - (amount_out_min * slippage) / 100
+    ),
+    path: new CLList(_paths),
+    to: createRecipientAddress(publicKey),
+    deadline: CLValueBuilder.u256(deadline),
+  });
+
+  let contractHashAsByteArray = Uint8Array.from(Buffer.from(ROUTER_CONTRACT_HASH, "hex"));
+  let entryPoint = "swap_exact_tokens_for_tokens_js_client";
+
+  // Set contract installation deploy (unsigned).
+  return await makeDeploySwap(
+    publicKey,
+    contractHashAsByteArray,
+    entryPoint,
+    runtimeArgs,
+    10_000_000_000
+  );
+}
+
+export async function makeDeploySwap(publicKey, contractHashAsByteArray, entryPoint, runtimeArgs, paymentAmount) {
+    let deploy = DeployUtil.makeDeploy(
+        new DeployUtil.DeployParams(
+            publicKey,
+            'casper-test'
+        ),
+        DeployUtil.ExecutableDeployItem.newStoredContractByHash(
+            contractHashAsByteArray,
+            entryPoint,
+            runtimeArgs
+        ),
+        DeployUtil.standardPayment(
+            paymentAmount
+        )
+    );
+    return deploy
+}
+
 export async function getswapPath(tokenASymbol, tokenBSymbol) {
   const complete = `${BASE_URL}/getpath`;
   const request = await axios.post(complete, {
@@ -448,6 +498,8 @@ export async function swapMakeDeploy(
 ) {
   const publicKey = CLPublicKey.fromHex(publicKeyHex);
   let _paths = await getswapPath(tokenASymbol, tokenBSymbol);
+  console.log("tokenASymbol",tokenASymbol)
+  console.log("tokenBSymbol",tokenBSymbol)
   const runtimeArgs = createRuntimeArgs(
     amount_in,
     slippSwapToken,
@@ -456,7 +508,6 @@ export async function swapMakeDeploy(
     mainPurse,
     deadline
   );
-
   let deploy = await makeDeployWasm(publicKey, runtimeArgs, paymentAmount);
 
   let signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);
