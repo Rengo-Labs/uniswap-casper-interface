@@ -120,20 +120,6 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                             Transaction Speed
                         </PillowDiv>
                     </ConfigModalBody>
-                    <ConfigModalBody>
-                        <h1>LP-Tokens</h1>
-                        <PillowDiv>
-                            <div style={{ display: "flex", flexDirection: "column",gap:"10px" }}>
-                                {Object.keys(pairState).map(x => {
-                                    return <div key={x.toString()}>
-                                        <ButtonStyle>{pairState[x].name + "-LP"}: {pairState[x].balance}</ButtonStyle>
-                                    </div>
-
-                                })}
-                            </div>
-
-                        </PillowDiv>
-                    </ConfigModalBody>
                     {children}
                 </ContentStyled>
             </ContainerStyled>

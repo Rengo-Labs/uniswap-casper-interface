@@ -5,6 +5,7 @@ export const PillowStyled = styled.div`
     border-radius: 10px;
     background-color: ${props => props.theme.StrongColor2};
     display: flex;
+    align-items: center;
     gap: 10px;
     justify-content: space-evenly;
 `

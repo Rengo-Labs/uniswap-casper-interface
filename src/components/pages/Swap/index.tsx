@@ -85,6 +85,10 @@ export const Swap = () => {
     slippSwapTokenSetter(minAmountReturn)
   }
 
+  function onSwitch() {
+    onSwitchTokens()
+  }
+
   return (
     <BasicLayout>
       <CardContainer cardTitle="Swap">
@@ -122,7 +126,7 @@ export const Swap = () => {
               </SwapContainerAtom>
             </SwapModal>
           }
-          <SwitchIcon switchHandler={onSwitchTokens} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
+          <SwitchIcon switchHandler={onSwitch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
             <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} amoutSwapToken={amoutSwapTokenB} />

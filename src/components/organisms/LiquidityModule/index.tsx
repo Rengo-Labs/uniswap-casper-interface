@@ -4,7 +4,7 @@ import { SwapSelection } from '../../molecules/SwapSelection'
 import { SwapModal } from '../../molecules/SwapModal'
 import { SwapModulesStyled } from './styles'
 import { LiquidityProviderContext } from '../../../contexts/LiquidityContext'
-import { AiOutlineClose } from 'react-icons/ai'
+import { AiFillPlusCircle, AiOutlineClose, AiOutlinePlus } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
 import { SwapConfirmAtom, SwapTokens } from '../../molecules'
 import casprIcon from '../../../assets/swapIcons/casprIcon.png'
@@ -19,6 +19,7 @@ import { addLiquidityMakeDeploy } from '../../pages/Liquidity/study'
 import { BASE_URL, CHAINS, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../../../constant'
 import Torus from '@toruslabs/casper-embed'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
+import { SwapToken } from '../../molecules/SwapToken'
 
 const errorToast = (msg) => toast.error(msg);
 const successToast = (msg) => toast.success(msg);
@@ -103,18 +104,20 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                             />
                         </SearchSectionAtom>
                         <SwapTokens >
-                            {/**
+                            {
                                 Object.keys(tokens)
                                     .map((key) => {
-                                        return <SwapToken key={key} token={tokens[key]} setToken={dispatch("SELECT_FIRST_TOKEN")} handleModal={handleModalPrimary} />
+                                        const handleToken = () => { onSelectFirstToken(tokens[key]), handleModalPrimary() }
+
+                                        return <SwapToken key={key.toString()} token={tokens[key]} handleToken={handleToken} />
                                     })
-                                     */
                             }
                         </SwapTokens>
+
                     </SwapContainerAtom>
                 </SwapModal>
             }
-            <SwitchIcon switchHandler={switchTokens} />
+            <SwitchIcon icon={<AiOutlinePlus size="2rem"/>} isIcon={false} switchHandler={()=>{}} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
             <SwapContainer>
                 <SwapTokenSelect onClickHandler={() => { handleModalSecondary() }} token={secondTokenSelected}></SwapTokenSelect>
                 <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} amoutSwapToken={amoutSwapTokenB} />
@@ -138,11 +141,15 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                             />
                         </SearchSectionAtom>
                         <SwapTokens >
-                            {/**
-                                fileteredTokens.map((token: any) => {
-                                    return <SwapToken key={token} icon={token.icon} token={token} amount={token.amount} setToken={() => { }} handleModal={handleModalSecondary} />
-                                })
-                             */}
+                            {
+                                Object.keys(tokens)
+                                    .map((key) => {
+                                        const filter = new RegExp(firstTokenSelected.symbol)
+                                        if (filter.test(key)) { return }
+                                        const handleToken = () => { onSelectSecondToken(tokens[key]), handleModalSecondary() }
+                                        return <SwapToken key={key.toString()} token={tokens[key]} handleToken={handleToken} />
+                                    })
+                            }
                         </SwapTokens>
                     </SwapContainerAtom>
                 </SwapModal>
@@ -170,7 +177,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                             slippSwapToken={slippSwapToken}
                             liquidity={true}
                         >
-                            <ConfirmSwapButton content="Confirm Add Liquidity" handler={async () => { await onLiquidiy();setActiveModalSwap(false) }} />
+                            <ConfirmSwapButton content="Confirm Add Liquidity" handler={async () => { await onLiquidiy(); setActiveModalSwap(false) }} />
                         </SwapConfirmAtom>
 
                     </SwapContainerAtom>

@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react'
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { CloseButtonAtom, ConfigModalBody, HeaderModalAtom, PillowDiv, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, WalletSelectionDiv } from '../../atoms';
+import { Button, CloseButtonAtom, ConfigModalBody, HeaderModalAtom, PillowDiv, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, WalletSelectionDiv } from '../../atoms';
 import { ConfigProviderContext } from '../../../contexts/ConfigContext';
 import { SwapModal } from '../../molecules';
-import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineClose,AiFillSetting } from 'react-icons/ai';
 import { WalletSelectionImageStyled } from '../../molecules/ConfigModal/styles';
 
 export const SwapModulesStyled = styled.section`
@@ -86,8 +86,7 @@ export const LiquidityTemplate = () => {
                     <LiquidityCardHeadSectionStyled>
                         <LiquidityCardHeadTitleStyled>Your Liquidity</LiquidityCardHeadTitleStyled>
                         <LiquidityCardHeadCallToActionStyled>
-                            <LiquidityCardHeadButtonStyled onClick={() => { activeModalSwapSetter(true) }}>X</LiquidityCardHeadButtonStyled>
-                            <LiquidityCardHeadButtonStyled>Y</LiquidityCardHeadButtonStyled>
+                            <Button handler={() => { activeModalSwapSetter(true) }} content={<AiFillSetting size="1.5em" />} />
                         </LiquidityCardHeadCallToActionStyled>
                     </LiquidityCardHeadSectionStyled>
                     <LiquidityCardHeadSectionStyled>
@@ -121,9 +120,11 @@ export const LiquidityTemplate = () => {
                                 </PillowDiv>
                                 <PillowDiv>
                                     Slippage Tolerance
+                                    <div style={{display:"flex",gap: "10px"}}>
                                     <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "0.1" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.1") }} >0.1%</ButtonStyle>
                                     <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "0.5" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.5") }} >0.5%</ButtonStyle>
                                     <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "1.0" ? "red" : ""}` }} onClick={() => { onSetSlippage("1.0") }} >1.0%</ButtonStyle>
+                                    </div>
                                 </PillowDiv>
                                 <PillowDiv>
                                     Transaction Speed

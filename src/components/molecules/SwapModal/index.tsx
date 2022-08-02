@@ -1,12 +1,22 @@
 import React, { ReactNode } from 'react'
+import styled from 'styled-components'
 
-import { SwapModalStyled, SwapContainerStyled, SwapHeaderStyled, CloseButtonStyled, SearchSectionStyled, SearchInputStyled, HeaderModalStyled } from './styles'
-import { SwapTokens } from '../SwapTokens'
-import { AiOutlineClose } from "react-icons/ai";
-import { CloseButtonAtom, HeaderModalAtom, SearchSectionAtom, SwapContainerAtom, SwapHeaderAtom } from '../../atoms';
-import { SearchInputAtom } from '../../atoms/SearchInputAtom';
+interface SwapModalStyledInterface {
+    isActive?: any
+}
+export const SwapModalStyled = styled.div<SwapModalStyledInterface>`
+    width: 100vw;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    background-color:${prop => prop.theme.StrongColor4};
+    display: grid;
+    place-items: center;
+    display:${prop => prop.isActive};
+`
 
-export const SwapModal = ({ children, onClick }: { children: ReactNode, onClick?: () => void }) => {
+export const SwapModal = ({ children }: { children: ReactNode }) => {
 
     return (
         <SwapModalStyled>

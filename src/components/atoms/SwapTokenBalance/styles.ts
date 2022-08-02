@@ -45,3 +45,7 @@ export const InputStyled = styled.input`
         color:${props => props.theme.PrimaryColor2};
     }
 `
+
+export const ButtonContainerStyled = styled.div`
+text-align: right;
+`

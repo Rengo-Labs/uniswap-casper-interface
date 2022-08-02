@@ -5,5 +5,7 @@ export const MainStyled = styled.main`
     padding: .5rem;
     border-radius: 10px;
     background-color: ${props => props.theme.StrongColor3};
-
+    display:flex;
+    flex-direction: column;
+    gap:10px;
 `

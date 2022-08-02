@@ -14,7 +14,6 @@ export const SwapModalStyled = styled.div<SwapModalStyledInterface>`
     display: grid;
     place-items: center;
     display:${prop => prop.isActive};
-    
 `
 
 export const SwapContainerStyled = styled.section<any>`
