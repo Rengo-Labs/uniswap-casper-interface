@@ -25,7 +25,7 @@ export const SwapTokenBalance = ({ token, amoutSwapTokenSetter, disabled = false
   return (
     <SwapTokenBalanceStyled>
       {!disabled &&
-        <InputStyled type='number' value={max} disabled placeholder="0.0001" onChange={onChange} />}
+        <InputStyled type='number' value={max} disabled={disabled} placeholder="0.0001" onChange={onChange} />}
 
       {disabled &&
         <InputStyled type='number' disabled value={amoutSwapToken} onChange={onChange} />}
