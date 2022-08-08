@@ -1,6 +1,11 @@
-[Link To Documentation](documentation/00_resume.md)
+# CasperSwap Documentation
+
+all documentation live in:
+
+**[Click here](documentation/00_resume.md)**
 
 
+# React Documentation 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
