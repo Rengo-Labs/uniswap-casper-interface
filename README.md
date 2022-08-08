@@ -1,4 +1,4 @@
-[Link To Documentation](documentation/01_login.md)
+[Link To Documentation](documentation/00_resume.md)
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
