@@ -580,7 +580,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         try {
             const contractA = firstTokenSelected.contractHash
             const contractB = secondTokenSelected.contractHash
-            const runtimeArgs = removeLiquidityArgs(contractA,
+            const runtimeArgs = removeLiquidityArgs(
+                contractA,
                 contractB,
                 1,
                 1,

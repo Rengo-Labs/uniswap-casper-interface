@@ -117,14 +117,16 @@ export async function createSwapRuntimeArgs(
   const runtimeArgs = RuntimeArgs.fromMap({
     amount_in: CLValueBuilder.u256(convertToStr(amount_in)),
     amount_out_min: CLValueBuilder.u256(
-      convertToStr(10)//amount_out_min - (amount_out_min * slippage) / 100
+      convertToStr(10) //amount_out_min - (amount_out_min * slippage) / 100
     ),
     path: new CLList(_paths),
     to: createRecipientAddress(publicKey),
     deadline: CLValueBuilder.u256(deadline),
   });
 
-  let contractHashAsByteArray = Uint8Array.from(Buffer.from(ROUTER_CONTRACT_HASH, "hex"));
+  let contractHashAsByteArray = Uint8Array.from(
+    Buffer.from(ROUTER_CONTRACT_HASH, "hex")
+  );
   let entryPoint = "swap_exact_tokens_for_tokens_js_client";
 
   // Set contract installation deploy (unsigned).
@@ -137,22 +139,23 @@ export async function createSwapRuntimeArgs(
   );
 }
 
-export async function makeDeploySwap(publicKey, contractHashAsByteArray, entryPoint, runtimeArgs, paymentAmount) {
-    let deploy = DeployUtil.makeDeploy(
-        new DeployUtil.DeployParams(
-            publicKey,
-            'casper-test'
-        ),
-        DeployUtil.ExecutableDeployItem.newStoredContractByHash(
-            contractHashAsByteArray,
-            entryPoint,
-            runtimeArgs
-        ),
-        DeployUtil.standardPayment(
-            paymentAmount
-        )
-    );
-    return deploy
+export async function makeDeploySwap(
+  publicKey,
+  contractHashAsByteArray,
+  entryPoint,
+  runtimeArgs,
+  paymentAmount
+) {
+  let deploy = DeployUtil.makeDeploy(
+    new DeployUtil.DeployParams(publicKey, "casper-test"),
+    DeployUtil.ExecutableDeployItem.newStoredContractByHash(
+      contractHashAsByteArray,
+      entryPoint,
+      runtimeArgs
+    ),
+    DeployUtil.standardPayment(paymentAmount)
+  );
+  return deploy;
 }
 
 export async function getswapPath(tokenASymbol, tokenBSymbol) {
@@ -321,17 +324,9 @@ export function removeLiquidityArgs(
     return RuntimeArgs.fromMap({
       token_a: new CLKey(_token_a),
       token_b: new CLKey(_token_b),
-      liquidity: CLValueBuilder.u256(convertToStr((liquidity * value) / 100)),
-      amount_a_min: CLValueBuilder.u256(
-        convertToStr(
-          Number(token_AAmount_ - (token_AAmount_ * slippage) / 100).toFixed(9)
-        )
-      ),
-      amount_b_min: CLValueBuilder.u256(
-        convertToStr(
-          Number(token_BAmount_ - (token_BAmount_ * slippage) / 100).toFixed(9)
-        )
-      ),
+      liquidity: CLValueBuilder.u256(convertToStr(1)),
+      amount_a_min: CLValueBuilder.u256(convertToStr(10)),
+      amount_b_min: CLValueBuilder.u256(convertToStr(10)),
       to: createRecipientAddress(publicKey),
       deadline: CLValueBuilder.u256(deadline),
     });
@@ -498,8 +493,8 @@ export async function swapMakeDeploy(
 ) {
   const publicKey = CLPublicKey.fromHex(publicKeyHex);
   let _paths = await getswapPath(tokenASymbol, tokenBSymbol);
-  console.log("tokenASymbol",tokenASymbol)
-  console.log("tokenBSymbol",tokenBSymbol)
+  console.log("tokenASymbol", tokenASymbol);
+  console.log("tokenBSymbol", tokenBSymbol);
   const runtimeArgs = createRuntimeArgs(
     amount_in,
     slippSwapToken,
