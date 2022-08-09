@@ -83,7 +83,7 @@ Response
 }
 ```
 
-## GetPathReserves
+## Get Path Reserves
 
 METHOD: POST
 

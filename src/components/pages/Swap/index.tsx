@@ -63,19 +63,7 @@ export const Swap = () => {
     const waiting = await onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB)
     amoutSwapTokenASetter(0)
     setActiveModalSwap(false);
-    // const algo = await swapMakeDeploy(walletAddress,
-    //   DEADLINE,
-    //   10_000_000_000,
-    //   amoutSwapTokenA,
-    //   amoutSwapTokenB,
-    //   firstTokenSelected.symbolPair,
-    //   secondTokenSelected.symbolPair,
-    //   slippSwapToken,
-    //   mainPurse,
-    //   axios,
-    //   toastLoading
-    // );
-
+    onConnectConfig()
   }
 
   async function onChangeValueToken(value) {

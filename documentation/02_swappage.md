@@ -38,3 +38,20 @@ both button have the same behavior, but when you click on token B selection the 
 
 ![Token Modal B](images/02_tokenModalB.png)
 
+the button in the middle switch tokens
+
+![Switch Button](images/02_switchButton.png)
+
+when both token are select the user can change the input value of token A, this action trigger a call from update token B value using the APIs called [Get Path Reserves](10_Apis.md)
+
+![Update Reserves](images/02_updateReserves.png)
+
+when two token have a number to be swap the user can click the button on the middle, and then a new modal is displayed
+
+![Swap Modal](images/02_modalSwap.png)
+
+then if the user click the swap confirmation signer display a new windows for sign the transaction to approve swap
+
+![Aprove Transaction](images/02_signSwap.png)
+
+when the trasaction is finished the balance in the wallet is updated.
