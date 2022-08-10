@@ -617,9 +617,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onCalculateReserves(value) {
+    async function onCalculateReserves(value, reverse) {
         try {
-            return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
+            if (!reverse) {
+                return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
+            } else {
+                return await calculateReserves(secondTokenSelected, firstTokenSelected, value)
+            }
         } catch (error) {
             console.log(__filename, "onCalculateReserves", error)
             return { secondTokenReturn: 0, minAmountReturn: 0 }

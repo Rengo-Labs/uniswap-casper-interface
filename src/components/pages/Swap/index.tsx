@@ -59,6 +59,7 @@ export const Swap = () => {
     onConnectConfig()
   }
 
+
   async function onConfirmSwap() {
     const waiting = await onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB)
     amoutSwapTokenASetter(0)
@@ -66,15 +67,24 @@ export const Swap = () => {
     onConnectConfig()
   }
 
-  async function onChangeValueToken(value) {
-    amoutSwapTokenASetter(value)
-    const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
-    amoutSwapTokenBSetter(secondTokenReturn)
-    slippSwapTokenSetter(minAmountReturn)
-  }
-
   function onSwitch() {
     onSwitchTokens()
+    amoutSwapTokenASetter(0)
+    amoutSwapTokenBSetter(0)
+  }
+
+  async function changeTokenA(value) {
+    const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value,false)
+    slippSwapTokenSetter(minAmountReturn)
+    amoutSwapTokenBSetter(secondTokenReturn)
+    amoutSwapTokenASetter(value)
+  }
+
+  async function changeTokenB(value) {
+    const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value,true)
+    slippSwapTokenSetter(minAmountReturn)
+    amoutSwapTokenASetter(secondTokenReturn)
+    amoutSwapTokenBSetter(value)
   }
 
   return (
@@ -83,7 +93,7 @@ export const Swap = () => {
         <SwapModule >
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance token={firstTokenSelected} amoutSwapTokenSetter={onChangeValueToken} />
+            <SwapTokenBalance token={firstTokenSelected} amoutSwapTokenSetter={changeTokenA} amoutSwapToken={amoutSwapTokenA} />
           </SwapContainer>
           {
             activeModalPrimary &&
@@ -117,7 +127,7 @@ export const Swap = () => {
           <SwitchIcon switchHandler={onSwitch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} amoutSwapToken={amoutSwapTokenB} />
+            <SwapTokenBalance token={secondTokenSelected} amoutSwapTokenSetter={changeTokenB} amoutSwapToken={amoutSwapTokenB} />
           </SwapContainer>
           {
             activeModalSecondary &&
