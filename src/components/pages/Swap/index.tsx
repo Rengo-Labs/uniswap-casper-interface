@@ -35,9 +35,11 @@ export const Swap = () => {
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
+    ResetTokens()
   }
   const handleModalSecondary = () => {
     setActiveModalSecondary(!activeModalSecondary)
+    ResetTokens()
   }
 
   const {
@@ -72,6 +74,13 @@ export const Swap = () => {
     amoutSwapTokenASetter(0)
     amoutSwapTokenBSetter(0)
   }
+
+  function ResetTokens() {
+    amoutSwapTokenASetter(0)
+    amoutSwapTokenBSetter(0)
+  }
+
+
 
   async function changeTokenA(value) {
     const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value,false)
