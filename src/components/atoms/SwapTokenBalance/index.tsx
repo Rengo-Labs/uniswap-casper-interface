@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 
 
 
-import { SwapTokenBalanceStyled, RoundedButtonStyled, InputStyled,ButtonContainerStyled } from './styles'
+import { SwapTokenBalanceStyled, RoundedButtonStyled, InputStyled, ButtonContainerStyled } from './styles'
 
-export const SwapTokenBalance = ({ token, amoutSwapTokenSetter, disabled = false, amoutSwapToken = 1 }) => {
+export const SwapTokenBalance = ({ token, amoutSwapToken, amoutSwapTokenSetter }:any) => {
   const [max, setMax] = useState<any>("")
 
   function maxSetter() {
@@ -24,14 +24,10 @@ export const SwapTokenBalance = ({ token, amoutSwapTokenSetter, disabled = false
 
   return (
     <SwapTokenBalanceStyled>
-      {!disabled &&
-        <InputStyled type='number' value={max} disabled={disabled} placeholder="0.0001" onChange={onChange} />}
-
-      {disabled &&
-        <InputStyled type='number' disabled value={amoutSwapToken} onChange={onChange} />}
+      <InputStyled type='number' value={amoutSwapToken} onChange={onChange} />
       <ButtonContainerStyled>
-        <RoundedButtonStyled onClick={maxSetter} style={{ display: `${disabled && "none"}` }}>MAX</RoundedButtonStyled>
-        <RoundedButtonStyled onClick={halfSetter} style={{ display: `${disabled && "none"}` }}>HALF</RoundedButtonStyled>
+        <RoundedButtonStyled onClick={maxSetter}>MAX</RoundedButtonStyled>
+        <RoundedButtonStyled onClick={halfSetter}>HALF</RoundedButtonStyled>
       </ButtonContainerStyled>
     </SwapTokenBalanceStyled>
   )
