@@ -1,6 +1,6 @@
 # Swap details
 
-Swap operation / transaction parameters available for users.
+Parameters of swap trade
 
 ## Short view
 
