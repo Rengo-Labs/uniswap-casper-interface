@@ -77,6 +77,6 @@ Fee recipients:
 
 Swap transaction Casper network fee paid in CSPR and prederminated:
 
-Swap + Approve = 
+Swap + Approve = 10 000 000 000 motes (10 CSPR)
 
 Swap = 
