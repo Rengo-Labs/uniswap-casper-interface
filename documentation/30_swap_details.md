@@ -8,13 +8,31 @@ Parameters of swap trade
 
 Token A to Token B exchange rate and vice versa
 
-Formula: https://www.notion.so/Formula-Exchange-rate-formula-c326fa644d714834b0c27ce610398d3e
+Swap exchange rate calculated according to specified swap volume
+
+```pool_exchange_rate = token_a_pool_size / token_b_pool_size```
+
+```constant_product = token_a_pool_size * token_b_pool_size```
+
+`constant_product` will be the same number before and after a trade occurs.
+
+```new_token_a_pool_size = token_a_pool_size + token_a_paid```
+
+```new_token_b_pool_size =  constant_product / new_token_a_pool_size```
+
+```token_b_recieved = token_b_pool_size - new_token_b_pool_size```
+
+```a_exchange_rate = token_b_recieved / token_a_paid``` Swap exchange rate 1 TokenA = X TokenB
+
+```b_exchange_rate = token_a_paid / token_b_recieved``` Swap exchange rate 1 TokenB = X TokenA
+
+#### SPIKE / NOTE
+
+Currently on `async function calculateReserves` call we return `token_b_recieved` and `minimum_token_b_recieved`
+
+https://github.com/Rengo-Labs/uniswap-casper-interface/blob/e544343368a268c2ba2792112f91483e77350106/src/contexts/ConfigContext/index.tsx#L112
 
 ## Full view
-
-### Swapping through
-
-Router (venue) that gave the best price for this trade (swap)
 
 ### Minimum received
 
@@ -24,15 +42,20 @@ Minimum recieved amount determinated by slippage settings.
 
 Formula:
 
-```Minimum recieved = Estimated recieved * Slippage Tolerance```
+```minimum_token_b_recieved = (token_b_recieved - (token_b_recieved * slippage_tolerance) / 100)```
 
 ### Price impact
 
-Formula: https://www.notion.so/Formula-Price-impact-eac86f35c2474b93914c3424cab87c32
+What is Price impact?
+Price impact is the difference between the current market price and the price you will actually pay when performing a swap transaction on a decentralized exchange
+
+```price_impact = ( b_exchange_ratec / pool_exchange_rate - 1 ) * 100```
 
 ### Slippage Tolerance
 
 The maximum difference (in %) between your estimated price and executed price
+
+Used to calculate minimum amount of Token B to recieve before transaction will be reverted
 
 ### Protocol fee (% token A)
 
@@ -44,9 +67,15 @@ Fee recipients:
 - 0.25% Liquidity providers
 - 0.05% Treasury
 
+```protocol_fee = token_a_paid * 0.3 / 100```
+
+```providers_fee = token_a_paid * 0.25 / 100```
+
+```treasury_fee = token_a_paid * 0.05 / 100```
+
 ### Network gas fee
 
-Casper network Swap transaction network fee in CSPR
+Swap transaction Casper network fee paid in CSPR and prederminated:
 
 Swap + Approve = 
 
