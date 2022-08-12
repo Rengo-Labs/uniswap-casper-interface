@@ -12,19 +12,21 @@ Swap exchange rate calculated according to specified swap volume
 
 ```pool_exchange_rate = token_a_pool_size / token_b_pool_size```
 
+```pool_exchange_rate_reverse = token_b_pool_size / token_a_pool_size```
+
 ```constant_product = token_a_pool_size * token_b_pool_size```
 
 `constant_product` will be the same number before and after a trade occurs.
 
-```new_token_a_pool_size = token_a_pool_size + token_a_paid```
+```new_token_a_pool_size = token_a_pool_size + (token_a_paid - protocol_fee)```
 
 ```new_token_b_pool_size =  constant_product / new_token_a_pool_size```
 
 ```token_b_recieved = token_b_pool_size - new_token_b_pool_size```
 
-```a_exchange_rate = token_b_recieved / token_a_paid``` Swap exchange rate 1 TokenA = X TokenB
+```a_exchange_rate = token_b_recieved / (token_a_paid - protocol_fee)``` Swap exchange rate 1 TokenA = X TokenB
 
-```b_exchange_rate = token_a_paid / token_b_recieved``` Swap exchange rate 1 TokenB = X TokenA
+```b_exchange_rate = (token_a_paid - protocol_fee) / token_b_recieved``` Swap exchange rate 1 TokenB = X TokenA
 
 #### SPIKE / NOTE
 
@@ -67,11 +69,11 @@ Fee recipients:
 - 0.25% Liquidity providers
 - 0.05% Treasury
 
-```protocol_fee = token_a_paid * 0.3 / 100```
-
 ```providers_fee = token_a_paid * 0.25 / 100```
 
 ```treasury_fee = token_a_paid * 0.05 / 100```
+
+```protocol_fee = providers_fee + treasury_fee```
 
 ### Network gas fee
 
