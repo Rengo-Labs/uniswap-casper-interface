@@ -22,7 +22,9 @@ Minimum Token B amount user will recieve, before transaction will be reverted.
 
 Minimum recieved amount determinated by slippage settings.
 
-Formula: https://www.notion.so/Formula-Minimum-recieved-5762b704c73d482cbc479b83230e2005
+Formula:
+
+```Minimum recieved = Estimated recieved * Slippage Tolerance```
 
 ### Price impact
 
