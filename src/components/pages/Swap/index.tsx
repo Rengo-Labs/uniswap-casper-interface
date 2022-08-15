@@ -1,15 +1,13 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import axios from 'axios'
 import { CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
 import { SwapModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
-import { SwapConfirmAtom, SwapModal, SwapSelection, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapModal, SwapTokens } from '../../molecules'
 import { AiOutlineClose } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
 import { SwapToken } from '../../molecules/SwapToken'
-import { SwapProviderContext } from '../../../contexts/SwapContext'
 import { v4 as uuidv4 } from 'uuid';
 
 function useQuery() {
@@ -18,9 +16,8 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-import { BASE_URL, DEADLINE, PAYMENT_AMOUNT } from '../../../constant'
-
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
+import {CollapsingBox} from "../../molecules/CollapsingBox";
 
 
 export const Swap = () => {
@@ -29,9 +26,12 @@ export const Swap = () => {
   const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
   const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
   const [activeModalSwap, setActiveModalSwap] = React.useState(false)
-  const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
-  const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
+  const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
+  const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
   const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
+  const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
+  const [tokenBPrice, tokenBPriceSetter] = useState<any>(0)
+  const [priceImpact, priceImpactSetter] = useState<any>(0)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
@@ -55,7 +55,9 @@ export const Swap = () => {
     isConnected,
     onConfirmSwapConfig,
     slippageToleranceSelected,
-    onCalculateReserves } = useContext(ConfigProviderContext)
+    onCalculateReserves,
+    getSwapDetail
+  } = useContext(ConfigProviderContext)
 
   function onConnect() {
     onConnectConfig()
@@ -63,21 +65,21 @@ export const Swap = () => {
 
 
   async function onConfirmSwap() {
-    const waiting = await onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB)
-    amoutSwapTokenASetter(0)
+    const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB)
+    amountSwapTokenASetter(0)
     setActiveModalSwap(false);
     onConnectConfig()
   }
 
   function onSwitch() {
     onSwitchTokens()
-    amoutSwapTokenASetter(0)
-    amoutSwapTokenBSetter(0)
+    amountSwapTokenASetter(0)
+    amountSwapTokenBSetter(0)
   }
 
   function ResetTokens() {
-    amoutSwapTokenASetter(0)
-    amoutSwapTokenBSetter(0)
+    amountSwapTokenASetter(0)
+    amountSwapTokenBSetter(0)
   }
 
 
@@ -85,15 +87,26 @@ export const Swap = () => {
   async function changeTokenA(value) {
     const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value,false)
     slippSwapTokenSetter(minAmountReturn)
-    amoutSwapTokenBSetter(secondTokenReturn)
-    amoutSwapTokenASetter(value)
+    amountSwapTokenBSetter(secondTokenReturn)
+    amountSwapTokenASetter(value)
+
+    await updateSwapDetail(firstTokenSelected, secondTokenSelected, value)
   }
 
   async function changeTokenB(value) {
     const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value,true)
     slippSwapTokenSetter(minAmountReturn)
-    amoutSwapTokenASetter(secondTokenReturn)
-    amoutSwapTokenBSetter(value)
+    amountSwapTokenASetter(secondTokenReturn)
+    amountSwapTokenBSetter(value)
+
+    await updateSwapDetail(secondTokenSelected, firstTokenSelected, value)
+  }
+
+  async function updateSwapDetail(tokenA, tokenB, value) {
+    const {tokensToTransfer, tokenBPrice, priceImpact} = await getSwapDetail(firstTokenSelected, secondTokenSelected, value)
+    tokensToTransferSetter(tokensToTransfer)
+    tokenBPriceSetter(tokenBPrice)
+    priceImpactSetter(priceImpact)
   }
 
   return (
@@ -102,7 +115,7 @@ export const Swap = () => {
         <SwapModule >
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance token={firstTokenSelected} amoutSwapTokenSetter={changeTokenA} amoutSwapToken={amoutSwapTokenA} />
+            <SwapTokenBalance token={firstTokenSelected} amountSwapTokenSetter={changeTokenA} amountSwapToken={amountSwapTokenA} />
           </SwapContainer>
           {
             activeModalPrimary &&
@@ -136,8 +149,18 @@ export const Swap = () => {
           <SwitchIcon switchHandler={onSwitch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
-            <SwapTokenBalance token={secondTokenSelected} amoutSwapTokenSetter={changeTokenB} amoutSwapToken={amoutSwapTokenB} />
+            <SwapTokenBalance token={secondTokenSelected} amountSwapTokenSetter={changeTokenB} amountSwapToken={amountSwapTokenB} />
           </SwapContainer>
+          {
+            amountSwapTokenB > 0 &&
+            <CollapsingBox firstToken={amountSwapTokenA}
+                           firstSymbolToken={firstTokenSelected}
+                           receivedSymbolToken={secondTokenSelected}
+                           tokensToTransfer={tokensToTransfer}
+                           tokenBPrice={tokenBPrice}
+                           priceImpact={priceImpact}
+            />
+          }
           {
             activeModalSecondary &&
             <SwapModal >
@@ -183,8 +206,8 @@ export const Swap = () => {
                 <SwapConfirmAtom
                   firstTokenSelected={firstTokenSelected}
                   secondTokenSelected={secondTokenSelected}
-                  amoutSwapTokenA={amoutSwapTokenA}
-                  amoutSwapTokenB={amoutSwapTokenB}
+                  amountSwapTokenA={amountSwapTokenA}
+                  amountSwapTokenB={amountSwapTokenB}
                   slippSwapToken={slippSwapToken}
                 >
                   <ConfirmSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />

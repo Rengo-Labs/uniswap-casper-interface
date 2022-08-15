@@ -4,27 +4,27 @@ import React, { useState } from 'react'
 
 import { SwapTokenBalanceStyled, RoundedButtonStyled, InputStyled, ButtonContainerStyled } from './styles'
 
-export const SwapTokenBalance = ({ token, amoutSwapToken, amoutSwapTokenSetter }:any) => {
+export const SwapTokenBalance = ({ token, amountSwapToken, amountSwapTokenSetter }:any) => {
   const [max, setMax] = useState<any>("")
 
   function maxSetter() {
-    amoutSwapTokenSetter(token.amount)
+    amountSwapTokenSetter(token.amount)
     setMax(token.amount)
   }
 
   function halfSetter() {
-    amoutSwapTokenSetter(token.amount / 2)
+    amountSwapTokenSetter(token.amount / 2)
     setMax(token.amount / 2)
   }
 
   function onChange(e) {
-    amoutSwapTokenSetter(e.target.value)
+    amountSwapTokenSetter(e.target.value)
     setMax(e.target.value)
   }
 
   return (
     <SwapTokenBalanceStyled>
-      <InputStyled type='number' value={amoutSwapToken} onChange={onChange} />
+      <InputStyled type='number' value={amountSwapToken} onChange={onChange} />
       <ButtonContainerStyled>
         <RoundedButtonStyled onClick={maxSetter}>MAX</RoundedButtonStyled>
         <RoundedButtonStyled onClick={halfSetter}>HALF</RoundedButtonStyled>

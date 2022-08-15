@@ -49,8 +49,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     const [activeModalPrimary, setActiveModalPrimary] = useState(false)
     const [activeModalSecondary, setActiveModalSecondary] = useState(false)
     const [activeModalSwap, setActiveModalSwap] = useState(false)
-    const [amoutSwapTokenA, amoutSwapTokenASetter] = useState<any>(0)
-    const [amoutSwapTokenB, amoutSwapTokenBSetter] = useState<any>(0)
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
     useEffect(() => {
     }, [])
@@ -69,16 +69,16 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     }
 
     async function onLiquidiy() {
-        if (await onIncreaseAllow(amoutSwapTokenB)) {
-            await onAddLiquidity(amoutSwapTokenA, amoutSwapTokenB)
+        if (await onIncreaseAllow(amountSwapTokenB)) {
+            await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
             onConnectConfig()
         }
     }
 
     async function onChangeValueToken(value) {
-        amoutSwapTokenASetter(value)
+        amountSwapTokenASetter(value)
         const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
-        amoutSwapTokenBSetter(secondTokenReturn)
+        amountSwapTokenBSetter(secondTokenReturn)
         slippSwapTokenSetter(minAmountReturn)
     }
 
@@ -86,7 +86,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         <SwapModulesStyled>
             <SwapContainer>
                 <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
-                <SwapTokenBalance token={firstTokenSelected} amoutSwapTokenSetter={onChangeValueToken} />
+                <SwapTokenBalance token={firstTokenSelected} amountSwapTokenSetter={onChangeValueToken} />
                 {/*<SwapTokenBalance token={primaryToken} />*/}
             </SwapContainer>
             {
@@ -121,7 +121,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
             <SwitchIcon icon={<AiOutlinePlus size="2rem"/>} isIcon={false} switchHandler={()=>{}} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
             <SwapContainer>
                 <SwapTokenSelect onClickHandler={() => { handleModalSecondary() }} token={secondTokenSelected}></SwapTokenSelect>
-                <SwapTokenBalance disabled={true} token={secondTokenSelected} amoutSwapTokenSetter={amoutSwapTokenBSetter} amoutSwapToken={amoutSwapTokenB} />
+                <SwapTokenBalance disabled={true} token={secondTokenSelected} amountSwapTokenSetter={amountSwapTokenBSetter} amountSwapToken={amountSwapTokenB} />
 
                 {/*<SwapTokenBalance token={primaryToken} />*/}
 
@@ -156,8 +156,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                 </SwapModal>
             }
             {!isConnected && <SwapButton content="Connect to Wallet" handler={() => { onConnect() }} />}
-            {isConnected && amoutSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p>}
-            {isConnected && amoutSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p>}
+            {isConnected && amountSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p>}
+            {isConnected && amountSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p>}
             {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
             {isConnected && <SwapButton content="Add Liquidity" handler={async () => { setActiveModalSwap(true) }} />}
             {
@@ -173,8 +173,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                         <SwapConfirmAtom
                             firstTokenSelected={firstTokenSelected}
                             secondTokenSelected={secondTokenSelected}
-                            amoutSwapTokenA={amoutSwapTokenA}
-                            amoutSwapTokenB={amoutSwapTokenB}
+                            amountSwapTokenA={amountSwapTokenA}
+                            amountSwapTokenB={amountSwapTokenB}
                             slippSwapToken={slippSwapToken}
                             liquidity={true}
                         >

@@ -30,16 +30,16 @@ const InnerTokenStyled = styled.div`
     gap:10px;
 `
 
-export const SwapConfirmAtom = ({ firstTokenSelected, secondTokenSelected, children, amoutSwapTokenA, amoutSwapTokenB, slippSwapToken,liquidity=false}) => {
+export const SwapConfirmAtom = ({ firstTokenSelected, secondTokenSelected, children, amountSwapTokenA, amountSwapTokenB, slippSwapToken,liquidity=false}) => {
     return (
         <ContainerStyled>
             <BorderStyled>
                 <TokenStyled>
-                    <Tokens Token={firstTokenSelected} amoutSwapToken={amoutSwapTokenA} />
+                    <Tokens Token={firstTokenSelected} amoutSwapToken={amountSwapTokenA} />
                 </TokenStyled>
                 <div style={{ marginLeft: "50%" }}><AiOutlineArrowDown></AiOutlineArrowDown></div>
                 <TokenStyled>
-                    <Tokens Token={secondTokenSelected} amoutSwapToken={amoutSwapTokenB} />
+                    <Tokens Token={secondTokenSelected} amoutSwapToken={amountSwapTokenB} />
                 </TokenStyled>
             </BorderStyled>
             {!liquidity && <div>output is estimated. you will receive at least {slippSwapToken} {secondTokenSelected.symbol} or the transaction will revert</div>}

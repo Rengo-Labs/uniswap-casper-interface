@@ -109,6 +109,38 @@ async function swapMakeDeploy(
     }
 }
 
+/***
+ *
+ * @param firstTokenSelected
+ * @param secondTokenSelected
+ * @param value
+ */
+async function getSwapDetail(firstTokenSelected, secondTokenSelected, value) {
+    try {
+        const response = await axios.post(`${BASE_URL}/getpathreserves`, {
+            path: [
+                firstTokenSelected.symbolPair,
+                secondTokenSelected.symbolPair,
+            ]
+        })
+        if (response.data.success) {
+            const constant_product = response.data.reserve0 * response.data.reserve1
+
+            const tokensToTransfer = parseFloat((constant_product / (response.data.reserve0 + parseFloat(value))).toString().slice(0, 10))
+
+            const tokenBPrice = parseFloat((constant_product / tokensToTransfer).toString().slice(0, 10))
+
+            const priceImpact = parseFloat(""+(tokenBPrice - response.data.reserve1) * 100 ).toFixed(2)
+
+            return { tokensToTransfer, tokenBPrice, priceImpact }
+        }
+        throw Error()
+    } catch (error) {
+        console.log(__filename, "getSwapDetail", error)
+        return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0 }
+    }
+}
+
 async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
     try {
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
@@ -645,6 +677,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSelectSecondToken,
             onSwitchTokens,
             onCalculateReserves,
+            getSwapDetail,
             tokens,
             firstTokenSelected,
             secondTokenSelected,
