@@ -18,7 +18,7 @@ function useQuery() {
 
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {CollapsingBox} from "../../molecules/CollapsingBox";
-
+import {ExchangeRateBox} from '../../atoms/ExchangeRateBox'
 
 export const Swap = () => {
   //const query = useQuery()
@@ -32,6 +32,11 @@ export const Swap = () => {
   const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
   const [tokenBPrice, tokenBPriceSetter] = useState<any>(0)
   const [priceImpact, priceImpactSetter] = useState<any>(0)
+  const [minTokenBToTransfer, minTokenBToTransferSetter] = useState<any>(0)
+  const [feeToPay, feeToPaySetter] = useState<any>(0.30)
+  const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
+  const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
+  const [defaultValue, defaultValueSetter] = useState<any>(0)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
@@ -103,10 +108,22 @@ export const Swap = () => {
   }
 
   async function updateSwapDetail(tokenA, tokenB, value) {
-    const {tokensToTransfer, tokenBPrice, priceImpact} = await getSwapDetail(firstTokenSelected, secondTokenSelected, value)
+    const {
+      tokensToTransfer, 
+      tokenBPrice, 
+      priceImpact, 
+      minTokenBToTransfer,
+      exchangeRateA,
+      exchangeRateB
+    } = await getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippSwapToken, feeToPay)
     tokensToTransferSetter(tokensToTransfer)
     tokenBPriceSetter(tokenBPrice)
     priceImpactSetter(priceImpact)
+    minTokenBToTransferSetter(minTokenBToTransfer)
+    exchangeRateASetter(exchangeRateA)
+    exchangeRateBSetter(exchangeRateB)
+
+    defaultValueSetter((exchangeRateB/exchangeRateA).toString().slice(0, 10))
   }
 
   return (
@@ -147,6 +164,15 @@ export const Swap = () => {
             </SwapModal>
           }
           <SwitchIcon switchHandler={onSwitch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
+          {
+            amountSwapTokenB > 0 &&
+              <ExchangeRateBox tokenASymbol={firstTokenSelected.symbol}
+                               tokenBSymbol={secondTokenSelected.symbol}
+                               exchangeRateA={exchangeRateA}
+                               exchangeRateB={exchangeRateB}
+                               defaultValue={defaultValue}
+              />  
+          }
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
             <SwapTokenBalance token={secondTokenSelected} amountSwapTokenSetter={changeTokenB} amountSwapToken={amountSwapTokenB} />
@@ -157,8 +183,11 @@ export const Swap = () => {
                            firstSymbolToken={firstTokenSelected}
                            receivedSymbolToken={secondTokenSelected}
                            tokensToTransfer={tokensToTransfer}
+                           minTokenBToTransfer={minTokenBToTransfer}
                            tokenBPrice={tokenBPrice}
                            priceImpact={priceImpact}
+                           slippage={slippSwapToken}
+                           fee={feeToPay}
             />
           }
           {

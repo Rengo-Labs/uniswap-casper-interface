@@ -10,8 +10,9 @@ import {
     CollapsingRouter
 } from './styles'
 import {AiOutlineCaretDown, AiOutlineCaretUp, AiFillQuestionCircle} from "react-icons/ai";
+import {RouterBox} from '../../atoms/RouterBox'
 
-export const CollapsingBox = ({ firstToken, firstSymbolToken, receivedSymbolToken, tokensToTransfer, tokenBPrice, priceImpact }:any)  => {
+export const CollapsingBox = ({ firstToken, firstSymbolToken, receivedSymbolToken, tokensToTransfer, tokenBPrice, priceImpact, minTokenBToTransfer, slippage, fee }:any)  => {
     const [ isExpanded, setExpanded ] = useState(false);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
@@ -45,23 +46,18 @@ export const CollapsingBox = ({ firstToken, firstSymbolToken, receivedSymbolToke
                         </CollapsingRow>
                         <CollapsingRow>
                             <CollapsingColumnLeft>Minimum received</CollapsingColumnLeft>
-                            <CollapsingColumnRight>{tokensToTransfer} {receivedSymbolToken.symbol}</CollapsingColumnRight>
+                            <CollapsingColumnRight>{minTokenBToTransfer} {receivedSymbolToken.symbol}</CollapsingColumnRight>
                         </CollapsingRow>
                         <CollapsingRow>
                             <CollapsingColumnLeft>Liquidity provider fee</CollapsingColumnLeft>
-                            <CollapsingColumnRight>0.0% CSPR Hardcoded</CollapsingColumnRight>
+                            <CollapsingColumnRight>10 CSPR</CollapsingColumnRight>
                         </CollapsingRow>
                         <CollapsingRow>
-                            <CollapsingRouter>
-                                <CollapsingRow>
-                                    <CollapsingColumnLeft>Swap router</CollapsingColumnLeft>
-                                    <CollapsingColumnRight><AiFillQuestionCircle/></CollapsingColumnRight>
-                                </CollapsingRow>
-                                <CollapsingRow>
-                                    <CollapsingColumnLeft>Route</CollapsingColumnLeft>
-                                    <CollapsingColumnRight>{firstSymbolToken.symbol} {` > `} {receivedSymbolToken.symbol}</CollapsingColumnRight>
-                                </CollapsingRow>
-                            </CollapsingRouter>
+                            <CollapsingColumnLeft>Slippage tolerance</CollapsingColumnLeft>
+                            <CollapsingColumnRight>{slippage} %</CollapsingColumnRight>
+                        </CollapsingRow>
+                        <CollapsingRow>
+                            <RouterBox tokenASymbol={firstSymbolToken.symbol} tokenBSymbol={receivedSymbolToken.symbol}/>
                         </CollapsingRow>
                     </CollapsingBody>
                 </div>

@@ -115,7 +115,7 @@ async function swapMakeDeploy(
  * @param secondTokenSelected
  * @param value
  */
-async function getSwapDetail(firstTokenSelected, secondTokenSelected, value) {
+async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) {
     try {
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
             path: [
@@ -124,20 +124,35 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value) {
             ]
         })
         if (response.data.success) {
-            const constant_product = response.data.reserve0 * response.data.reserve1
+            
+            const liquidityA = response.data.reserve0
+            const liquidityB = response.data.reserve1
+            const poolExchangeRate = liquidityB/ liquidityA
+            
+            const constant_product = liquidityA * liquidityB
 
-            const tokensToTransfer = parseFloat((constant_product / (response.data.reserve0 + parseFloat(value))).toString().slice(0, 10))
+            const newLiquidityAPool = liquidityA + parseFloat(value)*(1 - fee)
 
-            const tokenBPrice = parseFloat((constant_product / tokensToTransfer).toString().slice(0, 10))
+            const newLiquidityBPool = constant_product / newLiquidityAPool
 
-            const priceImpact = parseFloat(""+(tokenBPrice - response.data.reserve1) * 100 ).toFixed(2)
+            const tokensToTransfer = liquidityB - newLiquidityBPool
 
-            return { tokensToTransfer, tokenBPrice, priceImpact }
+            const tokenBPrice = parseFloat((constant_product / newLiquidityBPool).toString().slice(0, 10))
+
+            const minTokenBToTransfer = parseFloat("" + (newLiquidityBPool * slippage / 100))
+
+            const exchangeRateA = tokensToTransfer / parseFloat(value)*(1 - fee)
+
+            const exchangeRateB = parseFloat(value)*(1 - fee) / tokensToTransfer
+            
+            const priceImpact = parseFloat(""+(1 - (parseFloat(value)/(liquidityA+parseFloat(value))) ) * 100).toFixed(2)
+
+            return { tokensToTransfer: tokensToTransfer.toFixed(2), tokenBPrice, priceImpact, minTokenBToTransfer, exchangeRateA, exchangeRateB }
         }
         throw Error()
     } catch (error) {
         console.log(__filename, "getSwapDetail", error)
-        return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0 }
+        return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, minTokenBToTransfer: 0 }
     }
 }
 
