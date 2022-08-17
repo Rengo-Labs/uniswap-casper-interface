@@ -24,6 +24,13 @@ Swap exchange rate calculated according to specified swap volume
 
 ```token_b_recieved = token_b_pool_size - new_token_b_pool_size```
 
+According to Uniswap V2 formula for token B estimated output after protocol fee been applied:
+
+```Dy = y * dx * 0,997 / ( x + dx * 0,997)```
+
+```token_b_recieved = token_b_pool_size * token_a_paid * 0,997 / ( token_a_pool_size + token_a_paid * 0,997)```
+
+
 ```a_exchange_rate = token_b_recieved / (token_a_paid - protocol_fee)``` Swap exchange rate 1 TokenA = X TokenB
 
 ```b_exchange_rate = (token_a_paid - protocol_fee) / token_b_recieved``` Swap exchange rate 1 TokenB = X TokenA
