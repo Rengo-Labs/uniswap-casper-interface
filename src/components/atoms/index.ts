@@ -27,6 +27,9 @@ export { CloseButtonAtom } from './CloseButtonAtom'
 export { SearchSectionAtom } from './SearchSectionAtom'
 export { ConfirmSwapButton } from './ConfirmSwapButton'
 export { NotificationQueue } from './NotificationQueue'
+export { RouterBox } from './RouterBox'
+export { SearchInputAtom } from './SearchInputAtom'
+export { ExchangeRateBox } from './ExchangeRateBox'
 
 
 

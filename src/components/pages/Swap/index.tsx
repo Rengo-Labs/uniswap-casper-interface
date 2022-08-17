@@ -1,14 +1,18 @@
 import React, { useContext, useState } from 'react'
+import styled from 'styled-components'
 import { useLocation } from 'react-router-dom'
-import { CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon } from '../../atoms'
+import { 
+  CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton, 
+  SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon,
+  SearchInputAtom
+} from '../../atoms'
 import { SwapModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
-import { SwapConfirmAtom, SwapModal, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, SwitchBox } from '../../molecules'
 import { AiOutlineClose } from 'react-icons/ai'
-import { SearchInputAtom } from '../../atoms/SearchInputAtom'
-import { SwapToken } from '../../molecules/SwapToken'
 import { v4 as uuidv4 } from 'uuid';
+import {SwitchContainerStyled, SwitchColumnLeft, SwitchColumnRight} from '../Swap/styles'
 
 function useQuery() {
   const { search } = useLocation();
@@ -36,7 +40,9 @@ export const Swap = () => {
   const [feeToPay, feeToPaySetter] = useState<any>(0.30)
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
-  const [defaultValue, defaultValueSetter] = useState<any>(0)
+  const [defaultRate, defaultRateSetter] = useState<any>(0)
+  const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
+  const [switchTranslation, switchTranslationSetter] = useState(true)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
@@ -105,6 +111,7 @@ export const Swap = () => {
     amountSwapTokenBSetter(value)
 
     await updateSwapDetail(secondTokenSelected, firstTokenSelected, value)
+    switchTranslationSetter(!switchTranslation)
   }
 
   async function updateSwapDetail(tokenA, tokenB, value) {
@@ -123,7 +130,14 @@ export const Swap = () => {
     exchangeRateASetter(exchangeRateA)
     exchangeRateBSetter(exchangeRateB)
 
-    defaultValueSetter((exchangeRateB/exchangeRateA).toString().slice(0, 10))
+    console.log((exchangeRateB/exchangeRateA).toString().slice(0, 10))
+    defaultRateSetter((exchangeRateB/exchangeRateA).toString().slice(0, 10))
+    let titleImpact = 'Low Price Impact'
+    if (priceImpact > 1) {
+      titleImpact = 'Price Impact Warning'
+    }
+    defaultPriceImpactLabelSetter(titleImpact)
+    console.log(priceImpact, titleImpact, defaultPriceImpactLabel)
   }
 
   return (
@@ -163,16 +177,18 @@ export const Swap = () => {
               </SwapContainerAtom>
             </SwapModal>
           }
-          <SwitchIcon switchHandler={onSwitch} secondTokenSelected={secondTokenSelected} firstTokenSelected={firstTokenSelected} />
-          {
-            amountSwapTokenB > 0 &&
-              <ExchangeRateBox tokenASymbol={firstTokenSelected.symbol}
-                               tokenBSymbol={secondTokenSelected.symbol}
-                               exchangeRateA={exchangeRateA}
-                               exchangeRateB={exchangeRateB}
-                               defaultValue={defaultValue}
-              />  
-          }
+
+          
+          <SwitchBox active={switchTranslation}
+                     onSwitch={onSwitch}
+                     secondTokenSelected={secondTokenSelected}
+                     firstTokenSelected={firstTokenSelected}
+                     exchangeRateA={exchangeRateA}
+                     exchangeRateB={exchangeRateB}
+                     defaultRate={defaultRate}
+                     defaultPriceImpactLabel={defaultPriceImpactLabel}
+          />
+
           <SwapContainer>
             <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
             <SwapTokenBalance token={secondTokenSelected} amountSwapTokenSetter={changeTokenB} amountSwapToken={amountSwapTokenB} />

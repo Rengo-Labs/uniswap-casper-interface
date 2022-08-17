@@ -1,10 +1,15 @@
 import React from 'react'
 import {AiOutlineSwap} from "react-icons/ai"
-import {ExchangeRateContainer, ExchangeRateColumnLeft, ExchangeRateColumnMiddle, ExchangeRateColumnRight} from './styles'
+import {
+    ExchangeRateContainer,
+    ExchangeRateColumnLeft,
+    ExchangeRateColumnRight,
+    ExchangeRateRow
+} from './styles'
 
 
-export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exchangeRateB, defaultValue }:any) => {
-    const [tokenB, tokenBSetter] = React.useState<any>(defaultValue)
+export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exchangeRateB, defaultRate, defaultPriceImpact }:any) => {
+    const [tokenB, tokenBSetter] = React.useState<any>(defaultRate)
     const [symbolA, symbolASetter] = React.useState<any>(tokenASymbol)
     const [symbolB, symbolBSetter] = React.useState<any>(tokenBSymbol)
     const [switchRate, switchRateSetter] = React.useState(true)
@@ -28,15 +33,17 @@ export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exc
 
     return (
         <ExchangeRateContainer>
-            <ExchangeRateColumnLeft>
-                1 {symbolA}
-            </ExchangeRateColumnLeft>
-            <ExchangeRateColumnMiddle>
-                <AiOutlineSwap onClick={updateTokens}/>
-            </ExchangeRateColumnMiddle>
-            <ExchangeRateColumnRight>
-                {tokenB} {symbolB}
-            </ExchangeRateColumnRight>
+            <ExchangeRateRow>
+                <ExchangeRateColumnLeft>
+                    1 {symbolA} ~ {tokenB} {symbolB}
+                </ExchangeRateColumnLeft>
+                <ExchangeRateColumnRight>
+                    <AiOutlineSwap onClick={updateTokens}/>
+                </ExchangeRateColumnRight>
+            </ExchangeRateRow>
+            <ExchangeRateRow>
+                {defaultPriceImpact}
+            </ExchangeRateRow>
         </ExchangeRateContainer>
     )
 }
