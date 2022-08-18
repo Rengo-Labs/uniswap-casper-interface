@@ -4,46 +4,40 @@ import {
     ExchangeRateContainer,
     ExchangeRateColumnLeft,
     ExchangeRateColumnRight,
-    ExchangeRateRow
+    ExchangeRateRow,
+    PriceImpactLabel
 } from './styles'
 
-
-export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exchangeRateB, defaultRate, defaultPriceImpact }:any) => {
-    const [tokenB, tokenBSetter] = React.useState<any>(defaultRate)
+export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exchangeRateB, defaultRate, defaultPriceImpact, className }:any) => {
+    const [tokenB, tokenBSetter] = React.useState(defaultRate)
     const [symbolA, symbolASetter] = React.useState<any>(tokenASymbol)
     const [symbolB, symbolBSetter] = React.useState<any>(tokenBSymbol)
-    const [switchRate, switchRateSetter] = React.useState(true)
+    const [switchRate, switchRateSetter] = React.useState(false)
 
     function updateTokens() {
-        
-        if (switchRate) {
-            symbolASetter(tokenASymbol)
-            symbolBSetter(tokenBSymbol)
-            tokenBSetter((exchangeRateB / exchangeRateA).toString().slice(0, 10))
-            switchRateSetter(false)
-        } else {
-            symbolASetter(tokenBSymbol)
-            symbolBSetter(tokenASymbol)
-            tokenBSetter((exchangeRateA / exchangeRateB).toString().slice(0, 10))
-            switchRateSetter(true)
-        }
-        
-        console.log("Change data ")
+        switchRateSetter(!switchRate)
     }
 
     return (
-        <ExchangeRateContainer>
+        <ExchangeRateContainer className={className}>
             <ExchangeRateRow>
-                <ExchangeRateColumnLeft>
-                    1 {symbolA} ~ {tokenB} {symbolB}
-                </ExchangeRateColumnLeft>
+                {
+                    switchRate &&
+                    <ExchangeRateColumnLeft>
+                        1 {symbolA} ~ {(exchangeRateB / exchangeRateA).toString().slice(0, 10)} {symbolB}
+                    </ExchangeRateColumnLeft>
+                }
+                {
+                    !switchRate &&
+                    <ExchangeRateColumnLeft>
+                        1 {symbolB} ~ {(exchangeRateA / exchangeRateB).toString().slice(0, 10)} {symbolA}
+                    </ExchangeRateColumnLeft>
+                }
                 <ExchangeRateColumnRight>
                     <AiOutlineSwap onClick={updateTokens}/>
                 </ExchangeRateColumnRight>
             </ExchangeRateRow>
-            <ExchangeRateRow>
-                {defaultPriceImpact}
-            </ExchangeRateRow>
+            <PriceImpactLabel priceImpactTitle={defaultPriceImpact} />
         </ExchangeRateContainer>
     )
 }

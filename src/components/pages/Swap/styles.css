@@ -1,9 +1,0 @@
-.translateSwitch {
-    position: absolute;
-    right: 0;
-    transition: right 2s;
-}
-
-.translateSwitch-active {
-    right: 100px !important;
-}

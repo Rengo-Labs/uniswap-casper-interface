@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import {PriceImpactTitle} from '../PriceImpactTitle'
 
 export const ExchangeRateContainer = styled.section`
     position: relative;
@@ -18,4 +19,7 @@ export const ExchangeRateColumnLeft = styled.section`
 `
 export const ExchangeRateColumnRight = styled.section`
     text-align: left;
+`
+export const PriceImpactLabel = styled(PriceImpactTitle)`
+    color: ${props => props.priceImpactTitle == 'Low Price Impact'? 'aquamarine':'yellow'}
 `

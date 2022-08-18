@@ -110,10 +110,12 @@ async function swapMakeDeploy(
 }
 
 /***
- *
+ * it returns tokensToTransfer, priceImpact, minTokenBToTransfer, exchangeRateA and exchangeRateB that belong to the swap detail
  * @param firstTokenSelected
  * @param secondTokenSelected
  * @param value
+ * @param slippage
+ * @param fee
  */
 async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) {
     try {
@@ -137,8 +139,6 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
 
             const tokensToTransfer = liquidityB - newLiquidityBPool
 
-            const tokenBPrice = parseFloat((constant_product / newLiquidityBPool).toString().slice(0, 10))
-
             const minTokenBToTransfer = parseFloat("" + (newLiquidityBPool * slippage / 100))
 
             const exchangeRateA = tokensToTransfer / parseFloat(value)*(1 - fee)
@@ -147,7 +147,7 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
             
             const priceImpact = parseFloat(""+(1 - (parseFloat(value)/(liquidityA+parseFloat(value))) ) * 100).toFixed(2)
 
-            return { tokensToTransfer: tokensToTransfer.toFixed(2), tokenBPrice, priceImpact, minTokenBToTransfer, exchangeRateA, exchangeRateB }
+            return { tokensToTransfer: tokensToTransfer.toFixed(2), priceImpact, minTokenBToTransfer, exchangeRateA, exchangeRateB }
         }
         throw Error()
     } catch (error) {

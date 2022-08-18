@@ -12,7 +12,7 @@ import {
 import {AiOutlineCaretDown, AiOutlineCaretUp, AiFillQuestionCircle} from "react-icons/ai";
 import {RouterBox} from '../../atoms/RouterBox'
 
-export const CollapsingBox = ({ firstToken, firstSymbolToken, receivedSymbolToken, tokensToTransfer, tokenBPrice, priceImpact, minTokenBToTransfer, slippage, fee }:any)  => {
+export const CollapsingBox = ({ firstToken, firstSymbolToken, receivedSymbolToken, tokensToTransfer, tokenBPrice, priceImpact, minTokenBToTransfer, slippage, fee, className }:any)  => {
     const [ isExpanded, setExpanded ] = useState(false);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
@@ -22,7 +22,7 @@ export const CollapsingBox = ({ firstToken, firstSymbolToken, receivedSymbolToke
     }
 
     return (
-        <CollapsingContainerStyled>
+        <CollapsingContainerStyled className={className}>
             <div className="collapsible">
                 <CollapsingHeader {...getToggleProps({onClick: handleOnClick})}>
                     <CollapsingRow>

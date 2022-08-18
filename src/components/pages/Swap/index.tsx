@@ -3,16 +3,15 @@ import styled from 'styled-components'
 import { useLocation } from 'react-router-dom'
 import { 
   CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton, 
-  SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect, SwitchIcon,
+  SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect,
   SearchInputAtom
 } from '../../atoms'
 import { SwapModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
-import { SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, SwitchBox } from '../../molecules'
+import { SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, SwitchBox, CollapsingBox } from '../../molecules'
 import { AiOutlineClose } from 'react-icons/ai'
 import { v4 as uuidv4 } from 'uuid';
-import {SwitchContainerStyled, SwitchColumnLeft, SwitchColumnRight} from '../Swap/styles'
 
 function useQuery() {
   const { search } = useLocation();
@@ -21,8 +20,6 @@ function useQuery() {
 }
 
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
-import {CollapsingBox} from "../../molecules/CollapsingBox";
-import {ExchangeRateBox} from '../../atoms/ExchangeRateBox'
 
 export const Swap = () => {
   //const query = useQuery()
@@ -40,9 +37,8 @@ export const Swap = () => {
   const [feeToPay, feeToPaySetter] = useState<any>(0.30)
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
-  const [defaultRate, defaultRateSetter] = useState<any>(0)
   const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
-  const [switchTranslation, switchTranslationSetter] = useState(true)
+  const [switchMovement, switchMovementSetter] = useState(false)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
@@ -111,7 +107,6 @@ export const Swap = () => {
     amountSwapTokenBSetter(value)
 
     await updateSwapDetail(secondTokenSelected, firstTokenSelected, value)
-    switchTranslationSetter(!switchTranslation)
   }
 
   async function updateSwapDetail(tokenA, tokenB, value) {
@@ -130,14 +125,8 @@ export const Swap = () => {
     exchangeRateASetter(exchangeRateA)
     exchangeRateBSetter(exchangeRateB)
 
-    console.log((exchangeRateB/exchangeRateA).toString().slice(0, 10))
-    defaultRateSetter((exchangeRateB/exchangeRateA).toString().slice(0, 10))
-    let titleImpact = 'Low Price Impact'
-    if (priceImpact > 1) {
-      titleImpact = 'Price Impact Warning'
-    }
-    defaultPriceImpactLabelSetter(titleImpact)
-    console.log(priceImpact, titleImpact, defaultPriceImpactLabel)
+    defaultPriceImpactLabelSetter(priceImpact > 1 ? 'Price Impact Warning' : 'Low Price Impact')
+    switchMovementSetter(value > 0)
   }
 
   return (
@@ -177,15 +166,14 @@ export const Swap = () => {
               </SwapContainerAtom>
             </SwapModal>
           }
-
           
-          <SwitchBox active={switchTranslation}
+          <SwitchBox active={switchMovement}
                      onSwitch={onSwitch}
                      secondTokenSelected={secondTokenSelected}
                      firstTokenSelected={firstTokenSelected}
                      exchangeRateA={exchangeRateA}
                      exchangeRateB={exchangeRateB}
-                     defaultRate={defaultRate}
+                     defaultRate={(exchangeRateB/exchangeRateA).toString().slice(0, 10)}
                      defaultPriceImpactLabel={defaultPriceImpactLabel}
           />
 
