@@ -8,10 +8,7 @@ import {
     PriceImpactLabel
 } from './styles'
 
-export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exchangeRateB, defaultRate, defaultPriceImpact, className }:any) => {
-    const [tokenB, tokenBSetter] = React.useState(defaultRate)
-    const [symbolA, symbolASetter] = React.useState<any>(tokenASymbol)
-    const [symbolB, symbolBSetter] = React.useState<any>(tokenBSymbol)
+export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exchangeRateB, defaultPriceImpact, className }:any) => {
     const [switchRate, switchRateSetter] = React.useState(false)
 
     function updateTokens() {
@@ -24,13 +21,13 @@ export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exc
                 {
                     switchRate &&
                     <ExchangeRateColumnLeft>
-                        1 {symbolA} ~ {(exchangeRateB / exchangeRateA).toString().slice(0, 10)} {symbolB}
+                        1 {tokenASymbol} ~ {(exchangeRateB / exchangeRateA).toString().slice(0, 10)} {tokenBSymbol}
                     </ExchangeRateColumnLeft>
                 }
                 {
                     !switchRate &&
                     <ExchangeRateColumnLeft>
-                        1 {symbolB} ~ {(exchangeRateA / exchangeRateB).toString().slice(0, 10)} {symbolA}
+                        1 {tokenBSymbol} ~ {(exchangeRateA / exchangeRateB).toString().slice(0, 10)} {tokenASymbol}
                     </ExchangeRateColumnLeft>
                 }
                 <ExchangeRateColumnRight>

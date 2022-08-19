@@ -10,15 +10,29 @@ import {
     CollapsingRouter
 } from './styles'
 import {AiOutlineCaretDown, AiOutlineCaretUp, AiFillQuestionCircle} from "react-icons/ai";
-import {RouterBox} from '../../atoms/RouterBox'
+import {RouterBox, SlippageBox} from '../../atoms'
 
-export const CollapsingBox = ({ firstToken, firstSymbolToken, receivedSymbolToken, tokensToTransfer, tokenBPrice, priceImpact, minTokenBToTransfer, slippage, fee, className }:any)  => {
+export const CollapsingBox = ({
+                                  firstToken, firstSymbolToken,
+                                  receivedSymbolToken, tokensToTransfer,
+                                  tokenBPrice, priceImpact,
+                                  slippage, fee, className,
+                                  slippageSetter
+}:any)  => {
     const [ isExpanded, setExpanded ] = useState(false);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
-    function handleOnClick() {
+    const handleOnClick = () => {
         setExpanded(!isExpanded);
+    }
+
+    const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
+        return (tokensToTransfer - tokensToTransfer*slippage/100).toFixed(8)
+    }
+
+    const updateSlippage = event => {
+        slippageSetter(event.target.value)
     }
 
     return (
@@ -46,16 +60,13 @@ export const CollapsingBox = ({ firstToken, firstSymbolToken, receivedSymbolToke
                         </CollapsingRow>
                         <CollapsingRow>
                             <CollapsingColumnLeft>Minimum received</CollapsingColumnLeft>
-                            <CollapsingColumnRight>{minTokenBToTransfer} {receivedSymbolToken.symbol}</CollapsingColumnRight>
+                            <CollapsingColumnRight>{calculateMinimumTokenReceived(tokensToTransfer, slippage)} {receivedSymbolToken.symbol}</CollapsingColumnRight>
                         </CollapsingRow>
                         <CollapsingRow>
                             <CollapsingColumnLeft>Liquidity provider fee</CollapsingColumnLeft>
                             <CollapsingColumnRight>10 CSPR</CollapsingColumnRight>
                         </CollapsingRow>
-                        <CollapsingRow>
-                            <CollapsingColumnLeft>Slippage tolerance</CollapsingColumnLeft>
-                            <CollapsingColumnRight>{slippage} %</CollapsingColumnRight>
-                        </CollapsingRow>
+                        <SlippageBox onSlippageChange={updateSlippage} slippage={slippage} />
                         <CollapsingRow>
                             <RouterBox tokenASymbol={firstSymbolToken.symbol} tokenBSymbol={receivedSymbolToken.symbol}/>
                         </CollapsingRow>

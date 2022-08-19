@@ -7,7 +7,7 @@ import {
 } from './styles'
 import {SwitchIcon, ExchangeRateBox} from '../../atoms'
 
-export const SwitchBox = ({onSwitch, secondTokenSelected, firstTokenSelected, exchangeRateA, exchangeRateB, defaultRate, defaultPriceImpactLabel, active}) => {
+export const SwitchBox = ({onSwitch, secondTokenSelected, firstTokenSelected, exchangeRateA, exchangeRateB, defaultPriceImpactLabel, active}) => {
     
     return (
         <SwitchContainerStyled>
@@ -16,8 +16,7 @@ export const SwitchBox = ({onSwitch, secondTokenSelected, firstTokenSelected, ex
                                       tokenASymbol={firstTokenSelected.symbol} 
                                       tokenBSymbol={secondTokenSelected.symbol} 
                                       exchangeRateA={exchangeRateA} 
-                                      exchangeRateB={exchangeRateB} 
-                                      defaultRate={defaultRate} 
+                                      exchangeRateB={exchangeRateB}
                                       defaultPriceImpact={defaultPriceImpactLabel}
             />
         </SwitchContainerStyled>

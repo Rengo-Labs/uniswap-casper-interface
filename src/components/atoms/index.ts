@@ -30,6 +30,7 @@ export { NotificationQueue } from './NotificationQueue'
 export { RouterBox } from './RouterBox'
 export { SearchInputAtom } from './SearchInputAtom'
 export { ExchangeRateBox } from './ExchangeRateBox'
+export { SlippageBox } from './SlippageBox'
 
 
 
