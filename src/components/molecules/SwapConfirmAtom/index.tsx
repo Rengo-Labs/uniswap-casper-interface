@@ -33,6 +33,7 @@ const InnerTokenStyled = styled.div`
 `
 
 export const SwapConfirmAtom = ({
+                                    firstToken,
                                     firstTokenSelected,
                                     secondTokenSelected,
                                     children,
@@ -56,7 +57,7 @@ export const SwapConfirmAtom = ({
                     <Tokens Token={secondTokenSelected} amoutSwapToken={amountSwapTokenB} />
                 </TokenStyled>
             </BorderStyled>
-            <CollapsingBox
+            <CollapsingBox firstToken={firstToken}
                            firstSymbolToken={firstTokenSelected}
                            receivedSymbolToken={secondTokenSelected}
                            tokensToTransfer={tokensToTransfer}

@@ -50,18 +50,14 @@ export const CollapsingBox = ({
                     <CollapsingHeader {...getToggleProps({onClick: handleOnClick})}>
                         <CollapsingRow>
                             <CollapsingColumnLeft>
-                                {
-
-                                    <PriceImpactLabel priceImpactTitle={defaultPriceImpact} priceImpact={priceImpact}/>
-                                }
-
+                                <PriceImpactLabel priceImpactTitle={defaultPriceImpact} priceImpact={priceImpact} style={{justifyContent: "flex-start"}}/>
                             </CollapsingColumnLeft>
                             <CollapsingColumnRight>
                                 {
                                     !isExpanded && ' 10 CSPR '
                                 }
                                 {
-                                    isExpanded && priceImpact + ' %'
+                                    isExpanded && <PriceImpactLabel priceImpactTitle={priceImpact + ' %'} priceImpact={priceImpact} style={{justifyContent: "flex-end"}}/>
                                 }
                                 {
                                     isExpanded ? ''/*<AiOutlineCaretUp/>*/ : <AiOutlineCaretDown/>
@@ -72,6 +68,13 @@ export const CollapsingBox = ({
                 }
                 <div {...getCollapseProps()}>
                     <CollapsingBody>
+                        {
+                            !expandedEnabled &&
+                            <CollapsingRow>
+                                <CollapsingColumnLeft><PriceImpactLabel priceImpactTitle={defaultPriceImpact} priceImpact={priceImpact}/></CollapsingColumnLeft>
+                                <CollapsingColumnRight><PriceImpactLabel priceImpactTitle={priceImpact + ' %'} priceImpact={priceImpact} style={{justifyContent: "flex-end"}}/></CollapsingColumnRight>
+                            </CollapsingRow>
+                        }
                         <CollapsingRow>
                             <CollapsingColumnLeft>Expected output</CollapsingColumnLeft>
                             <CollapsingColumnRight>{tokensToTransfer} {receivedSymbolToken.symbol}</CollapsingColumnRight>

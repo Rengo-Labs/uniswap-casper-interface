@@ -234,6 +234,7 @@ export const Swap = () => {
                       </CloseButtonAtom>
                     </SwapHeaderAtom>
                     <SwapConfirmAtom
+                        firstToken={amountSwapTokenA}
                         firstTokenSelected={firstTokenSelected}
                         secondTokenSelected={secondTokenSelected}
                         amountSwapTokenA={amountSwapTokenA}

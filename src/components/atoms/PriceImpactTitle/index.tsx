@@ -3,10 +3,10 @@ import {
     PriceImpactBox
 } from './styles'
 
-export const PriceImpactTitle = ({ priceImpactTitle, className }:any) => {
+export const PriceImpactTitle = ({ priceImpactTitle, style, className }:any) => {
 
     return (
-        <PriceImpactBox className={className}>
+        <PriceImpactBox style={style} className={className}>
             {priceImpactTitle}
         </PriceImpactBox>
     )
