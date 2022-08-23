@@ -24,5 +24,5 @@ export const BoxMovementAnimation = styled.div<BoxMovement>`
     display: flex;
     align-self: ${props => props.active ? 'start' : 'center'};
     flex-direction: row;
-    animation: ${props => props.active ? rotate : ''} 0.5s linear 1;
+    animation: ${props => props.active ? rotate : ''} 0.3s linear 1;
 `

@@ -15,6 +15,7 @@ import {PriceImpactLabel} from "../../atoms/ExchangeRateBox/styles";
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 
 export const CollapsingBox = ({
+                                  firstToken,
                                   firstSymbolToken,
                                   receivedSymbolToken,
                                   tokensToTransfer,
@@ -50,13 +51,21 @@ export const CollapsingBox = ({
                         <CollapsingRow>
                             <CollapsingColumnLeft>
                                 {
-                                    !isExpanded &&
+
                                     <PriceImpactLabel priceImpactTitle={defaultPriceImpact} priceImpact={priceImpact}/>
                                 }
+
                             </CollapsingColumnLeft>
                             <CollapsingColumnRight>
-                                {!isExpanded && priceImpact + ' %'} {isExpanded ? <AiOutlineCaretUp/> :
-                                <AiOutlineCaretDown/>}
+                                {
+                                    !isExpanded && ' 10 CSPR '
+                                }
+                                {
+                                    isExpanded && priceImpact + ' %'
+                                }
+                                {
+                                    isExpanded ? ''/*<AiOutlineCaretUp/>*/ : <AiOutlineCaretDown/>
+                                }
                             </CollapsingColumnRight>
                         </CollapsingRow>
                     </CollapsingHeader>
@@ -64,8 +73,8 @@ export const CollapsingBox = ({
                 <div {...getCollapseProps()}>
                     <CollapsingBody>
                         <CollapsingRow>
-                            <CollapsingColumnLeft>Price impact</CollapsingColumnLeft>
-                            <CollapsingColumnRight>{priceImpact} %</CollapsingColumnRight>
+                            <CollapsingColumnLeft>Expected output</CollapsingColumnLeft>
+                            <CollapsingColumnRight>{tokensToTransfer} {receivedSymbolToken.symbol}</CollapsingColumnRight>
                         </CollapsingRow>
                         <CollapsingRow>
                             <CollapsingColumnLeft>Minimum received</CollapsingColumnLeft>
@@ -73,11 +82,11 @@ export const CollapsingBox = ({
                         </CollapsingRow>
                         <SlippageBox slippageEnabled={slippageEnabled} onSlippageChange={updateSlippage} slippage={slippage} />
                         <CollapsingRow>
-                            <CollapsingColumnLeft>Expected output</CollapsingColumnLeft>
-                            <CollapsingColumnRight>{tokensToTransfer} {receivedSymbolToken.symbol}</CollapsingColumnRight>
+                            <CollapsingColumnLeft>Swap fee</CollapsingColumnLeft>
+                            <CollapsingColumnRight>{firstToken * 0.003} CSPR</CollapsingColumnRight>
                         </CollapsingRow>
                         <CollapsingRow>
-                            <CollapsingColumnLeft>Liquidity provider fee</CollapsingColumnLeft>
+                            <CollapsingColumnLeft>Network gas fee</CollapsingColumnLeft>
                             <CollapsingColumnRight>10 CSPR</CollapsingColumnRight>
                         </CollapsingRow>
                         <CollapsingRow>

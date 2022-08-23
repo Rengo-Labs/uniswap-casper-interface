@@ -23,6 +23,6 @@ export const Input = styled.input`
 `
 export const Span = styled.span`
     position: absolute;
-    right: 10px;
-    top: 10px;
+    right: 0.5vw;
+    top: 15px;
 `

@@ -1,12 +1,12 @@
 import React from 'react'
-import { TbArrowsDownUp } from "react-icons/tb";
+import { AiOutlineSwap } from "react-icons/ai";
 import { SwitchButton } from './styles'
 
 export const SwitchIcon = ({ switchHandler, icon="",isIcon=true, className }: any) => {
     return (
-        <SwitchButton onClick={() => { switchHandler() }} className={className}>
+        <SwitchButton onClick={switchHandler} className={className}>
             {icon}
-            {isIcon && <TbArrowsDownUp size="1.5rem" />}
+            {isIcon && <AiOutlineSwap style={{transform: "rotate(90deg)"}} size="1.5rem" />}
         </SwitchButton>
     )
 }

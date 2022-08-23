@@ -16,22 +16,19 @@ export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exc
 
     return (
         <ExchangeRateContainer className={className}>
-            <ExchangeRateRow>
+            <ExchangeRateRow onClick={updateTokens}>
                 {
                     switchRate &&
                     <ExchangeRateColumnLeft>
-                        1 {tokenASymbol} ~ {(exchangeRateB / exchangeRateA).toString().slice(0, 10)} {tokenBSymbol}
+                        1 {tokenASymbol} ≈ {(exchangeRateB / exchangeRateA).toString().slice(0, 10)} {tokenBSymbol}
                     </ExchangeRateColumnLeft>
                 }
                 {
                     !switchRate &&
                     <ExchangeRateColumnLeft>
-                        1 {tokenBSymbol} ~ {(exchangeRateA / exchangeRateB).toString().slice(0, 10)} {tokenASymbol}
+                        1 {tokenBSymbol} ≈ {(exchangeRateA / exchangeRateB).toString().slice(0, 10)} {tokenASymbol}
                     </ExchangeRateColumnLeft>
                 }
-                <ExchangeRateColumnRight>
-                    <AiOutlineSwap onClick={updateTokens}/>
-                </ExchangeRateColumnRight>
             </ExchangeRateRow>
         </ExchangeRateContainer>
     )

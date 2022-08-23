@@ -5,11 +5,11 @@ import {
 } from './styles'
 import {SwitchIcon} from "../../atoms";
 
-export const SwitchBox = ({onSwitch, secondTokenSelected, firstTokenSelected, exchangeRateA, exchangeRateB, defaultPriceImpactLabel, active}) => {
+export const SwitchBox = ({onSwitch, secondTokenSelected, firstTokenSelected, exchangeRateA, exchangeRateB, defaultPriceImpactLabel, active} : any) => {
     
     return (
         <BoxMovementAnimation active={active}>
-            <SwitchIcon onSwitch={onSwitch}
+            <SwitchIcon switchHandler={onSwitch}
                         secondTokenSelected={secondTokenSelected}
                         firstTokenSelected={firstTokenSelected}
             />
