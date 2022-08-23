@@ -1,19 +1,11 @@
 import styled from 'styled-components'
-import {PriceImpactTitle} from '../PriceImpactTitle'
-
-export const ExchangeRateContainer = styled.section`
-    position: relative;
-    display: block;
-    align-self: center;
-    width: 100%;
-    padding: 3px;
-`
 
 export const SlippageContainer = styled.section`
     position: relative;
     display: flex;
     width: 100%;
-    padding: 3px;
+    align-items: center;
+    padding-top: 10px;
 `
 export const SlippageColumnLeft = styled.section`
     width: 50%;
@@ -27,6 +19,7 @@ export const Input = styled.input`
     background: transparent;
     color: white;
     width: 25%;
+    border: solid 1px;
 `
 export const Span = styled.span`
     position: absolute;

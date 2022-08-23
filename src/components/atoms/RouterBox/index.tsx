@@ -1,5 +1,5 @@
 import React from 'react'
-import {AiOutlineCaretDown, AiOutlineCaretUp, AiFillQuestionCircle} from "react-icons/ai"
+import {AiFillQuestionCircle} from "react-icons/ai"
 import {RouterContainer, RouterRow, RouterColumnLeft, RouterColumnRight} from './styles'
 
 export const RouterBox = ({ tokenASymbol, tokenBSymbol }:any) => {

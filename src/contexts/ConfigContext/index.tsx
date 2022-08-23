@@ -154,6 +154,10 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
     }
 }
 
+const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
+    return (tokensToTransfer - tokensToTransfer*slippage/100).toFixed(8)
+}
+
 async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
     try {
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
@@ -691,6 +695,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSwitchTokens,
             onCalculateReserves,
             getSwapDetail,
+            calculateMinimumTokenReceived,
             tokens,
             firstTokenSelected,
             secondTokenSelected,

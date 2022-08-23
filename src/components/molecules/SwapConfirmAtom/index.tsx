@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 import { AiOutlineArrowDown } from "react-icons/ai";
+import {CollapsingBox} from "../CollapsingBox";
+import React from "react";
 
 
 
@@ -30,7 +32,19 @@ const InnerTokenStyled = styled.div`
     gap:10px;
 `
 
-export const SwapConfirmAtom = ({ firstTokenSelected, secondTokenSelected, children, amountSwapTokenA, amountSwapTokenB, slippSwapToken,liquidity=false}) => {
+export const SwapConfirmAtom = ({
+                                    firstTokenSelected,
+                                    secondTokenSelected,
+                                    children,
+                                    amountSwapTokenA,
+                                    amountSwapTokenB,
+                                    slippSwapToken,
+                                    tokensToTransfer,
+                                    priceImpact,
+                                    defaultPriceImpactLabel,
+                                    slippSwapTokenSetter,
+                                    liquidity=false
+                                }: any) => {
     return (
         <ContainerStyled>
             <BorderStyled>
@@ -42,6 +56,15 @@ export const SwapConfirmAtom = ({ firstTokenSelected, secondTokenSelected, child
                     <Tokens Token={secondTokenSelected} amoutSwapToken={amountSwapTokenB} />
                 </TokenStyled>
             </BorderStyled>
+            <CollapsingBox
+                           firstSymbolToken={firstTokenSelected}
+                           receivedSymbolToken={secondTokenSelected}
+                           tokensToTransfer={tokensToTransfer}
+                           priceImpact={priceImpact}
+                           slippage={slippSwapToken}
+                           defaultPriceImpact={defaultPriceImpactLabel}
+                           slippageSetter={slippSwapTokenSetter}
+            />
             {!liquidity && <div>output is estimated. you will receive at least {slippSwapToken} {secondTokenSelected.symbol} or the transaction will revert</div>}
             {liquidity && <div>you will receive at least {slippSwapToken} {secondTokenSelected.symbol}-{firstTokenSelected.symbol}-LP token or the transaction will revert</div>}
             <div style={{ marginLeft: "20%" }}>{children}</div>

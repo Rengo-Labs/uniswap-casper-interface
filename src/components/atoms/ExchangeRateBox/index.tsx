@@ -4,11 +4,10 @@ import {
     ExchangeRateContainer,
     ExchangeRateColumnLeft,
     ExchangeRateColumnRight,
-    ExchangeRateRow,
-    PriceImpactLabel
+    ExchangeRateRow
 } from './styles'
 
-export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exchangeRateB, defaultPriceImpact, className }:any) => {
+export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exchangeRateB, className }:any) => {
     const [switchRate, switchRateSetter] = React.useState(false)
 
     function updateTokens() {
@@ -34,7 +33,6 @@ export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exc
                     <AiOutlineSwap onClick={updateTokens}/>
                 </ExchangeRateColumnRight>
             </ExchangeRateRow>
-            <PriceImpactLabel priceImpactTitle={defaultPriceImpact} />
         </ExchangeRateContainer>
     )
 }

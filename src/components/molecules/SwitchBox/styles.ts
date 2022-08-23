@@ -1,18 +1,28 @@
-import styled from 'styled-components'
-import {SwitchIcon, ExchangeRateBox} from '../../atoms'
-
-export const SwitchContainerStyled = styled.div`
-    display: flex;
-    width: 100%;
-`
-
-export const SwitchIconAnimation = styled(SwitchIcon)`
-    transition: all .5s;
-    margin-left: ${props => (props.active ? "0%" : "46%")};
-`
+import styled, {keyframes} from 'styled-components'
+import {ExchangeRateBox} from '../../atoms'
 
 export const ExchangeRateBoxAnimation = styled(ExchangeRateBox)`
     transition: all .2s;
-    padding-left: 15px;
-    visibility: ${props => (props.active ? "initial" : "hidden")};
+    display: ${props => props.active ? 'initial' : 'none'};
+`
+interface BoxMovement {
+    active: boolean
+}
+
+const rotate = keyframes`
+  0% {
+    margin-left: 40%;
+  }
+ 50% { 
+    margin-right:5%; 
+ }
+ 100% { 
+    align-self: flex-start;
+ }
+`;
+export const BoxMovementAnimation = styled.div<BoxMovement>`
+    display: flex;
+    align-self: ${props => props.active ? 'start' : 'center'};
+    flex-direction: row;
+    animation: ${props => props.active ? rotate : ''} 0.5s linear 1;
 `

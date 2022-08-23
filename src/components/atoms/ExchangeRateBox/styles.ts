@@ -21,5 +21,6 @@ export const ExchangeRateColumnRight = styled.section`
     text-align: left;
 `
 export const PriceImpactLabel = styled(PriceImpactTitle)`
-    color: ${props => props.priceImpactTitle == 'Low Price Impact'? 'aquamarine':'yellow'}
+    transition: color 1s;
+    color: ${props => props.priceImpact <= 1 ? 'green' : props.priceImpact > 1 && props.priceImpact <= 5 ? 'yellow' : 'orange'}
 `

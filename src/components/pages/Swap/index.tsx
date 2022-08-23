@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import styled from 'styled-components'
+
 import { useLocation } from 'react-router-dom'
 import {
   CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton,
@@ -9,7 +9,7 @@ import {
 import { SwapModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
-import { SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, SwitchBox, CollapsingBox } from '../../molecules'
+import {SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, CollapsingBox, SwitchBox} from '../../molecules'
 import { AiOutlineClose } from 'react-icons/ai'
 import { v4 as uuidv4 } from 'uuid';
 
@@ -161,13 +161,14 @@ export const Swap = () => {
                 </SwapModal>
             }
 
-            <SwitchBox active={switchMovement}
+            <SwitchBox
                        onSwitch={onSwitch}
                        secondTokenSelected={secondTokenSelected}
                        firstTokenSelected={firstTokenSelected}
                        exchangeRateA={exchangeRateA}
                        exchangeRateB={exchangeRateB}
                        defaultPriceImpactLabel={defaultPriceImpactLabel}
+                       active={switchMovement}
             />
 
             <SwapContainer>
@@ -182,8 +183,12 @@ export const Swap = () => {
                                tokensToTransfer={tokensToTransfer}
                                priceImpact={priceImpact}
                                slippage={slippSwapToken}
-                               fee={feeToPay}
+                               defaultPriceImpact={defaultPriceImpactLabel}
                                slippageSetter={slippSwapTokenSetter}
+                               fullWidth={true}
+                               fullExpanded = {false}
+                               expandedEnabled = {true}
+                               slippageEnabled = {true}
                 />
             }
             {
@@ -217,7 +222,7 @@ export const Swap = () => {
             }
             {!isConnected && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
             {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
-            {isConnected && <SwapButton content="Swap" handler={async () => { setActiveModalSwap(true) }} />}
+            {isConnected && <SwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
             {
                 activeModalSwap &&
                 <SwapModal >
@@ -234,6 +239,10 @@ export const Swap = () => {
                         amountSwapTokenA={amountSwapTokenA}
                         amountSwapTokenB={amountSwapTokenB}
                         slippSwapToken={slippSwapToken}
+                        tokensToTransfer={tokensToTransfer}
+                        priceImpact={priceImpact}
+                        defaultPriceImpactLabel={defaultPriceImpactLabel}
+                        slippSwapTokenSetter={slippSwapTokenSetter}
                     >
                       <ConfirmSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
                     </SwapConfirmAtom>
