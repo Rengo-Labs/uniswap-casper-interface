@@ -6,6 +6,7 @@
 .pnp.js
 .vscode/
 *.rar
+.idea/
 
 # testing
 /coverage

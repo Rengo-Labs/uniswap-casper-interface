@@ -109,6 +109,55 @@ async function swapMakeDeploy(
     }
 }
 
+/***
+ * it returns tokensToTransfer, priceImpact, minTokenBToTransfer, exchangeRateA and exchangeRateB that belong to the swap detail
+ * @param firstTokenSelected
+ * @param secondTokenSelected
+ * @param value
+ * @param slippage
+ * @param fee
+ */
+async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) {
+    try {
+        const response = await axios.post(`${BASE_URL}/getpathreserves`, {
+            path: [
+                firstTokenSelected.symbolPair,
+                secondTokenSelected.symbolPair,
+            ]
+        })
+        if (response.data.success) {
+
+            const liquidityA = response.data.reserve0
+            const liquidityB = response.data.reserve1
+            const poolExchangeRate = liquidityB/ liquidityA
+
+            const constantProduct = liquidityA * liquidityB
+
+            const newLiquidityAPool = liquidityA + parseFloat(value)*(1 - fee)
+
+            const newLiquidityBPool = constantProduct / newLiquidityAPool
+
+            const tokensToTransfer = liquidityB - newLiquidityBPool
+
+            const exchangeRateA = tokensToTransfer / parseFloat(value)*(1 - fee)
+
+            const exchangeRateB = parseFloat(value)*(1 - fee) / tokensToTransfer
+
+            const priceImpact = ((1 - parseFloat(value)/(liquidityA+parseFloat(value)) ) * 100).toFixed(2)
+
+            return { tokensToTransfer: tokensToTransfer.toFixed(8), priceImpact, exchangeRateA, exchangeRateB }
+        }
+        throw Error()
+    } catch (error) {
+        console.log(__filename, "getSwapDetail", error)
+        return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0 }
+    }
+}
+
+const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
+    return (tokensToTransfer - tokensToTransfer*slippage/100).toFixed(8)
+}
+
 async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
     try {
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
@@ -645,6 +694,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSelectSecondToken,
             onSwitchTokens,
             onCalculateReserves,
+            getSwapDetail,
+            calculateMinimumTokenReceived,
             tokens,
             firstTokenSelected,
             secondTokenSelected,

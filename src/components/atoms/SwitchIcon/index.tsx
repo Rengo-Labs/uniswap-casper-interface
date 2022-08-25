@@ -1,12 +1,12 @@
 import React from 'react'
-import { AiOutlineSync } from "react-icons/ai";
+import { AiOutlineSwap } from "react-icons/ai";
 import { SwitchButton } from './styles'
 
-export const SwitchIcon = ({ switchHandler, secondTokenSelected, firstTokenSelected,icon="",isIcon=true }: any) => {
+export const SwitchIcon = ({ switchHandler, icon="",isIcon=true, className }: any) => {
     return (
-        <SwitchButton onClick={() => { switchHandler() }}>
+        <SwitchButton onClick={switchHandler} className={className}>
             {icon}
-            {isIcon && <AiOutlineSync size="2rem" />}
+            {isIcon && <AiOutlineSwap style={{transform: "rotate(90deg)"}} size="1.5rem" />}
         </SwitchButton>
     )
 }
