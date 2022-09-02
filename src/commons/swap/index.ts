@@ -27,6 +27,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import Torus from "@toruslabs/casper-embed";
 import { Some } from "ts-results";
+import { entryPointEnum } from "../../types";
 
 const convertToStr = (e) => e.toString();
 export function createRecipientAddress(recipient) {
@@ -127,7 +128,7 @@ export async function createSwapRuntimeArgs(
   let contractHashAsByteArray = Uint8Array.from(
     Buffer.from(ROUTER_CONTRACT_HASH, "hex")
   );
-  let entryPoint = "swap_exact_tokens_for_tokens_js_client";
+  let entryPoint = entryPointEnum.Swap_exact_tokens_for_tokens_js_client
 
   // Set contract installation deploy (unsigned).
   return await makeDeploySwap(

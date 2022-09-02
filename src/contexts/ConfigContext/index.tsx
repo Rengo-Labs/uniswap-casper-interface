@@ -3,7 +3,6 @@ import axios from 'axios';
 import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
-import { convertToStr } from '../../app/components/ConvertToString/ConvertToString';
 import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, createSwapRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
@@ -12,9 +11,11 @@ import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers
 import { initialPairsState, PairsReducer } from '../../reducers/PairsReducer';
 import { initialStateToken, TokenReducer, tokenReducerEnum } from '../../reducers/TokenReducers';
 import { initialStateWallet, reducerWallet } from '../../reducers/WalletReducers';
+import { entryPointEnum } from '../../types';
 
 export const ConfigProviderContext = createContext<any>({})
 let torus;
+function convertToStr(x){return x.toString()}
 async function tryToConnectSigner() {
     try {
         return await Signer.getActivePublicKey()
@@ -129,21 +130,21 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
 
             const liquidityA = response.data.reserve0
             const liquidityB = response.data.reserve1
-            const poolExchangeRate = liquidityB/ liquidityA
+            const poolExchangeRate = liquidityB / liquidityA
 
             const constantProduct = liquidityA * liquidityB
 
-            const newLiquidityAPool = liquidityA + parseFloat(value)*(1 - fee)
+            const newLiquidityAPool = liquidityA + parseFloat(value) * (1 - fee)
 
             const newLiquidityBPool = constantProduct / newLiquidityAPool
 
             const tokensToTransfer = liquidityB - newLiquidityBPool
 
-            const exchangeRateA = tokensToTransfer / parseFloat(value)*(1 - fee)
+            const exchangeRateA = tokensToTransfer / parseFloat(value) * (1 - fee)
 
-            const exchangeRateB = parseFloat(value)*(1 - fee) / tokensToTransfer
+            const exchangeRateB = parseFloat(value) * (1 - fee) / tokensToTransfer
 
-            const priceImpact = ((1 - parseFloat(value)/(liquidityA+parseFloat(value)) ) * 100).toFixed(2)
+            const priceImpact = ((1 - parseFloat(value) / (liquidityA + parseFloat(value))) * 100).toFixed(2)
 
             return { tokensToTransfer: tokensToTransfer.toFixed(8), priceImpact, exchangeRateA, exchangeRateB }
         }
@@ -155,7 +156,7 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
 }
 
 const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
-    return (tokensToTransfer - tokensToTransfer*slippage/100).toFixed(8)
+    return (tokensToTransfer - tokensToTransfer * slippage / 100).toFixed(8)
 }
 
 async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
@@ -205,7 +206,7 @@ async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, toke
 
 
     let contractHashAsByteArray = Uint8Array.from(Buffer.from(caller, "hex"));
-    let entryPoint = "remove_liquidity_js_client";
+    let entryPoint = entryPointEnum.Remove_liquidity_js_client
 
     // Set contract installation deploy (unsigned).
     return await makeDeploy(
@@ -279,7 +280,7 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
         let contractHashAsByteArray = Uint8Array.from(
             Buffer.from(contractHash.slice(5), "hex")
         );
-        let entryPoint = increase ? "increase_allowance" : "decrease_allowance";
+        let entryPoint = increase ? entryPointEnum.Increase_allowance : entryPointEnum.Decrease_allowance;
         // Set contract installation deploy (unsigned).
         let deploy = await makeDeployLiquidity(
             publicKey,
