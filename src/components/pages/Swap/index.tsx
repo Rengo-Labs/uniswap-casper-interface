@@ -9,7 +9,7 @@ import {
 import { SwapModule } from '../../organisms'
 
 import { BasicLayout } from '../../../layout/Basic'
-import {SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, CollapsingBox, SwitchBox} from '../../molecules'
+import {SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, CollapsingBox, SwitchBox, ApprovalButton} from '../../molecules'
 import { AiOutlineClose } from 'react-icons/ai'
 import { v4 as uuidv4 } from 'uuid';
 
@@ -20,6 +20,7 @@ function useQuery() {
 }
 
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
+import {WrappedApprovalButton} from "./styles";
 
 export const Swap = () => {
   //const query = useQuery()
@@ -37,6 +38,7 @@ export const Swap = () => {
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
   const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
   const [switchMovement, switchMovementSetter] = useState(false)
+  const [isApprovedToken, isApprovedTokenSetter] = useState(false)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
@@ -61,7 +63,8 @@ export const Swap = () => {
     onConfirmSwapConfig,
     slippageToleranceSelected,
     onCalculateReserves,
-    getSwapDetail
+    getSwapDetail,
+    onIncreaseAllow
   } = useContext(ConfigProviderContext)
 
   function onConnect() {
@@ -123,12 +126,18 @@ export const Swap = () => {
     switchMovementSetter(value > 0)
   }
 
+  async function requestIncreaseAllowance(amount, contractHash) {
+    console.log("requestIncreaseAllowance")
+    const isApproved = await onIncreaseAllow(amount, contractHash)
+    isApprovedTokenSetter(isApproved)
+  }
+
   return (
       <BasicLayout>
         <CardContainer cardTitle="Swap">
           <SwapModule >
             <SwapContainer>
-              <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected}></SwapTokenSelect>
+              <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected} isWalletConnected={isConnected} />
               <SwapTokenBalance token={firstTokenSelected} amountSwapTokenSetter={changeTokenA} amountSwapToken={amountSwapTokenA} />
             </SwapContainer>
             {
@@ -172,7 +181,7 @@ export const Swap = () => {
             />
 
             <SwapContainer>
-              <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected}></SwapTokenSelect>
+              <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected} isWalletConnected={isConnected} />
               <SwapTokenBalance token={secondTokenSelected} amountSwapTokenSetter={changeTokenB} amountSwapToken={amountSwapTokenB} />
             </SwapContainer>
             {
@@ -222,7 +231,17 @@ export const Swap = () => {
             }
             {!isConnected && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
             {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
-            {isConnected && <SwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
+            <WrappedApprovalButton>
+              <ApprovalButton isVisible={!isApprovedToken && (isConnected && firstTokenSelected.symbol !== 'CSPR' && secondTokenSelected.symbol !== 'CSPR')}
+                              title={'Approve ' + secondTokenSelected.symbol}
+                              amount={amountSwapTokenB}
+                              contractHash={secondTokenSelected.contractHash}
+                              callIncreaseAllowance={requestIncreaseAllowance}/>
+            </WrappedApprovalButton>
+            {
+              isConnected && ( ! (firstTokenSelected.symbol !== 'CSPR' && secondTokenSelected.symbol !== 'CSPR') || isApprovedToken )&&
+                <SwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />
+            }
             {
                 activeModalSwap &&
                 <SwapModal >

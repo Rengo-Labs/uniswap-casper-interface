@@ -21,15 +21,33 @@ import {
   ROUTER_CONTRACT_HASH,
   ROUTER_PACKAGE_HASH,
   SUPPORTED_NETWORKS,
-  URL_DEPLOY,
 } from "../../constant";
 import toast from "react-hot-toast";
 import axios from "axios";
 import Torus from "@toruslabs/casper-embed";
-import { Some } from "ts-results";
-import { entryPointEnum } from "../../types";
+import {Some} from "ts-results";
+import {entryPointEnum} from "../../types";
 
 const convertToStr = (e) => e.toString();
+
+const normilizeAmountToString = (amount) => {
+  let strAmount = amount.toString();
+  if(amount.toString().includes('e')) {
+    strAmount=amount.toFixed(9).toString()
+  }
+  let amountArr = strAmount.split('.')
+  if (amountArr[1] === undefined) {
+    let concatedAmount = amountArr[0].concat('000000000')
+    return concatedAmount
+  } else {
+    let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
+    for (let i = 0; i < 9 - amountArr[1].length; i++) {
+      concatedAmount = concatedAmount.concat('0')
+    }
+    return concatedAmount
+  }
+}
+
 export function createRecipientAddress(recipient) {
   if (recipient instanceof CLPublicKey) {
     return new CLKey(new CLAccountHash(recipient.toAccountHash()));
@@ -107,36 +125,47 @@ export function createRuntimeArgs(
   }
 }
 
+export const selectEntryPoint = (tokenA, tokenB) => {
+  if (tokenA === 'CSPR' && tokenB !== 'CSPR') {
+    return entryPointEnum.Swap_exact_cspr_for_tokens_js_client
+  } else if (tokenA !== 'CSPR' && tokenB === 'CSPR') {
+    return entryPointEnum.Swap_exact_tokens_for_cspr_js_client
+  } else if (tokenA !== 'CSPR' && tokenB !== 'CSPR') {
+    return entryPointEnum.Swap_exact_tokens_for_tokens_js_client
+  }
+}
+
 export async function createSwapRuntimeArgs(
   amount_in,
+  amount_out_min,
   slippSwapToken,
   _paths,
   publicKey,
   mainPurse,
-  deadline
+  deadline,
+  entryPointSelected
 ) {
+  const amount_out = amount_out_min - (amount_out_min * slippSwapToken) / 100
   const runtimeArgs = RuntimeArgs.fromMap({
-    amount_in: CLValueBuilder.u256(convertToStr(amount_in)),
+    amount_in: CLValueBuilder.u256(normilizeAmountToString(amount_in)),
     amount_out_min: CLValueBuilder.u256(
-      convertToStr(10) //amount_out_min - (amount_out_min * slippage) / 100
+        normilizeAmountToString(amount_out)
     ),
     path: new CLList(_paths),
     to: createRecipientAddress(publicKey),
     deadline: CLValueBuilder.u256(deadline),
   });
-
   let contractHashAsByteArray = Uint8Array.from(
     Buffer.from(ROUTER_CONTRACT_HASH, "hex")
   );
-  let entryPoint = entryPointEnum.Swap_exact_tokens_for_tokens_js_client
-
+  let entryPoint = entryPointSelected;
   // Set contract installation deploy (unsigned).
   return await makeDeploySwap(
     publicKey,
     contractHashAsByteArray,
     entryPoint,
     runtimeArgs,
-    10_000_000_000
+    5_000_000_000
   );
 }
 

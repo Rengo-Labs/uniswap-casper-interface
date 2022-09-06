@@ -2,7 +2,7 @@ import React from 'react'
 import { AiOutlineCaretDown } from "react-icons/ai";
 
 import { SwapTokenSelectStyled, SwapTokenChoiseStyled, SwapTokenBalanceStyled,SwapTokenRoundedImageStyled } from './styles'
-export const SwapTokenSelect = ({ onClickHandler, token }:any) => {
+export const SwapTokenSelect = ({ onClickHandler, token, isWalletConnected = false }:any) => {
   
   return (
     <SwapTokenSelectStyled>
@@ -12,7 +12,7 @@ export const SwapTokenSelect = ({ onClickHandler, token }:any) => {
         <AiOutlineCaretDown />
       </SwapTokenChoiseStyled>
       <SwapTokenBalanceStyled>
-        {token.amount ? <p>Balance: {token.amount}</p> : ""}
+          {token.amount && isWalletConnected ? <p>Balance: {token.amount}</p> : <p>Balance: (wallet not connected)</p>}
       </SwapTokenBalanceStyled>
     </SwapTokenSelectStyled>
   )

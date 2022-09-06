@@ -1,9 +1,40 @@
 import Torus from '@toruslabs/casper-embed';
 import axios from 'axios';
-import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
+import {
+    AccessRights,
+    CasperServiceByJsonRPC,
+    CLByteArray,
+    CLKey,
+    CLList,
+    CLOption,
+    CLPublicKey,
+    CLValueBuilder,
+    RuntimeArgs,
+    Signer
+} from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
-import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, createSwapRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import {
+    CLBArray,
+    convertToString,
+    createRecipientAddress,
+    createRuntimeArgs,
+    createSwapRuntimeArgs,
+    getDeploy,
+    getswapPath,
+    makeDeploy,
+    makeDeployLiquidity,
+    makeDeployLiquidityWasm,
+    makeDeployWasm,
+    putdeploy,
+    putdeploySigner,
+    removeLiquidityArgs,
+    removeLiquidityPutDeploy,
+    selectEntryPoint,
+    signdeploywithcaspersigner,
+    signDeployWithTorus,
+    updateBalances
+} from '../../commons/swap';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
@@ -15,7 +46,25 @@ import { entryPointEnum } from '../../types';
 
 export const ConfigProviderContext = createContext<any>({})
 let torus;
-function convertToStr(x){return x.toString()}
+
+const convertToStr = (amount) => {
+    let strAmount = amount.toString();
+    if(amount.toString().includes('e')) {
+        strAmount=amount.toFixed(9).toString()
+    }
+    let amountArr = strAmount.split('.')
+    if (amountArr[1] === undefined) {
+        let concatedAmount = amountArr[0].concat('000000000')
+        return concatedAmount
+    } else {
+        let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
+        for (let i = 0; i < 9 - amountArr[1].length; i++) {
+            concatedAmount = concatedAmount.concat('0')
+        }
+        return concatedAmount
+    }
+}
+
 async function tryToConnectSigner() {
     try {
         return await Signer.getActivePublicKey()
@@ -81,14 +130,20 @@ async function swapMakeDeploy(
         const publicKey = CLPublicKey.fromHex(publicKeyHex);
         let _paths = await getswapPath(tokenASymbol, tokenBSymbol);
         if (tokenASymbol !== "WCSPR" && tokenBSymbol !== "WCSPR") {
+            const entryPoint = selectEntryPoint(tokenASymbol, tokenBSymbol)
+            console.log("EntryPoint", entryPoint, tokenASymbol, tokenBSymbol, amount_out_min)
             return createSwapRuntimeArgs(
                 amount_in,
+                amount_out_min,
                 slippSwapToken,
                 _paths,
                 publicKey,
                 mainPurse,
-                deadline)
+                deadline,
+                entryPoint
+                )
         } else {
+            console.log("WCSPR")
             const runtimeArgs = createRuntimeArgs(
                 amount_in,
                 slippSwapToken,
@@ -106,6 +161,7 @@ async function swapMakeDeploy(
         }
 
     } catch (error) {
+        console.log("Paso error")
         return false
     }
 }
@@ -537,11 +593,12 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onIncreaseAllow(amount) {
+    async function onIncreaseAllow(amount, contractHash) {
         const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
+        console.log("onIncreaseAllow")
         try {
             const valueTotal = amount * 10 ** 9
-            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, secondTokenSelected.contractHash, valueTotal, true)
+            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, valueTotal, true)
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
                 let result = await putdeploySigner(signedDeploy);
