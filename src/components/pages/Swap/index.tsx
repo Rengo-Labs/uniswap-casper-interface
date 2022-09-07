@@ -38,7 +38,7 @@ export const Swap = () => {
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
   const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
   const [switchMovement, switchMovementSetter] = useState(false)
-  const [isApprovedToken, isApprovedTokenSetter] = useState(false)
+  const [isApprovedToken, isApprovedTokenSetter] = useState(true)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)
@@ -73,7 +73,7 @@ export const Swap = () => {
 
 
   async function onConfirmSwap() {
-    const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB)
+    const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
     amountSwapTokenASetter(0)
     setActiveModalSwap(false);
     onConnectConfig()

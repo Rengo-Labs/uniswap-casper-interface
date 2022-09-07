@@ -214,10 +214,12 @@ const getPairTokenReserve = async (tokenA, tokenB) => {
         const list = response.data.pairList
 
         let pair = list.filter(p => p.token0.symbol === tokenA && p.token1.symbol === tokenB)
+        console.log(pair)
         if (pair.length != 0)
             return {success: true, liquidityA: parseFloat(pair[0].reserve0), liquidityB: parseFloat(pair[0].reserve1)}
 
         pair = list.filter(p => p.token0.symbol === tokenB && p.token1.symbol === tokenA)
+        console.log(pair)
         if (pair.length != 0)
             return {success: true, liquidityA: parseFloat(pair[0].reserve1), liquidityB: parseFloat(pair[0].reserve0)}
     }
@@ -545,7 +547,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         tokenDispatch({ type: tokenReducerEnum.SWITCH_TOKENS, payload: { secondTokenSelected, firstTokenSelected } })
     }
 
-    async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB) {
+    async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB, slippSwapToken) {
         const loadingToast = toast.loading("let me try to swap! be patient!")
         try {
             const deploy = await swapMakeDeploy(walletAddress,
@@ -555,9 +557,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 amoutSwapTokenB,
                 firstTokenSelected.symbolPair,
                 secondTokenSelected.symbolPair,
-                slippageToleranceSelected,
+                slippSwapToken,
                 mainPurse,
             );
+            console.log("walletSelected", walletSelected)
             if (walletSelected === 'torus') {
                 const signedDeploy = await signDeployWithTorus(deploy)
                 console.log("deploy_hash", signedDeploy.deploy_hash)
