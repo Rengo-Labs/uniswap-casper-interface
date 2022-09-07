@@ -176,31 +176,28 @@ async function swapMakeDeploy(
  */
 async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) {
     try {
-        const response = await axios.post(`${BASE_URL}/getpathreserves`, {
-            path: [
-                firstTokenSelected.symbolPair,
-                secondTokenSelected.symbolPair,
-            ]
-        })
-        if (response.data.success) {
+        const response = await getPairTokenReserve(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
+        if (response.success) {
 
-            const liquidityA = response.data.reserve0
-            const liquidityB = response.data.reserve1
-            const poolExchangeRate = liquidityB / liquidityA
+            const liquidityA = response.liquidityA
+            const liquidityB = response.liquidityB
 
             const constantProduct = liquidityA * liquidityB
+            console.log("liquidityA", liquidityA, "liquidityB", liquidityB, "constant_product", constantProduct)
 
             const newLiquidityAPool = liquidityA + parseFloat(value) * (1 - fee)
-
             const newLiquidityBPool = constantProduct / newLiquidityAPool
+            console.log("new_liquidity_a_pool", newLiquidityAPool, "new_liquidity_b_pool", newLiquidityBPool)
 
             const tokensToTransfer = liquidityB - newLiquidityBPool
+            console.log("tokensToTransfer", tokensToTransfer)
 
-            const exchangeRateA = tokensToTransfer / parseFloat(value) * (1 - fee)
+            const exchangeRateA = tokensToTransfer / parseFloat(value)
+            const exchangeRateB = parseFloat(value) / tokensToTransfer
+            console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
-            const exchangeRateB = parseFloat(value) * (1 - fee) / tokensToTransfer
-
-            const priceImpact = ((1 - parseFloat(value) / (liquidityA + parseFloat(value))) * 100).toFixed(2)
+            const priceImpact = (parseFloat(value) / (liquidityA + parseFloat(value)) * 100).toFixed(2)
+            console.log("priceImpact", priceImpact)
 
             return { tokensToTransfer: tokensToTransfer.toFixed(8), priceImpact, exchangeRateA, exchangeRateB }
         }
@@ -209,6 +206,23 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
         console.log(__filename, "getSwapDetail", error)
         return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0 }
     }
+}
+
+const getPairTokenReserve = async (tokenA, tokenB) => {
+    const response = await axios.get(`${BASE_URL}/getpairlist`)
+    if (response.data.success) {
+        const list = response.data.pairList
+
+        let pair = list.filter(p => p.token0.symbol === tokenA && p.token1.symbol === tokenB)
+        if (pair.length != 0)
+            return {success: true, liquidityA: parseFloat(pair[0].reserve0), liquidityB: parseFloat(pair[0].reserve1)}
+
+        pair = list.filter(p => p.token0.symbol === tokenB && p.token1.symbol === tokenA)
+        if (pair.length != 0)
+            return {success: true, liquidityA: parseFloat(pair[0].reserve1), liquidityB: parseFloat(pair[0].reserve0)}
+    }
+
+    return {success: false, liquidityA: 0, liquidityB: 0}
 }
 
 const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {

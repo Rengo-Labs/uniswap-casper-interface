@@ -30,7 +30,7 @@ export const Swap = () => {
   const [activeModalSwap, setActiveModalSwap] = React.useState(false)
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
-  const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
+  const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0.5)
   const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
   const [priceImpact, priceImpactSetter] = useState<any>(0)
   const [feeToPay, feeToPaySetter] = useState<any>(0.03)
@@ -83,6 +83,7 @@ export const Swap = () => {
     onSwitchTokens()
     amountSwapTokenASetter(0)
     amountSwapTokenBSetter(0)
+    switchMovementSetter(false)
   }
 
   function ResetTokens() {
@@ -90,24 +91,18 @@ export const Swap = () => {
     amountSwapTokenBSetter(0)
   }
 
-
-
   async function changeTokenA(value) {
-    const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value,false)
-    slippSwapTokenSetter(minAmountReturn)
-    amountSwapTokenBSetter(secondTokenReturn)
     amountSwapTokenASetter(value)
 
-    await updateSwapDetail(firstTokenSelected, secondTokenSelected, value)
+    const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value)
+    amountSwapTokenBSetter(minTokenToReceive)
   }
 
   async function changeTokenB(value) {
-    const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value,true)
-    slippSwapTokenSetter(minAmountReturn)
-    amountSwapTokenASetter(secondTokenReturn)
     amountSwapTokenBSetter(value)
 
-    await updateSwapDetail(secondTokenSelected, firstTokenSelected, value)
+    const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, value)
+    amountSwapTokenASetter(minTokenToReceive)
   }
 
   async function updateSwapDetail(tokenA, tokenB, value) {
@@ -124,6 +119,7 @@ export const Swap = () => {
 
     defaultPriceImpactLabelSetter(priceImpact > 1 ? 'Price Impact Warning' : 'Low Price Impact')
     switchMovementSetter(value > 0)
+    return tokensToTransfer
   }
 
   async function requestIncreaseAllowance(amount, contractHash) {
@@ -230,7 +226,6 @@ export const Swap = () => {
                 </SwapModal>
             }
             {!isConnected && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
-            {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
             <WrappedApprovalButton>
               <ApprovalButton isVisible={!isApprovedToken && (isConnected && firstTokenSelected.symbol !== 'CSPR' && secondTokenSelected.symbol !== 'CSPR')}
                               title={'Approve ' + secondTokenSelected.symbol}

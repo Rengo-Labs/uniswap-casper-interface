@@ -12,7 +12,7 @@ export const SwapTokenSelect = ({ onClickHandler, token, isWalletConnected = fal
         <AiOutlineCaretDown />
       </SwapTokenChoiseStyled>
       <SwapTokenBalanceStyled>
-          {token.amount && isWalletConnected ? <p>Balance: {token.amount}</p> : <p>Balance: (wallet not connected)</p>}
+          {isWalletConnected ? <p>Balance: {token.amount}</p> : <p>Balance: (wallet not connected)</p>}
       </SwapTokenBalanceStyled>
     </SwapTokenSelectStyled>
   )
