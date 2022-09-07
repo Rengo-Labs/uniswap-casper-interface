@@ -38,7 +38,7 @@ export const Swap = () => {
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
   const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
   const [switchMovement, switchMovementSetter] = useState(false)
-  const [isApprovedToken, isApprovedTokenSetter] = useState(true)
+  const [isApprovedToken, isApprovedTokenSetter] = useState(false)
 
   const handleModalPrimary = () => {
     setActiveModalPrimary(!activeModalPrimary)

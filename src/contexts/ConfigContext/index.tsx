@@ -560,7 +560,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 slippSwapToken,
                 mainPurse,
             );
-            console.log("walletSelected", walletSelected)
+
             if (walletSelected === 'torus') {
                 const signedDeploy = await signDeployWithTorus(deploy)
                 console.log("deploy_hash", signedDeploy.deploy_hash)
