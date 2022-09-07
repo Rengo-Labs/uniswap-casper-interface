@@ -1,7 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { ButtonClose } from '../../atoms'
-import { AiOutlineLoading3Quarters, AiOutlineCloseCircle } from "react-icons/ai";
+import { AiOutlineArrowUp, AiOutlineCloseCircle } from "react-icons/ai";
 
 
 const PopupStyled = styled.div<any>`
@@ -33,21 +33,14 @@ const MiddleStyled = styled.div`
     justify-self: center;
 `
 
-const SpinEffect = keyframes`
- 0% { transform: rotate(0deg); } 
- 100% { transform: rotate(360deg); } 
-`
 const TotalCenterStyled = styled.div`
     justify-self: center;
     align-self: center;
-    animation-name: ${SpinEffect};
-    animation-duration: 9s;
-    animation-iteration-count: infinite;
     font-size:5rem;
 `
 
 
-const PopupModal = ({ display, handleModal }) => {
+const ConfirmModal = ({ display, handleModal, linkExplorer }) => {
     return (
         <PopupStyled display={display}>
             <MidModalStyled>
@@ -58,14 +51,13 @@ const PopupModal = ({ display, handleModal }) => {
                 </CloseStyled>
 
                 <TotalCenterStyled>
-                    <AiOutlineLoading3Quarters />
+                    <AiOutlineArrowUp />
                 </TotalCenterStyled>
-                <MiddleStyled>Waiting for Confirmation</MiddleStyled>
-                <MiddleStyled>Swapping X Y for X Y</MiddleStyled>
-                <MiddleStyled>Confirm this transaction in your wallet</MiddleStyled>
+                <MiddleStyled>Transaction Submitted</MiddleStyled>
+                <MiddleStyled><a href={linkExplorer} target="_blank"> View on Explorer</a></MiddleStyled>
             </MidModalStyled>
         </PopupStyled>
     )
 }
 
-export default PopupModal
+export default ConfirmModal
