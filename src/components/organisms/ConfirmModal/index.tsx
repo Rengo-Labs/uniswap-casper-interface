@@ -49,6 +49,14 @@ const TotalCenterStyled = styled.div`
     font-size:5rem;
 `
 
+const AnchorStyled = styled.a`
+    color:white;
+    &:visited{
+        color:white;
+    }
+`
+
+
 
 const ConfirmModal = ({ display, handleModal, linkExplorer }) => {
     return (
@@ -65,7 +73,7 @@ const ConfirmModal = ({ display, handleModal, linkExplorer }) => {
                         <AiOutlineArrowUp />
                     </TotalCenterStyled>
                     <MiddleStyled>Transaction Submitted</MiddleStyled>
-                    <MiddleStyled><a href={linkExplorer} target="_blank"> View on Explorer</a></MiddleStyled>
+                    <MiddleStyled><AnchorStyled href={linkExplorer} target="_blank"> View on Explorer</AnchorStyled></MiddleStyled>
                 </MidModalStyled>
             </ContainerStyled>
         </PopupStyled>
