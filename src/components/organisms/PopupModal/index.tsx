@@ -13,16 +13,27 @@ const PopupStyled = styled.div<any>`
     height:100vh;
     place-items: center;
 `
-const MidModalStyled = styled.div<any>`
+
+const ContainerStyled = styled.div<any>`
+    background-color: ${props => props.theme.StrongColor};
     width:30%;
     height:50%;
-    background-color:rgba(230,230,230,1);
+    padding:20px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+`
+
+const MidModalStyled = styled.div<any>`
+    width:100%;
+    height:100%;
+    color: "white";
+    background-color: ${props => props.theme.StrongColor2};
     display:grid;
     grid-template: auto 1fr auto auto auto / 1fr;
     border-radius: 10px;
     padding:10px;
     gap:10px;
-    color:rgba(10,10,10,1);
 `
 
 const CloseStyled = styled.div`
@@ -50,20 +61,22 @@ const TotalCenterStyled = styled.div`
 const PopupModal = ({ display, handleModal }) => {
     return (
         <PopupStyled display={display}>
-            <MidModalStyled>
-                <CloseStyled>
-                    <ButtonClose onClickHandler={() => { handleModal(false) }}>
-                        <AiOutlineCloseCircle />
-                    </ButtonClose>
-                </CloseStyled>
+            <ContainerStyled>
+                <MidModalStyled>
+                    <CloseStyled>
+                        <ButtonClose onClickHandler={() => { handleModal(false) }}>
+                            <AiOutlineCloseCircle />
+                        </ButtonClose>
+                    </CloseStyled>
 
-                <TotalCenterStyled>
-                    <AiOutlineLoading3Quarters />
-                </TotalCenterStyled>
-                <MiddleStyled>Waiting for Confirmation</MiddleStyled>
-                <MiddleStyled>Swapping X Y for X Y</MiddleStyled>
-                <MiddleStyled>Confirm this transaction in your wallet</MiddleStyled>
-            </MidModalStyled>
+                    <TotalCenterStyled>
+                        <AiOutlineLoading3Quarters />
+                    </TotalCenterStyled>
+                    <MiddleStyled>Waiting for Confirmation</MiddleStyled>
+                    <MiddleStyled>Swapping X Y for X Y</MiddleStyled>
+                    <MiddleStyled>Confirm this transaction in your wallet</MiddleStyled>
+                </MidModalStyled>
+            </ContainerStyled>
         </PopupStyled>
     )
 }
