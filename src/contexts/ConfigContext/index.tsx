@@ -388,8 +388,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
     const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
     const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
-    const [swapModal, setSwapModal] = useState(true)
-    const [confirmModal, setConfirmModal] = useState(true)
+    const [swapModal, setSwapModal] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
     const {
         isConnected,
         walletAddress,
