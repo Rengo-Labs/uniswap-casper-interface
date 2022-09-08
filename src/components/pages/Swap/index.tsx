@@ -124,7 +124,7 @@ export const Swap = () => {
 
   async function requestIncreaseAllowance(amount, contractHash) {
     console.log("requestIncreaseAllowance")
-    const isApproved = await onIncreaseAllow(amount, contractHash)
+    const isApproved = await onIncreaseAllow(amount, contractHash, amountSwapTokenA, firstTokenSelected.amount)
     isApprovedTokenSetter(isApproved)
   }
 

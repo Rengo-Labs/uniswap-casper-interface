@@ -12,12 +12,12 @@ import { Toaster } from 'react-hot-toast';
 import { ConfigContextWithReducer } from './ConfigContext'
 export const BigContext = ({ children }: { children: ReactNode }) => {
     return (
-        <SwapContext>
-            <ConfigContextWithReducer>
-                <Toaster />
-                <TorusContext>
-                    <InitialContext>
-                        <ThemeContext>
+        <ThemeContext>
+            <SwapContext>
+                <ConfigContextWithReducer>
+                    <Toaster />
+                    <TorusContext>
+                        <InitialContext>
                             <TokensContext2>
                                 <PoolsContext>
                                     <LiquidityContext>
@@ -27,10 +27,10 @@ export const BigContext = ({ children }: { children: ReactNode }) => {
                                     </LiquidityContext>
                                 </PoolsContext>
                             </TokensContext2>
-                        </ThemeContext>
-                    </InitialContext>
-                </TorusContext>
-            </ConfigContextWithReducer>
-        </SwapContext>
+                        </InitialContext>
+                    </TorusContext>
+                </ConfigContextWithReducer>
+            </SwapContext>
+        </ThemeContext>
     )
 }

@@ -14,6 +14,7 @@ import {
 } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
+
 import {
     CLBArray,
     convertToString,
@@ -35,6 +36,8 @@ import {
     signDeployWithTorus,
     updateBalances
 } from '../../commons/swap';
+import ConfirmModal from '../../components/organisms/ConfirmModal';
+import PopupModal from '../../components/organisms/PopupModal';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
@@ -47,23 +50,7 @@ import { entryPointEnum } from '../../types';
 export const ConfigProviderContext = createContext<any>({})
 let torus;
 
-const convertToStr = (amount) => {
-    let strAmount = amount.toString();
-    if(amount.toString().includes('e')) {
-        strAmount=amount.toFixed(9).toString()
-    }
-    let amountArr = strAmount.split('.')
-    if (amountArr[1] === undefined) {
-        let concatedAmount = amountArr[0].concat('000000000')
-        return concatedAmount
-    } else {
-        let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
-        for (let i = 0; i < 9 - amountArr[1].length; i++) {
-            concatedAmount = concatedAmount.concat('0')
-        }
-        return concatedAmount
-    }
-}
+function convertToStr(x) { return x.toString() }
 
 async function tryToConnectSigner() {
     try {
@@ -464,6 +451,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
     const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
     const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
+    const [swapModal, setSwapModal] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
     const {
         isConnected,
         walletAddress,
@@ -553,8 +542,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         tokenDispatch({ type: tokenReducerEnum.SWITCH_TOKENS, payload: { secondTokenSelected, firstTokenSelected } })
     }
 
+    const [linkExplorer, setLinkExplorer] = useState("")
     async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB, slippSwapToken) {
-        const loadingToast = toast.loading("let me try to swap! be patient!")
+        setSwapModal(true)
+
         try {
             const deploy = await swapMakeDeploy(walletAddress,
                 DEADLINE,
@@ -571,23 +562,24 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 const signedDeploy = await signDeployWithTorus(deploy)
                 console.log("deploy_hash", signedDeploy.deploy_hash)
                 let result = await getDeploy(signedDeploy.deploy_hash);
-                toast.dismiss(loadingToast)
-                toast.success(`Got it! take your swap!`)
-                console.log(result)
+                setSwapModal(false)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setConfirmModal(true)
+                console.log("result", result)
                 return true
             }
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
                 let result = await putdeploySigner(signedDeploy);
-                toast.dismiss(loadingToast)
-                toast.success(`Got it! take your swap!`)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setSwapModal(false)
+                setConfirmModal(true)
                 console.log(result)
                 return true
             }
         } catch (error) {
-            toast.dismiss(loadingToast)
+            setSwapModal(false)
             console.log("onConfirmSwapConfig")
-            toast.error("Ooops, we have a problem")
             return false
         }
     }
@@ -616,9 +608,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onIncreaseAllow(amount, contractHash) {
-        const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
+    async function onIncreaseAllow(amount, contractHash, tokenAAmount, balance) {
         console.log("onIncreaseAllow")
+        if (tokenAAmount > balance) {
+            toast.error("Your balance is more less than the amount that you want to approve")
+            return false
+        }
+        const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
+
         try {
             const valueTotal = amount * 10 ** 9
             const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, valueTotal, true)
@@ -793,6 +790,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onRemoveLiquidity
         }}>
             {children}
+            <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} />
+            <ConfirmModal display={confirmModal ? 1 : 0} handleModal={setConfirmModal} linkExplorer={linkExplorer} />
         </ConfigProviderContext.Provider>
     )
 }
