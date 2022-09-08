@@ -4,6 +4,8 @@ import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLP
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
 import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, createSwapRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import ConfirmModal from '../../components/organisms/ConfirmModal';
+import PopupModal from '../../components/organisms/PopupModal';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
@@ -15,7 +17,7 @@ import { entryPointEnum } from '../../types';
 
 export const ConfigProviderContext = createContext<any>({})
 let torus;
-function convertToStr(x){return x.toString()}
+function convertToStr(x) { return x.toString() }
 async function tryToConnectSigner() {
     try {
         return await Signer.getActivePublicKey()
@@ -386,6 +388,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
     const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
     const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
+    const [swapModal, setSwapModal] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
     const {
         isConnected,
         walletAddress,
@@ -475,8 +479,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         tokenDispatch({ type: tokenReducerEnum.SWITCH_TOKENS, payload: { secondTokenSelected, firstTokenSelected } })
     }
 
+    const [linkExplorer, setLinkExplorer] = useState("")
     async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB) {
-        const loadingToast = toast.loading("let me try to swap! be patient!")
+        setSwapModal(true)
         try {
             const deploy = await swapMakeDeploy(walletAddress,
                 DEADLINE,
@@ -492,23 +497,24 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 const signedDeploy = await signDeployWithTorus(deploy)
                 console.log("deploy_hash", signedDeploy.deploy_hash)
                 let result = await getDeploy(signedDeploy.deploy_hash);
-                toast.dismiss(loadingToast)
-                toast.success(`Got it! take your swap!`)
-                console.log(result)
+                setSwapModal(false)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setConfirmModal(true)
+                console.log("result", result)
                 return true
             }
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
                 let result = await putdeploySigner(signedDeploy);
-                toast.dismiss(loadingToast)
-                toast.success(`Got it! take your swap!`)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setSwapModal(false)
+                setConfirmModal(true)
                 console.log(result)
                 return true
             }
         } catch (error) {
-            toast.dismiss(loadingToast)
+            setSwapModal(false)
             console.log("onConfirmSwapConfig")
-            toast.error("Ooops, we have a problem")
             return false
         }
     }
@@ -713,6 +719,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onRemoveLiquidity
         }}>
             {children}
+            <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} />
+            <ConfirmModal display={confirmModal ? 1 : 0} handleModal={setConfirmModal} linkExplorer={linkExplorer} />
         </ConfigProviderContext.Provider>
     )
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { ButtonClose } from '../../atoms'
-import { AiOutlineLoading3Quarters, AiOutlineCloseCircle } from "react-icons/ai";
+import { AiOutlineArrowUp, AiOutlineCloseCircle } from "react-icons/ai";
 
 
 const PopupStyled = styled.div<any>`
@@ -13,7 +13,6 @@ const PopupStyled = styled.div<any>`
     height:100vh;
     place-items: center;
 `
-
 const ContainerStyled = styled.div<any>`
     background-color: ${props => props.theme.StrongColor};
     width:30%;
@@ -44,21 +43,22 @@ const MiddleStyled = styled.div`
     justify-self: center;
 `
 
-const SpinEffect = keyframes`
- 0% { transform: rotate(0deg); } 
- 100% { transform: rotate(360deg); } 
-`
 const TotalCenterStyled = styled.div`
     justify-self: center;
     align-self: center;
-    animation-name: ${SpinEffect};
-    animation-duration: 9s;
-    animation-iteration-count: infinite;
     font-size:5rem;
 `
 
+const AnchorStyled = styled.a`
+    color:white;
+    &:visited{
+        color:white;
+    }
+`
 
-const PopupModal = ({ display, handleModal }) => {
+
+
+const ConfirmModal = ({ display, handleModal, linkExplorer }) => {
     return (
         <PopupStyled display={display}>
             <ContainerStyled>
@@ -70,15 +70,14 @@ const PopupModal = ({ display, handleModal }) => {
                     </CloseStyled>
 
                     <TotalCenterStyled>
-                        <AiOutlineLoading3Quarters />
+                        <AiOutlineArrowUp />
                     </TotalCenterStyled>
-                    <MiddleStyled>Waiting for Confirmation</MiddleStyled>
-                    <MiddleStyled>Swapping X Y for X Y</MiddleStyled>
-                    <MiddleStyled>Confirm this transaction in your wallet</MiddleStyled>
+                    <MiddleStyled>Transaction Submitted</MiddleStyled>
+                    <MiddleStyled><AnchorStyled href={linkExplorer} target="_blank"> View on Explorer</AnchorStyled></MiddleStyled>
                 </MidModalStyled>
             </ContainerStyled>
         </PopupStyled>
     )
 }
 
-export default PopupModal
+export default ConfirmModal
