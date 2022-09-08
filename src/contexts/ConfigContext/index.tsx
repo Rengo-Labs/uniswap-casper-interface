@@ -181,25 +181,31 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
 
             const liquidityA = response.liquidityA
             const liquidityB = response.liquidityB
+            const tokenToTrade = parseFloat(value) * (1 - fee)
 
             const constantProduct = liquidityA * liquidityB
-            console.log("liquidityA", liquidityA, "liquidityB", liquidityB, "constant_product", constantProduct)
+            console.log("liquidityA", liquidityA, "liquidityB", liquidityB, "constant_product", constantProduct, "tokenToTrade", tokenToTrade)
 
-            const newLiquidityAPool = liquidityA + parseFloat(value) * (1 - fee)
+            const newLiquidityAPool = liquidityA + tokenToTrade
             const newLiquidityBPool = constantProduct / newLiquidityAPool
             console.log("new_liquidity_a_pool", newLiquidityAPool, "new_liquidity_b_pool", newLiquidityBPool)
 
-            const tokensToTransfer = liquidityB - newLiquidityBPool
+            const tokensToTransfer = (liquidityB - newLiquidityBPool)
             console.log("tokensToTransfer", tokensToTransfer)
 
             const exchangeRateA = tokensToTransfer / parseFloat(value)
             const exchangeRateB = parseFloat(value) / tokensToTransfer
             console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
-            const priceImpact = (parseFloat(value) / (liquidityA + parseFloat(value)) * 100).toFixed(2)
+            const priceImpact = ((tokenToTrade / (liquidityA + tokenToTrade)) * 100)
             console.log("priceImpact", priceImpact)
 
-            return { tokensToTransfer: tokensToTransfer.toFixed(8), priceImpact, exchangeRateA, exchangeRateB }
+            return {
+                tokensToTransfer: tokensToTransfer.toFixed(8),
+                priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
+                exchangeRateA,
+                exchangeRateB
+            }
         }
         throw Error()
     } catch (error) {
