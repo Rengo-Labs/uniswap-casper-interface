@@ -59,7 +59,7 @@ const TotalCenterStyled = styled.div`
 `
 
 
-const PopupModal = ({ display, handleModal }) => {
+const PopupModal = ({ display, handleModal, tokenA = 'X Y', tokenB = 'X Y' }) => {
     return (
         <PopupStyled display={display}>
             <ContainerStyled>
@@ -74,7 +74,7 @@ const PopupModal = ({ display, handleModal }) => {
                         <AiOutlineLoading3Quarters />
                     </TotalCenterStyled>
                     <MiddleStyled>Waiting for Confirmation</MiddleStyled>
-                    <MiddleStyled>Swapping X Y for X Y</MiddleStyled>
+                    <MiddleStyled>Swapping {tokenA} for {tokenB}</MiddleStyled>
                     <MiddleStyled>Confirm this transaction in your wallet</MiddleStyled>
                 </MidModalStyled>
             </ContainerStyled>

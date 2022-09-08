@@ -20,7 +20,7 @@ import {
     convertToString,
     createRecipientAddress,
     createRuntimeArgs,
-    createSwapRuntimeArgs,
+    createSwapRuntimeArgs, createSwapToReceiveCSPRRuntimeArgs,
     getDeploy,
     getswapPath,
     makeDeploy,
@@ -116,9 +116,9 @@ async function swapMakeDeploy(
     try {
         const publicKey = CLPublicKey.fromHex(publicKeyHex);
         let _paths = await getswapPath(tokenASymbol, tokenBSymbol);
+        const entryPoint = selectEntryPoint(tokenASymbol, tokenBSymbol)
+        console.log("EntryPoint", entryPoint, tokenASymbol, tokenBSymbol, amount_out_min)
         if (tokenASymbol !== "WCSPR" && tokenBSymbol !== "WCSPR") {
-            const entryPoint = selectEntryPoint(tokenASymbol, tokenBSymbol)
-            console.log("EntryPoint", entryPoint, tokenASymbol, tokenBSymbol, amount_out_min)
             return createSwapRuntimeArgs(
                 amount_in,
                 amount_out_min,
@@ -129,15 +129,32 @@ async function swapMakeDeploy(
                 deadline,
                 entryPoint
                 )
-        } else {
-            console.log("WCSPR")
-            const runtimeArgs = createRuntimeArgs(
+        } if (tokenBSymbol === "WCSPR") {
+            const runtimeArgs = createSwapToReceiveCSPRRuntimeArgs(
                 amount_in,
+                amount_out_min,
                 slippSwapToken,
                 _paths,
                 publicKey,
                 mainPurse,
-                deadline
+                deadline,
+                entryPoint
+            )
+            return await makeDeployWasm(
+                publicKey,
+                runtimeArgs,
+                paymentAmount,
+            );
+        } else {
+            const runtimeArgs = createRuntimeArgs(
+                amount_in,
+                amount_out_min,
+                slippSwapToken,
+                _paths,
+                publicKey,
+                mainPurse,
+                deadline,
+                entryPoint
             );
 
             return await makeDeployWasm(
@@ -790,7 +807,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onRemoveLiquidity
         }}>
             {children}
-            <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} />
+            <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />
             <ConfirmModal display={confirmModal ? 1 : 0} handleModal={setConfirmModal} linkExplorer={linkExplorer} />
         </ConfigProviderContext.Provider>
     )
