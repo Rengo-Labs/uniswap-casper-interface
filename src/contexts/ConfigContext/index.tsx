@@ -20,7 +20,7 @@ import {
     convertToString,
     createRecipientAddress,
     createRuntimeArgs,
-    createSwapRuntimeArgs, createSwapToReceiveCSPRRuntimeArgs,
+    createSwapRuntimeArgs, createSwapRuntimeArgs2, createSwapToReceiveCSPRRuntimeArgs,
     getDeploy,
     getswapPath,
     makeDeploy,
@@ -130,7 +130,7 @@ async function swapMakeDeploy(
                 entryPoint
                 )
         } if (tokenBSymbol === "WCSPR") {
-            const runtimeArgs = createSwapToReceiveCSPRRuntimeArgs(
+            return createSwapRuntimeArgs2(
                 amount_in,
                 amount_out_min,
                 slippSwapToken,
@@ -140,11 +140,6 @@ async function swapMakeDeploy(
                 deadline,
                 entryPoint
             )
-            return await makeDeployWasm(
-                publicKey,
-                runtimeArgs,
-                paymentAmount,
-            );
         } else {
             const runtimeArgs = createRuntimeArgs(
                 amount_in,

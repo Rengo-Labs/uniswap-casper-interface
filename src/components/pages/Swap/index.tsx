@@ -79,11 +79,12 @@ export const Swap = () => {
     onConnectConfig()
   }
 
-  function onSwitch() {
+  function onSwitch(amountA, amountB, rateA, rateB) {
     onSwitchTokens()
-    amountSwapTokenASetter(0)
-    amountSwapTokenBSetter(0)
-    switchMovementSetter(false)
+    amountSwapTokenASetter(amountB)
+    amountSwapTokenBSetter(amountA)
+    exchangeRateASetter(rateB)
+    exchangeRateBSetter(rateA)
   }
 
   function ResetTokens() {
@@ -128,6 +129,18 @@ export const Swap = () => {
     isApprovedTokenSetter(isApproved)
   }
 
+  function onListenerFirstInput(token) {
+    if (token.symbol !== secondTokenSelected.symbol)
+      onSelectFirstToken(token)
+
+  }
+
+  function onListenerSecondInput(token) {
+    if (token.symbol !== secondTokenSelected.symbol)
+      onSelectSecondToken(token)
+
+  }
+
   return (
       <BasicLayout>
         <CardContainer cardTitle="Swap">
@@ -151,11 +164,11 @@ export const Swap = () => {
                           placeholder="Search name"
                       />
                     </SearchSectionAtom>
-                    <SwapTokens >
+                    <SwapTokens>
                       {
                         Object.keys(tokens)
                             .map((key) => {
-                              const handleToken = () => { onSelectFirstToken(tokens[key]), handleModalPrimary() }
+                              const handleToken = () => { onListenerFirstInput(tokens[key]), handleModalPrimary() }
 
                               return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
                             })
@@ -167,7 +180,7 @@ export const Swap = () => {
             }
 
             <SwitchBox
-                       onSwitch={onSwitch}
+                       onSwitch={() => {onSwitch(amountSwapTokenA, amountSwapTokenB, exchangeRateA, exchangeRateB)}}
                        secondTokenSelected={secondTokenSelected}
                        firstTokenSelected={firstTokenSelected}
                        exchangeRateA={exchangeRateA}
@@ -217,7 +230,7 @@ export const Swap = () => {
                             .map((key) => {
                               const filter = new RegExp(firstTokenSelected.symbol)
                               if (filter.test(key)) { return }
-                              const handleToken = () => { onSelectSecondToken(tokens[key]), handleModalSecondary() }
+                              const handleToken = () => { onListenerSecondInput(tokens[key]), handleModalSecondary() }
                               return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
                             })
                       }

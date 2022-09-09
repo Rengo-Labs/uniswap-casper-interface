@@ -28,13 +28,8 @@ import Torus from "@toruslabs/casper-embed";
 import {Some} from "ts-results";
 import {entryPointEnum} from "../../types";
 
-const convertToStr = (e) => e.toString();
-
 const normilizeAmountToString = (amount) => {
-  let strAmount = amount.toString();
-  if(amount.toString().includes('e')) {
-    strAmount=amount.toFixed(9).toString()
-  }
+  let strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
   let amountArr = strAmount.split('.')
   if (amountArr[1] === undefined) {
     let concatedAmount = amountArr[0].concat('000000000')
@@ -129,7 +124,7 @@ export const selectEntryPoint = (tokenA, tokenB) => {
   if (tokenA === 'WCSPR' && tokenB !== 'WCSPR') {
     return entryPointEnum.Swap_exact_cspr_for_tokens
   } else if (tokenA !== 'WCSPR' && tokenB === 'WCSPR') {
-    return entryPointEnum.Swap_tokens_for_exact_cspr
+    return entryPointEnum.Swap_tokens_for_exact_cspr_js_client
   } else if (tokenA !== 'WCSPR' && tokenB !== 'CSPR') {
     return entryPointEnum.Swap_exact_tokens_for_tokens_js_client
   }
@@ -204,6 +199,43 @@ export async function createSwapRuntimeArgs(
     entryPoint,
     runtimeArgs,
     10_000_000_000
+  );
+}
+
+export async function createSwapRuntimeArgs2(
+    amount_in,
+    amount_out_min,
+    slippSwapToken,
+    _paths,
+    publicKey,
+    mainPurse,
+    deadline,
+    entryPointSelected
+) {
+  const amount_out = amount_out_min - (amount_out_min * slippSwapToken) / 100
+  const runtimeArgs = RuntimeArgs.fromMap({
+    amount_in_max: CLValueBuilder.u256(normilizeAmountToString(amount_in)),
+    amount_out: CLValueBuilder.u256(
+        normilizeAmountToString(amount_out)
+    ),
+    path: new CLList(_paths),
+    to: CLValueBuilder.uref(
+        Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+        AccessRights.READ_ADD_WRITE
+    ),
+    deadline: CLValueBuilder.u256(deadline),
+  });
+  let contractHashAsByteArray = Uint8Array.from(
+      Buffer.from(ROUTER_CONTRACT_HASH, "hex")
+  );
+  let entryPoint = entryPointSelected;
+  // Set contract installation deploy (unsigned).
+  return await makeDeploySwap(
+      publicKey,
+      contractHashAsByteArray,
+      entryPoint,
+      runtimeArgs,
+      10_000_000_000
   );
 }
 
@@ -392,9 +424,9 @@ export function removeLiquidityArgs(
     return RuntimeArgs.fromMap({
       token_a: new CLKey(_token_a),
       token_b: new CLKey(_token_b),
-      liquidity: CLValueBuilder.u256(convertToStr(1)),
-      amount_a_min: CLValueBuilder.u256(convertToStr(10)),
-      amount_b_min: CLValueBuilder.u256(convertToStr(10)),
+      liquidity: CLValueBuilder.u256(normilizeAmountToString(1)),
+      amount_a_min: CLValueBuilder.u256(normilizeAmountToString(10)),
+      amount_b_min: CLValueBuilder.u256(normilizeAmountToString(10)),
       to: createRecipientAddress(publicKey),
       deadline: CLValueBuilder.u256(deadline),
     });
