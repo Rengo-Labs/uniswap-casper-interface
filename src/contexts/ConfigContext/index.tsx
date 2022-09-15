@@ -175,11 +175,17 @@ async function swapMakeDeploy(
  */
 async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) {
     try {
-        const response = await getPairTokenReserve(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
-        if (response.success) {
+        //const response = await getPairTokenReserve(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
+        const response = await axios.post(`${BASE_URL}/getpathreserves`, {
+            path: [
+                firstTokenSelected.symbolPair,
+                secondTokenSelected.symbolPair,
+            ]
+        })
+        if (response.data.success) {
 
-            const liquidityA = response.liquidityA
-            const liquidityB = response.liquidityB
+            const liquidityA = parseFloat(response.data.reserve0)
+            const liquidityB = parseFloat(response.data.reserve1)
             const tokenToTrade = parseFloat(value) * (1 - fee)
 
             const constantProduct = liquidityA * liquidityB
@@ -507,11 +513,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
             else {
                 const { csprBalance, mainPurse } = await getStatus(walletAddress)
-                tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: "CSPR", data: csprBalance } })
                 await updateBalances(walletAddress,
                     tokens,
                     tokenDispatch,
-                    secondTokenSelected)
+                    secondTokenSelected,
+                    firstTokenSelected,
+                    csprBalance
+                    )
                 console.log("csprBalance", csprBalance)
                 dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
                 dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
@@ -528,11 +536,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             });
             const walletAddress = (await torus?.login())[0];
             const { csprBalance, mainPurse } = await getStatus(walletAddress)
-            tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: "CSPR", data: csprBalance } })
             await updateBalances(walletAddress,
                 tokens,
                 tokenDispatch,
-                secondTokenSelected)
+                secondTokenSelected,
+                firstTokenSelected,
+                csprBalance
+            )
             console.log("csprBalance", csprBalance)
             dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
             dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })

@@ -27,6 +27,7 @@ import axios from "axios";
 import Torus from "@toruslabs/casper-embed";
 import {Some} from "ts-results";
 import {entryPointEnum} from "../../types";
+import {tokenReducerEnum} from "../../reducers/TokenReducers";
 
 const normilizeAmountToString = (amount) => {
   let strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
@@ -628,8 +629,19 @@ export function updateBalances(
   walletAddress,
   tokens,
   tokenDispatch,
-  secondTokenSelected
+  secondTokenSelected,
+  firstTokenSelected,
+  casperBalance
 ) {
+  console.log("Load balance")
+  if ("CSPR" === secondTokenSelected.symbol) {
+    tokenDispatch({ type: "BALANCE_SECOND_TOKEN", payload: casperBalance });
+  }
+  if ("CSPR" === firstTokenSelected.symbol) {
+    tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: "CSPR", data: casperBalance } })
+  } else {
+    tokenDispatch({ type: "LOAD_BALANCE_TOKEN", payload: {name: "CSPR", data: casperBalance} });
+  }
   Object.keys(tokens).map((x) => {
     if (tokens[`${x}`].contractHash.length > 0) {
       const param = {
@@ -648,6 +660,10 @@ export function updateBalances(
           });
           if (x === secondTokenSelected.symbol) {
             tokenDispatch({ type: "BALANCE_SECOND_TOKEN", payload: balance });
+          }
+
+          if (x === firstTokenSelected.symbol) {
+            tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: x, data: balance } })
           }
         })
         .catch((error) => {

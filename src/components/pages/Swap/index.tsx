@@ -75,7 +75,9 @@ export const Swap = () => {
   async function onConfirmSwap() {
     setActiveModalSwap(false);
     const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
+    console.log("Paso anti end")
     amountSwapTokenASetter(0)
+    console.log("Paso end")
     onConnectConfig()
   }
 
@@ -113,6 +115,7 @@ export const Swap = () => {
       exchangeRateA,
       exchangeRateB
     } = await getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippSwapToken, feeToPay)
+    console.log(tokensToTransfer)
     tokensToTransferSetter(tokensToTransfer)
     priceImpactSetter(priceImpact)
     exchangeRateASetter(exchangeRateA)
