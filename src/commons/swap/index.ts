@@ -128,7 +128,7 @@ export async function createSwapRuntimeArgs(
   let contractHashAsByteArray = Uint8Array.from(
     Buffer.from(ROUTER_CONTRACT_HASH, "hex")
   );
-  let entryPoint = entryPointEnum.Swap_exact_tokens_for_tokens_js_client
+  let entryPoint = entryPointEnum.Swap_exact_tokens_for_tokens_js_client;
 
   // Set contract installation deploy (unsigned).
   return await makeDeploySwap(
@@ -398,6 +398,25 @@ export async function putdeploySigner(signedDeploy) {
   try {
     const client = new CasperClient(NODE_ADDRESS);
     const installDeployHash = await client.putDeploy(signedDeploy);
+    console.log(`... Contract installation deployHash: ${installDeployHash}`);
+    const result = await getDeploySigner(installDeployHash);
+    console.log(
+      `... Contract installed successfully.`,
+      JSON.parse(JSON.stringify(result))
+    );
+    return installDeployHash;
+  } catch (error) {
+    console.log("putdeploySigner", error);
+    throw Error(error.message);
+  }
+}
+
+export async function withPutDeploy(signedDeploy, setDeployExplorer) {
+  try {
+    const client = new CasperClient(NODE_ADDRESS);
+    const installDeployHash = await client.putDeploy(signedDeploy);
+    const deployHash = `https://testnet.cspr.live/deploy/${installDeployHash}`;
+    setDeployExplorer(deployHash);
     console.log(`... Contract installation deployHash: ${installDeployHash}`);
     const result = await getDeploySigner(installDeployHash);
     console.log(

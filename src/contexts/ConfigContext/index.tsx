@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
-import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, createSwapRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, createSwapRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances, withPutDeploy } from '../../commons/swap';
 import ConfirmModal from '../../components/organisms/ConfirmModal';
 import PopupModal from '../../components/organisms/PopupModal';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
@@ -480,6 +480,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     const [linkExplorer, setLinkExplorer] = useState("")
+    const [deployExplorer, setDeployExplorer] = useState("")
     async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB) {
         setSwapModal(true)
         try {
@@ -495,6 +496,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             );
             if (walletSelected === 'torus') {
                 const signedDeploy = await signDeployWithTorus(deploy)
+                const deployHash = `https://testnet.cspr.live/deploy/${signedDeploy.deploy_hash}`
+                setDeployExplorer(deployHash || "")
                 console.log("deploy_hash", signedDeploy.deploy_hash)
                 let result = await getDeploy(signedDeploy.deploy_hash);
                 setSwapModal(false)
@@ -505,7 +508,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
-                let result = await putdeploySigner(signedDeploy);
+                let result = await withPutDeploy(signedDeploy, setDeployExplorer);
                 setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
                 setSwapModal(false)
                 setConfirmModal(true)
@@ -719,7 +722,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onRemoveLiquidity
         }}>
             {children}
-            <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} />
+            <PopupModal
+                display={swapModal ? 1 : 0}
+                handleModal={setSwapModal}
+                firstTokenSelected={firstTokenSelected}
+                secondTokenSelected={secondTokenSelected}
+                deployExplorer={deployExplorer}
+                deploy={deployExplorer.length > 0 ? true : false}
+            />
             <ConfirmModal display={confirmModal ? 1 : 0} handleModal={setConfirmModal} linkExplorer={linkExplorer} />
         </ConfigProviderContext.Provider>
     )

@@ -57,8 +57,14 @@ const TotalCenterStyled = styled.div`
     font-size:5rem;
 `
 
+const AnchorStyled = styled.a`
+    color:white;
+    &:visited{
+        color:white;
+    }
+`
 
-const PopupModal = ({ display, handleModal }) => {
+const PopupModal = ({ display, handleModal, firstTokenSelected, secondTokenSelected, deploy = false, deployExplorer = "" }) => {
     return (
         <PopupStyled display={display}>
             <ContainerStyled>
@@ -73,7 +79,10 @@ const PopupModal = ({ display, handleModal }) => {
                         <AiOutlineLoading3Quarters />
                     </TotalCenterStyled>
                     <MiddleStyled>Waiting for Confirmation</MiddleStyled>
-                    <MiddleStyled>Swapping X Y for X Y</MiddleStyled>
+                    <MiddleStyled>Swapping {firstTokenSelected.symbol} for {secondTokenSelected.symbol}</MiddleStyled>
+                    {deploy && <MiddleStyled>
+                        <AnchorStyled href={deployExplorer} target="_blank"> View on Explorer</AnchorStyled>
+                    </MiddleStyled>}
                     <MiddleStyled>Confirm this transaction in your wallet</MiddleStyled>
                 </MidModalStyled>
             </ContainerStyled>
