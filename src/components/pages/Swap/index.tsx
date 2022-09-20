@@ -188,7 +188,6 @@ export const Swap = () => {
                        firstTokenSelected={firstTokenSelected}
                        exchangeRateA={exchangeRateA}
                        exchangeRateB={exchangeRateB}
-                       defaultPriceImpactLabel={defaultPriceImpactLabel}
                        active={switchMovement}
             />
 
