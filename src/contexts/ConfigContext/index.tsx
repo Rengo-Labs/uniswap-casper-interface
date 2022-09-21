@@ -1,9 +1,41 @@
 import Torus from '@toruslabs/casper-embed';
 import axios from 'axios';
-import { AccessRights, CasperServiceByJsonRPC, CLByteArray, CLKey, CLOption, CLPublicKey, CLValueBuilder, RuntimeArgs, Signer } from 'casper-js-sdk';
+import {
+    AccessRights,
+    CasperServiceByJsonRPC,
+    CLByteArray,
+    CLKey,
+    CLList,
+    CLOption,
+    CLPublicKey,
+    CLValueBuilder,
+    RuntimeArgs,
+    Signer
+} from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
-import { CLBArray, convertToString, createRecipientAddress, createRuntimeArgs, createSwapRuntimeArgs, getDeploy, getswapPath, makeDeploy, makeDeployLiquidity, makeDeployLiquidityWasm, makeDeployWasm, putdeploy, putdeploySigner, removeLiquidityArgs, removeLiquidityPutDeploy, signdeploywithcaspersigner, signDeployWithTorus, updateBalances } from '../../commons/swap';
+
+import {
+    CLBArray,
+    convertToString,
+    createRecipientAddress,
+    createRuntimeArgs,
+    createSwapRuntimeArgs, createSwapRuntimeArgs2, createSwapToReceiveCSPRRuntimeArgs,
+    getDeploy,
+    getswapPath,
+    makeDeploy,
+    makeDeployLiquidity,
+    makeDeployLiquidityWasm,
+    makeDeployWasm,
+    putdeploy,
+    putdeploySigner,
+    removeLiquidityArgs,
+    removeLiquidityPutDeploy,
+    selectEntryPoint,
+    signdeploywithcaspersigner,
+    signDeployWithTorus,
+    updateBalances
+} from '../../commons/swap';
 import ConfirmModal from '../../components/organisms/ConfirmModal';
 import PopupModal from '../../components/organisms/PopupModal';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
@@ -17,7 +49,9 @@ import { entryPointEnum } from '../../types';
 
 export const ConfigProviderContext = createContext<any>({})
 let torus;
+
 function convertToStr(x) { return x.toString() }
+
 async function tryToConnectSigner() {
     try {
         return await Signer.getActivePublicKey()
@@ -82,22 +116,40 @@ async function swapMakeDeploy(
     try {
         const publicKey = CLPublicKey.fromHex(publicKeyHex);
         let _paths = await getswapPath(tokenASymbol, tokenBSymbol);
+        const entryPoint = selectEntryPoint(tokenASymbol, tokenBSymbol)
+        console.log("EntryPoint", entryPoint, tokenASymbol, tokenBSymbol, amount_out_min)
         if (tokenASymbol !== "WCSPR" && tokenBSymbol !== "WCSPR") {
             return createSwapRuntimeArgs(
                 amount_in,
+                amount_out_min,
                 slippSwapToken,
                 _paths,
                 publicKey,
                 mainPurse,
-                deadline)
+                deadline,
+                entryPoint
+                )
+        } if (tokenBSymbol === "WCSPR") {
+            return createSwapRuntimeArgs2(
+                amount_in,
+                amount_out_min,
+                slippSwapToken,
+                _paths,
+                publicKey,
+                mainPurse,
+                deadline,
+                entryPoint
+            )
         } else {
             const runtimeArgs = createRuntimeArgs(
                 amount_in,
+                amount_out_min,
                 slippSwapToken,
                 _paths,
                 publicKey,
                 mainPurse,
-                deadline
+                deadline,
+                entryPoint
             );
 
             return await makeDeployWasm(
@@ -108,6 +160,7 @@ async function swapMakeDeploy(
         }
 
     } catch (error) {
+        console.log("Paso error")
         return false
     }
 }
@@ -122,6 +175,7 @@ async function swapMakeDeploy(
  */
 async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) {
     try {
+        //const response = await getPairTokenReserve(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
             path: [
                 firstTokenSelected.symbolPair,
@@ -130,31 +184,58 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
         })
         if (response.data.success) {
 
-            const liquidityA = response.data.reserve0
-            const liquidityB = response.data.reserve1
-            const poolExchangeRate = liquidityB / liquidityA
+            const liquidityA = parseFloat(response.data.reserve0)
+            const liquidityB = parseFloat(response.data.reserve1)
+            const tokenToTrade = parseFloat(value) * (1 - fee)
 
             const constantProduct = liquidityA * liquidityB
+            console.log("liquidityA", liquidityA, "liquidityB", liquidityB, "constant_product", constantProduct, "tokenToTrade", tokenToTrade)
 
-            const newLiquidityAPool = liquidityA + parseFloat(value) * (1 - fee)
-
+            const newLiquidityAPool = liquidityA + tokenToTrade
             const newLiquidityBPool = constantProduct / newLiquidityAPool
+            console.log("new_liquidity_a_pool", newLiquidityAPool, "new_liquidity_b_pool", newLiquidityBPool)
 
-            const tokensToTransfer = liquidityB - newLiquidityBPool
+            const tokensToTransfer = (liquidityB - newLiquidityBPool)
+            console.log("tokensToTransfer", tokensToTransfer)
 
-            const exchangeRateA = tokensToTransfer / parseFloat(value) * (1 - fee)
+            const exchangeRateA = tokensToTransfer / parseFloat(value)
+            const exchangeRateB = parseFloat(value) / tokensToTransfer
+            console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
-            const exchangeRateB = parseFloat(value) * (1 - fee) / tokensToTransfer
+            const priceImpact = ((tokenToTrade / (liquidityA + tokenToTrade)) * 100)
+            console.log("priceImpact", priceImpact)
 
-            const priceImpact = ((1 - parseFloat(value) / (liquidityA + parseFloat(value))) * 100).toFixed(2)
-
-            return { tokensToTransfer: tokensToTransfer.toFixed(8), priceImpact, exchangeRateA, exchangeRateB }
+            return {
+                tokensToTransfer: tokensToTransfer.toFixed(8),
+                priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
+                exchangeRateA,
+                exchangeRateB
+            }
         }
         throw Error()
     } catch (error) {
         console.log(__filename, "getSwapDetail", error)
         return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0 }
     }
+}
+
+const getPairTokenReserve = async (tokenA, tokenB) => {
+    const response = await axios.get(`${BASE_URL}/getpairlist`)
+    if (response.data.success) {
+        const list = response.data.pairList
+
+        let pair = list.filter(p => p.token0.symbol === tokenA && p.token1.symbol === tokenB)
+        console.log(pair)
+        if (pair.length != 0)
+            return {success: true, liquidityA: parseFloat(pair[0].reserve0), liquidityB: parseFloat(pair[0].reserve1)}
+
+        pair = list.filter(p => p.token0.symbol === tokenB && p.token1.symbol === tokenA)
+        console.log(pair)
+        if (pair.length != 0)
+            return {success: true, liquidityA: parseFloat(pair[0].reserve1), liquidityB: parseFloat(pair[0].reserve0)}
+    }
+
+    return {success: false, liquidityA: 0, liquidityB: 0}
 }
 
 const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
@@ -432,11 +513,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
             else {
                 const { csprBalance, mainPurse } = await getStatus(walletAddress)
-                tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: "CSPR", data: csprBalance } })
                 await updateBalances(walletAddress,
                     tokens,
                     tokenDispatch,
-                    secondTokenSelected)
+                    secondTokenSelected,
+                    firstTokenSelected,
+                    csprBalance
+                    )
                 console.log("csprBalance", csprBalance)
                 dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
                 dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
@@ -453,11 +536,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             });
             const walletAddress = (await torus?.login())[0];
             const { csprBalance, mainPurse } = await getStatus(walletAddress)
-            tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: "CSPR", data: csprBalance } })
             await updateBalances(walletAddress,
                 tokens,
                 tokenDispatch,
-                secondTokenSelected)
+                secondTokenSelected,
+                firstTokenSelected,
+                csprBalance
+            )
             console.log("csprBalance", csprBalance)
             dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
             dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
@@ -480,8 +565,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     const [linkExplorer, setLinkExplorer] = useState("")
-    async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB) {
+    async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB, slippSwapToken) {
         setSwapModal(true)
+
         try {
             const deploy = await swapMakeDeploy(walletAddress,
                 DEADLINE,
@@ -490,9 +576,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 amoutSwapTokenB,
                 firstTokenSelected.symbolPair,
                 secondTokenSelected.symbolPair,
-                slippageToleranceSelected,
+                slippSwapToken,
                 mainPurse,
             );
+
             if (walletSelected === 'torus') {
                 const signedDeploy = await signDeployWithTorus(deploy)
                 console.log("deploy_hash", signedDeploy.deploy_hash)
@@ -543,11 +630,17 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onIncreaseAllow(amount) {
+    async function onIncreaseAllow(amount, contractHash, tokenAAmount, balance) {
+        console.log("onIncreaseAllow")
+        if (tokenAAmount > balance) {
+            toast.error("Your balance is more less than the amount that you want to approve")
+            return false
+        }
         const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
+
         try {
             const valueTotal = amount * 10 ** 9
-            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, secondTokenSelected.contractHash, valueTotal, true)
+            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, valueTotal, true)
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
                 let result = await putdeploySigner(signedDeploy);
@@ -719,7 +812,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onRemoveLiquidity
         }}>
             {children}
-            <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} />
+            <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />
             <ConfirmModal display={confirmModal ? 1 : 0} handleModal={setConfirmModal} linkExplorer={linkExplorer} />
         </ConfigProviderContext.Provider>
     )
