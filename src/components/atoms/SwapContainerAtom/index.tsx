@@ -15,6 +15,7 @@ export const SwapContainerStyled = styled.section<any>`
     flex-direction: column;
     align-items: center;
     border-radius:10px;
+    z-index: 1;
 `
 export const SwapContainerAtom = ({ children }: { children: ReactNode }) => {
     return (
