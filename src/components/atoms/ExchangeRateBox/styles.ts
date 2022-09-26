@@ -5,7 +5,6 @@ export const ExchangeRateContainer = styled.section`
     position: relative;
     display: block;
     align-self: center;
-    width: 100%;
     padding: 3px;
 `
 export const ExchangeRateRow = styled.section`
@@ -22,5 +21,5 @@ export const ExchangeRateColumnRight = styled.section`
 `
 export const PriceImpactLabel = styled(PriceImpactTitle)`
     transition: color 1s;
-    color: ${props => props.priceImpact <= 1 ? 'green' : props.priceImpact > 1 && props.priceImpact <= 5 ? 'yellow' : 'orange'}
+    color: ${props => props.priceImpact <= 1 || props.priceImpact === '<0.01' ? 'green' : props.priceImpact > 1 && props.priceImpact <= 5 ? 'yellow' : 'orange'}
 `

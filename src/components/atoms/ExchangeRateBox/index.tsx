@@ -20,13 +20,13 @@ export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exc
                 {
                     switchRate &&
                     <ExchangeRateColumnLeft>
-                        1 {tokenASymbol} ≈ {(exchangeRateB / exchangeRateA).toString().slice(0, 10)} {tokenBSymbol}
+                        1 {tokenASymbol} ≈ {(exchangeRateA).toString().slice(0, 10)} {tokenBSymbol}
                     </ExchangeRateColumnLeft>
                 }
                 {
                     !switchRate &&
                     <ExchangeRateColumnLeft>
-                        1 {tokenBSymbol} ≈ {(exchangeRateA / exchangeRateB).toString().slice(0, 10)} {tokenASymbol}
+                        1 {tokenBSymbol} ≈ {(exchangeRateB).toString().slice(0, 10)} {tokenASymbol}
                     </ExchangeRateColumnLeft>
                 }
             </ExchangeRateRow>
