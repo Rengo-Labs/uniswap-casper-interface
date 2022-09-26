@@ -3,17 +3,37 @@ import styled from 'styled-components';
 export const filterStyled = styled.span`
     background-color: white;
 `
-export const THeadStyled = styled.thead`
+export const THeadStyled = styled.div`
+    display: flex;
+    border-radius: 7px;
+    border: 1px solid black;
+    padding: 7px 0px 7px 0px;
 `
 
-export const TRowStyled = styled.tr`
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    place-items: center;
-`
-export const THeadersStyled = styled.th`
-    display: grid;
-    grid-template-columns: 3fr 1fr;
+export const THeader6Styled = styled.div`
+    flex: 6;
+    display: flex;
+    justify-content: center;
     place-items: center;
     background-color: transparent;
+`
+
+export const THeader3Styled = styled.div`
+    flex: 3;
+    justify-content: center;
+    display: flex;
+    place-items: center;
+    background-color: transparent;
+`
+
+export const THeaderStyled = styled.div`
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    background-color: transparent;
+`
+
+export const THeaderTitle = styled.div`
+    margin-right: 10px;
 `

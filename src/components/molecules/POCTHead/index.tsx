@@ -1,31 +1,48 @@
 import React from 'react'
-import { AiOutlineCaretDown, AiOutlineCaretUp,AiOutlineGold } from "react-icons/ai";
-import { THeadStyled, TRowStyled, THeadersStyled } from './styles'
+import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
+import { THeadStyled, THeader6Styled, THeader3Styled, THeaderStyled, THeaderTitle } from './styles'
 import { v4 as uuidv4 } from 'uuid';
+import {TbCircle} from "react-icons/all";
 
+
+const Header = ({headerGroup, header } : any) => {
+    return <THeader3Styled {...headerGroup.getHeaderGroupProps()} {...header.getHeaderProps(header.getSortByToggleProps())} key={uuidv4()}>
+        <THeaderTitle>
+            {header.Header}
+        </THeaderTitle>
+        <div>
+            {header.isSorted ? header.isSortedDesc
+                    ? <TiArrowSortedDown /> : <TiArrowSortedUp />
+                : <TiArrowUnsorted />
+            }
+        </div>
+    </THeader3Styled>
+}
 
 export const POCTHead = ({ headerGroups }) => {
     return (
         <THeadStyled>
-            {headerGroups.map(headerGroup => (
-                <TRowStyled {...headerGroup.getHeaderGroupProps()} key={uuidv4()}>
-                    {headerGroup.headers.map(column => (
-                        // Add the sorting props to control sorting. For this example
-                        // we can add them into the header props
-                        <THeadersStyled {...column.getHeaderProps(column.getSortByToggleProps())} key={uuidv4()}>
-                            {column.render('Header')}
-                            {/* Add a sort direction indicator */}
-                            <span>
-                                {column.isSorted
-                                    ? column.isSortedDesc
-                                        ? <AiOutlineCaretDown />
-                                        : <AiOutlineCaretUp />
-                                    : <AiOutlineGold />}
-                            </span>
-                        </THeadersStyled>
-                    ))}
-                </TRowStyled>
-            ))}
+            {
+                <THeader6Styled {...headerGroups[0].getHeaderGroupProps()} {...headerGroups[0].headers[0].getHeaderProps(headerGroups[0].headers[0].getSortByToggleProps())} key={uuidv4()}>
+                    <THeaderTitle>
+                        {headerGroups[0].headers[0].Header}
+                    </THeaderTitle>
+                    <div>
+                        {headerGroups[0].headers[0].isSorted
+                            ? headerGroups[0].headers[0].isSortedDesc
+                                ? <TiArrowSortedDown />
+                                : <TiArrowSortedUp />
+                            : <TiArrowUnsorted />}
+                    </div>
+                </THeader6Styled>
+            }
+            <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[1]} />
+            <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[2]} />
+            <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[3]} />
+            <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[4]} />
+            <THeaderStyled>
+                <div><TbCircle /></div>
+            </THeaderStyled>
         </THeadStyled>
     )
 }

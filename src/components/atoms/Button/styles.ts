@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const ButtonStyle = styled.button`
     color: ${props => props.theme.StrongColor};
-    background-color: ${props => props.theme.TertiaryColor};
+    background-color: #70ecd4;
     padding:10px;
     border-radius: 10px;
     border:none;
