@@ -102,7 +102,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                     <TColumn3>
                         <TRow>
                             <Button content={'Add Liquidity'} handler={() => {
-                                navigate({pathname: "/liquidity", search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
+                                navigate({pathname: "/liquidity/add", search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
                             }}/>
                         </TRow>
                     </TColumn3>

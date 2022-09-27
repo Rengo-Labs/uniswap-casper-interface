@@ -214,18 +214,14 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
   ]
   const columns = React.useMemo(() => headers, [])
   const data = React.useMemo(() => tokens, [])
+  const [isStaked, setStaked] = useState(false)
 
-  const filter = (onlyStaked) => {
-    if (onlyStaked) {
-      const result = tokens.filter(t => parseFloat(t.pair.totalLiquidityPool) > 0)
-      console.log(result)
-    }
-
-    return tokens
+  const filter = (x) => {
+    return parseFloat(x.original.pair.totalLiquidityPool) > 0
   }
 
   return (
-    <PoolsProviderContext.Provider value={{ columns, data, filter }}>
+    <PoolsProviderContext.Provider value={{ columns, data, filter, isStaked, setStaked }}>
       {children}
     </PoolsProviderContext.Provider>
   )

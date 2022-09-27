@@ -12,9 +12,7 @@ import { ItemSelector } from "../../atoms/ItemSelector";
 export const PoolModule = () => {
     const options = ["Time basis: 1D", "Time basis: 3D", "Time basis: 7D"];
 
-    const { columns, data, filter } = React.useContext(PoolsProviderContext)
-
-    const [ filterData, setFilter] = useState(data)
+    const { columns, data, setStaked } = React.useContext(PoolsProviderContext)
 
     const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
     const { preGlobalFilteredRows, setGlobalFilter, state }:any = tableInstance
@@ -25,7 +23,7 @@ export const PoolModule = () => {
             <MenuStyled>
                 <MenuTitleStyled>Earn yield trading by providing liquidity</MenuTitleStyled>
                 <MenuToggleStyled>
-                    <ToggleBox filter={filter} />
+                    <ToggleBox setStaked={setStaked} />
                 </MenuToggleStyled>
                 <MenuFilterStyled>
                     <ItemSelector options={options} />

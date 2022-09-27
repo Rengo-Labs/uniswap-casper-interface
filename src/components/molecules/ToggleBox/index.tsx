@@ -4,12 +4,11 @@ import { v4 as uuidv4 } from 'uuid'
 import {ToggleTitle, WrapToggle} from "./styles";
 import {CustomToggle} from "../../atoms";
 
-
-export const ToggleBox = (filter)  => {
+export const ToggleBox = ({setStaked}: any)  => {
     const [isChecked, setChecked] = useState(false)
 
     const handleOnClick = () => {
-        filter(!isChecked)
+        setStaked(!isChecked)
         setChecked(!isChecked)
     }
 
