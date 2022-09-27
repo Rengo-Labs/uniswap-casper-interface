@@ -21,7 +21,7 @@ const LayoutStyled = styled.div<any>`
 `
 
 const NewNavigationStyled = styled.nav`
-    background-color:red;
+    background-color:rgba(255,255,255,.1);
     display: grid;
     padding:10px 0;
     grid-template: auto 1fr auto / auto;
@@ -46,7 +46,7 @@ const NavItemStyled = styled.nav<any>`
     gap:1em;
     justify-content: ${props => props.collapse ? "center" : "space-between"};
     align-items:center;
-    background-color:${props => props.active ? "green" : ""};
+    background-color:${props => props.active ? "rgba(255,255,255,.4)" : ""};
     grid-template-columns: 1fr 2fr;
 `
 function NavItem({ children, collapse }) {
