@@ -20,12 +20,15 @@ import { BASE_URL, CHAINS, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../..
 import Torus from '@toruslabs/casper-embed'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { SwapToken } from '../../molecules/SwapToken'
+import {useSearchParams} from "react-router-dom";
 
 const errorToast = (msg) => toast.error(msg);
 const successToast = (msg) => toast.success(msg);
 const loadingToast = (msg) => toast.loading(msg);
 
 export const LiquidityModule = ({ tokenOne }: any) => {
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const {
         onConnectConfig,
@@ -46,6 +49,10 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         fillPairs
     } = useContext(ConfigProviderContext)
 
+    console.log(tokens)
+
+    const t0 = searchParams.get("token0")
+    const t1 = searchParams.get("token1")
     const [activeModalPrimary, setActiveModalPrimary] = useState(false)
     const [activeModalSecondary, setActiveModalSecondary] = useState(false)
     const [activeModalSwap, setActiveModalSwap] = useState(false)

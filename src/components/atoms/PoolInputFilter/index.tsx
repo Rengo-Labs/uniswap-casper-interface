@@ -9,6 +9,6 @@ export const PoolInputFilter = ({ value, setValue, count, onChange }:{ value?:an
                 setValue(e.target.value);
                 onChange(e.target.value);
             }}
-            placeholder={`${count} records...`} />
+            placeholder={`Search all`} />
     )
 }

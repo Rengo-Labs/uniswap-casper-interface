@@ -32,6 +32,6 @@ export { SearchInputAtom } from './SearchInputAtom'
 export { ExchangeRateBox } from './ExchangeRateBox'
 export { SlippageBox } from './SlippageBox'
 export { NewIcons } from './NewIcons'
-
+export { CustomToggle } from './CustomToggle'
 
 

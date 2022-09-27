@@ -2,8 +2,11 @@ import React from 'react'
 import { TBody} from './styles'
 import {CollapsingRow} from '../CollapsingRow'
 import { v4 as uuidv4 } from 'uuid'
+import {PoolsProviderContext} from "../../../contexts/PoolsContext";
 
 export const POCTBody = ({ getTableBodyProps, rows, prepareRow }) => {
+
+    const { isStaked, filter } = React.useContext(PoolsProviderContext)
 
     return (
         <TBody {...getTableBodyProps()}>
@@ -13,6 +16,7 @@ export const POCTBody = ({ getTableBodyProps, rows, prepareRow }) => {
                     prepareRow(row)
                     return (
                         // Apply the row props
+                        (!isStaked || filter(row)) &&
                         <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} />
                     )
                 })

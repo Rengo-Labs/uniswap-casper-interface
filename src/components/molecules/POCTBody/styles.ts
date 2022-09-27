@@ -13,7 +13,6 @@ export const TBody = styled.div`
 `
 
 export const TWrapRow = styled.div`
-    flex: 1;
     border-radius: 7px;
     border: 1px solid black;
     padding: 7px 0px 7px 0px;
