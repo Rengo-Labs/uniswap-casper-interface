@@ -49,10 +49,6 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         fillPairs
     } = useContext(ConfigProviderContext)
 
-    console.log(tokens)
-
-    const t0 = searchParams.get("token0")
-    const t1 = searchParams.get("token1")
     const [activeModalPrimary, setActiveModalPrimary] = useState(false)
     const [activeModalSecondary, setActiveModalSecondary] = useState(false)
     const [activeModalSwap, setActiveModalSwap] = useState(false)
@@ -60,6 +56,12 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0)
     useEffect(() => {
+        const t0 = searchParams.get("token0")
+        const t1 = searchParams.get("token1")
+        if (t0) {
+            onSelectFirstToken(tokens[t0])
+            onSelectSecondToken(tokens[t1])
+        }
     }, [])
 
     const handleModalPrimary = () => {

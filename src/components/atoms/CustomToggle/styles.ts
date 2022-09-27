@@ -13,7 +13,7 @@ export const StyledSwitch = styled.label`
         margin: 0;
 
         position: relative;
-        background-color: rgb(120, 100, 244);
+        background-color: ${props => props.theme.secondBackgroundColor};
         border-radius: 32px;
 
         cursor: pointer;
@@ -22,10 +22,11 @@ export const StyledSwitch = styled.label`
         border-color 0.3s;
 
         &:checked {
-             background-color: #70ecd4;
+             background-color: ${props => props.theme.thirdBackgroundColor};
 
             &::before {
                  left: unset;
+                 background-color: ${props => props.theme.secondBackgroundColor};
                  transform: translateX(calc(100% + 12px));
              }
         }
@@ -38,7 +39,7 @@ export const StyledSwitch = styled.label`
              top: 2px;
              left: 2px;
              bottom: 2px;
-             background-color: white;
+             background-color: ${props => props.theme.thirdBackgroundColor};
              transition: all 0.3s;
              border-radius: 50%;
              cursor: pointer;

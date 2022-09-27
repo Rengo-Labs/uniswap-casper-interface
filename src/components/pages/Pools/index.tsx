@@ -5,22 +5,32 @@ import { PoolModule } from '../../organisms'
 
 import {useNavigate} from "react-router-dom";
 import NewLayout from "../../../layout/NewLayout";
+import {PoolsProviderContext} from "../../../contexts/PoolsContext";
+import {WrappedPool, WrappedPoolTitle} from "./styles";
+import {lightTheme} from "../../../contexts/ThemeContext/themes";
+
+const TitleBox = ({label, content}) => {
+    return <div style={{flex: "2", padding: "10px 10px 10px 20px", backgroundColor: lightTheme.secondBackgroundColor, marginRight: "1vw", fontSize: "0.9vw"}}>{label} {content}</div>
+}
+
 export const Pools = () => {
     const navigate = useNavigate()
-  return (
-      <NewLayout>
-          <div style={{display: "grid", gridTemplateColumns: "repeat(11, 1fr)"}}>
-              <div style={{gridRow: "2", gridColumn: "1/11", display: "grid", gridTemplateColumns: "repeat(6, 1fr)", alignItems: "center", margin: "5% 0 10px 0"}}>
-                  <div style={{gridColumn: "2", gridRow: "3", padding: "10px", backgroundColor: "#7864f4", marginRight: "1em"}}>TVL: $ 192.168.000.000</div>
-                  <div style={{gridColumn: "3", gridRow: "3", padding: "10px", backgroundColor: "#7864f4", marginRight: "1em"}}>VOLUME: $ 1.000.000</div>
-                  <div style={{gridColumn: "4", gridRow: "3"}}>
-                      <Button content="Create pool" handler={() => {navigate("/liquidity")}} />
-                  </div>
-              </div>
-              <CardContainer gridRow="3" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
-                  <PoolModule />
-              </CardContainer >
-          </div>
-      </NewLayout>
-  )
+    const { gralData } = React.useContext(PoolsProviderContext)
+
+    return (
+        <NewLayout title="CASPERSWAP">
+            <WrappedPool>
+                <WrappedPoolTitle>
+                    <div style={{flex: "1"}} />
+                    <TitleBox label="TVL: $" content={gralData.tvl} />
+                    <TitleBox label="VOLUME: $" content={gralData.totalVolume} />
+                    <Button style={{flex: "1"}} content="Create pool" handler={() => {navigate("/liquidity")}} />
+                    <div style={{flex: "6"}} />
+                </WrappedPoolTitle>
+                <CardContainer gridRow="3" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
+                    <PoolModule />
+                </CardContainer >
+            </WrappedPool>
+        </NewLayout>
+    )
 }
