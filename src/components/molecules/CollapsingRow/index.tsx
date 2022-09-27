@@ -63,12 +63,12 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         <TRow>
                             <TColumn1 />
                             <TColumn3 />
-                            <TColumn3 style={{textAlign: "left"}}>$ 0</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>$ {row.original.pair.totalLiquidityUSD}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
                             <TColumn3 />
-                            <TColumn3 style={{textAlign: "left"}}>0 LP</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.totalLiquidityPool} LP</TColumn3>
                         </TRow>
                     </TColumn6>
                     <TColumn3>
@@ -78,11 +78,11 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>0 XRP</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token0Liquidity} {row.original.pair.token0}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>0 CSPR</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token1Liquidity} {row.original.pair.token1}</TColumn3>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
@@ -95,7 +95,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         <TRow>
                             <TColumn1 />
                             <TColumn3 style={{textAlign: "left"}}>
-                                0 %
+                                {row.original.pair.volumePercentage} %
                             </TColumn3>
                         </TRow>
                     </TColumn3>

@@ -10,6 +10,8 @@ import SwapIcon from '../assets/newIcons/swapIcon.svg'
 import ConfigIcon from '../assets/newIcons/configIcon.svg'
 import CommunityIcon from '../assets/newIcons/communityIcon.svg'
 import { NewIcons } from '../components/atoms'
+import {useNavigate} from "react-router-dom";
+
 
 const LayoutStyled = styled.div<any>`
     width: 100vw;
@@ -49,11 +51,12 @@ const NavItemStyled = styled.nav<any>`
     background-color:${props => props.active ? "green" : ""};
     grid-template-columns: 1fr 2fr;
 `
-function NavItem({ children, collapse }) {
+function NavItem({ children, redirect, collapse }: any) {
     const [active, setActive] = useState(false)
     return (<NavItemStyled
         onMouseEnter={() => { setActive(!active) }}
         onMouseLeave={() => { setActive(!active) }}
+        onClick={redirect}
         active={active}
         collapse={collapse}
     >
@@ -77,12 +80,12 @@ function IconText({ collapse, iconSet, text }) {
 }
 const size = "25"
 const IconTexts = [
-    { icon: SwapIcon, text: "Swap" },
-    { icon: LiquidityIcon, text: "Liquidity" },
-    { icon: PoolIcon, text: "Pools" },
-    { icon: FarmIcon, text: "Farms" },
-    { icon: StakingIcon, text: "Staking" },
-    { icon: NftIcon, text: "NFT" },
+    { icon: SwapIcon, text: "Swap", path: "/swap" },
+    { icon: LiquidityIcon, text: "Liquidity", path: "/liquidity" },
+    { icon: PoolIcon, text: "Pools", path: "/pools" },
+    { icon: FarmIcon, text: "Farms", path: "/farms" },
+    { icon: StakingIcon, text: "Staking", path: "/staking" },
+    { icon: NftIcon, text: "NFT", path: "/nft" },
 ]
 
 const IconTextsTwo = [
@@ -91,6 +94,7 @@ const IconTextsTwo = [
     { icon: CasperIcon, text: "CasperSwap" },
 ]
 const NewLayout = ({ children }) => {
+    const navigate = useNavigate()
     const [collapse, setCollapse] = useState(true)
     return (
         <LayoutStyled collapse={collapse}>
@@ -105,6 +109,7 @@ const NewLayout = ({ children }) => {
                     {IconTexts.map(x => {
                         return (
                             <NavItem key={x.text}
+                                     redirect={() => {navigate(x.path)}}
                                 collapse={collapse}
                             >
                                 <IconText collapse={collapse}
@@ -119,6 +124,7 @@ const NewLayout = ({ children }) => {
                     {IconTextsTwo.map(x => {
                         return (
                             <NavItem key={x.text}
+                                     redirect={() => {}}
                                 collapse={collapse}
                             >
                                 <IconText collapse={collapse}

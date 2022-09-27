@@ -2,9 +2,13 @@ import styled from 'styled-components'
 
 interface CardStyledInterface { 
     width?: string;
+    gridColumn?: string;
+    gridRow?: string;
 }
 
 export const CardStyled = styled.section<CardStyledInterface>`
+    grid-row: ${props => props.gridRow};
+    grid-column: ${props => props.gridColumn};
     width: ${props => props.width};
     margin: .5em auto;
     border-radius: 20px;

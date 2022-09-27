@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import Toggle from 'react-toggle'
 
 export const PoolModulesStyled = styled.section`
     margin: 0;
@@ -38,15 +37,6 @@ export const MenuFilterStyled = styled.div`
 export const MenuTitleStyled = styled.div`
     flex: 3;
     align-self: center;
-`
-
-export const ToggleTitle = styled.div`
-    flex: 2;
-    align-self: center;
-`
-
-export const ToggleStyled = styled(Toggle)`
-    flex: 1;
 `
 
 export const WrapToggle = styled.div`
