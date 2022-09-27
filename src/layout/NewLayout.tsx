@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import CasperIcon from '../assets/newIcons/casperIcon.svg'
 import FarmIcon from '../assets/newIcons/farmIcon.svg'
@@ -9,8 +9,9 @@ import StakingIcon from '../assets/newIcons/stakingIcon.svg'
 import SwapIcon from '../assets/newIcons/swapIcon.svg'
 import ConfigIcon from '../assets/newIcons/configIcon.svg'
 import CommunityIcon from '../assets/newIcons/communityIcon.svg'
-import { NewIcons } from '../components/atoms'
-import {useNavigate} from "react-router-dom";
+import { ButtonConnection, NewIcons } from '../components/atoms'
+import { useNavigate } from "react-router-dom";
+import { ConfigProviderContext } from '../contexts/ConfigContext'
 
 
 const LayoutStyled = styled.div<any>`
@@ -23,7 +24,7 @@ const LayoutStyled = styled.div<any>`
 `
 
 const NewNavigationStyled = styled.nav`
-    background-color:red;
+    background-color:rgba(255,255,255,.1);
     display: grid;
     padding:10px 0;
     grid-template: auto 1fr auto / auto;
@@ -48,7 +49,7 @@ const NavItemStyled = styled.nav<any>`
     gap:1em;
     justify-content: ${props => props.collapse ? "center" : "space-between"};
     align-items:center;
-    background-color:${props => props.active ? "green" : ""};
+    background-color:${props => props.active ? "rgba(255,255,255,.4)" : ""};
     grid-template-columns: 1fr 2fr;
 `
 function NavItem({ children, redirect, collapse }: any) {
@@ -93,9 +94,60 @@ const IconTextsTwo = [
     { icon: CommunityIcon, text: "Community" },
     { icon: CasperIcon, text: "CasperSwap" },
 ]
+const MainSpaceStyled = styled.main`
+    height:100%;
+    width:100%;
+    display:grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr;
+`
+function MainSpace({ children }) {
+    return (<MainSpaceStyled>{children}</MainSpaceStyled>)
+}
+const NavBarStyled = styled.nav`
+    padding:10px;
+    display:grid;
+    grid-template: auto / repeat(6, 1fr);
+`
+function NavBar({ children }) {
+    return (<NavBarStyled>{children}</NavBarStyled>)
+}
+
+const IconContainerStyled = styled.nav`
+    grid-column: 4/5;
+`
+function IconContainer({ children }) {
+    return (<IconContainerStyled>{children}</IconContainerStyled>)
+}
+
+const CallContainerStyled = styled.nav`
+        grid-column: 6/7;
+
+`
+function CallContainer({ children }) {
+    return (<CallContainerStyled>{children}</CallContainerStyled>)
+}
 const NewLayout = ({ children }) => {
     const navigate = useNavigate()
     const [collapse, setCollapse] = useState(true)
+    const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
+
+    const {
+        isConnected,
+        walletAddress,
+        walletSelected,
+        languagesSelected,
+        visualModeSelected,
+        slippageToleranceSelected,
+        gasPriceSelected } = configState
+
+    async function onConnect() {
+        onConnectConfig()
+    }
+    async function onDisconnect() {
+        onDisconnectWallet()
+    }
+
     return (
         <LayoutStyled collapse={collapse}>
             <NewNavigation
@@ -109,7 +161,7 @@ const NewLayout = ({ children }) => {
                     {IconTexts.map(x => {
                         return (
                             <NavItem key={x.text}
-                                     redirect={() => {navigate(x.path)}}
+                                redirect={() => { navigate(x.path) }}
                                 collapse={collapse}
                             >
                                 <IconText collapse={collapse}
@@ -124,7 +176,7 @@ const NewLayout = ({ children }) => {
                     {IconTextsTwo.map(x => {
                         return (
                             <NavItem key={x.text}
-                                     redirect={() => {}}
+                                redirect={() => { }}
                                 collapse={collapse}
                             >
                                 <IconText collapse={collapse}
@@ -136,7 +188,17 @@ const NewLayout = ({ children }) => {
                     })}
                 </MenuCenter>
             </NewNavigation>
-            <div>{children}</div>
+            <MainSpace>
+                <NavBar>
+                    <IconContainer>
+                        <NewIcons icon={CasperIcon} size={40} />
+                    </IconContainer>
+                    <CallContainer>
+                        <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                    </CallContainer>
+                </NavBar>
+                {children}
+            </MainSpace>
         </LayoutStyled>
 
     )
