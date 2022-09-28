@@ -24,7 +24,7 @@ export const ItemSelector: React.FC<ItemProperties> = ({options}: any) => {
 
     return (
         <DropDownContainer>
-            <DropDownHeader style={{display: "flex"}} onClick={toggling}>
+            <DropDownHeader style={{display: "flex", alignItems: "center"}} onClick={toggling}>
                 <div style={{flex: "3"}}>{selectedOption || options[0]}</div>
                 <div style={{flex: "1", textAlign: "end"}}><TiArrowSortedDown /></div>
             </DropDownHeader>

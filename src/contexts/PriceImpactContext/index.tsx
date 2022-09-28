@@ -77,7 +77,7 @@ const getPairTokenReserve = async (tokenA, tokenB) => {
     return {success: false, liquidityA: 0, liquidityB: 0}
 }
 
-const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
+export const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
     return (tokensToTransfer - tokensToTransfer * slippage / 100).toFixed(8)
 }
 

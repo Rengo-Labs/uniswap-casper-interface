@@ -21,7 +21,7 @@ export const DropDownListContainer = styled("div")`
 `
 
 export const DropDownList = styled("ul")`
-  padding: 0.4em 0.4em 0.4em 0.4em;
+  padding: 0.4em 0.4em 0 0.4em;
   margin: 0;
   background: rgb(120, 100, 244);
   border: 2px solid #e5e5e5;
