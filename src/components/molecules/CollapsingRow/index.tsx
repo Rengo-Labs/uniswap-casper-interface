@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import useCollapse from 'react-collapsed';
 
-import {AiOutlineSwap} from "react-icons/ai";
+import {AiFillStar, AiOutlineStar, AiOutlineSwap} from "react-icons/ai";
 import {Button} from '../../atoms'
 import { useNavigate } from 'react-router-dom';
 
@@ -34,7 +34,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
         <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>
                 <TColumn6 style={{display: "flex"}}>
-                    <TColumn1 />
+                    <TColumn1><AiFillStar style={{color: "rgb(120, 100, 244)"}}/></TColumn1>
                     <TColumn3>
                         <SwapIconImageStyled src={row.original.tokeIcon1} width="30" height="30" />
                         <SwapIconImageStyled style={{position: "relative", left: "-12px"}} src={row.original.tokeIcon2} width="30" height="30" />
@@ -49,7 +49,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                 </TColumn3>
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
                 <TColumn3>$ {row.original.fees24h}</TColumn3>
-                <TColumn3>% {row.original.oneYFees}</TColumn3>
+                <TColumn3>{row.original.oneYFees} %</TColumn3>
                 <TColumn1>{isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</TColumn1>
             </TRow>
             <TBodyExpanded {...getCollapseProps()}>
@@ -101,16 +101,16 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                     </TColumn3>
                     <TColumn3>
                         <TRow>
-                            <Button content={'Add Liquidity'} handler={() => {
+                            <Button style={{borderRadius: "10px", padding: "0.5em 3.6em 0.5em 3.6em"}} content={'Add Liquidity'} handler={() => {
                                 navigate({pathname: "/liquidity/add", search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
                             }}/>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
                         <TRow>
-                            <CircleButton><AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)"}} size="1.3rem" /></CircleButton>
-                            <CircleButton><TiTrash style={{alignSelf: "center"}} size="1.3rem" /></CircleButton>
-                            <CircleButton><TiTrash style={{alignSelf: "center"}} size="1.3rem" /></CircleButton>
+                            <CircleButton><AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: "#70ecd4"}} size="1.3rem" /></CircleButton>
+                            <CircleButton><TiTrash style={{alignSelf: "center", color: "#70ecd4"}} size="1.3rem" /></CircleButton>
+                            <CircleButton><TiTrash style={{alignSelf: "center", color: "#70ecd4"}} size="1.3rem" /></CircleButton>
                         </TRow>
                     </TColumn3>
                     <TColumn1 />

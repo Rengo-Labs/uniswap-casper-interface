@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 export const PoolSeachButtonStyled = styled.section`
     box-sizing: border-box;
-    background-color: ${prop => prop.theme.StrongColor3};
+    background-color: rgb(120,100,244);
     width: 100%;
     padding:.6rem .7rem;
     border-radius: 10px;

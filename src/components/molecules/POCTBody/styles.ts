@@ -10,6 +10,7 @@ export const TBody = styled.div`
     flex-direction: column;
     overflow-y: scroll;
     height: 50vh;
+    color: black;
 `
 
 export const TWrapRow = styled.div`
@@ -52,6 +53,7 @@ export const CircleButton = styled.button`
     display: flex;
     padding: 0;
     border: 0;
+    cursor: pointer;
     justify-content: center;
     border-radius: 45%;
     margin: 5px;

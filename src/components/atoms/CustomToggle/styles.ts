@@ -26,6 +26,7 @@ export const StyledSwitch = styled.label`
 
             &::before {
                  left: unset;
+                 background-color: rgb(120,100,244);
                  transform: translateX(calc(100% + 12px));
              }
         }
@@ -38,7 +39,7 @@ export const StyledSwitch = styled.label`
              top: 2px;
              left: 2px;
              bottom: 2px;
-             background-color: white;
+             background-color: #70ecd4;
              transition: all 0.3s;
              border-radius: 50%;
              cursor: pointer;

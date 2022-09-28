@@ -14,7 +14,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "11,645,726.23",
       volume7d: "20,666,726.23",
       fees24h: "0",
-      oneYFees: "0%",
+      oneYFees: "0",
       pair: {
         token0: "CSPR",
         token1: "WETH",
@@ -33,7 +33,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "20,645,726.23",
       volume7d: "25,666,726.23",
       fees24h: "0",
-      oneYFees: "0%",
+      oneYFees: "0",
       pair: {
         token0: "WCSPR",
         token1: "WETH",
@@ -52,7 +52,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "60,258,852.64",
       volume7d: "46,471,451.45",
       fees24h: "1,378.36",
-      oneYFees: "47.0%",
+      oneYFees: "47.0",
       pair: {
         token0: "CSPR",
         token1: "WISER",
@@ -71,7 +71,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "41,184,286.40",
       volume7d: "60,547,413.20",
       fees24h: "6,214.60",
-      oneYFees: "33.47%",
+      oneYFees: "33.47",
       pair: {
         token0: "WISER",
         token1: "WCSPR",
@@ -90,7 +90,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "22,848,464.14",
       volume7d: "40,879.726.16",
       fees24h: "4,471.19",
-      oneYFees: "15.0%",
+      oneYFees: "15.0",
       pair: {
         token0: "WETH",
         token1: "WISER",
@@ -109,7 +109,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "84,456,654.23",
       volume7d: "25,888,841.23",
       fees24h: "8,265.00",
-      oneYFees: "28.36%",
+      oneYFees: "28.36",
       pair: {
         token0: "CSPR",
         token1: "USDC",
@@ -128,7 +128,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "84,456,654.23",
       volume7d: "25,888,841.23",
       fees24h: "8,265.00",
-      oneYFees: "28.36%",
+      oneYFees: "28.36",
       pair: {
         token0: "BNB",
         token1: "USDC",
@@ -147,7 +147,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "84,456,654.23",
       volume7d: "25,888,841.23",
       fees24h: "8,265.00",
-      oneYFees: "28.36%",
+      oneYFees: "28.36",
       pair: {
         token0: "CSPR",
         token1: "SOL",
@@ -166,7 +166,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       volume24h: "84,456,654.23",
       volume7d: "25,888,841.23",
       fees24h: "8,265.00",
-      oneYFees: "28.36%",
+      oneYFees: "28.36",
       pair: {
         token0: "CSPR",
         token1: "DOT",

@@ -11,8 +11,9 @@ export const CardStyled = styled.section<CardStyledInterface>`
     grid-column: ${props => props.gridColumn};
     width: ${props => props.width};
     margin: .5em auto;
+    border: 0.5px solid black;
     border-radius: 20px;
-    background-color: ${props => props.theme.StrongColor3};
+    background-color: rgba(247,252,253,255);
     display: grid;
     grid-template-rows: auto 1fr;
 `

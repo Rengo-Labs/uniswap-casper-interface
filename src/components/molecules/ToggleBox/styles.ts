@@ -7,4 +7,5 @@ export const WrapToggle = styled.div`
 export const ToggleTitle = styled.div`
     flex: 1;
     align-self: center;
+    color: black;
 `

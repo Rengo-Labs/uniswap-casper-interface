@@ -24,7 +24,7 @@ const LayoutStyled = styled.div<any>`
 `
 
 const NewNavigationStyled = styled.nav`
-    background-color:rgba(255,255,255,.1);
+    background-color: rgb(120,100,244);
     display: grid;
     padding:10px 0;
     grid-template: auto 1fr auto / auto;
@@ -95,6 +95,7 @@ const IconTextsTwo = [
     { icon: CasperIcon, text: "CasperSwap" },
 ]
 const MainSpaceStyled = styled.main`
+    background-color: rgba(247,252,253,255);
     height:100%;
     width:100%;
     display:grid;
@@ -120,6 +121,14 @@ function IconContainer({ children }) {
     return (<IconContainerStyled>{children}</IconContainerStyled>)
 }
 
+const TitleCellContainerStyled = styled.nav`
+    grid-column: 3;
+    grid-row: 1;
+    color: #7864f4;
+    text-align: center;
+    font-size: 2em;
+`
+
 const CallContainerStyled = styled.nav`
         grid-column: 6/7;
 
@@ -127,7 +136,7 @@ const CallContainerStyled = styled.nav`
 function CallContainer({ children }) {
     return (<CallContainerStyled>{children}</CallContainerStyled>)
 }
-const NewLayout = ({ children }) => {
+const NewLayout = ({ children, title="" }) => {
     const navigate = useNavigate()
     const [collapse, setCollapse] = useState(true)
     const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
@@ -193,6 +202,7 @@ const NewLayout = ({ children }) => {
                     <IconContainer>
                         <NewIcons icon={CasperIcon} size={40} />
                     </IconContainer>
+                    <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
                     <CallContainer>
                         <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
                     </CallContainer>

@@ -7,7 +7,9 @@ export const DropDownContainer = styled("div")`
 
 export const DropDownHeader = styled("div")`
   margin-bottom: 0.2em;
-  padding: 0.4em 0.4em 0.4em 0.4em;
+  border-radius: 8px;
+  padding: 0.6em;
+  width: 80%;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
   font-weight: 500;
   font-size: 1rem;

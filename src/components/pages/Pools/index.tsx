@@ -10,7 +10,7 @@ export const Pools = () => {
 
 
     return (
-        <NewLayout>
+        <NewLayout title="CASPERSWAP">
             <div style={{display: "grid", gridTemplateColumns: "repeat(11, 1fr)"}}>
                 <div style={{gridRow: "2", gridColumn: "1/11", display: "grid", gridTemplateColumns: "repeat(6, 1fr)", alignItems: "center", margin: "0 0 10px 0"}}>
                     <div style={{gridColumn: "2", gridRow: "3", padding: "10px", backgroundColor: "#7864f4", marginRight: "1em"}}>TVL: $ 192.168.000.000</div>
