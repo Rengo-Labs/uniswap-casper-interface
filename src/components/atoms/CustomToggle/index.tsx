@@ -11,6 +11,7 @@ export const CustomToggle: React.FC<SwitchProperties> = ({id, isChecked, onChang
   return (
       <StyledSwitch htmlFor={id}>
         <input
+            data-testid="toggle_id"
             id={`label-${id}`}
             type="checkbox"
             role="switch"

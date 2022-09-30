@@ -3,9 +3,16 @@ import casprIcon from '../../assets/swapIcons/casprIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 
 export const PoolsProviderContext = createContext<any>({})
-export const PoolsContext = ({ children }:{children:ReactNode}) => {
 
-  const [tokens, setTokens] = useState([
+const getTVLandVolume = () => {
+  return {
+    tvl: "192,168,000,000",
+    totalVolume: "1,000,000"
+  }
+}
+
+const getPoolList = () => {
+  return [
     {
       tokeIcon1: wethIcon,
       tokeIcon2: casprIcon,
@@ -177,18 +184,109 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
         totalLiquidityUSD: "0"
       }
     }
-  ])
-  const headers = [
+  ]
+}
+
+const getPoolDetailByUser = ({user}: any) => {
+
+
+  return [
+    {
+      token0: "CSPR",
+      token1: "WETH",
+      volumePercentage: "20",
+      token0Liquidity: "30,000,000",
+      token1Liquidity: "120,000,000",
+      totalLiquidityPool: "2,000",
+      totalLiquidityUSD: "200,000,000"
+    },
+    {
+      token0: "WCSPR",
+      token1: "WETH",
+      volumePercentage: "10",
+      token0Liquidity: "30,000,000",
+      token1Liquidity: "120,000,000",
+      totalLiquidityPool: "2,000",
+      totalLiquidityUSD: "200,000,000"
+    },
+    {
+      token0: "CSPR",
+      token1: "WISER",
+      volumePercentage: "0",
+      token0Liquidity: "0",
+      token1Liquidity: "0",
+      totalLiquidityPool: "0",
+      totalLiquidityUSD: "0"
+    },
+    {
+      token0: "WISER",
+      token1: "WCSPR",
+      volumePercentage: "0",
+      token0Liquidity: "0",
+      token1Liquidity: "0",
+      totalLiquidityPool: "0",
+      totalLiquidityUSD: "0"
+    },
+    {
+      token0: "WETH",
+      token1: "WISER",
+      volumePercentage: "0",
+      token0Liquidity: "0",
+      token1Liquidity: "0",
+      totalLiquidityPool: "0",
+      totalLiquidityUSD: "0"
+    },
+    {
+      token0: "CSPR",
+      token1: "USDC",
+      volumePercentage: "5",
+      token0Liquidity: "30,000,000",
+      token1Liquidity: "120,000,000",
+      totalLiquidityPool: "2,000",
+      totalLiquidityUSD: "200,000,000"
+    },
+    {
+      token0: "BNB",
+      token1: "USDC",
+      volumePercentage: "0",
+      token0Liquidity: "0",
+      token1Liquidity: "0",
+      totalLiquidityPool: "0",
+      totalLiquidityUSD: "0"
+    },
+    {
+      token0: "CSPR",
+      token1: "SOL",
+      volumePercentage: "0",
+      token0Liquidity: "0",
+      token1Liquidity: "0",
+      totalLiquidityPool: "0",
+      totalLiquidityUSD: "0"
+    },
+    {
+      token0: "CSPR",
+      token1: "DOT",
+      volumePercentage: "0",
+      token0Liquidity: "0",
+      token1Liquidity: "0",
+      totalLiquidityPool: "0",
+      totalLiquidityUSD: "0"
+    }
+  ]
+}
+
+const getColumns = () => {
+  return [
     {
       id: 1,
       Header: 'Pool',
       accessor: 'tokeIcon',
       Cell: (tableProps:any) => (
-        <img
-          src={tableProps.row.original.tokeIcon}
-          width={25}
-          alt='Token Icon'
-        />
+          <img
+              src={tableProps.row.original.tokeIcon}
+              width={25}
+              alt='Token Icon'
+          />
       )
     },
     {
@@ -212,6 +310,14 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
       accessor: 'fees24h',
     }
   ]
+}
+
+export const PoolsContext = ({ children }:{children:ReactNode}) => {
+
+  const [gralData, setGralData] = useState(getTVLandVolume())
+  const [tokens, setTokens] = useState(getPoolList())
+
+  const headers = getColumns()
   const columns = React.useMemo(() => headers, [])
   const data = React.useMemo(() => tokens, [])
   const [isStaked, setStaked] = useState(false)
@@ -221,7 +327,7 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
   }
 
   return (
-    <PoolsProviderContext.Provider value={{ columns, data, filter, isStaked, setStaked }}>
+    <PoolsProviderContext.Provider value={{ gralData, columns, data, filter, isStaked, setStaked }}>
       {children}
     </PoolsProviderContext.Provider>
   )

@@ -22,7 +22,7 @@ const LayoutStyled = styled.div<any>`
     grid-template-rows: 1fr;
     transition: all 500ms ease;
 `
-
+//TODO navbar background
 const NewNavigationStyled = styled.nav`
     background-color: rgb(120,100,244);
     display: grid;
@@ -94,6 +94,8 @@ const IconTextsTwo = [
     { icon: CommunityIcon, text: "Community" },
     { icon: CasperIcon, text: "CasperSwap" },
 ]
+
+//TODO container background
 const MainSpaceStyled = styled.main`
     background-color: rgba(247,252,253,255);
     height:100%;
@@ -124,7 +126,7 @@ function IconContainer({ children }) {
 const TitleCellContainerStyled = styled.nav`
     grid-column: 3;
     grid-row: 1;
-    color: #7864f4;
+    color: ${props => props.theme.secondBackgroundColor};
     text-align: center;
     font-size: 2em;
 `

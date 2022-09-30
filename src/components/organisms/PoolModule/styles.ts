@@ -7,7 +7,7 @@ export const PoolModulesStyled = styled.section`
     border-top-color: black;
     border-top-style: solid;
     border-top-width: 0.5px;
-    background-color: rgba(247,252,253,255);
+    background-color: ${props => props.theme.mainBackgroundColor};
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -38,8 +38,10 @@ export const MenuFilterStyled = styled.div`
 export const MenuTitleStyled = styled.div`
     flex: 3;
     align-self: center;
-    color: black;
+    color: grey;
     margin-left: 3%;
+    font-family: 'EpilogueLight'; 
+    font-size: 1em;
 `
 
 export const WrapToggle = styled.div`

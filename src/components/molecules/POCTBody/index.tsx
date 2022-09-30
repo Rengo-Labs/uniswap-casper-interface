@@ -1,6 +1,6 @@
 import React from 'react'
 import { TBody} from './styles'
-import {CollapsingRow} from '../CollapsingRow'
+import {CollapsingRow} from '../'
 import { v4 as uuidv4 } from 'uuid'
 import {PoolsProviderContext} from "../../../contexts/PoolsContext";
 

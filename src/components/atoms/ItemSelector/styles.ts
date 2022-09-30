@@ -9,12 +9,12 @@ export const DropDownHeader = styled("div")`
   margin-bottom: 0.2em;
   border-radius: 8px;
   padding: 0.6em;
-  width: 80%;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+  width: 88%;
+  box-shadow: 0 2px 3px ${props => props.theme.secondBackgroundColor};
   font-weight: 500;
   font-size: 1rem;
   color: white;
-  background: rgb(120, 100, 244);
+  background: ${props => props.theme.secondBackgroundColor};
 `
 
 export const DropDownListContainer = styled("div")`
@@ -25,7 +25,7 @@ export const DropDownListContainer = styled("div")`
 export const DropDownList = styled("ul")`
   padding: 0.4em 0.4em 0 0.4em;
   margin: 0;
-  background: rgb(120, 100, 244);
+  background: ${props => props.theme.secondBackgroundColor};
   border: 2px solid #e5e5e5;
   box-sizing: border-box;
   color: white;
@@ -39,4 +39,6 @@ export const DropDownList = styled("ul")`
 export const ListItem = styled("li")`
   list-style: none;
   margin-bottom: 0.8em;
+  font-family: 'EpilogueLight';
+  font-size: 1em;
 `

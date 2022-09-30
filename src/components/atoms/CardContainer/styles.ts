@@ -13,7 +13,7 @@ export const CardStyled = styled.section<CardStyledInterface>`
     margin: .5em auto;
     border: 0.5px solid black;
     border-radius: 20px;
-    background-color: rgba(247,252,253,255);
+    background-color: ${props => props.theme.mainBackgroundColor};
     display: grid;
     grid-template-rows: auto 1fr;
 `
@@ -21,4 +21,10 @@ export const CardHeaderStyled = styled.section`
     padding:1rem ;
     display: flex;
     justify-content: space-between;
+`
+
+export const CardTitleStyled = styled.div`
+    color: ${props => props.theme.secondBackgroundColor};
+    font-size: 1.2em;
+    padding-left: 5%;
 `

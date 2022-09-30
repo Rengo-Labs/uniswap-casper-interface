@@ -11,6 +11,8 @@ export const TBody = styled.div`
     overflow-y: scroll;
     height: 50vh;
     color: black;
+    font-family: 'EpilogueLight'; 
+    font-size: 1em;
 `
 
 export const TWrapRow = styled.div`
@@ -49,7 +51,7 @@ export const TBodyExpanded = styled.div`
 `
 
 export const CircleButton = styled.button`
-    background-color: #7864f4;
+    background-color: ${props => props.theme.secondBackgroundColor};
     display: flex;
     padding: 0;
     border: 0;

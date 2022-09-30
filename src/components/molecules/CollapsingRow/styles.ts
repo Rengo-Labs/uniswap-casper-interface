@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import FarmIcon from '../../../assets/newIcons/farmIconCyan.svg'
 
 interface CollapsingContainer {
     fullWidth: boolean
@@ -29,4 +30,8 @@ export const CollapsingColumnLeft = styled.div`
 export const CollapsingColumnRight = styled.div`
     flex: 1;
     text-align: right;
+`
+
+export const FarmIconStyled = styled.div`
+    background-image: url(${FarmIcon});
 `

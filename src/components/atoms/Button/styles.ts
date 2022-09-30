@@ -1,10 +1,15 @@
 import styled from 'styled-components'
 
 export const ButtonStyle = styled.button`
-    color: rgb(120,100,244);
-    background-color: #70ecd4;
-    padding: 0.6em 1.7em 0.6em 1.7em;
+    color: ${props => props.theme.secondBackgroundColor};
+    background-color: ${props => props.theme.thirdBackgroundColor};
+    padding: 0.1em 1.7em;
+    border-radius: 10px;
     border:none;
+    width: 8vw;
+    height: 5vh;
+    font-family: 'EpilogueLight';
+    font-size: .9em;
     display: grid;
     place-items: center;
     &:hover{
