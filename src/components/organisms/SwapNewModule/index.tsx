@@ -94,59 +94,85 @@ const SwapNewModule = () => {
         <Container>
             <ContainerSwapActions>
                 <NewSwapContainer>
-                    <div>
+                    <TokenSelectStyled>
                         <div>from</div>
                         <div>balance</div>
-                    </div>
-                    <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected} isWalletConnected={isConnected} />
-                    <SwapTokenBalance token={firstTokenSelected} amountSwapTokenSetter={changeTokenA} amountSwapToken={amountSwapTokenA} />
+                    </TokenSelectStyled>
+                    <TokenSelectionStyled>
+                        <div>
+                            <div>icon</div>
+                            <div>name</div>
+                        </div>
+                        <div>A</div>
+                        <div>|</div>
+                        <div>
+                            <div>Half</div>
+                            <div>Max</div>
+                        </div>
+                        <div>
+                            <input type="text" name="" id="" />
+                        </div>
+                    </TokenSelectionStyled>
                 </NewSwapContainer>
-                {
-                    activeModalPrimary &&
-                    <SwapModal >
-                        <SwapContainerAtom >
-                            <SwapHeaderAtom>
-                                <HeaderModalAtom>Select Token</HeaderModalAtom>
-                                <CloseButtonAtom onClick={handleModalPrimary}>
-                                    <AiOutlineClose />
-                                </CloseButtonAtom>
-                            </SwapHeaderAtom>
-                            <SearchSectionAtom>
-                                <SearchInputAtom
-                                    placeholder="Search name"
-                                />
-                            </SearchSectionAtom>
-                            <SwapTokens>
-                                {
-                                    Object.keys(tokens)
-                                        .map((key) => {
-                                            const handleToken = () => { onListenerFirstInput(tokens[key]), handleModalPrimary() }
-
-                                            function uuidv4(): React.Key {
-                                                throw new Error('Function not implemented.')
-                                            }
-
-                                            return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
-                                        })
-                                }
-                            </SwapTokens>
-
-                        </SwapContainerAtom>
-                    </SwapModal>
-                }
                 <div>Swap Icon</div>
                 <div>Swap Token B</div>
                 <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
 
             </ContainerSwapActions>
             <ContainerSwapStatics>
-                <div>statistics</div>
-                <div>statistics</div>
+                {[1, 1].map((x) => {
+                    return (
+                        <CoinContainerStyled key={x.toString()}>
+                            <div>icon</div>
+                            <div>name</div>
+                            <div>|</div>
+                            <div>
+                                <div>price</div>
+                                <div>$1.456</div>
+                            </div>
+                            <div>
+                                <div>24H%</div>
+                                <div>12.05</div>
+                            </div>
+                            <div>
+                                graphics
+                            </div>
+                        </CoinContainerStyled>)
+                })}
             </ContainerSwapStatics>
         </Container>
     )
 }
+const TokenSelectStyled = styled.div`
+    display: flex;
+    justify-content: space-between;
+`
+const TokenSelectionStyled = styled.div`
+    display: flex;
+    gap:10px;
+`
 
+const CoinContainerStyled = styled.div`
+    box-sizing: border-box;
+    border:1px solid black;
+    border-radius: 10px;
+    padding:10px;
+    display: flex;
+    gap:10px;
+    align-items: center;
+`
+const ContainerSwapStatics = styled.section`
+    box-sizing: border-box;
+    justify-self: start;
+    padding:10px;
+    border:1px solid black;
+    border-radius: 10px;
+    display:flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap:10px;
+`
 const NewSwapContainer = styled.section`
     box-sizing: border-box; 
     width: 100%;
@@ -160,11 +186,12 @@ const Container = styled.main`
     box-sizing: border-box;
     height:100%;
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     gap:10px;
     padding:10px;
     color:black;
+    display: grid;
+    grid-template-columns: repeat(2,auto);
+    align-items: start;
 `
 const ContainerSwapActions = styled.section`
     justify-self: end;
@@ -174,11 +201,5 @@ const ContainerSwapActions = styled.section`
     display:grid;
     grid-template-rows: repeat(4,auto);
 `
-const ContainerSwapStatics = styled.section`
-    width: 30%;
-    justify-self: start;
-    padding:10px;
-    border:1px solid black;
-    border-radius: 10px;
-`
+
 export default SwapNewModule
