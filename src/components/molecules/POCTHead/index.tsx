@@ -2,7 +2,7 @@ import React from 'react'
 import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 import { THeadStyled, THeader6Styled, THeader3Styled, THeaderStyled, THeaderTitle } from './styles'
 import { v4 as uuidv4 } from 'uuid';
-import {TbCircle} from "react-icons/all";
+import {RiCheckboxBlankCircleLine} from "react-icons/ri";
 
 
 const Header = ({headerGroup, header } : any) => {
@@ -41,7 +41,7 @@ export const POCTHead = ({ headerGroups }) => {
             <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[3]} />
             <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[4]} />
             <THeaderStyled>
-                <div><TbCircle /></div>
+                <div><RiCheckboxBlankCircleLine /></div>
             </THeaderStyled>
         </THeadStyled>
     )

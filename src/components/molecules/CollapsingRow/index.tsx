@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import useCollapse from 'react-collapsed';
 
-import {AiOutlineSwap} from "react-icons/ai";
-import {Button} from '../../atoms'
+import {AiFillStar, AiOutlineSwap} from "react-icons/ai";
+import {Button, NewIcons} from '../../atoms'
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -16,9 +16,10 @@ import {
     WrappedRow
 } from "../POCTBody/styles";
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
-import {TiTrash} from "react-icons/all";
+import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled} from "../SwapToken/styles";
-
+import FarmIcon from '../../../assets/newIcons/farmIconCyan.svg'
+import {lightTheme} from "../../../contexts/ThemeContext/themes";
 
 export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
@@ -34,11 +35,11 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
         <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>
                 <TColumn6 style={{display: "flex"}}>
-                    <TColumn1 />
-                    <TColumn3>
+                    <TColumn1 style={{alignSelf: "center"}}><AiFillStar style={{color: lightTheme.secondBackgroundColor}}/></TColumn1>
+                    <TColumn1 style={{display: "flex"}}>
                         <SwapIconImageStyled src={row.original.tokeIcon1} width="30" height="30" />
                         <SwapIconImageStyled style={{position: "relative", left: "-12px"}} src={row.original.tokeIcon2} width="30" height="30" />
-                    </TColumn3>
+                    </TColumn1>
                     <div style={{flex: "3", alignSelf: "center", textAlign: "left"}}>{row.original.tokeName}</div>
                 </TColumn6>
                 <TColumn3 style={{display: "flex"}}>
@@ -49,30 +50,30 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                 </TColumn3>
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
                 <TColumn3>$ {row.original.fees24h}</TColumn3>
-                <TColumn3>% {row.original.oneYFees}</TColumn3>
+                <TColumn3>{row.original.oneYFees} %</TColumn3>
                 <TColumn1>{isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</TColumn1>
             </TRow>
             <TBodyExpanded {...getCollapseProps()}>
                 <WrappedRow>
                     <TColumn6>
-                        <TRow style={{color: "#7864f4"}}>
+                        <TRow style={{color: lightTheme.secondBackgroundColor}}>
                             <TColumn1 />
-                            <TColumn3 />
+                            <TColumn1 />
                             <TColumn3 style={{textAlign: "left"}}>Your Liquidity</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 />
+                            <TColumn1 />
                             <TColumn3 style={{textAlign: "left"}}>$ {row.original.pair.totalLiquidityUSD}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 />
+                            <TColumn1 />
                             <TColumn3 style={{textAlign: "left"}}>{row.original.pair.totalLiquidityPool} LP</TColumn3>
                         </TRow>
                     </TColumn6>
                     <TColumn3>
-                        <TRow style={{color: "#7864f4"}}>
+                        <TRow style={{color: lightTheme.secondBackgroundColor}}>
                             <TColumn1 />
                             <TColumn3 style={{textAlign: "left"}}>Assets Pooled</TColumn3>
                         </TRow>
@@ -86,7 +87,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         </TRow>
                     </TColumn3>
                     <TColumn3>
-                        <TRow style={{color: "#7864f4"}}>
+                        <TRow style={{color: lightTheme.secondBackgroundColor}}>
                             <TColumn1 />
                             <TColumn3 style={{textAlign: "left"}}>
                                 Your Share
@@ -101,16 +102,16 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                     </TColumn3>
                     <TColumn3>
                         <TRow>
-                            <Button content={'Add Liquidity'} handler={() => {
+                            <Button style={{borderRadius: "10px", width: "90%b"}} content={'Add Liquidity'} handler={() => {
                                 navigate({pathname: "/liquidity/add", search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
                             }}/>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
                         <TRow>
-                            <CircleButton><AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)"}} size="1.3rem" /></CircleButton>
-                            <CircleButton><TiTrash style={{alignSelf: "center"}} size="1.3rem" /></CircleButton>
-                            <CircleButton><TiTrash style={{alignSelf: "center"}} size="1.3rem" /></CircleButton>
+                            <CircleButton><AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" /></CircleButton>
+                            <CircleButton><TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem" /></CircleButton>
+                            <CircleButton><NewIcons icon={FarmIcon} style={{alignSelf: "center"}} size="22px" /></CircleButton>
                         </TRow>
                     </TColumn3>
                     <TColumn1 />

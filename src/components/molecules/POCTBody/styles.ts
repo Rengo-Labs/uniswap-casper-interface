@@ -10,6 +10,9 @@ export const TBody = styled.div`
     flex-direction: column;
     overflow-y: scroll;
     height: 50vh;
+    color: black;
+    font-family: 'EpilogueLight'; 
+    font-size: 1em;
 `
 
 export const TWrapRow = styled.div`
@@ -48,10 +51,11 @@ export const TBodyExpanded = styled.div`
 `
 
 export const CircleButton = styled.button`
-    background-color: #7864f4;
+    background-color: ${props => props.theme.secondBackgroundColor};
     display: flex;
     padding: 0;
     border: 0;
+    cursor: pointer;
     justify-content: center;
     border-radius: 45%;
     margin: 5px;

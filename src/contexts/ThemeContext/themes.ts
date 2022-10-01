@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components'
+import '../../index.css'
 
 interface LightThemeInterface {
   PrimaryColor: string;
@@ -13,6 +14,9 @@ interface LightThemeInterface {
   TertiaryColor: string;
   TertiaryColor2: string;
   backgroundColor: string;
+  mainBackgroundColor: string;
+  secondBackgroundColor: string;
+  thirdBackgroundColor: string;
 }
 
 export const lightTheme = {
@@ -28,8 +32,12 @@ export const lightTheme = {
   TertiaryColor: 'rgba(255,204,0,1)',
   TertiaryColor2: 'rgba(255,204,0,.5)',
   TertiaryColor3: 'rgba(255,204,0,.8)',
-  backgroundColor: 'linear-gradient(to bottom, rgba(0,187,233,.8), rgba(0,62,145,1))'
+  backgroundColor: 'linear-gradient(to bottom, rgba(0,187,233,.8), rgba(0,62,145,1))',
+  mainBackgroundColor: 'rgba(247,252,253,255)',
+  secondBackgroundColor: 'rgba(120, 100, 244, 1)',
+  thirdBackgroundColor: 'rgba(112, 236, 212, 1)'
 }
+
 export const darkTheme = {
   PrimaryColor: 'rgba(255,255,255,1)'
 }
@@ -84,7 +92,7 @@ table {
 	border-spacing: 0;
 }
     * {
-      font-family: 'Baloo 2', regular;
+      font-family: 'Epilogue', regular;
     }
     #__next{
         height: 100%;
