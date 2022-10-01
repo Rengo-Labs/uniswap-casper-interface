@@ -7,7 +7,8 @@ export const THeadStyled = styled.div`
     display: flex;
     border-radius: 7px;
     border: 1px solid black;
-    padding: 7px 0px 7px 0px;
+    padding: 7px 0px;
+    color: ${props => props.theme.secondBackgroundColor};
 `
 
 export const THeader6Styled = styled.div`

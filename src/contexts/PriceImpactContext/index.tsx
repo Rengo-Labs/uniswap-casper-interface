@@ -1,9 +1,16 @@
 import axios from 'axios';
-import React, { createContext } from 'react'
+import React from 'react'
 
 import { BASE_URL } from '../../constant';
 
-export const ConfigProviderContext = createContext<any>({})
+const getAxiosResponse = async (firstTokenSelected, secondTokenSelected) => {
+    return await axios.post(`${BASE_URL}/getpathreserves`, {
+        path: [
+            firstTokenSelected.symbolPair,
+            secondTokenSelected.symbolPair,
+        ]
+    });
+}
 
 /***
  * it returns tokensToTransfer, priceImpact, minTokenBToTransfer, exchangeRateA and exchangeRateB that belong to the swap detail
@@ -15,12 +22,7 @@ export const ConfigProviderContext = createContext<any>({})
  */
 const getSwapDetail = async (firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) => {
     try {
-        const response = await axios.post(`${BASE_URL}/getpathreserves`, {
-            path: [
-                firstTokenSelected.symbolPair,
-                secondTokenSelected.symbolPair,
-            ]
-        })
+        const response = await getAxiosResponse(firstTokenSelected, secondTokenSelected)
         if (response.data.success) {
 
             const liquidityA = parseFloat(response.data.reserve0)
@@ -77,7 +79,7 @@ const getPairTokenReserve = async (tokenA, tokenB) => {
     return {success: false, liquidityA: 0, liquidityB: 0}
 }
 
-const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
+export const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
     return (tokensToTransfer - tokensToTransfer * slippage / 100).toFixed(8)
 }
 

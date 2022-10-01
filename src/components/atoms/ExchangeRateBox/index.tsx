@@ -16,16 +16,16 @@ export const ExchangeRateBox = ({ tokenASymbol, tokenBSymbol, exchangeRateA, exc
 
     return (
         <ExchangeRateContainer className={className}>
-            <ExchangeRateRow onClick={updateTokens}>
+            <ExchangeRateRow data-testid="switch_rate" onClick={updateTokens}>
                 {
                     switchRate &&
-                    <ExchangeRateColumnLeft>
+                    <ExchangeRateColumnLeft data-testid="id_rate">
                         1 {tokenASymbol} ≈ {(exchangeRateA).toString().slice(0, 10)} {tokenBSymbol}
                     </ExchangeRateColumnLeft>
                 }
                 {
                     !switchRate &&
-                    <ExchangeRateColumnLeft>
+                    <ExchangeRateColumnLeft data-testid="id_rate">
                         1 {tokenBSymbol} ≈ {(exchangeRateB).toString().slice(0, 10)} {tokenASymbol}
                     </ExchangeRateColumnLeft>
                 }

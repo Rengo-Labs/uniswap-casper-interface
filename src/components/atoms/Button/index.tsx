@@ -1,9 +1,9 @@
 import React from 'react'
 import { ButtonStyle } from './styles'
 
-export const Button = ({ content, handler }) => {
+export const Button = ({ content, handler, style={} }) => {
   return (
-    <ButtonStyle onClick={ handler } >
+    <ButtonStyle style={style} onClick={ handler } >
     { content }
     </ButtonStyle>
   )
