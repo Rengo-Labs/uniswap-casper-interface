@@ -4,12 +4,13 @@ import { useLocation } from 'react-router-dom'
 import {
   CardContainer, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchSectionAtom, SwapButton,
   SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect,
-  SearchInputAtom
+  SearchInputAtom,
+  CustomToggle
 } from '../../atoms'
 import { SwapModule } from '../../organisms'
 import styled from 'styled-components'
 import { BasicLayout } from '../../../layout/Basic'
-import { SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, CollapsingBox, SwitchBox, ApprovalButton } from '../../molecules'
+import { SwapConfirmAtom, SwapModal, SwapTokens, SwapToken, CollapsingBox, SwitchBox, ApprovalButton, ToggleBox } from '../../molecules'
 import { AiOutlineClose } from 'react-icons/ai'
 import { v4 as uuidv4 } from 'uuid';
 
@@ -22,6 +23,7 @@ function useQuery() {
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { WrappedApprovalButton } from "./styles";
 import NewLayout from '../../../layout/NewLayout'
+import SwapNewModule from '../../organisms/SwapNewModule'
 
 export const Swap = () => {
   //const query = useQuery()
@@ -150,153 +152,26 @@ export const Swap = () => {
       <Container>
         <SwapLiquidity>
           <SwapLiquidityContainer>
-            <SwapLiquidityButton>Swap</SwapLiquidityButton>
-            <button>Liquidity</button>
+            <ExtendedCustomToggle id={uuidv4()} onChange={() => { toggleStateSetter(!toggleState) }} isChecked={toggleState} />
           </SwapLiquidityContainer>
         </SwapLiquidity>
         <div>
-          <CardContainer cardTitle="Swap">
-            <SwapModule >
-              <SwapContainer>
-                <SwapTokenSelect onClickHandler={handleModalPrimary} token={firstTokenSelected} isWalletConnected={isConnected} />
-                <SwapTokenBalance token={firstTokenSelected} amountSwapTokenSetter={changeTokenA} amountSwapToken={amountSwapTokenA} />
-              </SwapContainer>
-              {
-                activeModalPrimary &&
-                <SwapModal >
-                  <SwapContainerAtom >
-                    <SwapHeaderAtom>
-                      <HeaderModalAtom>Select Token</HeaderModalAtom>
-                      <CloseButtonAtom onClick={handleModalPrimary}>
-                        <AiOutlineClose />
-                      </CloseButtonAtom>
-                    </SwapHeaderAtom>
-                    <SearchSectionAtom>
-                      <SearchInputAtom
-                        placeholder="Search name"
-                      />
-                    </SearchSectionAtom>
-                    <SwapTokens>
-                      {
-                        Object.keys(tokens)
-                          .map((key) => {
-                            const handleToken = () => { onListenerFirstInput(tokens[key]), handleModalPrimary() }
-
-                            return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
-                          })
-                      }
-                    </SwapTokens>
-
-                  </SwapContainerAtom>
-                </SwapModal>
-              }
-
-              <SwitchBox
-                onSwitch={() => { onSwitch(amountSwapTokenA, amountSwapTokenB, exchangeRateA, exchangeRateB) }}
-                secondTokenSelected={secondTokenSelected}
-                firstTokenSelected={firstTokenSelected}
-                exchangeRateA={exchangeRateA}
-                exchangeRateB={exchangeRateB}
-                active={switchMovement}
-              />
-
-              <SwapContainer>
-                <SwapTokenSelect onClickHandler={handleModalSecondary} token={secondTokenSelected} isWalletConnected={isConnected} />
-                <SwapTokenBalance token={secondTokenSelected} amountSwapTokenSetter={changeTokenB} amountSwapToken={amountSwapTokenB} />
-              </SwapContainer>
-              {
-                amountSwapTokenB > 0 &&
-                <CollapsingBox firstToken={amountSwapTokenA}
-                  firstSymbolToken={firstTokenSelected}
-                  receivedSymbolToken={secondTokenSelected}
-                  tokensToTransfer={tokensToTransfer}
-                  priceImpact={priceImpact}
-                  slippage={slippSwapToken}
-                  defaultPriceImpact={defaultPriceImpactLabel}
-                  slippageSetter={slippSwapTokenSetter}
-                  fullWidth={true}
-                  fullExpanded={false}
-                  expandedEnabled={true}
-                  slippageEnabled={true}
-                />
-              }
-              {
-                activeModalSecondary &&
-                <SwapModal >
-                  <SwapContainerAtom >
-                    <SwapHeaderAtom>
-                      <HeaderModalAtom>Select Token</HeaderModalAtom>
-                      <CloseButtonAtom onClick={handleModalSecondary}>
-                        <AiOutlineClose />
-                      </CloseButtonAtom>
-                    </SwapHeaderAtom>
-                    <SearchSectionAtom>
-                      <SearchInputAtom
-                        placeholder="Search name"
-                      />
-                    </SearchSectionAtom>
-                    <SwapTokens >
-                      {
-                        Object.keys(tokens)
-                          .map((key) => {
-                            const filter = new RegExp(firstTokenSelected.symbol)
-                            if (filter.test(key)) { return }
-                            const handleToken = () => { onListenerSecondInput(tokens[key]), handleModalSecondary() }
-                            return <SwapToken key={uuidv4()} token={tokens[key]} handleToken={handleToken} />
-                          })
-                      }
-                    </SwapTokens>
-                  </SwapContainerAtom>
-                </SwapModal>
-              }
-              {!isConnected && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
-              <WrappedApprovalButton>
-                <ApprovalButton isVisible={!isApprovedToken && (isConnected && firstTokenSelected.symbol !== 'CSPR' && secondTokenSelected.symbol !== 'CSPR')}
-                  title={'Approve ' + secondTokenSelected.symbol}
-                  amount={amountSwapTokenB}
-                  contractHash={secondTokenSelected.contractHash}
-                  callIncreaseAllowance={requestIncreaseAllowance} />
-              </WrappedApprovalButton>
-              {
-                isConnected && (!(firstTokenSelected.symbol !== 'CSPR' && secondTokenSelected.symbol !== 'CSPR') || isApprovedToken) &&
-                <SwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />
-              }
-              {
-                activeModalSwap &&
-                <SwapModal >
-                  <SwapContainerAtom >
-                    <SwapHeaderAtom>
-                      <HeaderModalAtom>Confirm Swap</HeaderModalAtom>
-                      <CloseButtonAtom onClick={() => { setActiveModalSwap(false) }}>
-                        <AiOutlineClose />
-                      </CloseButtonAtom>
-                    </SwapHeaderAtom>
-                    <SwapConfirmAtom
-                      firstToken={amountSwapTokenA}
-                      firstTokenSelected={firstTokenSelected}
-                      secondTokenSelected={secondTokenSelected}
-                      amountSwapTokenA={amountSwapTokenA}
-                      amountSwapTokenB={amountSwapTokenB}
-                      slippSwapToken={slippSwapToken}
-                      tokensToTransfer={tokensToTransfer}
-                      priceImpact={priceImpact}
-                      defaultPriceImpactLabel={defaultPriceImpactLabel}
-                      slippSwapTokenSetter={slippSwapTokenSetter}
-                    >
-                      <ConfirmSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
-                    </SwapConfirmAtom>
-
-                  </SwapContainerAtom>
-                </SwapModal>
-              }
-
-            </SwapModule>
-          </CardContainer >
+          <SwapNewModule />
         </div>
       </Container>
     </NewLayout>
   )
 }
+
+const ExtendedCustomToggle = styled(CustomToggle)`
+  min-width: 1000px;
+  width: 1000px;
+  input{
+    min-width: 1000px;
+    width: 1000px;
+    background-color:red ;
+  }
+`
 
 const SwapLiquidityButtonStyled = styled.button`
   border-radius:10px;
