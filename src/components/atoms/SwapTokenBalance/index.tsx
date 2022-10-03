@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 
-
-
 import { SwapTokenBalanceStyled, RoundedButtonStyled, InputStyled, ButtonContainerStyled } from './styles'
 
 export const SwapTokenBalance = ({ token, amountSwapToken, amountSwapTokenSetter }:any) => {
