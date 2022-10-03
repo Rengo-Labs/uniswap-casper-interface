@@ -3,6 +3,7 @@ import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { ButtonConnection, CloseButtonAtom, HeaderModalAtom, SearchInputAtom, SearchSectionAtom, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
+import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import { SwapModal, SwapToken, SwapTokens } from '../../molecules'
 
@@ -90,6 +91,7 @@ const SwapNewModule = () => {
         amountSwapTokenASetter(minTokenToReceive)
     }
 
+    const [searchModal,searchModalSetter] = useState(false)
     return (
         <Container>
             <ContainerSwapActions>
@@ -103,7 +105,10 @@ const SwapNewModule = () => {
                             <img src={firstTokenSelected.logoURI} width="50" height="50"/>
                             <div>{firstTokenSelected.symbol}</div>
                         </div>
-                        <div>A</div>
+                        <div>
+                            <FlechaIcon />
+                            { searchModal && <div>Search Modal</div>}
+                        </div>
                         <div>|</div>
                         <div>
                             <div>Half</div>
@@ -149,6 +154,7 @@ const TokenSelectStyled = styled.div`
 `
 const TokenSelectionStyled = styled.div`
     display: flex;
+    align-items: center;
     gap:10px;
 `
 
