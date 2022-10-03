@@ -6,6 +6,7 @@ import { ButtonConnection, CloseButtonAtom, HeaderModalAtom, SearchInputAtom, Se
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import { SwapModal, SwapToken, SwapTokens } from '../../molecules'
+import FloatMenu from '../FloatMenu'
 
 const SwapNewModule = () => {
     const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
@@ -91,7 +92,7 @@ const SwapNewModule = () => {
         amountSwapTokenASetter(minTokenToReceive)
     }
 
-    const [searchModal,searchModalSetter] = useState(false)
+    const [searchModal, searchModalSetter] = useState(false)
     return (
         <Container>
             <ContainerSwapActions>
@@ -102,12 +103,12 @@ const SwapNewModule = () => {
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
                         <div>
-                            <img src={firstTokenSelected.logoURI} width="50" height="50"/>
+                            <img src={firstTokenSelected.logoURI} width="50" height="50" />
                             <div>{firstTokenSelected.symbol}</div>
                         </div>
                         <div>
-                            <FlechaIcon />
-                            { searchModal && <div>Search Modal</div>}
+                            <FlechaIcon onClick={() => { searchModalSetter(true) }} />
+                            {searchModal && <FloatMenu />}
                         </div>
                         <div>|</div>
                         <div>
