@@ -100,8 +100,8 @@ const SwapNewModule = () => {
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
                         <div>
-                            <div>icon</div>
-                            <div>name</div>
+                            <img src={firstTokenSelected.logoURI} width="50" height="50"/>
+                            <div>{firstTokenSelected.symbol}</div>
                         </div>
                         <div>A</div>
                         <div>|</div>
@@ -120,7 +120,7 @@ const SwapNewModule = () => {
 
             </ContainerSwapActions>
             <ContainerSwapStatics>
-                {[1, 1].map((x) => {
+                {[1, 2].map((x) => {
                     return (
                         <CoinContainerStyled key={x.toString()}>
                             <div>icon</div>
