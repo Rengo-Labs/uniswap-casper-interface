@@ -31,6 +31,7 @@ export { RouterBox } from './RouterBox'
 export { SearchInputAtom } from './SearchInputAtom'
 export { ExchangeRateBox } from './ExchangeRateBox'
 export { SlippageBox } from './SlippageBox'
-
-
+export { NewIcons } from './NewIcons'
+export { CustomToggle } from './CustomToggle'
+export { ItemSelector } from './ItemSelector'
 

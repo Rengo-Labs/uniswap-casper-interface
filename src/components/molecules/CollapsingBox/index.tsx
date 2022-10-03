@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import useCollapse from 'react-collapsed';
 import {
     CollapsingContainerStyled,
@@ -8,11 +8,11 @@ import {
     CollapsingHeader,
     CollapsingBody
 } from './styles'
-import {AiOutlineCaretDown, AiOutlineCaretUp} from "react-icons/ai";
+import {AiOutlineCaretDown} from "react-icons/ai";
 import {RouterBox, SlippageBox} from '../../atoms'
 import {PriceImpactLabel} from "../../atoms/ExchangeRateBox/styles";
 
-import { ConfigProviderContext } from '../../../contexts/ConfigContext'
+import { calculateMinimumTokenReceived } from '../../../contexts/PriceImpactContext'
 
 export const CollapsingBox = ({
                                   firstToken,
@@ -29,7 +29,6 @@ export const CollapsingBox = ({
                                   expandedEnabled = false,
                                   slippageEnabled = false
                               }:any)  => {
-    const { calculateMinimumTokenReceived } = useContext(ConfigProviderContext)
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
@@ -47,12 +46,12 @@ export const CollapsingBox = ({
             <div className="collapsible">
                 {
                     expandedEnabled &&
-                    <CollapsingHeader {...getToggleProps({onClick: handleOnClick})}>
+                    <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({onClick: handleOnClick})}>
                         <CollapsingRow>
                             <CollapsingColumnLeft>
                                 <PriceImpactLabel priceImpactTitle={defaultPriceImpact} priceImpact={priceImpact} style={{justifyContent: "flex-start"}}/>
                             </CollapsingColumnLeft>
-                            <CollapsingColumnRight>
+                            <CollapsingColumnRight data-testid="collapsing_column_right_id">
                                 {
                                     !isExpanded && ' 10 CSPR '
                                 }
@@ -60,7 +59,7 @@ export const CollapsingBox = ({
                                     isExpanded && <PriceImpactLabel priceImpactTitle={priceImpact + ' %'} priceImpact={priceImpact} style={{justifyContent: "flex-end"}}/>
                                 }
                                 {
-                                    isExpanded ? ''/*<AiOutlineCaretUp/>*/ : <AiOutlineCaretDown/>
+                                    isExpanded ? '' : <AiOutlineCaretDown/>
                                 }
                             </CollapsingColumnRight>
                         </CollapsingRow>
@@ -81,7 +80,7 @@ export const CollapsingBox = ({
                         </CollapsingRow>
                         <CollapsingRow>
                             <CollapsingColumnLeft>Minimum received</CollapsingColumnLeft>
-                            <CollapsingColumnRight>{calculateMinimumTokenReceived(tokensToTransfer, slippage)} {receivedSymbolToken.symbol}</CollapsingColumnRight>
+                            <CollapsingColumnRight data-testid="collapsing_min_received">{calculateMinimumTokenReceived(tokensToTransfer, slippage)} {receivedSymbolToken.symbol}</CollapsingColumnRight>
                         </CollapsingRow>
                         <SlippageBox slippageEnabled={slippageEnabled} onSlippageChange={updateSlippage} slippage={slippage} />
                         <CollapsingRow>

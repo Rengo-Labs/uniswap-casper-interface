@@ -17,7 +17,7 @@ export const POCSearch = ({ preGlobalFilteredRows, globalFilter, setGlobalFilter
 
     return (
         <PoolSeachButtonStyled>
-            <AiOutlineSearch />
+            <AiOutlineSearch style={{ backgroundColor: "white", color: "rgb(120,100,244)", borderRadius: "45%", padding: "0.2em", height: "1em", width: "1.2em"}} />
             <PoolInputFilter value={value} setValue={setValue} count={count} onChange={onChange} />
         </PoolSeachButtonStyled>
     )
