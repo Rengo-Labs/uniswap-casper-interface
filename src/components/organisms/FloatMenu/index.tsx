@@ -60,6 +60,11 @@ const SpacerStyled = styled.div`
     justify-content: space-between;
     align-items: center;
 `
+const SpacerEvenlyStyled = styled.div`
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+`
 const ContainerCenter = styled.div`
     border: 1px solid black;
     padding: 10px;
