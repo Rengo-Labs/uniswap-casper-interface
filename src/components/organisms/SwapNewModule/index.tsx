@@ -92,14 +92,23 @@ const SwapNewModule = () => {
         amountSwapTokenASetter(minTokenToReceive)
     }
 
-    const [searchModal, searchModalSetter] = useState(false)
+    const [searchModalA, searchModalASetter] = useState(false)
+    function SelectAndCloseTokenA(token) {
+        onSelectFirstToken(token)
+        searchModalASetter(false)
+    }
+    const [searchModalB, searchModalBSetter] = useState(false)
+    function SelectAndCloseTokenB(token) {
+        onSelectSecondToken(token)
+        searchModalBSetter(false)
+    }
     return (
         <Container>
             <ContainerSwapActions>
                 <NewSwapContainer>
                     <TokenSelectStyled>
-                        <div>from</div>
-                        <div>balance</div>
+                        <div>From</div>
+                        <div>Balance: {firstTokenSelected.balance || "--"}</div>
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
                         <div>
@@ -107,8 +116,8 @@ const SwapNewModule = () => {
                             <div>{firstTokenSelected.symbol}</div>
                         </div>
                         <div>
-                            <FlechaIcon onClick={() => { searchModalSetter(true) }} />
-                            {searchModal && <FloatMenu />}
+                            <FlechaIcon onClick={() => { searchModalASetter(true) }} />
+                            {searchModalA && <FloatMenu tokens={tokens} selectToken={SelectAndCloseTokenA} />}
                         </div>
                         <div>|</div>
                         <div>
@@ -121,8 +130,33 @@ const SwapNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <div>Swap Icon</div>
-                <div>Swap Token B</div>
-                <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                <NewSwapContainer>
+                    <TokenSelectStyled>
+                        <div>To</div>
+                        <div>Balance: {secondTokenSelected.balance || "--"}</div>
+                    </TokenSelectStyled>
+                    <TokenSelectionStyled>
+                        <div>
+                            <img src={secondTokenSelected.logoURI} width="50" height="50" />
+                            <div>{secondTokenSelected.symbol}</div>
+                        </div>
+                        <div>
+                            <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
+                            {searchModalB && <FloatMenu tokens={tokens} selectToken={SelectAndCloseTokenB} />}
+                        </div>
+                        <div>|</div>
+                        <div>
+                            <div>Half</div>
+                            <div>Max</div>
+                        </div>
+                        <div>
+                            <input type="text" name="" id="" />
+                        </div>
+                    </TokenSelectionStyled>
+                </NewSwapContainer>
+                <ButtonSpaceStyled>
+                    <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                </ButtonSpaceStyled>
 
             </ContainerSwapActions>
             <ContainerSwapStatics>
@@ -149,6 +183,12 @@ const SwapNewModule = () => {
         </Container>
     )
 }
+const ButtonSpaceStyled = styled.div`
+    justify-self: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+`
 const TokenSelectStyled = styled.div`
     display: flex;
     justify-content: space-between;
@@ -206,6 +246,7 @@ const ContainerSwapActions = styled.section`
     border:1px solid black;
     border-radius: 10px;
     display:grid;
+    gap:10px;
     grid-template-rows: repeat(4,auto);
 `
 
