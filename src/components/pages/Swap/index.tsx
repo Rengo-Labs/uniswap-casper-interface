@@ -150,9 +150,6 @@ export const Swap = () => {
   return (
     <NewLayout>
       <Container>
-        <SwapLiquidity>
-          <ExtendedCustomToggle id={uuidv4()} onChange={() => { toggleStateSetter(!toggleState) }} isChecked={toggleState} />
-        </SwapLiquidity>
         <ModuleSwapStyled>
           <SwapNewModule />
         </ModuleSwapStyled>

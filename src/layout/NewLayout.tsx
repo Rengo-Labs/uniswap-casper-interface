@@ -12,6 +12,7 @@ import CommunityIcon from '../assets/newIcons/communityIcon.svg'
 import { ButtonConnection, NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
+import OctoPurple from '../components/atoms/OctoPurple'
 
 
 const LayoutStyled = styled.div<any>`
@@ -138,7 +139,7 @@ const CallContainerStyled = styled.nav`
 function CallContainer({ children }) {
     return (<CallContainerStyled>{children}</CallContainerStyled>)
 }
-const NewLayout = ({ children, title="" }) => {
+const NewLayout = ({ children, title = "" }) => {
     const navigate = useNavigate()
     const [collapse, setCollapse] = useState(true)
     const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
@@ -202,7 +203,7 @@ const NewLayout = ({ children, title="" }) => {
             <MainSpace>
                 <NavBar>
                     <IconContainer>
-                        <NewIcons icon={CasperIcon} size={40} />
+                        <OctoPurple />
                     </IconContainer>
                     <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
                     <CallContainer>

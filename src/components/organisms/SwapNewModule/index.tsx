@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { ButtonConnection, CloseButtonAtom, HeaderModalAtom, SearchInputAtom, SearchSectionAtom, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
+import Graphics from '../../atoms/Graphics'
 import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import SwitchSwap from '../../atoms/SwitchSwap'
 import { SwapModal, SwapToken, SwapTokens } from '../../molecules'
@@ -109,7 +110,7 @@ const SwapNewModule = () => {
                 <NewSwapContainer>
                     <TokenSelectStyled>
                         <div>From</div>
-                        <div>Balance: {firstTokenSelected.balance || "--"}</div>
+                        <div>Balance: {firstTokenSelected.amount || "--"}</div>
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
                         <div>
@@ -120,13 +121,13 @@ const SwapNewModule = () => {
                             <FlechaIcon onClick={() => { searchModalASetter(true) }} />
                             {searchModalA && <FloatMenu tokens={tokens} selectToken={SelectAndCloseTokenA} />}
                         </ArrowContainerStyle>
-                        <div>|</div>
+                        <StickStyle />
                         <ButtonHalfMaxContainer>
                             <ButtonHalfMax>Half</ButtonHalfMax>
                             <ButtonHalfMax>Max</ButtonHalfMax>
                         </ButtonHalfMaxContainer>
                         <div>
-                            <input type="text" name="" id="" />
+                            <BalanceInput type="number" name="" id="" />
                         </div>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
@@ -136,7 +137,7 @@ const SwapNewModule = () => {
                 <NewSwapContainer>
                     <TokenSelectStyled>
                         <div>To</div>
-                        <div>Balance: {secondTokenSelected.balance || "--"}</div>
+                        <div>Balance: {secondTokenSelected.amount || "--"}</div>
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
                         <div>
@@ -147,13 +148,13 @@ const SwapNewModule = () => {
                             <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                             {searchModalB && <FloatMenu tokens={tokens} selectToken={SelectAndCloseTokenB} />}
                         </ArrowContainerStyle>
-                        <div>|</div>
+                        <StickStyle />
                         <ButtonHalfMaxContainer>
                             <ButtonHalfMax>Half</ButtonHalfMax>
                             <ButtonHalfMax>Max</ButtonHalfMax>
                         </ButtonHalfMaxContainer>
                         <div>
-                            <input type="text" name="" id="" />
+                            <BalanceInput type="number" name="" id="" />
                         </div>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
@@ -176,7 +177,7 @@ const SwapNewModule = () => {
                         <div>12.05</div>
                     </div>
                     <div>
-                        graphics
+                        <Graphics />
                     </div>
                 </CoinContainerStyled>
                 <CoinContainerStyled>
@@ -192,17 +193,35 @@ const SwapNewModule = () => {
                         <div>12.05</div>
                     </div>
                     <div>
-                        graphics
+                        <Graphics />
                     </div>
                 </CoinContainerStyled>
             </ContainerSwapStatics>
         </Container>
     )
 }
+const BalanceInput = styled.input`
+    all: unset;
+    width: 100%;
+    height: 100%;
+    &:active{
+        border: none;
+    }
+`
+
+const StickStyle = styled.div`
+    color:${props => props.theme.NewPurpleColor};
+    font-size: 5em;
+    border-left:3px solid ${props => props.theme.NewPurpleColor};
+    &::before{
+        content: ".";
+        color:white;
+    }
+`
+
 const ArrowContainerStyle = styled.div`
     align-self: start;
 `
-
 const ButtonHalfMaxContainer = styled.div`
     display: grid;
     gap:10px;
@@ -213,6 +232,7 @@ const ButtonHalfMax = styled.div`
     color: ${props => props.theme.NewPurpleColor};
     padding:10px;
     border-radius: 12px;
+    cursor: pointer;
 `
 
 const IconPlaceStyle = styled.div`
