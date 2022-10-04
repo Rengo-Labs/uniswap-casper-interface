@@ -2,6 +2,8 @@ import styled from 'styled-components'
 
 
 export const PoolSeachButtonStyled = styled.section`
+    flex: 1;
+    height: 5.1vh;
     box-sizing: border-box;
     background-color: ${props => props.theme.secondBackgroundColor};
     width: 100%;

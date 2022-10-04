@@ -9,7 +9,7 @@ export const ButtonStyle = styled.button`
     width: 8vw;
     height: 5vh;
     font-family: 'EpilogueLight';
-    font-size: .9em;
+    font-size: .8vw;
     display: grid;
     place-items: center;
     &:hover{

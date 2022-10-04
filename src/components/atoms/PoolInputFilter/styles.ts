@@ -6,7 +6,7 @@ export const InputStyled = styled.input`
     color: ${props => props.theme.PrimaryColor};
     border-style:none;
     font-family: 'EpilogueLight'; 
-    font-size: 1em;
+    font-size: 0.8vw;
     width:100%;
     &::placeholder{
         color:rgba(255,255,255,.6);
