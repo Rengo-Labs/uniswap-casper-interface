@@ -26,10 +26,8 @@ export const PoolModule = () => {
                 <MenuToggleStyled>
                     <ToggleBox setStaked={setStaked} />
                 </MenuToggleStyled>
-                <MenuFilterStyled>
-                    <ItemSelector options={options} />
-                </MenuFilterStyled>
-                <MenuSearchStyled><POCSearch preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} /></MenuSearchStyled>
+                <ItemSelector options={options} />
+                <POCSearch preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />
             </MenuStyled>
             <POCTable {...tableInstance} />
         </PoolModulesStyled>

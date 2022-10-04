@@ -6,7 +6,7 @@ import styled from 'styled-components'
 interface AnchorPropInterface {
   isAnchor: boolean,
   to: string,
-  insideMessage: string
+  insideMessage: string,
 }
 
 export const LinkAnchorStyle = styled(Link)`
