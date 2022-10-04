@@ -11,7 +11,7 @@ const FlechaStyled = styled.img`
 `
 const FlechaIcon = ({onClick}) => {
     return (
-        <FlechaStyled onClick={onClick}src={flechaIcon} width="50" height="50" />
+        <FlechaStyled onClick={onClick}src={flechaIcon} width="25" height="25" />
     )
 }
 
