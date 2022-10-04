@@ -5,6 +5,7 @@ import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { ButtonConnection, CloseButtonAtom, HeaderModalAtom, SearchInputAtom, SearchSectionAtom, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
+import SwitchSwap from '../../atoms/SwitchSwap'
 import { SwapModal, SwapToken, SwapTokens } from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
@@ -115,21 +116,23 @@ const SwapNewModule = () => {
                             <img src={firstTokenSelected.logoURI} width="50" height="50" />
                             <div>{firstTokenSelected.symbol}</div>
                         </div>
-                        <div>
+                        <ArrowContainerStyle>
                             <FlechaIcon onClick={() => { searchModalASetter(true) }} />
                             {searchModalA && <FloatMenu tokens={tokens} selectToken={SelectAndCloseTokenA} />}
-                        </div>
+                        </ArrowContainerStyle>
                         <div>|</div>
-                        <div>
-                            <div>Half</div>
-                            <div>Max</div>
-                        </div>
+                        <ButtonHalfMaxContainer>
+                            <ButtonHalfMax>Half</ButtonHalfMax>
+                            <ButtonHalfMax>Max</ButtonHalfMax>
+                        </ButtonHalfMaxContainer>
                         <div>
                             <input type="text" name="" id="" />
                         </div>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
-                <div>Swap Icon</div>
+                <IconPlaceStyle>
+                    <SwitchSwap onClick={onSwitchTokens} />
+                </IconPlaceStyle>
                 <NewSwapContainer>
                     <TokenSelectStyled>
                         <div>To</div>
@@ -140,15 +143,15 @@ const SwapNewModule = () => {
                             <img src={secondTokenSelected.logoURI} width="50" height="50" />
                             <div>{secondTokenSelected.symbol}</div>
                         </div>
-                        <div>
+                        <ArrowContainerStyle>
                             <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                             {searchModalB && <FloatMenu tokens={tokens} selectToken={SelectAndCloseTokenB} />}
-                        </div>
+                        </ArrowContainerStyle>
                         <div>|</div>
-                        <div>
-                            <div>Half</div>
-                            <div>Max</div>
-                        </div>
+                        <ButtonHalfMaxContainer>
+                            <ButtonHalfMax>Half</ButtonHalfMax>
+                            <ButtonHalfMax>Max</ButtonHalfMax>
+                        </ButtonHalfMaxContainer>
                         <div>
                             <input type="text" name="" id="" />
                         </div>
@@ -160,29 +163,61 @@ const SwapNewModule = () => {
 
             </ContainerSwapActions>
             <ContainerSwapStatics>
-                {[1, 2].map((x) => {
-                    return (
-                        <CoinContainerStyled key={x.toString()}>
-                            <div>icon</div>
-                            <div>name</div>
-                            <div>|</div>
-                            <div>
-                                <div>price</div>
-                                <div>$1.456</div>
-                            </div>
-                            <div>
-                                <div>24H%</div>
-                                <div>12.05</div>
-                            </div>
-                            <div>
-                                graphics
-                            </div>
-                        </CoinContainerStyled>)
-                })}
+                <CoinContainerStyled>
+                    <img src={firstTokenSelected.logoURI} width="50" height="50" />
+                    <div>{firstTokenSelected.symbol}</div>
+                    <div>|</div>
+                    <div>
+                        <div>price</div>
+                        <div>$1.456</div>
+                    </div>
+                    <div>
+                        <div>24H%</div>
+                        <div>12.05</div>
+                    </div>
+                    <div>
+                        graphics
+                    </div>
+                </CoinContainerStyled>
+                <CoinContainerStyled>
+                    <img src={secondTokenSelected.logoURI} width="50" height="50" />
+                    <div>{secondTokenSelected.symbol}</div>
+                    <div>|</div>
+                    <div>
+                        <div>price</div>
+                        <div>$1.456</div>
+                    </div>
+                    <div>
+                        <div>24H%</div>
+                        <div>12.05</div>
+                    </div>
+                    <div>
+                        graphics
+                    </div>
+                </CoinContainerStyled>
             </ContainerSwapStatics>
         </Container>
     )
 }
+const ArrowContainerStyle = styled.div`
+    align-self: start;
+`
+
+const ButtonHalfMaxContainer = styled.div`
+    display: grid;
+    gap:10px;
+`
+
+const ButtonHalfMax = styled.div`
+    background-color: ${props => props.theme.NewAquamarineColor};
+    color: ${props => props.theme.NewPurpleColor};
+    padding:10px;
+    border-radius: 12px;
+`
+
+const IconPlaceStyle = styled.div`
+    justify-self: center;
+`
 const ButtonSpaceStyled = styled.div`
     justify-self: center;
     width: 100%;
