@@ -112,6 +112,22 @@ const SwapNewModule = () => {
     function makeMax(amount, Setter) {
         Setter(amount)
     }
+
+    function returnFilter(tokens, firstTokenSelected) {
+        const tokenHead = Object.keys(tokens)
+        const filtered = tokenHead.reduce((acc, keya) => {
+            const filter = new RegExp(firstTokenSelected.symbol)
+            if (filter.test(keya)) { return }
+            let filteredTokens = {
+                ...acc,
+                [keya]: tokens[keya]
+            }
+            return filteredTokens
+        }, {})
+        console.log(filtered)
+        return filtered
+    }
+
     return (
         <Container>
             <ContainerSwapActions>
@@ -161,9 +177,9 @@ const SwapNewModule = () => {
                         <ArrowContainerStyle>
                             <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                             {searchModalB && <FloatMenu
-                                tokens={tokens}
-                                selectToken={SelectAndCloseTokenA}
-                                onClick={() => { searchModalASetter(false) }}
+                                tokens={returnFilter(tokens, firstTokenSelected)}
+                                selectToken={SelectAndCloseTokenB}
+                                onClick={() => { searchModalBSetter(false) }}
                             />}
                         </ArrowContainerStyle>
                         <StickStyle />
