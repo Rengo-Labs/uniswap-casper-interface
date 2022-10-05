@@ -104,6 +104,14 @@ const SwapNewModule = () => {
         onSelectSecondToken(token)
         searchModalBSetter(false)
     }
+    const [amountSelectA, amountSelectASetter] = useState(0)
+    const [amountSelectB, amountSelectBSetter] = useState(0)
+    function makeHalf(amount, Setter) {
+        Setter(amount / 2)
+    }
+    function makeMax(amount, Setter) {
+        Setter(amount)
+    }
     return (
         <Container>
             <ContainerSwapActions>
@@ -123,11 +131,13 @@ const SwapNewModule = () => {
                         </ArrowContainerStyle>
                         <StickStyle />
                         <ButtonHalfMaxContainer>
-                            <ButtonHalfMax>Half</ButtonHalfMax>
-                            <ButtonHalfMax>Max</ButtonHalfMax>
+                            <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
+                            <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
                         </ButtonHalfMaxContainer>
                         <div>
-                            <BalanceInput type="number" name="" id="" />
+                            <BalanceInput
+                                onChange={(e) => { changeTokenA(e.target.value) }}
+                                type="number" name="" id="" value={amountSwapTokenA} />
                         </div>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
@@ -150,11 +160,13 @@ const SwapNewModule = () => {
                         </ArrowContainerStyle>
                         <StickStyle />
                         <ButtonHalfMaxContainer>
-                            <ButtonHalfMax>Half</ButtonHalfMax>
-                            <ButtonHalfMax>Max</ButtonHalfMax>
+                            <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, amountSwapTokenBSetter) }}>Half</ButtonHalfMax>
+                            <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, amountSwapTokenBSetter) }}>Max</ButtonHalfMax>
                         </ButtonHalfMaxContainer>
                         <div>
-                            <BalanceInput type="number" name="" id="" />
+                            <BalanceInput
+                                onChange={(e) => { changeTokenB(e.target.value) }}
+                                type="number" name="" id="" value={amountSwapTokenB} />
                         </div>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
@@ -204,6 +216,7 @@ const BalanceInput = styled.input`
     all: unset;
     width: 100%;
     height: 100%;
+    text-align: right;
     &:active{
         border: none;
     }
@@ -227,7 +240,7 @@ const ButtonHalfMaxContainer = styled.div`
     gap:10px;
 `
 
-const ButtonHalfMax = styled.div`
+const ButtonHalfMax = styled.div<any>`
     background-color: ${props => props.theme.NewAquamarineColor};
     color: ${props => props.theme.NewPurpleColor};
     padding:10px;

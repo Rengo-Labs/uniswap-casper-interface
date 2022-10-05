@@ -513,6 +513,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
             else {
                 const { csprBalance, mainPurse } = await getStatus(walletAddress)
+                
+                console.log("csprBalance", csprBalance)
+                dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
+                dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
+                await fillPairs(walletAddress)
                 await updateBalances(walletAddress,
                     tokens,
                     tokenDispatch,
@@ -520,10 +525,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                     firstTokenSelected,
                     csprBalance
                     )
-                console.log("csprBalance", csprBalance)
-                dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
-                dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
-                fillPairs(walletAddress)
                 toast.dismiss(ToasLoading)
                 toast.success("your wallet is mounted and ready to ride!")
             }
