@@ -1,13 +1,13 @@
 import React from 'react'
-import { AiOutlineSearch } from "react-icons/ai";
+import { AiOutlineSearch, AiFillCloseCircle } from "react-icons/ai";
 
-const FloatMenu = ({ tokens, selectToken }) => {
+const FloatMenu = ({ tokens, selectToken, onClick }) => {
     return (
         <Container>
             <ContainerCenter>
                 <HeaderStyled>
                     <div>Select Token</div>
-                    <div>Close</div>
+                    <IconContainerStyled onClick={onClick}><AiFillCloseCircle /></IconContainerStyled>
                 </HeaderStyled>
                 <SearchAndFavoritesStyled>
                     <SearchStyle>
@@ -55,6 +55,9 @@ const FloatMenu = ({ tokens, selectToken }) => {
 }
 
 import styled from 'styled-components'
+const IconContainerStyled = styled.div`
+    cursor: pointer;
+`
 const TokenShortStyle = styled.div`
     display: flex;
     align-items: center;

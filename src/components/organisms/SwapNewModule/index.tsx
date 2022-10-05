@@ -127,7 +127,11 @@ const SwapNewModule = () => {
                         </div>
                         <ArrowContainerStyle>
                             <FlechaIcon onClick={() => { searchModalASetter(true) }} />
-                            {searchModalA && <FloatMenu tokens={tokens} selectToken={SelectAndCloseTokenA} />}
+                            {searchModalA && <FloatMenu
+                                tokens={tokens}
+                                selectToken={SelectAndCloseTokenA}
+                                onClick={() => { searchModalASetter(false) }}
+                            />}
                         </ArrowContainerStyle>
                         <StickStyle />
                         <ButtonHalfMaxContainer>
@@ -156,7 +160,11 @@ const SwapNewModule = () => {
                         </div>
                         <ArrowContainerStyle>
                             <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
-                            {searchModalB && <FloatMenu tokens={tokens} selectToken={SelectAndCloseTokenB} />}
+                            {searchModalB && <FloatMenu
+                                tokens={tokens}
+                                selectToken={SelectAndCloseTokenA}
+                                onClick={() => { searchModalASetter(false) }}
+                            />}
                         </ArrowContainerStyle>
                         <StickStyle />
                         <ButtonHalfMaxContainer>
