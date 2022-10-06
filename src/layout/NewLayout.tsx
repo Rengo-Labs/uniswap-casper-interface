@@ -46,6 +46,7 @@ const NavItemStyled = styled.nav<any>`
     box-sizing: border-box;
     width: 100%;
     padding:5px 1.2em;
+    cursor:pointer;
     display: ${props => props.collapse ? "flex" : "grid"};
     gap:1em;
     justify-content: ${props => props.collapse ? "center" : "space-between"};
