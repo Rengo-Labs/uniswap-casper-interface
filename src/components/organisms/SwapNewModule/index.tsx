@@ -2,12 +2,12 @@ import React, { useContext, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
-import { ButtonConnection, CloseButtonAtom, HeaderModalAtom, SearchInputAtom, SearchSectionAtom, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
+import { ButtonConnection, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchInputAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
 import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import SwitchSwap from '../../atoms/SwitchSwap'
-import { SwapModal, SwapToken, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapModal, SwapToken, SwapTokens } from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
 const SwapNewModule = () => {
@@ -57,11 +57,22 @@ const SwapNewModule = () => {
     }
     const handleModalPrimary = () => {
         setActiveModalPrimary(!activeModalPrimary)
-        ResetTokens()
+        ResetAll()
     }
     const handleModalSecondary = () => {
         setActiveModalSecondary(!activeModalSecondary)
+        ResetAll()
+    }
+    function ResetAll() {
+        amountSwapTokenASetter(0)
+        amountSwapTokenBSetter(0)
         ResetTokens()
+    }
+    async function onConfirmSwap() {
+        setActiveModalSwap(false);
+        const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
+        amountSwapTokenASetter(0)
+        onConnectConfig()
     }
     async function updateSwapDetail(tokenA, tokenB, value) {
         const {
@@ -195,8 +206,37 @@ const SwapNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <ButtonSpaceStyled>
-                    <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                    {!isConnected && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
+                    {isConnected && <SwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
                 </ButtonSpaceStyled>
+                {
+                    activeModalSwap &&
+                    <SwapModal >
+                        <SwapContainerAtom >
+                            <SwapHeaderAtom>
+                                <HeaderModalAtom>Confirm Swap</HeaderModalAtom>
+                                <CloseButtonAtom onClick={() => { setActiveModalSwap(false) }}>
+                                    <AiOutlineClose />
+                                </CloseButtonAtom>
+                            </SwapHeaderAtom>
+                            <SwapConfirmAtom
+                                firstToken={amountSwapTokenA}
+                                firstTokenSelected={firstTokenSelected}
+                                secondTokenSelected={secondTokenSelected}
+                                amountSwapTokenA={amountSwapTokenA}
+                                amountSwapTokenB={amountSwapTokenB}
+                                slippSwapToken={slippSwapToken}
+                                tokensToTransfer={tokensToTransfer}
+                                priceImpact={priceImpact}
+                                defaultPriceImpactLabel={defaultPriceImpactLabel}
+                                slippSwapTokenSetter={slippSwapTokenSetter}
+                            >
+                                <ConfirmSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
+                            </SwapConfirmAtom>
+
+                        </SwapContainerAtom>
+                    </SwapModal>
+                }
 
             </ContainerSwapActions>
             <ContainerSwapStatics>

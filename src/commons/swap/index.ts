@@ -25,9 +25,9 @@ import {
 import toast from "react-hot-toast";
 import axios from "axios";
 import Torus from "@toruslabs/casper-embed";
-import {Some} from "ts-results";
-import {entryPointEnum} from "../../types";
-import {tokenReducerEnum} from "../../reducers/TokenReducers";
+import { Some } from "ts-results";
+import { entryPointEnum } from "../../types";
+import { tokenReducerEnum } from "../../reducers/TokenReducers";
 
 const normilizeAmountToString = (amount) => {
   let strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
@@ -82,7 +82,9 @@ export async function makeDeployWasm(publicKey, runtimeArgs, paymentAmount) {
   );
   return deploy;
 }
-
+function ConvertString(amount) {
+  return amount.toString();
+}
 export function createRuntimeArgs(
   amount_in,
   amount_out,
@@ -96,6 +98,9 @@ export function createRuntimeArgs(
   try {
     const amount = normilizeAmountToString(amount_in);
     const amount_out_min = amount_out - (amount_out * slippSwapToken) / 100
+    console.log("amount_out",amount_out)
+    console.log("slippSwapToken",slippSwapToken)
+    console.log("amount_out_min",amount_out_min)
     return RuntimeArgs.fromMap({
       amount: CLValueBuilder.u512(amount),
       destination_entrypoint: CLValueBuilder.string(entryPoint),
@@ -132,14 +137,14 @@ export const selectEntryPoint = (tokenA, tokenB) => {
 }
 
 export function createSwapToReceiveCSPRRuntimeArgs(
-    amount_in,
-    amount_out,
-    slippSwapToken,
-    _paths,
-    publicKey,
-    mainPurse,
-    deadline,
-    entryPoint
+  amount_in,
+  amount_out,
+  slippSwapToken,
+  _paths,
+  publicKey,
+  mainPurse,
+  deadline,
+  entryPoint
 ) {
   try {
     const amount = normilizeAmountToString(amount_in);
@@ -148,19 +153,19 @@ export function createSwapToReceiveCSPRRuntimeArgs(
       amount: CLValueBuilder.u512(amount),
       destination_entrypoint: CLValueBuilder.string(entryPoint),
       router_hash: new CLKey(
-          new CLByteArray(
-              Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
-          )
+        new CLByteArray(
+          Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
+        )
       ),
       amount_in_max: CLValueBuilder.u256(amount),
       amount_out: CLValueBuilder.u256(
-          normilizeAmountToString(amount_out_min)
+        normilizeAmountToString(amount_out_min)
       ),
       path: new CLList(_paths),
       to: createRecipientAddress(publicKey),
       purse: CLValueBuilder.uref(
-          Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-          AccessRights.READ_ADD_WRITE
+        Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+        AccessRights.READ_ADD_WRITE
       ),
       deadline: CLValueBuilder.u256(deadline),
     });
@@ -183,7 +188,7 @@ export async function createSwapRuntimeArgs(
   const runtimeArgs = RuntimeArgs.fromMap({
     amount_in: CLValueBuilder.u256(normilizeAmountToString(amount_in)),
     amount_out_min: CLValueBuilder.u256(
-        normilizeAmountToString(amount_out)
+      normilizeAmountToString(amount_out)
     ),
     path: new CLList(_paths),
     to: createRecipientAddress(publicKey),
@@ -204,39 +209,39 @@ export async function createSwapRuntimeArgs(
 }
 
 export async function createSwapRuntimeArgs2(
-    amount_in,
-    amount_out_min,
-    slippSwapToken,
-    _paths,
-    publicKey,
-    mainPurse,
-    deadline,
-    entryPointSelected
+  amount_in,
+  amount_out_min,
+  slippSwapToken,
+  _paths,
+  publicKey,
+  mainPurse,
+  deadline,
+  entryPointSelected
 ) {
   const amount_out = amount_out_min - (amount_out_min * slippSwapToken) / 100
   const runtimeArgs = RuntimeArgs.fromMap({
     amount_in_max: CLValueBuilder.u256(normilizeAmountToString(amount_in)),
     amount_out: CLValueBuilder.u256(
-        normilizeAmountToString(amount_out)
+      normilizeAmountToString(amount_out)
     ),
     path: new CLList(_paths),
     to: CLValueBuilder.uref(
-        Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-        AccessRights.READ_ADD_WRITE
+      Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+      AccessRights.READ_ADD_WRITE
     ),
     deadline: CLValueBuilder.u256(deadline),
   });
   let contractHashAsByteArray = Uint8Array.from(
-      Buffer.from(ROUTER_CONTRACT_HASH, "hex")
+    Buffer.from(ROUTER_CONTRACT_HASH, "hex")
   );
   let entryPoint = entryPointSelected;
   // Set contract installation deploy (unsigned).
   return await makeDeploySwap(
-      publicKey,
-      contractHashAsByteArray,
-      entryPoint,
-      runtimeArgs,
-      10_000_000_000
+    publicKey,
+    contractHashAsByteArray,
+    entryPoint,
+    runtimeArgs,
+    10_000_000_000
   );
 }
 
@@ -526,7 +531,7 @@ export async function getDeploySigner(deployHash) {
           let variant = "error";
           throw Error(
             "Contract execution: " +
-              raw.execution_results[0].result.Failure.error_message
+            raw.execution_results[0].result.Failure.error_message
           );
         }
       } else {
@@ -556,7 +561,7 @@ export async function getDeploy(deployHash) {
         let variant = "error";
         throw Error(
           "Contract execution: " +
-            raw.execution_results[0].result.Failure.error_message
+          raw.execution_results[0].result.Failure.error_message
         );
       }
     } else {
@@ -640,7 +645,7 @@ export function updateBalances(
   if ("CSPR" === firstTokenSelected.symbol) {
     tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: "CSPR", data: casperBalance } })
   } else {
-    tokenDispatch({ type: "LOAD_BALANCE_TOKEN", payload: {name: "CSPR", data: casperBalance} });
+    tokenDispatch({ type: "LOAD_BALANCE_TOKEN", payload: { name: "CSPR", data: casperBalance } });
   }
   Object.keys(tokens).map((x) => {
     if (tokens[`${x}`].contractHash.length > 0) {
