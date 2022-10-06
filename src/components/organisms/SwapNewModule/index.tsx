@@ -115,17 +115,17 @@ const SwapNewModule = () => {
 
     function returnFilter(tokens, firstTokenSelected) {
         const tokenHead = Object.keys(tokens)
+        let tokenFiltered = {}
         const filtered = tokenHead.reduce((acc, keya) => {
             const filter = new RegExp(firstTokenSelected.symbol)
             if (filter.test(keya)) { return }
-            let filteredTokens = {
+            tokenFiltered = {
                 ...acc,
                 [keya]: tokens[keya]
             }
-            return filteredTokens
+            return tokenFiltered
         }, {})
-        console.log(filtered)
-        return filtered
+        return tokenFiltered
     }
 
     return (
