@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useState } from 'react'
 import { LiquidityContext } from './LiquidityContext'
 import { PoolsContext } from './PoolsContext'
 import { ThemeContext } from './ThemeContext'
@@ -11,7 +11,7 @@ import { NotificationContext } from './NotificationContext'
 import { Toaster } from 'react-hot-toast';
 import { ConfigContextWithReducer } from './ConfigContext'
 export const BigContext = ({ children }: { children: ReactNode }) => {
-    
+
     return (
         <ThemeContext>
             <SwapContext>

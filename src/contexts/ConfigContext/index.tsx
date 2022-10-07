@@ -473,17 +473,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
     const [swapModal, setSwapModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [spamListener, spamListenerSetter] = useState(false)
     async function onConnectConfig() {
-        const ToasLoading = toast.loading("Try to connect your wallet")
         if (walletSelected === 'casper') {
             const walletAddress = await tryToConnectSigner()
             if (!walletAddress) {
-                toast.dismiss(ToasLoading)
-                toast.error("Ooops we have an error")
             }
             else {
                 const { csprBalance, mainPurse } = await getStatus(walletAddress)
-    
+
                 console.log("csprBalance", csprBalance)
                 dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
                 dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
@@ -495,8 +493,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                     firstTokenSelected,
                     csprBalance
                 )
-                toast.dismiss(ToasLoading)
-                toast.success("your wallet is mounted and ready to ride!")
             }
         } else {
             torus = new Torus();
@@ -518,8 +514,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
             dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
             fillPairs(walletAddress)
-            toast.dismiss(ToasLoading)
-            toast.success("your wallet is mounted and ready to ride!")
         }
     }
     const {
@@ -537,34 +531,37 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     useEffect(() => {
         // console.log("localStorage.getItem(selectedWallet)", localStorage.getItem("selectedWallet"));
         // if (props.selectedWallet === "Casper" || localStorage.getItem("selectedWallet") === "Casper") {
-        window.addEventListener('signer:connected', msg => {
-            console.log("signer:connected", msg)
-            onConnectConfig()
-        });
-        window.addEventListener('signer:disconnected', msg => {
-            console.log("signer:disconnected", msg)
-            onDisconnectWallet()
-        });
-        window.addEventListener('signer:tabUpdated', msg => {
-            console.log("signer:tabUpdated", msg)
-            onConnectConfig()
-        });
-        window.addEventListener('signer:activeKeyChanged', msg => {
-            console.log("signer:activeKeyChanged", msg)
-            onConnectConfig()
-        });
-        window.addEventListener('signer:locked', msg => {
-            console.log("signer:locked", msg)
-            onDisconnectWallet()
-        });
-        window.addEventListener('signer:unlocked', msg => {
-            console.log("signer:unlocked", msg)
-            onConnectConfig()
-        });
-        window.addEventListener('signer:initialState', msg => {
-            onConnectConfig()
-            console.log("signer:initialState", msg)
-        });
+        if (!spamListener) {
+            window.addEventListener('signer:connected', msg => {
+                console.log("signer:connected", msg)
+                onConnectConfig()
+            });
+            window.addEventListener('signer:disconnected', msg => {
+                console.log("signer:disconnected", msg)
+                onDisconnectWallet()
+            });
+            window.addEventListener('signer:tabUpdated', msg => {
+                console.log("signer:tabUpdated", msg)
+                onConnectConfig()
+            });
+            window.addEventListener('signer:activeKeyChanged', msg => {
+                console.log("signer:activeKeyChanged", msg)
+                onConnectConfig()
+            });
+            window.addEventListener('signer:locked', msg => {
+                console.log("signer:locked", msg)
+                onDisconnectWallet()
+            });
+            window.addEventListener('signer:unlocked', msg => {
+                console.log("signer:unlocked", msg)
+                onConnectConfig()
+            });
+            window.addEventListener('signer:initialState', msg => {
+                onConnectConfig()
+                console.log("signer:initialState", msg)
+            });
+            spamListenerSetter(true)
+        }
         // }
     }, []);
 
