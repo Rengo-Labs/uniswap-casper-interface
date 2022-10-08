@@ -14,8 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import OctoPurple from '../components/atoms/OctoPurple'
 
-const CLOSED_WIDTH = '100px'
-const OPEN_WIDTH = '300px'
+const CLOSED_WIDTH = '96px'
+const OPEN_WIDTH = '288px'
 
 const ExpansionAreaStyled = styled.div<any>`
     width: ${props => props.collapse ? OPEN_WIDTH : 0};
