@@ -68,22 +68,32 @@ const NavItemStyled = styled.nav<any>`
     gap: ${props => props.collapse ? "0" : "40px"};
     justify-content: center;
     align-items: center;
-    color: ${props => props.active ? "rgba(255,255,255,.4)" : ""};
-    background-color: ${props => props.active ? "white" : ""};
-    transition: all 200ms ease;
+    transition: all 100ms ease;
+    
+    & svg {
+        stroke: white;
+        fill: white;
+        transition: all 100ms ease;
+    }
+
+    &:hover {
+        background-color: white;
+        color: #715FF5;
+
+        svg {
+            stroke: #715FF5;
+            fill: #715FF5;
+        }
+    }
 `
-const NavItem = ({ children, redirect, collapse }: any) => {
-    const [active, setActive] = useState(false)
-    return (<NavItemStyled
-        onMouseEnter={() => { setActive(true) }}
-        onMouseLeave={() => { setActive(false) }}
+const NavItem = ({ children, redirect, collapse }: any) => (
+    <NavItemStyled    
         onClick={redirect}
-        active={active}
         collapse={collapse}
     >
         {children}
-    </NavItemStyled>)
-}
+    </NavItemStyled>
+)
 
 const CollapseButtonStyled = styled.button`
     all:unset;
@@ -162,12 +172,28 @@ const TitleCellContainerStyled = styled.nav`
 const CallContainerStyled = styled.nav`
     grid-column: 6/7;
 `
-const CallContainer = ({ children }) => {
-    return (<CallContainerStyled>{children}</CallContainerStyled>)
-}
+const CallContainer = ({ children }) => (
+    <CallContainerStyled>{children}</CallContainerStyled>
+)
+
+const LogoIconStyled = styled.nav`
+    padding-top: 20px;
+    & svg {
+        stroke: white;
+        fill: white;
+    }
+`
+
+const LogoIcon = ({ collapse, children }) => (
+    <LogoIconStyled>
+        { !collapse ? <NewIcons Icon={CasperIcon} size={64} /> : <div style={{height: 64}}>{ children }</div> }
+    </LogoIconStyled>
+)
+
 const NewLayout = ({ children, title = "" }) => {
     const navigate = useNavigate()
     const [collapse, setCollapse] = useState(true)
+
     const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
 
     const {
@@ -198,7 +224,9 @@ const NewLayout = ({ children, title = "" }) => {
                     onMouseLeave={() => setCollapse(true)}
                 >
                     <CollapseButton>
-                        {collapse ? <NewIcons Icon={CasperIcon} size={40} /> : <div style={{height: 40}}>casperswap</div>}
+                        <LogoIcon collapse={false}>
+                            casperswap
+                        </LogoIcon>
                     </CollapseButton>
                     <MenuCenter>
                         {IconTexts.map(x => {
