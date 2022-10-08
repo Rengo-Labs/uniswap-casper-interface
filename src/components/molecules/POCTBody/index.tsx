@@ -16,7 +16,7 @@ export const POCTBody = ({ getTableBodyProps, rows, prepareRow }) => {
                     prepareRow(row)
                     return (
                         // Apply the row props
-                        (!isStaked || filter(row)) &&
+                        (!isStaked || filter(isStaked, row)) &&
                         <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} />
                     )
                 })
