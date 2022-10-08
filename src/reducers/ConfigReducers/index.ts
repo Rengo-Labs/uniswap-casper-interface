@@ -55,11 +55,11 @@ export function ConfigReducer(state, action) {
         ...state,
         slippageToleranceSelected: action.payload.slippageToleranceSelected,
       };
-    case ConfigActions.SELECT_SLIPPAGE:
+    /* case ConfigActions.SELECT_SLIPPAGE:
       return {
         ...state,
         gasPriceSelected: action.payload.gasPriceSelected,
-      };
+      }; */
     case ConfigActions.SELECT_MAIN_PURSE:
       return {
         ...state,

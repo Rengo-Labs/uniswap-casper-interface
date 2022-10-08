@@ -2,9 +2,12 @@
   "name": "casperswap-interface",
   "private": true,
   "version": "0.0.1",
+  "license": "GPLv3",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
@@ -64,7 +67,11 @@
     "@storybook/react": "^6.5.10",
     "@storybook/testing-library": "0.0.13",
     "@types/axios": "^0.14.0",
-    "cypress": "^10.6.0"
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "cypress": "^10.6.0",
+    "eslint": "^8.25.0",
+    "tslint": "^6.1.3"
   },
   "eslintConfig": {
     "overrides": [
