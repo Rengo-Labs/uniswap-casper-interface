@@ -3,15 +3,21 @@ import casprIcon from '../../assets/swapIcons/casprIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 
 export const PoolsProviderContext = createContext<any>({})
+const formatter = Intl.NumberFormat('en', {notation: 'compact'})
 
-const getTVLandVolume = () => {
+export const convertNumber = (number) => {
+  return formatter.format(number)
+}
+
+export const getTVLandVolume = () => {
+
   return {
     tvl: "192,168,000,000",
     totalVolume: "1,000,000"
   }
 }
 
-const getPoolList = () => {
+export const getPoolList = async () => {
   return [
     {
       tokeIcon1: wethIcon,
@@ -29,7 +35,8 @@ const getPoolList = () => {
         token0Liquidity: "30,000,000",
         token1Liquidity: "120,000,000",
         totalLiquidityPool: "2,000",
-        totalLiquidityUSD: "200,000,000"
+        totalLiquidityUSD: "200,000,000",
+        totalPool: 0
       }
     },
     {
@@ -48,7 +55,8 @@ const getPoolList = () => {
         token0Liquidity: "30,000,000",
         token1Liquidity: "120,000,000",
         totalLiquidityPool: "2,000",
-        totalLiquidityUSD: "200,000,000"
+        totalLiquidityUSD: "200,000,000",
+        totalPool: 0
       }
     },
     {
@@ -67,7 +75,8 @@ const getPoolList = () => {
         token0Liquidity: "0",
         token1Liquidity: "0",
         totalLiquidityPool: "0",
-        totalLiquidityUSD: "0"
+        totalLiquidityUSD: "0",
+        totalPool: 0
       }
     },
     {
@@ -86,7 +95,8 @@ const getPoolList = () => {
         token0Liquidity: "0",
         token1Liquidity: "0",
         totalLiquidityPool: "0",
-        totalLiquidityUSD: "0"
+        totalLiquidityUSD: "0",
+        totalPool: 0
       }
     },
     {
@@ -105,7 +115,8 @@ const getPoolList = () => {
         token0Liquidity: "0",
         token1Liquidity: "0",
         totalLiquidityPool: "0",
-        totalLiquidityUSD: "0"
+        totalLiquidityUSD: "0",
+        totalPool: 0
       }
     },
     {
@@ -124,7 +135,8 @@ const getPoolList = () => {
         token0Liquidity: "30,000,000",
         token1Liquidity: "120,000,000",
         totalLiquidityPool: "2,000",
-        totalLiquidityUSD: "200,000,000"
+        totalLiquidityUSD: "200,000,000",
+        totalPool: 0
       }
     },
     {
@@ -143,7 +155,8 @@ const getPoolList = () => {
         token0Liquidity: "0",
         token1Liquidity: "0",
         totalLiquidityPool: "0",
-        totalLiquidityUSD: "0"
+        totalLiquidityUSD: "0",
+        totalPool: 0
       }
     },
     {
@@ -162,7 +175,8 @@ const getPoolList = () => {
         token0Liquidity: "0",
         token1Liquidity: "0",
         totalLiquidityPool: "0",
-        totalLiquidityUSD: "0"
+        totalLiquidityUSD: "0",
+        totalPool: 0
       }
     },
     {
@@ -181,15 +195,14 @@ const getPoolList = () => {
         token0Liquidity: "0",
         token1Liquidity: "0",
         totalLiquidityPool: "0",
-        totalLiquidityUSD: "0"
+        totalLiquidityUSD: "0",
+        totalPool: 0
       }
     }
   ]
 }
 
-const getPoolDetailByUser = ({user}: any) => {
-
-
+export const getPoolDetailByUser = async (hash) => {
   return [
     {
       token0: "CSPR",
@@ -198,7 +211,8 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "30,000,000",
       token1Liquidity: "120,000,000",
       totalLiquidityPool: "2,000",
-      totalLiquidityUSD: "200,000,000"
+      totalLiquidityUSD: "200,000,000",
+      totalPool: 1000
     },
     {
       token0: "WCSPR",
@@ -207,7 +221,8 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "30,000,000",
       token1Liquidity: "120,000,000",
       totalLiquidityPool: "2,000",
-      totalLiquidityUSD: "200,000,000"
+      totalLiquidityUSD: "200,000,000",
+      totalPool: 1000
     },
     {
       token0: "CSPR",
@@ -216,7 +231,8 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "0",
       token1Liquidity: "0",
       totalLiquidityPool: "0",
-      totalLiquidityUSD: "0"
+      totalLiquidityUSD: "0",
+      totalPool: 0
     },
     {
       token0: "WISER",
@@ -225,7 +241,8 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "0",
       token1Liquidity: "0",
       totalLiquidityPool: "0",
-      totalLiquidityUSD: "0"
+      totalLiquidityUSD: "0",
+      totalPool: 0
     },
     {
       token0: "WETH",
@@ -234,7 +251,8 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "0",
       token1Liquidity: "0",
       totalLiquidityPool: "0",
-      totalLiquidityUSD: "0"
+      totalLiquidityUSD: "0",
+      totalPool: 0
     },
     {
       token0: "CSPR",
@@ -243,7 +261,8 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "30,000,000",
       token1Liquidity: "120,000,000",
       totalLiquidityPool: "2,000",
-      totalLiquidityUSD: "200,000,000"
+      totalLiquidityUSD: "200,000,000",
+      totalPool: 1000
     },
     {
       token0: "BNB",
@@ -252,7 +271,8 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "0",
       token1Liquidity: "0",
       totalLiquidityPool: "0",
-      totalLiquidityUSD: "0"
+      totalLiquidityUSD: "0",
+      totalPool: 0
     },
     {
       token0: "CSPR",
@@ -261,7 +281,8 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "0",
       token1Liquidity: "0",
       totalLiquidityPool: "0",
-      totalLiquidityUSD: "0"
+      totalLiquidityUSD: "0",
+      totalPool: 0
     },
     {
       token0: "CSPR",
@@ -270,12 +291,27 @@ const getPoolDetailByUser = ({user}: any) => {
       token0Liquidity: "0",
       token1Liquidity: "0",
       totalLiquidityPool: "0",
-      totalLiquidityUSD: "0"
+      totalLiquidityUSD: "0",
+      totalPool: 0
     }
   ]
 }
 
-const getColumns = () => {
+export const loadPoolDetailByUser = async (hash, poolList) => {
+  const list = await getPoolDetailByUser(hash)
+
+  const newList = poolList.map(d => {
+    const data = list.filter(f => d.pair.token0 === f.token0 && d.pair.token1 === f.token1 || d.pair.token1 === f.token0 && d.pair.token0 === f.token1)
+    if (data.length > 0) {
+      return {...d, pair: data[0]}
+    }
+    return d
+  })
+
+  return newList
+}
+
+export function getColumns() {
   return [
     {
       id: 1,
@@ -313,21 +349,13 @@ const getColumns = () => {
 }
 
 export const PoolsContext = ({ children }:{children:ReactNode}) => {
-
   const [gralData, setGralData] = useState(getTVLandVolume())
-  const [tokens, setTokens] = useState(getPoolList())
 
   const headers = getColumns()
   const columns = React.useMemo(() => headers, [])
-  const data = React.useMemo(() => tokens, [])
-  const [isStaked, setStaked] = useState(false)
-
-  const filter = (x) => {
-    return parseFloat(x.original.pair.totalLiquidityPool) > 0
-  }
 
   return (
-    <PoolsProviderContext.Provider value={{ gralData, columns, data, filter, isStaked, setStaked }}>
+    <PoolsProviderContext.Provider value={{ gralData, columns, getPoolList, getPoolDetailByUser, loadPoolDetailByUser }}>
       {children}
     </PoolsProviderContext.Provider>
   )

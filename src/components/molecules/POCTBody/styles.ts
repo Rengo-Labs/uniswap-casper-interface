@@ -1,10 +1,5 @@
 import styled from 'styled-components'
 
-export const TBodyStyled = styled.tbody`
-    box-sizing: border-box;
-    padding: .5rem;
-`
-
 export const TBody = styled.div`
     display: flex;
     flex-direction: column;

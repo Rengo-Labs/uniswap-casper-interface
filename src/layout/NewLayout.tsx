@@ -9,10 +9,11 @@ import StakingIcon from '../assets/newIcons/stakingIcon.svg'
 import SwapIcon from '../assets/newIcons/swapIcon.svg'
 import ConfigIcon from '../assets/newIcons/configIcon.svg'
 import CommunityIcon from '../assets/newIcons/communityIcon.svg'
-import { ButtonConnection, NewIcons } from '../components/atoms'
+import { NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import OctoPurple from '../components/atoms/OctoPurple'
+import {ButtonConnectionOver} from "../components/organisms";
 
 
 const LayoutStyled = styled.div<any>`
@@ -206,9 +207,8 @@ const NewLayout = ({ children, title = "" }) => {
                     <IconContainer>
                         <OctoPurple />
                     </IconContainer>
-                    <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
                     <CallContainer>
-                        <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                        <ButtonConnectionOver isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
                     </CallContainer>
                 </NavBar>
                 {children}
