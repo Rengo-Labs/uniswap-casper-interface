@@ -14,8 +14,11 @@ import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import OctoPurple from '../components/atoms/OctoPurple'
 
+const CLOSED_WIDTH = '100px'
+const OPEN_WIDTH = '300px'
+
 const ExpansionAreaStyled = styled.div<any>`
-    width: ${props => props.collapse ? "15%" : "0%"};
+    width: ${props => props.collapse ? OPEN_WIDTH : 0};
     height: 100vh;
     position: absolute;
     top: 0;
@@ -30,10 +33,11 @@ const LayoutStyled = styled.div<any>`
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-columns: ${props => props.collapse ? "5% auto" : "15% auto"};
+    grid-template-columns: ${props => props.collapse ? CLOSED_WIDTH + " auto" : OPEN_WIDTH + " auto"};
     grid-template-rows: 1fr;
     transition: all 500ms ease;
 `
+
 //TODO navbar background
 const NewNavigationStyled = styled.nav`
     background-color: rgb(120,100,244);
@@ -42,6 +46,7 @@ const NewNavigationStyled = styled.nav`
     grid-template: auto 1fr auto / auto;
     justify-items: center;
 `
+
 const NewNavigation = ({ children, onMouseLeave }) => (
     <NewNavigationStyled onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>
 )
@@ -57,20 +62,20 @@ function MenuCenter({ children }) {
 const NavItemStyled = styled.nav<any>`
     box-sizing: border-box;
     width: 100%;
-    padding:5px 1.2em;
-    cursor:pointer;
-    display: ${props => props.collapse ? "flex" : "grid"};
-    gap:1em;
-    justify-content: ${props => props.collapse ? "center" : "space-between"};
-    align-items:center;
-    background-color:${props => props.active ? "rgba(255,255,255,.4)" : ""};
-    grid-template-columns: 1fr 2fr;
+    padding: 5px 1.2em;
+    cursor: pointer;
+    display: flex;
+    gap: ${props => props.collapse ? "0" : "1em"};
+    justify-content: center;
+    align-items: center;
+    background-color: ${props => props.active ? "rgba(255,255,255,.4)" : ""};
+    transition: all 200ms ease;
 `
-function NavItem({ children, redirect, collapse }: any) {
+const NavItem = ({ children, redirect, collapse }: any) => {
     const [active, setActive] = useState(false)
     return (<NavItemStyled
-        onMouseEnter={() => { setActive(!active) }}
-        onMouseLeave={() => { setActive(!active) }}
+        onMouseEnter={() => { setActive(true) }}
+        onMouseLeave={() => { setActive(false) }}
         onClick={redirect}
         active={active}
         collapse={collapse}
@@ -82,15 +87,21 @@ function NavItem({ children, redirect, collapse }: any) {
 const CollapseButtonStyled = styled.button`
     all:unset;
 `
-function CollapseButton({ children }) {
+const CollapseButton = ({ children }) => {
     return (<CollapseButtonStyled>{children}</CollapseButtonStyled>)
 }
 
-function IconText({ collapse, iconSet, text }) {
+const IconTextStyled = styled.nav<any>`
+    opacity: ${props => props.collapse ? "0" : "1"};
+    width: ${props => props.collapse ? "0px" : "100%"};
+    transition: all 200ms ease;
+`
+
+const IconText = ({ collapse, iconSet, text }) => {
     return (
         <>
             {iconSet}
-            {!collapse && <div>{text}</div>}
+            <IconTextStyled collapse={collapse}>{text}</IconTextStyled>
         </>)
 }
 const size = "25"
@@ -118,7 +129,7 @@ const MainSpaceStyled = styled.main`
     grid-template-rows: auto 1fr;
     grid-template-columns: 1fr;
 `
-function MainSpace({ children }) {
+const MainSpace = ({ children }) => {
     return (<MainSpaceStyled>{children}</MainSpaceStyled>)
 }
 const NavBarStyled = styled.nav`
@@ -126,14 +137,14 @@ const NavBarStyled = styled.nav`
     display:grid;
     grid-template: auto / repeat(6, 1fr);
 `
-function NavBar({ children }) {
+const NavBar = ({ children }) => {
     return (<NavBarStyled>{children}</NavBarStyled>)
 }
 
 const IconContainerStyled = styled.nav`
     grid-column: 4/5;
 `
-function IconContainer({ children }) {
+const IconContainer = ({ children }) => {
     return (<IconContainerStyled>{children}</IconContainerStyled>)
 }
 
@@ -146,10 +157,9 @@ const TitleCellContainerStyled = styled.nav`
 `
 
 const CallContainerStyled = styled.nav`
-        grid-column: 6/7;
-
+    grid-column: 6/7;
 `
-function CallContainer({ children }) {
+const CallContainer = ({ children }) => {
     return (<CallContainerStyled>{children}</CallContainerStyled>)
 }
 const NewLayout = ({ children, title = "" }) => {
@@ -185,7 +195,7 @@ const NewLayout = ({ children, title = "" }) => {
                     onMouseLeave={() => setCollapse(true)}
                 >
                     <CollapseButton>
-                        {collapse ? <NewIcons icon={CasperIcon} size={40} /> : "casperswap"}
+                        {collapse ? <NewIcons icon={CasperIcon} size={40} /> : <div style={{height: 40}}>casperswap</div>}
                     </CollapseButton>
                     <MenuCenter>
                         {IconTexts.map(x => {

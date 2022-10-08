@@ -17,6 +17,7 @@
     }
   },
   "rules": {
+    "import/no-anonymous-default-export": "off",
     "no-empty": "off",
     "no-unused-vars": "off",
     "@typescript-eslint/ban-ts-comment": ["warn"],
