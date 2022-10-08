@@ -1,17 +1,57 @@
 import React, { createContext, ReactNode, useState } from 'react'
 import casprIcon from '../../assets/swapIcons/casprIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
+import axios from "axios";
+import {BASE_URL} from "../../constant";
 
 export const PoolsProviderContext = createContext<any>({})
+const formatter = Intl.NumberFormat('en', {notation: 'compact'})
+
+export const convertNumber = (number) => {
+  return formatter.format(number)
+}
 
 const getTVLandVolume = () => {
+
   return {
     tvl: "192,168,000,000",
     totalVolume: "1,000,000"
   }
 }
 
-const getPoolList = () => {
+const getPoolList = async () => {
+  const result = await axios.get(`${BASE_URL}/getpairlist`)
+
+  if (result.data.success) {
+
+    const pairList = result.data.pairList
+    const newList = pairList.map(d => {
+      return {
+        tokeIcon1: wethIcon,
+        tokeIcon2: casprIcon,
+        tokenName: d.token0.symbol + "-" + d.token1.symbol,
+        tokenLiquidity: convertNumber(parseFloat(d.token0.totalLiquidity) + parseFloat(d.token1.totalLiquidity)),
+        volume7d: parseFloat(d.volumeUSD).toFixed(2),
+        fees24h: 0,
+        oneYFees: 0,
+        volume: parseFloat(d.volumeUSD),
+        pair: {
+          token0: d.token0.symbol,
+          token1: d.token1.symbol,
+          token0Liquidity: 0,
+          token1Liquidity: 0,
+          totalLiquidityPool: 0,
+          totalLiquidityUSD: 0,
+          volumePercentage: 0
+        }
+      }
+    })
+
+    return newList
+  }
+
+  return []
+  /*
   return [
     {
       tokeIcon1: wethIcon,
@@ -184,12 +224,32 @@ const getPoolList = () => {
         totalLiquidityUSD: "0"
       }
     }
-  ]
+  ]*/
 }
 
-const getPoolDetailByUser = ({user}: any) => {
+const getPoolDetailByUser = async (hash) => {
 
+  const result = await axios.post(`${BASE_URL}/getpairagainstuser`, {user: hash})
 
+  if (result.data.success) {
+    const pairList = result.data.pairsdata
+    const list = pairList.map(d => {
+      return {
+        token0: d.token0.symbol,
+        token1: d.token1.symbol,
+        token0Liquidity: convertNumber(parseFloat(d.token0.totalLiquidity)),
+        token1Liquidity: convertNumber(parseFloat(d.token1.totalLiquidity)),
+        totalLiquidityPool: convertNumber(parseFloat(d.token0.totalLiquidity) + parseFloat(d.token1.totalLiquidity)),
+        totalLiquidityUSD: convertNumber(parseFloat(d.token0.totalLiquidity) * parseFloat(d.token0Price) + parseFloat(d.token1.totalLiquidity) * parseFloat(d.token1Price)),
+        volume: parseFloat(d.volumeUSD),
+      }
+    })
+    console.log("Pool", list)
+    return list
+  }
+
+  return []
+  /*
   return [
     {
       token0: "CSPR",
@@ -272,7 +332,21 @@ const getPoolDetailByUser = ({user}: any) => {
       totalLiquidityPool: "0",
       totalLiquidityUSD: "0"
     }
-  ]
+  ]*/
+}
+
+const loadPoolDetailByUser = async (hash, poolList) => {
+  const list = await getPoolDetailByUser(hash)
+
+  const newList = poolList.map(d => {
+    const data = list.filter(f => d.pair.token0 === f.token0 && d.pair.token1 === f.token1 || d.pair.token1 === f.token0 && d.pair.token0 === f.token1)
+    if (data.length > 0) {
+      return {...d, pair: data[0]}
+    }
+    return d
+  })
+
+  return newList
 }
 
 const getColumns = () => {
@@ -313,21 +387,24 @@ const getColumns = () => {
 }
 
 export const PoolsContext = ({ children }:{children:ReactNode}) => {
-
   const [gralData, setGralData] = useState(getTVLandVolume())
-  const [tokens, setTokens] = useState(getPoolList())
 
   const headers = getColumns()
   const columns = React.useMemo(() => headers, [])
-  const data = React.useMemo(() => tokens, [])
+  const data = React.useMemo(() => [], [])
   const [isStaked, setStaked] = useState(false)
 
-  const filter = (x) => {
-    return parseFloat(x.original.pair.totalLiquidityPool) > 0
+  const filter = (onlyStaked, row) => {
+    if (onlyStaked) {
+      console.log(row)
+      return row.totalLiquidityPool > 0
+    }
+
+    return row
   }
 
   return (
-    <PoolsProviderContext.Provider value={{ gralData, columns, data, filter, isStaked, setStaked }}>
+    <PoolsProviderContext.Provider value={{ gralData, columns, data, isStaked, setStaked, filter, getPoolList, getPoolDetailByUser, loadPoolDetailByUser }}>
       {children}
     </PoolsProviderContext.Provider>
   )
