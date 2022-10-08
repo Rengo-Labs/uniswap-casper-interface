@@ -14,6 +14,17 @@ import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import OctoPurple from '../components/atoms/OctoPurple'
 
+const ExpansionAreaStyled = styled.div<any>`
+    width: ${props => props.collapse ? "15%" : "0%"};
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+`
+
+const ExpansionArea = ({ children, collapse, onMouseEnter }) => (
+    <ExpansionAreaStyled collapse={collapse} onMouseEnter={onMouseEnter}>{children}</ExpansionAreaStyled>
+)
 
 const LayoutStyled = styled.div<any>`
     width: 100vw;
@@ -31,9 +42,10 @@ const NewNavigationStyled = styled.nav`
     grid-template: auto 1fr auto / auto;
     justify-items: center;
 `
-function NewNavigation({ children, onMouseEnter, onMouseLeave }) {
-    return (<NewNavigationStyled onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>)
-}
+const NewNavigation = ({ children, onMouseLeave }) => (
+    <NewNavigationStyled onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>
+)
+    
 const MenuCenterStyled = styled.main`
     width: 100%;
     align-self: center;
@@ -162,59 +174,64 @@ const NewLayout = ({ children, title = "" }) => {
     }
 
     return (
-        <LayoutStyled collapse={collapse}>
-            <NewNavigation
-                onMouseEnter={() => setCollapse(!collapse)}
-                onMouseLeave={() => setCollapse(!collapse)}
+        <>
+            <ExpansionArea
+                collapse={collapse}
+                onMouseEnter={() => setCollapse(false)}
             >
-                <CollapseButton>
-                    {collapse ? <NewIcons icon={CasperIcon} size={40} /> : "casperswap"}
-                </CollapseButton>
-                <MenuCenter>
-                    {IconTexts.map(x => {
-                        return (
-                            <NavItem key={x.text}
-                                redirect={() => { navigate(x.path) }}
-                                collapse={collapse}
-                            >
-                                <IconText collapse={collapse}
-                                    iconSet={<NewIcons icon={x.icon} size={size} />}
-                                    text={x.text}
-                                />
-                            </NavItem>
-                        )
-                    })}
-                </MenuCenter>
-                <MenuCenter>
-                    {IconTextsTwo.map(x => {
-                        return (
-                            <NavItem key={x.text}
-                                redirect={() => { }}
-                                collapse={collapse}
-                            >
-                                <IconText collapse={collapse}
-                                    iconSet={<NewIcons icon={x.icon} size={size} />}
-                                    text={x.text}
-                                />
-                            </NavItem>
-                        )
-                    })}
-                </MenuCenter>
-            </NewNavigation>
-            <MainSpace>
-                <NavBar>
-                    <IconContainer>
-                        <OctoPurple />
-                    </IconContainer>
-                    <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
-                    <CallContainer>
-                        <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
-                    </CallContainer>
-                </NavBar>
-                {children}
-            </MainSpace>
-        </LayoutStyled>
-
+            </ExpansionArea>
+            <LayoutStyled collapse={collapse}>
+                <NewNavigation
+                    onMouseLeave={() => setCollapse(true)}
+                >
+                    <CollapseButton>
+                        {collapse ? <NewIcons icon={CasperIcon} size={40} /> : "casperswap"}
+                    </CollapseButton>
+                    <MenuCenter>
+                        {IconTexts.map(x => {
+                            return (
+                                <NavItem key={x.text}
+                                    redirect={() => { navigate(x.path) }}
+                                    collapse={collapse}
+                                >
+                                    <IconText collapse={collapse}
+                                        iconSet={<NewIcons icon={x.icon} size={size} />}
+                                        text={x.text}
+                                    />
+                                </NavItem>
+                            )
+                        })}
+                    </MenuCenter>
+                    <MenuCenter>
+                        {IconTextsTwo.map(x => {
+                            return (
+                                <NavItem key={x.text}
+                                    redirect={() => { }}
+                                    collapse={collapse}
+                                >
+                                    <IconText collapse={collapse}
+                                        iconSet={<NewIcons icon={x.icon} size={size} />}
+                                        text={x.text}
+                                    />
+                                </NavItem>
+                            )
+                        })}
+                    </MenuCenter>
+                </NewNavigation>
+                <MainSpace>
+                    <NavBar>
+                        <IconContainer>
+                            <OctoPurple />
+                        </IconContainer>
+                        <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
+                        <CallContainer>
+                            <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                        </CallContainer>
+                    </NavBar>
+                    {children}
+                </MainSpace>
+            </LayoutStyled>
+        </>
     )
 }
 
