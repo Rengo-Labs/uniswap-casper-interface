@@ -42,7 +42,7 @@ const LayoutStyled = styled.div<any>`
 const NewNavigationStyled = styled.nav`
     background-color: rgb(120,100,244);
     display: grid;
-    padding:10px 0;
+    padding: 32px 0;
     grid-template: auto 1fr auto / auto;
     justify-items: center;
 `
@@ -177,7 +177,6 @@ const CallContainer = ({ children }) => (
 )
 
 const LogoIconStyled = styled.nav`
-    padding-top: 20px;
     & svg {
         stroke: white;
         fill: white;
@@ -266,7 +265,12 @@ const NewLayout = ({ children, title = "" }) => {
                         </IconContainer>
                         <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
                         <CallContainer>
-                            <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
+                            <ButtonConnection 
+                                isConnected={isConnected} 
+                                onConnect={onConnect} 
+                                onDisconnect={onDisconnect} 
+                                Account={walletAddress} 
+                            />
                         </CallContainer>
                     </NavBar>
                     {children}

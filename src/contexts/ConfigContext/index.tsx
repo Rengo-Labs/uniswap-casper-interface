@@ -466,54 +466,74 @@ function PairsWithBalance(pairs) {
 
 
 export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) => {
-
     const [state, dispatch] = useReducer(ConfigReducer, initialConfigState)
     const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
     const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
     const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
     const [swapModal, setSwapModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    async function onConnectConfig() {
-        const ToasLoading = toast.loading("Try to connect your wallet")
+
+    let debounceConnect = false
+
+    async function connect() {
+        if (debounceConnect) {
+            return []
+        }
+
+        debounceConnect = true
+        let walletAddress: string | false
+
         if (walletSelected === 'casper') {
-            const walletAddress = await tryToConnectSigner()
-            if (!walletAddress) {
-                toast.dismiss(ToasLoading)
-                toast.error("Ooops we have an error")
+            try {
+                walletAddress = await tryToConnectSigner()
+            } catch (e) {
+                debounceConnect = false
+                throw e
             }
-            else {
-                const { csprBalance, mainPurse } = await getStatus(walletAddress)
-    
-                console.log("csprBalance", csprBalance)
-                dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
-                dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
-                await fillPairs(walletAddress)
-                await updateBalances(walletAddress,
-                    tokens,
-                    tokenDispatch,
-                    secondTokenSelected,
-                    firstTokenSelected,
-                    csprBalance
-                )
-                toast.dismiss(ToasLoading)
-                toast.success("your wallet is mounted and ready to ride!")
+            if (!walletAddress) {
+                debounceConnect = true
+                throw new Error("casper signer error")
             }
         } else {
             torus = new Torus();
 
             if (!torus) {
-                toast.dismiss(ToasLoading)
-                toast.error("Ooops we have an error")
-                return
+                throw new Error("torus error")
             }
+            
+            try {
+                await torus.init({
+                    buildEnv: "testing",
+                    showTorusButton: true,
+                    network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+                });
+            } catch (e) {
+                debounceConnect = false
+                throw e
+            }
+            
+            walletAddress = (await torus.login())[0];
+        }
 
-            await torus.init({
-                buildEnv: "testing",
-                showTorusButton: true,
-                network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-            });
-            const walletAddress = (await torus.login())[0];
-            const { csprBalance, mainPurse } = await getStatus(walletAddress)
+        const { csprBalance, mainPurse } = await getStatus(walletAddress)
+        debounceConnect = false
+        return [csprBalance, mainPurse, walletAddress ]
+    }
+
+    async function onConnectConfig() {
+        if (debounceConnect) {
+            return
+        }
+        
+        const toastLoading = toast.loading("Try to connect your wallet")
+        try {
+            const [ csprBalance, mainPurse, walletAddress ] = await connect()
+
+            console.log("csprBalance", csprBalance)
+
+            dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
+            dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
+            await fillPairs(walletAddress)
             await updateBalances(walletAddress,
                 tokens,
                 tokenDispatch,
@@ -521,14 +541,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 firstTokenSelected,
                 csprBalance
             )
-            console.log("csprBalance", csprBalance)
-            dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
-            dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
-            fillPairs(walletAddress)
-            toast.dismiss(ToasLoading)
+            toast.dismiss(toastLoading)
             toast.success("your wallet is mounted and ready to ride!")
+        } catch (e) {
+            console.log('error', e)
+            toast.dismiss(toastLoading)
+            toast.error("Ooops we have an error")
         }
     }
+
     const {
         isConnected,
         walletAddress,
@@ -537,10 +558,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         visualModeSelected,
         slippageToleranceSelected,
         gasPriceSelected,
-        mainPurse } = state
+        mainPurse 
+    } = state
+
     useEffect(() => {
         loadTokens(tokenDispatch)
     }, [])
+
     useEffect(() => {
         // console.log("localStorage.getItem(selectedWallet)", localStorage.getItem("selectedWallet"));
         // if (props.selectedWallet === "Casper" || localStorage.getItem("selectedWallet") === "Casper") {
@@ -569,8 +593,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onConnectConfig()
         });
         window.addEventListener('signer:initialState', msg => {
-            onConnectConfig()
             console.log("signer:initialState", msg)
+            connect()
         });
         // }
     }, []);
