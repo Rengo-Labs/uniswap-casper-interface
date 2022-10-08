@@ -78,11 +78,11 @@ const NavItemStyled = styled.nav<any>`
 
     &:hover {
         background-color: white;
-        color: #715FF5;
+        color: ${props => props.theme.NewPurpleColor};
 
         svg {
-            stroke: #715FF5;
-            fill: #715FF5;
+            stroke: ${props => props.theme.NewPurpleColor};
+            fill:${props => props.theme.NewPurpleColor};
         }
     }
 `
