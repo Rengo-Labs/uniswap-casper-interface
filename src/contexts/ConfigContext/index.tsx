@@ -34,8 +34,10 @@ import {
     selectEntryPoint,
     signdeploywithcaspersigner,
     signDeployWithTorus,
-    updateBalances
+    updateBalances,
+    withPutDeploy
 } from '../../commons/swap';
+
 import ConfirmModal from '../../components/organisms/ConfirmModal';
 import PopupModal from '../../components/organisms/PopupModal';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
@@ -633,6 +635,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     const [linkExplorer, setLinkExplorer] = useState("")
+    const [deployExplorer, setDeployExplorer] = useState("")
+
     async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB, slippSwapToken) {
         setSwapModal(true)
 
@@ -650,6 +654,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
             if (walletSelected === 'torus') {
                 const signedDeploy = await signDeployWithTorus(deploy)
+                const deployHash = `https://testnet.cspr.live/deploy/${signedDeploy.deploy_hash}`
+                setDeployExplorer(deployHash || "")
                 console.log("deploy_hash", signedDeploy.deploy_hash)
                 const result = await getDeploy(signedDeploy.deploy_hash);
                 setSwapModal(false)
@@ -660,7 +666,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
-                const result = await putdeploySigner(signedDeploy);
+
+                const result = await withPutDeploy(signedDeploy, setDeployExplorer);
                 setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
                 setSwapModal(false)
                 setConfirmModal(true)
