@@ -111,7 +111,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         <TRow>
                             <CircleButton><AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" /></CircleButton>
                             <CircleButton><TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem" /></CircleButton>
-                            <CircleButton><NewIcons icon={FarmIcon} style={{alignSelf: "center"}} size="22px" /></CircleButton>
+                            <CircleButton><NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" /></CircleButton>
                         </TRow>
                     </TColumn3>
                     <TColumn1 />

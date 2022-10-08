@@ -1,21 +1,21 @@
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
-import CasperIcon from '../assets/newIcons/casperIcon.svg'
-import FarmIcon from '../assets/newIcons/farmIcon.svg'
-import LiquidityIcon from '../assets/newIcons/liquidityIcon.svg'
-import NftIcon from '../assets/newIcons/nftIcon.svg'
-import PoolIcon from '../assets/newIcons/poolIcon.svg'
-import StakingIcon from '../assets/newIcons/stakingIcon.svg'
-import SwapIcon from '../assets/newIcons/swapIcon.svg'
-import ConfigIcon from '../assets/newIcons/configIcon.svg'
-import CommunityIcon from '../assets/newIcons/communityIcon.svg'
+import { ReactComponent as CasperIcon } from '../assets/newIcons/casperIcon.svg'
+import { ReactComponent as FarmIcon } from '../assets/newIcons/farmIcon.svg'
+import { ReactComponent as LiquidityIcon } from '../assets/newIcons/liquidityIcon.svg'
+import { ReactComponent as NftIcon } from '../assets/newIcons/nftIcon.svg'
+import { ReactComponent as PoolIcon } from '../assets/newIcons/poolIcon.svg'
+import { ReactComponent as StakingIcon } from '../assets/newIcons/stakingIcon.svg'
+import { ReactComponent as SwapIcon } from '../assets/newIcons/swapIcon.svg'
+import { ReactComponent as ConfigIcon } from '../assets/newIcons/configIcon.svg'
+import { ReactComponent as CommunityIcon } from '../assets/newIcons/communityIcon.svg'
 import { ButtonConnection, NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import OctoPurple from '../components/atoms/OctoPurple'
 
-const CLOSED_WIDTH = '96px'
-const OPEN_WIDTH = '288px'
+const CLOSED_WIDTH = '108px'
+const OPEN_WIDTH = '280px'
 
 const ExpansionAreaStyled = styled.div<any>`
     width: ${props => props.collapse ? OPEN_WIDTH : 0};
@@ -62,13 +62,14 @@ function MenuCenter({ children }) {
 const NavItemStyled = styled.nav<any>`
     box-sizing: border-box;
     width: 100%;
-    padding: 5px 1.2em;
+    padding: 10px 1.2em;
     cursor: pointer;
     display: flex;
-    gap: ${props => props.collapse ? "0" : "1em"};
+    gap: ${props => props.collapse ? "0" : "40px"};
     justify-content: center;
     align-items: center;
-    background-color: ${props => props.active ? "rgba(255,255,255,.4)" : ""};
+    color: ${props => props.active ? "rgba(255,255,255,.4)" : ""};
+    background-color: ${props => props.active ? "white" : ""};
     transition: all 200ms ease;
 `
 const NavItem = ({ children, redirect, collapse }: any) => {
@@ -95,6 +96,8 @@ const IconTextStyled = styled.nav<any>`
     opacity: ${props => props.collapse ? "0" : "1"};
     width: ${props => props.collapse ? "0px" : "100%"};
     transition: all 200ms ease;
+    font-size: 18px;
+    letter-spacing: 4.68px;
 `
 
 const IconText = ({ collapse, iconSet, text }) => {
@@ -104,7 +107,7 @@ const IconText = ({ collapse, iconSet, text }) => {
             <IconTextStyled collapse={collapse}>{text}</IconTextStyled>
         </>)
 }
-const size = "25"
+const size = 20
 const IconTexts = [
     { icon: SwapIcon, text: "Swap", path: "/swap" },
     { icon: LiquidityIcon, text: "Liquidity", path: "/liquidity" },
@@ -195,7 +198,7 @@ const NewLayout = ({ children, title = "" }) => {
                     onMouseLeave={() => setCollapse(true)}
                 >
                     <CollapseButton>
-                        {collapse ? <NewIcons icon={CasperIcon} size={40} /> : <div style={{height: 40}}>casperswap</div>}
+                        {collapse ? <NewIcons Icon={CasperIcon} size={40} /> : <div style={{height: 40}}>casperswap</div>}
                     </CollapseButton>
                     <MenuCenter>
                         {IconTexts.map(x => {
@@ -205,7 +208,7 @@ const NewLayout = ({ children, title = "" }) => {
                                     collapse={collapse}
                                 >
                                     <IconText collapse={collapse}
-                                        iconSet={<NewIcons icon={x.icon} size={size} />}
+                                        iconSet={<NewIcons Icon={x.icon} size={size} />}
                                         text={x.text}
                                     />
                                 </NavItem>
@@ -220,7 +223,7 @@ const NewLayout = ({ children, title = "" }) => {
                                     collapse={collapse}
                                 >
                                     <IconText collapse={collapse}
-                                        iconSet={<NewIcons icon={x.icon} size={size} />}
+                                        iconSet={<NewIcons Icon={x.icon} size={size} />}
                                         text={x.text}
                                     />
                                 </NavItem>
