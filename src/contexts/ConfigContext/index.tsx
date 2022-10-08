@@ -491,7 +491,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 throw e
             }
             if (!walletAddress) {
-                debounceConnect = true
+                debounceConnect = false
                 throw new Error("casper signer error")
             }
         } else {
@@ -520,11 +520,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         return [csprBalance, mainPurse, walletAddress ]
     }
 
-    async function onConnectConfig() {
+    async function onConnectConfig(ignoreError = false) {
         if (debounceConnect) {
             return
         }
-        
+
         const toastLoading = toast.loading("Try to connect your wallet")
         try {
             const [ csprBalance, mainPurse, walletAddress ] = await connect()
@@ -546,7 +546,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         } catch (e) {
             console.log('error', e)
             toast.dismiss(toastLoading)
-            toast.error("Ooops we have an error")
+            if (!ignoreError) {
+                toast.error("Ooops we have an error")
+            }
         }
     }
 

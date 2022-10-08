@@ -205,7 +205,7 @@ const NewLayout = ({ children, title = "" }) => {
         gasPriceSelected } = configState
 
     async function onConnect() {
-        onConnectConfig()
+        onConnectConfig(true)
     }
     async function onDisconnect() {
         onDisconnectWallet()
