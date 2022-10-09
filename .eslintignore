@@ -1,0 +1,7 @@
+node_modules
+.storybook
+.vscode
+.git
+cypress
+documentation
+public

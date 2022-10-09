@@ -74,7 +74,6 @@ export const Swap = () => {
     onConnectConfig()
   }
 
-
   async function onConfirmSwap() {
     setActiveModalSwap(false);
     const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)

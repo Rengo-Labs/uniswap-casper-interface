@@ -1,39 +1,56 @@
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
-import CasperIcon from '../assets/newIcons/casperIcon.svg'
-import FarmIcon from '../assets/newIcons/farmIcon.svg'
-import LiquidityIcon from '../assets/newIcons/liquidityIcon.svg'
-import NftIcon from '../assets/newIcons/nftIcon.svg'
-import PoolIcon from '../assets/newIcons/poolIcon.svg'
-import StakingIcon from '../assets/newIcons/stakingIcon.svg'
-import SwapIcon from '../assets/newIcons/swapIcon.svg'
-import ConfigIcon from '../assets/newIcons/configIcon.svg'
-import CommunityIcon from '../assets/newIcons/communityIcon.svg'
+import { ReactComponent as CasperIcon } from '../assets/newIcons/casperIcon.svg'
+import { ReactComponent as FarmIcon } from '../assets/newIcons/farmIcon.svg'
+import { ReactComponent as LiquidityIcon } from '../assets/newIcons/liquidityIcon.svg'
+import { ReactComponent as NftIcon } from '../assets/newIcons/nftIcon.svg'
+import { ReactComponent as PoolIcon } from '../assets/newIcons/poolIcon.svg'
+import { ReactComponent as StakingIcon } from '../assets/newIcons/stakingIcon.svg'
+import { ReactComponent as SwapIcon } from '../assets/newIcons/swapIcon.svg'
+import { ReactComponent as ConfigIcon } from '../assets/newIcons/configIcon.svg'
+import { ReactComponent as CommunityIcon } from '../assets/newIcons/communityIcon.svg'
 import { ButtonConnection, NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import OctoPurple from '../components/atoms/OctoPurple'
 
+const CLOSED_WIDTH = '108px'
+const OPEN_WIDTH = '280px'
+
+const ExpansionAreaStyled = styled.div<any>`
+    width: ${props => props.collapse ? OPEN_WIDTH : 0};
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+`
+
+const ExpansionArea = ({ children, collapse, onMouseEnter }) => (
+    <ExpansionAreaStyled collapse={collapse} onMouseEnter={onMouseEnter}>{children}</ExpansionAreaStyled>
+)
 
 const LayoutStyled = styled.div<any>`
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-columns: ${props => props.collapse ? "5% auto" : "15% auto"};
+    grid-template-columns: ${props => props.collapse ? CLOSED_WIDTH + " auto" : OPEN_WIDTH + " auto"};
     grid-template-rows: 1fr;
     transition: all 500ms ease;
 `
+
 //TODO navbar background
 const NewNavigationStyled = styled.nav`
     background-color: rgb(120,100,244);
     display: grid;
-    padding:10px 0;
+    padding: 32px 0;
     grid-template: auto 1fr auto / auto;
     justify-items: center;
 `
-function NewNavigation({ children, onMouseEnter, onMouseLeave }) {
-    return (<NewNavigationStyled onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>)
-}
+
+const NewNavigation = ({ children, onMouseLeave }) => (
+    <NewNavigationStyled onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>
+)
+    
 const MenuCenterStyled = styled.main`
     width: 100%;
     align-self: center;
@@ -45,43 +62,62 @@ function MenuCenter({ children }) {
 const NavItemStyled = styled.nav<any>`
     box-sizing: border-box;
     width: 100%;
-    padding:5px 1.2em;
-    cursor:pointer;
-    display: ${props => props.collapse ? "flex" : "grid"};
-    gap:1em;
-    justify-content: ${props => props.collapse ? "center" : "space-between"};
-    align-items:center;
-    background-color:${props => props.active ? "rgba(255,255,255,.4)" : ""};
-    grid-template-columns: 1fr 2fr;
+    padding: 10px 1.2em;
+    cursor: pointer;
+    display: flex;
+    gap: ${props => props.collapse ? "0" : "40px"};
+    justify-content: center;
+    align-items: center;
+    transition: all 100ms ease;
+    
+    & svg {
+        stroke: white;
+        fill: white;
+        transition: all 100ms ease;
+    }
+
+    &:hover {
+        background-color: white;
+        color: #715FF5;
+
+        svg {
+            stroke: #715FF5;
+            fill: #715FF5;
+        }
+    }
 `
-function NavItem({ children, redirect, collapse }: any) {
-    const [active, setActive] = useState(false)
-    return (<NavItemStyled
-        onMouseEnter={() => { setActive(!active) }}
-        onMouseLeave={() => { setActive(!active) }}
+const NavItem = ({ children, redirect, collapse }: any) => (
+    <NavItemStyled    
         onClick={redirect}
-        active={active}
         collapse={collapse}
     >
         {children}
-    </NavItemStyled>)
-}
+    </NavItemStyled>
+)
 
 const CollapseButtonStyled = styled.button`
     all:unset;
 `
-function CollapseButton({ children }) {
+const CollapseButton = ({ children }) => {
     return (<CollapseButtonStyled>{children}</CollapseButtonStyled>)
 }
 
-function IconText({ collapse, iconSet, text }) {
+const IconTextStyled = styled.nav<any>`
+    opacity: ${props => props.collapse ? "0" : "1"};
+    width: ${props => props.collapse ? "0px" : "100%"};
+    transition: all 200ms ease;
+    font-size: 18px;
+    letter-spacing: 4.68px;
+`
+
+const IconText = ({ collapse, iconSet, text }) => {
     return (
         <>
             {iconSet}
-            {!collapse && <div>{text}</div>}
+            <IconTextStyled collapse={collapse}>{text}</IconTextStyled>
         </>)
 }
-const size = "25"
+const size = 20
 const IconTexts = [
     { icon: SwapIcon, text: "Swap", path: "/swap" },
     { icon: LiquidityIcon, text: "Liquidity", path: "/liquidity" },
@@ -106,7 +142,7 @@ const MainSpaceStyled = styled.main`
     grid-template-rows: auto 1fr;
     grid-template-columns: 1fr;
 `
-function MainSpace({ children }) {
+const MainSpace = ({ children }) => {
     return (<MainSpaceStyled>{children}</MainSpaceStyled>)
 }
 const NavBarStyled = styled.nav`
@@ -114,14 +150,14 @@ const NavBarStyled = styled.nav`
     display:grid;
     grid-template: auto / repeat(6, 1fr);
 `
-function NavBar({ children }) {
+const NavBar = ({ children }) => {
     return (<NavBarStyled>{children}</NavBarStyled>)
 }
 
 const IconContainerStyled = styled.nav`
     grid-column: 4/5;
 `
-function IconContainer({ children }) {
+const IconContainer = ({ children }) => {
     return (<IconContainerStyled>{children}</IconContainerStyled>)
 }
 
@@ -134,15 +170,29 @@ const TitleCellContainerStyled = styled.nav`
 `
 
 const CallContainerStyled = styled.nav`
-        grid-column: 6/7;
-
+    grid-column: 6/7;
 `
-function CallContainer({ children }) {
-    return (<CallContainerStyled>{children}</CallContainerStyled>)
-}
+const CallContainer = ({ children }) => (
+    <CallContainerStyled>{children}</CallContainerStyled>
+)
+
+const LogoIconStyled = styled.nav`
+    & svg {
+        stroke: white;
+        fill: white;
+    }
+`
+
+const LogoIcon = ({ collapse, children }) => (
+    <LogoIconStyled>
+        { !collapse ? <NewIcons Icon={CasperIcon} size={64} /> : <div style={{height: 64}}>{ children }</div> }
+    </LogoIconStyled>
+)
+
 const NewLayout = ({ children, title = "" }) => {
     const navigate = useNavigate()
     const [collapse, setCollapse] = useState(true)
+
     const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
 
     const {
@@ -162,59 +212,71 @@ const NewLayout = ({ children, title = "" }) => {
     }
 
     return (
-        <LayoutStyled collapse={collapse}>
-            <NewNavigation
-                onMouseEnter={() => setCollapse(!collapse)}
-                onMouseLeave={() => setCollapse(!collapse)}
+        <>
+            <ExpansionArea
+                collapse={collapse}
+                onMouseEnter={() => setCollapse(false)}
             >
-                <CollapseButton>
-                    {collapse ? <NewIcons icon={CasperIcon} size={40} /> : "casperswap"}
-                </CollapseButton>
-                <MenuCenter>
-                    {IconTexts.map(x => {
-                        return (
-                            <NavItem key={x.text}
-                                redirect={() => { navigate(x.path) }}
-                                collapse={collapse}
-                            >
-                                <IconText collapse={collapse}
-                                    iconSet={<NewIcons icon={x.icon} size={size} />}
-                                    text={x.text}
-                                />
-                            </NavItem>
-                        )
-                    })}
-                </MenuCenter>
-                <MenuCenter>
-                    {IconTextsTwo.map(x => {
-                        return (
-                            <NavItem key={x.text}
-                                redirect={() => { }}
-                                collapse={collapse}
-                            >
-                                <IconText collapse={collapse}
-                                    iconSet={<NewIcons icon={x.icon} size={size} />}
-                                    text={x.text}
-                                />
-                            </NavItem>
-                        )
-                    })}
-                </MenuCenter>
-            </NewNavigation>
-            <MainSpace>
-                <NavBar>
-                    <IconContainer>
-                        <OctoPurple />
-                    </IconContainer>
-                    <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
-                    <CallContainer>
-                        <ButtonConnection isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} Account={walletAddress} />
-                    </CallContainer>
-                </NavBar>
-                {children}
-            </MainSpace>
-        </LayoutStyled>
-
+            </ExpansionArea>
+            <LayoutStyled collapse={collapse}>
+                <NewNavigation
+                    onMouseLeave={() => setCollapse(true)}
+                >
+                    <CollapseButton>
+                        <LogoIcon collapse={false}>
+                            casperswap
+                        </LogoIcon>
+                    </CollapseButton>
+                    <MenuCenter>
+                        {IconTexts.map(x => {
+                            return (
+                                <NavItem key={x.text}
+                                    redirect={() => { navigate(x.path) }}
+                                    collapse={collapse}
+                                >
+                                    <IconText collapse={collapse}
+                                        iconSet={<NewIcons Icon={x.icon} size={size} />}
+                                        text={x.text}
+                                    />
+                                </NavItem>
+                            )
+                        })}
+                    </MenuCenter>
+                    <MenuCenter>
+                        {IconTextsTwo.map(x => {
+                            return (
+                                <NavItem key={x.text}
+                                    redirect={() => { }}
+                                    collapse={collapse}
+                                >
+                                    <IconText collapse={collapse}
+                                        iconSet={<NewIcons Icon={x.icon} size={size} />}
+                                        text={x.text}
+                                    />
+                                </NavItem>
+                            )
+                        })}
+                    </MenuCenter>
+                </NewNavigation>
+                <MainSpace>
+                    <NavBar>
+                        <IconContainer>
+                            <OctoPurple />
+                        </IconContainer>
+                        <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
+                        <CallContainer>
+                            <ButtonConnection 
+                                isConnected={isConnected} 
+                                onConnect={onConnect} 
+                                onDisconnect={onDisconnect} 
+                                Account={walletAddress} 
+                            />
+                        </CallContainer>
+                    </NavBar>
+                    {children}
+                </MainSpace>
+            </LayoutStyled>
+        </>
     )
 }
 

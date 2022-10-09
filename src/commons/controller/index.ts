@@ -11,7 +11,7 @@ export class WalletController {
   activeWallet: ActiveWallet = ActiveWallet.CASPER;
   torus;
   walletAddress;
-  constructor() {}
+
   switchWallet() {
     console.log("switchWallet",this.activeWallet)
     if (this.activeWallet === ActiveWallet.CASPER) {
