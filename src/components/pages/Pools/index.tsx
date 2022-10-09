@@ -21,18 +21,19 @@ export const Pools = () => {
     useEffect(() => {
         const result = async () => {
             await getTVLandVolume()
-
+            
             const result = await getPoolList()
             if (isConnected) {
                 const newList = await loadPoolDetailByUser(getAccountHash(), result)
                 setPoolList(newList)
-                return;
+                console.log('pools a', newList)
+            } else {
+                setPoolList(result)
             }
-            setPoolList(result)
         }
 
         result().catch(console.error)
-    }, [])
+    }, [isConnected])
 
     return (
         <NewLayout>

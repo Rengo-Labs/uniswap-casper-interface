@@ -481,14 +481,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 debounceConnect = false
                 throw new Error("casper signer error")
             }
-            //Load user's pool detail
-            const poolList = await getPoolList()
-            //TODO user's HASH hardcoded
-            const accountHash = getAccountHash(walletAddress)
-            const list = await loadPoolDetailByUser(accountHash, poolList)
-            setPoolList(list)
-
-            console.log("Try to load", list)
         } else {
             torus = new Torus();
 
@@ -540,9 +532,12 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             //Load user's pool detail
             const poolList = await getPoolList()
             //TODO user's HASH hardcoded
-            const list = await loadPoolDetailByUser("4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab", poolList)
+            const accountHash = getAccountHash(walletAddress)
+            const list = await loadPoolDetailByUser(accountHash, poolList)
             setPoolList(list)
 
+            console.log("Try to load", list)
+            
             toast.dismiss(toastLoading)
             toast.success("your wallet is mounted and ready to ride!")
         } catch (e) {
@@ -691,10 +686,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
         if (result.data.success) {
             const pairList = result.data.pairsdata
+            console.log('lol')
             const list = pairList.map(d => {
                 return {
                     token0: d.token0.symbol,
                     token1: d.token1.symbol,
+                    reserve0: d.reserve0 ?? 0,
+                    reserve1: d.reserve1 ?? 0,
                     token0Liquidity: convertNumber(parseFloat(d.token0.totalLiquidity)),
                     token1Liquidity: convertNumber(parseFloat(d.token1.totalLiquidity)),
                     totalLiquidityPool: convertNumber(parseFloat(d.token0.totalLiquidity) + parseFloat(d.token1.totalLiquidity)),
@@ -990,7 +988,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
     }
 
-    function getAccountHash(wa: string | boolean = false) {
+    function getAccountHash(wa: string | number | boolean | void = null) {
         console.log('getAccountHash', wa ?? walletAddress)
         //return "4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
         return Buffer.from(CLPublicKey.fromHex(wa ?? walletAddress).toAccountHash()).toString("hex")
@@ -1032,7 +1030,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             gralData,
             isStaked,
             setStaked,
-            filter
+            filter,
+            loadPoolDetailByUser
         }}>
             {children}
             <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />
