@@ -14,9 +14,8 @@ const PopupStyled = styled.div<any>`
     place-items: center;
 `
 const ContainerStyled = styled.div<any>`
-    background-color: ${props => props.theme.StrongColor};
-    width:30%;
-    height:50%;
+    background-color: ${props => props.theme.NewAquamarineColor};
+    width:50%;
     padding:20px;
     display: grid;
     place-items: center;
@@ -27,7 +26,7 @@ const MidModalStyled = styled.div<any>`
     width:100%;
     height:100%;
     color: "white";
-    background-color: ${props => props.theme.StrongColor2};
+    background-color: ${props => props.theme.NewAquamarineColor};
     display:grid;
     grid-template: auto 1fr auto auto auto / 1fr;
     border-radius: 10px;

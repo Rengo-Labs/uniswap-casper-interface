@@ -8,6 +8,7 @@ import React from "react";
 const ContainerStyled = styled.div`
     display:grid;
     gap:10px;
+    background-color:white;
 `
 
 const BorderStyled = styled.div`

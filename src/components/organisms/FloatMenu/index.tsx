@@ -86,7 +86,7 @@ const SpacerEvenlyStyled = styled.div`
 `
 const ContainerCenter = styled.div`
     border: 1px solid black;
-    min-width: 30%;
+    width: 50%;
     padding: 10px;
     border-radius: 10px;
     background-color: white;

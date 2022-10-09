@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
-import { ButtonConnection, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, SearchInputAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
+import { ButtonConnection, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, NewSwapButton, SearchInputAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
 import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
@@ -115,8 +115,7 @@ const SwapNewModule = () => {
         onSelectSecondToken(token)
         searchModalBSetter(false)
     }
-    const [amountSelectA, amountSelectASetter] = useState(0)
-    const [amountSelectB, amountSelectBSetter] = useState(0)
+
     function makeHalf(amount, Setter) {
         Setter(amount / 2)
     }
@@ -206,8 +205,8 @@ const SwapNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <ButtonSpaceStyled>
-                    {!isConnected && <SwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
-                    {isConnected && <SwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
+                    {!isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
+                    {isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
                 </ButtonSpaceStyled>
                 {
                     activeModalSwap &&
@@ -231,7 +230,7 @@ const SwapNewModule = () => {
                                 defaultPriceImpactLabel={defaultPriceImpactLabel}
                                 slippSwapTokenSetter={slippSwapTokenSetter}
                             >
-                                <ConfirmSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
+                                <NewSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
                             </SwapConfirmAtom>
 
                         </SwapContainerAtom>

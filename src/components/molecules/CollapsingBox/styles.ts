@@ -5,7 +5,7 @@ interface CollapsingContainer {
 }
 
 export const CollapsingContainerStyled = styled.div<CollapsingContainer>`
-    background-color: ${props => props.theme.StrongColor3};
+    background-color: white;
     width: ${props => props.fullWidth ? '100%' : ''};
     padding: 0.5rem 1rem;
     border-radius: 10px;
