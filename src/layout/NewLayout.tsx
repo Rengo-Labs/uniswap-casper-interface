@@ -123,9 +123,9 @@ const IconTexts = [
     { icon: SwapIcon, text: "Swap", path: "/swap" },
     { icon: LiquidityIcon, text: "Liquidity", path: "/liquidity" },
     { icon: PoolIcon, text: "Pools", path: "/pools" },
-    { icon: FarmIcon, text: "Farms", path: "/farms" },
+    /*{ icon: FarmIcon, text: "Farms", path: "/farms" },
     { icon: StakingIcon, text: "Staking", path: "/staking" },
-    { icon: NftIcon, text: "NFT", path: "/nft" },
+    { icon: NftIcon, text: "NFT", path: "/nft" },*/
 ]
 
 const IconTextsTwo = [

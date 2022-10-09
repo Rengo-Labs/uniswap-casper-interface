@@ -596,7 +596,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         });
         window.addEventListener('signer:tabUpdated', msg => {
             console.log("signer:tabUpdated", msg)
-            onConnectConfig()
+            //onConnectConfig()
         });
         window.addEventListener('signer:activeKeyChanged', msg => {
             console.log("signer:activeKeyChanged", msg)
