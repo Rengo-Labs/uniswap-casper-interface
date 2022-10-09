@@ -990,7 +990,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
     }
 
-    function getAccountHash(wa) {
+    function getAccountHash(wa: string | boolean = false) {
         console.log('getAccountHash', wa ?? walletAddress)
         //return "4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
         return Buffer.from(CLPublicKey.fromHex(wa ?? walletAddress).toAccountHash()).toString("hex")
