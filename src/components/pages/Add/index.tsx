@@ -9,7 +9,7 @@ export const Add = () => {
 
   return (
     <NewLayout>
-        <div style={{display: "grid", gridTemplateColumns: "repeat(11, 1fr)"}} >
+        <div style={{/*display: "grid", gridTemplateColumns: "repeat(11, 1fr)"*/}} >
             <CardContainer cardTitle="Add Liquidity">
                 <LiquidityModule />
             </CardContainer >
