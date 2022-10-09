@@ -18,7 +18,7 @@ import {
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled} from "../SwapToken/styles";
-import FarmIcon from '../../../assets/newIcons/farmIconCyan.svg'
+import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 
 export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
@@ -123,7 +123,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                                 <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
                             <CircleButton onClick={() => {goTo("/farms")}}>
-                                <NewIcons icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
+                                <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
                             </CircleButton>
                         </TRow>
                     </TColumn3>

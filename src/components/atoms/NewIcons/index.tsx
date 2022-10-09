@@ -1,7 +1,13 @@
 import React from 'react'
 
-export function NewIcons({ icon, size, style={} }) {
-    return (
-        <img style={style} src={icon} width={size} height={size} />
-    )
-}
+export const NewIcons = ({ Icon, size, style={} }) => (
+    <div style={{
+        display: 'flex', 
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: size + 'px', 
+        height: size + 'px'
+    }}>
+        <Icon width={size} height={size}/>
+    </div>
+)

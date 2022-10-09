@@ -30,10 +30,10 @@ import { entryPointEnum } from "../../types";
 import { tokenReducerEnum } from "../../reducers/TokenReducers";
 
 const normilizeAmountToString = (amount) => {
-  let strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
-  let amountArr = strAmount.split('.')
+  const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
+  const amountArr = strAmount.split('.')
   if (amountArr[1] === undefined) {
-    let concatedAmount = amountArr[0].concat('000000000')
+    const concatedAmount = amountArr[0].concat('000000000')
     return concatedAmount
   } else {
     let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
@@ -71,8 +71,8 @@ export const getStateRootHash = async (nodeAddress, activePublicKey) => {
 //     });
 //   })
 export async function makeDeployWasm(publicKey, runtimeArgs, paymentAmount) {
-  let wasmData = await axios.get(`${BASE_URL}/getWasmData`);
-  let deploy = DeployUtil.makeDeploy(
+  const wasmData = await axios.get(`${BASE_URL}/getWasmData`);
+  const deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
     DeployUtil.ExecutableDeployItem.newModuleBytes(
       new Uint8Array(wasmData.data.wasmData.data),
@@ -194,10 +194,10 @@ export async function createSwapRuntimeArgs(
     to: createRecipientAddress(publicKey),
     deadline: CLValueBuilder.u256(deadline),
   });
-  let contractHashAsByteArray = Uint8Array.from(
+  const contractHashAsByteArray = Uint8Array.from(
     Buffer.from(ROUTER_CONTRACT_HASH, "hex")
   );
-  let entryPoint = entryPointSelected;
+  const entryPoint = entryPointSelected;
   // Set contract installation deploy (unsigned).
   return await makeDeploySwap(
     publicKey,
@@ -231,10 +231,10 @@ export async function createSwapRuntimeArgs2(
     ),
     deadline: CLValueBuilder.u256(deadline),
   });
-  let contractHashAsByteArray = Uint8Array.from(
+  const contractHashAsByteArray = Uint8Array.from(
     Buffer.from(ROUTER_CONTRACT_HASH, "hex")
   );
-  let entryPoint = entryPointSelected;
+  const entryPoint = entryPointSelected;
   // Set contract installation deploy (unsigned).
   return await makeDeploySwap(
     publicKey,
@@ -252,7 +252,7 @@ export async function makeDeploySwap(
   runtimeArgs,
   paymentAmount
 ) {
-  let deploy = DeployUtil.makeDeploy(
+  const deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
     DeployUtil.ExecutableDeployItem.newStoredContractByHash(
       contractHashAsByteArray,
@@ -282,7 +282,7 @@ export async function makeDeployLiquidity(
   runtimeArgs,
   paymentAmount
 ) {
-  let deploy = DeployUtil.makeDeploy(
+  const deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
     DeployUtil.ExecutableDeployItem.newStoredContractByHash(
       contractHashAsByteArray,
@@ -299,13 +299,13 @@ export async function makeDeployLiquidityWasm(
   runtimeArgs,
   paymentAmount
 ) {
-  let wasmData = await axios.get(`${BASE_URL}/getWasmData`);
+  const wasmData = await axios.get(`${BASE_URL}/getWasmData`);
   console.log("wasmData.data.wasmData", wasmData.data.wasmData.data);
   console.log(
     "new Uint8Array(wasmData.data.wasmData.data)",
     new Uint8Array(wasmData.data.wasmData.data)
   );
-  let deploy = DeployUtil.makeDeploy(
+  const deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
     DeployUtil.ExecutableDeployItem.newModuleBytes(
       new Uint8Array(wasmData.data.wasmData.data),
@@ -369,7 +369,7 @@ async function addLiquidityMakeDeployLiquidityV2(
     ),
   });
   // Set contract installation deploy (unsigned).
-  let deploy = await makeDeployWasm(publicKey, runtimeArgs, paymentAmount);
+  const deploy = await makeDeployWasm(publicKey, runtimeArgs, paymentAmount);
   return deploy;
 }
 
@@ -381,7 +381,7 @@ export async function removeLiquidityPutDeploy(signedDeploy, activePublicKey) {
   // Dispatch deploy to node.
   const client = new CasperClient(NODE_ADDRESS);
   const installDeployHash = await client.putDeploy(signedDeploy);
-  let param = {
+  const param = {
     user: Buffer.from(
       CLPublicKey.fromHex(activePublicKey).toAccountHash()
     ).toString("hex"),
@@ -447,7 +447,7 @@ export async function makeDeploy(
   runtimeArgs,
   paymentAmount
 ) {
-  let deploy = DeployUtil.makeDeploy(
+  const deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
     DeployUtil.ExecutableDeployItem.newStoredContractByHash(
       contractHashAsByteArray,
@@ -478,14 +478,14 @@ export async function signDeployWithTorus(deploy) {
 
 export async function signdeploywithcaspersigner(deploy, publicKeyHex) {
   try {
-    let deployJSON = DeployUtil.deployToJson(deploy);
-    let signedDeployJSON = await Signer.sign(
+    const deployJSON = DeployUtil.deployToJson(deploy);
+    const signedDeployJSON = await Signer.sign(
       deployJSON,
       publicKeyHex,
       publicKeyHex
     );
     console.log("signedDeployJSON: ", signedDeployJSON);
-    let signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
+    const signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
 
     console.log("signed deploy: ", signedDeploy);
     return signedDeploy;
@@ -528,7 +528,7 @@ export async function getDeploySigner(deployHash) {
           return deploy;
         } else {
           // @ts-ignore
-          let variant = "error";
+          const variant = "error";
           throw Error(
             "Contract execution: " +
             raw.execution_results[0].result.Failure.error_message
@@ -558,7 +558,7 @@ export async function getDeploy(deployHash) {
         return deploy;
       } else {
         // @ts-ignore
-        let variant = "error";
+        const variant = "error";
         throw Error(
           "Contract execution: " +
           raw.execution_results[0].result.Failure.error_message
@@ -598,7 +598,7 @@ export async function swapMakeDeploy(
   countSetter
 ) {
   const publicKey = CLPublicKey.fromHex(publicKeyHex);
-  let _paths = await getswapPath(tokenASymbol, tokenBSymbol);
+  const _paths = await getswapPath(tokenASymbol, tokenBSymbol);
   console.log("tokenASymbol", tokenASymbol);
   console.log("tokenBSymbol", tokenBSymbol);
   const entryPoint = selectEntryPoint(tokenASymbol, tokenBSymbol)
@@ -612,9 +612,9 @@ export async function swapMakeDeploy(
     deadline,
     entryPoint
   );
-  let deploy = await makeDeployWasm(publicKey, runtimeArgs, paymentAmount);
+  const deploy = await makeDeployWasm(publicKey, runtimeArgs, paymentAmount);
 
-  let signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);
+  const signedDeploy = await signdeploywithcaspersigner(deploy, publicKeyHex);
   toast.dismiss(toastLoading);
   const toastLoadingg = toast.loading("Waiting for deployment...");
 

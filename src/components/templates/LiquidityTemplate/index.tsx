@@ -49,7 +49,7 @@ export const LiquidityCardFooterStyled = styled.div`
 `
 
 export const LiquidityTemplate = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const [activeModalSwap, activeModalSwapSetter] = useState(false)
     const [activeModalLiquidity, activeModalLiquiditySetter] = useState(false)
     const [activePair, activePairSetter] = useState({ name: "", balance: "" })
@@ -298,7 +298,6 @@ const ButtonStyle = styled.button`
         background-color: ${props => props.theme.TertiaryColor3};
     }
 `
-
 
 const ButtonPair = ({ pair, callback }: any) => {
     return (

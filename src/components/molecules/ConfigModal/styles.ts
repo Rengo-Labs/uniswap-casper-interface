@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 type ConfigModalType = {
-    openModal?: boolean | Boolean;
+    openModal?: boolean | boolean;
 }
 
 export const ModalStyled = styled.section<Partial<ConfigModalType>>`

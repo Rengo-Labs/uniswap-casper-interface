@@ -6,8 +6,8 @@ import React, {useState} from "react";
 
 describe('Swtich Box Test', ()=> {
     test('Test 1 - Switch Rate', async () => {
-        let firstToken = {symbol: 'TK1'}
-        let secondToken = {symbol: 'TK2'}
+        const firstToken = {symbol: 'TK1'}
+        const secondToken = {symbol: 'TK2'}
         const rateA = 0.50
         const rateB = 2.00
         const onSwitch = jest.fn()

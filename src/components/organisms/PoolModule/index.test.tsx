@@ -4,11 +4,11 @@ import {render, fireEvent} from '@testing-library/react'
 import {PoolModule} from "./index";
 
 import {jest} from "@jest/globals";
+jest.mock('axios', () => {})
+jest.mock('@toruslabs/casper-embed', () => {})
+
 import {getColumns, getPoolList, loadPoolDetailByUser} from "../../../contexts/PoolsContext";
 import {ConfigContextWithReducer} from "../../../contexts/ConfigContext";
-
-jest.mock('axios');
-jest.mock('@toruslabs/casper-embed', () => {})
 
 describe("Test for Pool Module", () => {
 
