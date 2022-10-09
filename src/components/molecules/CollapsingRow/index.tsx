@@ -18,7 +18,7 @@ import {
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled} from "../SwapToken/styles";
-import { ReactComponent as FarmIcon } from '../../../assets/newIcons/farmIconCyan.svg'
+import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 
 export const CollapsingRow = ({row, fullExpanded = false}:any)  => {

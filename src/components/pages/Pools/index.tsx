@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 
 import {Button, CardContainer} from '../../atoms'
 import { PoolModule } from '../../organisms'
 
 import {useNavigate} from "react-router-dom";
 import NewLayout from "../../../layout/NewLayout";
-import {PoolsProviderContext} from "../../../contexts/PoolsContext";
 import {WrappedPool, WrappedPoolTitle} from "./styles";
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
@@ -17,24 +16,26 @@ const TitleBox = ({label, content}) => {
 
 export const Pools = () => {
     const navigate = useNavigate()
-    const { poolColumns, gralData, poolList, setPoolList, getPoolList, getTVLandVolume } = React.useContext(ConfigProviderContext)
-    const [rows, setRows] = useState(poolList)
+    const { poolColumns, gralData, poolList, setPoolList, getPoolList, getTVLandVolume, loadPoolDetailByUser, isConnected, getAccountHash } = React.useContext(ConfigProviderContext)
 
     useEffect(() => {
         const result = async () => {
             await getTVLandVolume()
 
             const result = await getPoolList()
-
+            if (isConnected) {
+                const newList = await loadPoolDetailByUser(getAccountHash(), result)
+                setPoolList(newList)
+                return;
+            }
             setPoolList(result)
-            //setRows(result)
         }
 
         result().catch(console.error)
     }, [])
 
     return (
-        <NewLayout title="">
+        <NewLayout>
             <WrappedPool>
                 <WrappedPoolTitle>
                     <div style={{flex: "1"}} />

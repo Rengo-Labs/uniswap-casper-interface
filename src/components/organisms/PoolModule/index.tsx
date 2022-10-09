@@ -5,18 +5,16 @@ import {
     PoolModulesStyled, MenuTitleStyled, MenuToggleStyled, MenuStyled
 } from './styles'
 import { POCSearch, ToggleBox } from '../../molecules'
-import { PoolsProviderContext } from '../../../contexts/PoolsContext'
 import { POCTable } from '..'
 import { ItemSelector } from "../../atoms";
+import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 
 export const PoolModule = ({columns, data}) => {
-    const options = ["Time basis: 1D", "Time basis: 3D", "Time basis: 7D"];
-    const { setStaked} = React.useContext(PoolsProviderContext)
+    const options = ["Time basis: 1D", "Time basis: 3D", "Time basis: 7D"]
+    const { setStaked} = React.useContext(ConfigProviderContext)
 
     const tableInstance = useTable({columns, data}, useGlobalFilter, useSortBy)
     const {preGlobalFilteredRows, setGlobalFilter, state}: any = tableInstance
-
-    console.log(data)
 
     return (
         <PoolModulesStyled>
