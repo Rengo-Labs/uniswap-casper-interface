@@ -59,6 +59,12 @@ const TotalCenterStyled = styled.div`
     font-size:5rem;
 `
 
+const AnchorStyled = styled.a`
+    color:white;
+    &:visited{
+        color:white;
+    }
+`
 
 const PopupModal = ({ display, handleModal, tokenA = 'X Y', tokenB = 'X Y' }) => {
     return (

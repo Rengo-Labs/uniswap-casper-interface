@@ -15,7 +15,7 @@ describe("Test for Pool Module", () => {
         const poolModule = render(
             <PoolsContext>
                 <Router>
-                    <PoolModule/>
+                    { /*<PoolModule/>*/ }
                 </Router>
             </PoolsContext>
         )

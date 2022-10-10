@@ -18,7 +18,7 @@ import {
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled} from "../SwapToken/styles";
-import FarmIcon from '../../../assets/newIcons/farmIconCyan.svg'
+import { ReactComponent as FarmIcon } from '../../../assets/newIcons/farmIconCyan.svg'
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 
 export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
@@ -31,6 +31,10 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
         setExpanded(!isExpanded);
     }
 
+    const goTo = (path) => {
+        navigate({pathname: path, search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
+    }
+
     return (
         <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>
@@ -40,7 +44,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         <SwapIconImageStyled src={row.original.tokeIcon1} width="30" height="30" />
                         <SwapIconImageStyled style={{position: "relative", left: "-12px"}} src={row.original.tokeIcon2} width="30" height="30" />
                     </TColumn1>
-                    <div style={{flex: "3", alignSelf: "center", textAlign: "left"}}>{row.original.tokeName}</div>
+                    <div style={{flex: "3", alignSelf: "center", textAlign: "left"}}>{row.original.tokenName}</div>
                 </TColumn6>
                 <TColumn3 style={{display: "flex"}}>
                     <TColumn1 />
@@ -96,22 +100,31 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         <TRow>
                             <TColumn1 />
                             <TColumn3 style={{textAlign: "left"}}>
-                                {row.original.pair.volumePercentage} %
+                                {
+                                    row.original.pair.volume ?
+                                    row.original.pair.volume / row.original.volume : 0
+                                } %
                             </TColumn3>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
                         <TRow>
                             <Button style={{borderRadius: "10px", width: "90%b"}} content={'Add Liquidity'} handler={() => {
-                                navigate({pathname: "/liquidity/add", search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
+                                goTo("/liquidity/add")
                             }}/>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
                         <TRow>
-                            <CircleButton><AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" /></CircleButton>
-                            <CircleButton><TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem" /></CircleButton>
-                            <CircleButton><NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" /></CircleButton>
+                            <CircleButton onClick={() => {goTo("/swap")}}>
+                                <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
+                            </CircleButton>
+                            <CircleButton onClick={() => {goTo("/liquidity/remove")}}>
+                                <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
+                            </CircleButton>
+                            <CircleButton onClick={() => {goTo("/farms")}}>
+                                <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
+                            </CircleButton>
                         </TRow>
                     </TColumn3>
                     <TColumn1 />

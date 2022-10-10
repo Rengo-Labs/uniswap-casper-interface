@@ -7,7 +7,7 @@ export const ButtonStyle = styled.button`
     border-radius: 10px;
     border:none;
     width: 8vw;
-    height: 5vh;
+    height: 5.6vh;
     font-family: 'EpilogueLight';
     font-size: .8vw;
     display: grid;

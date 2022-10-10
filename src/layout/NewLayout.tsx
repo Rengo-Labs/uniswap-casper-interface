@@ -12,7 +12,8 @@ import { ReactComponent as CommunityIcon } from '../assets/newIcons/communityIco
 import { ButtonConnection, NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
-import OctoPurple from '../components/atoms/OctoPurple'
+import { ReactComponent as WordMarkIcon } from '../assets/newIcons/casperswap-wordmark.svg'
+import {ButtonConnectionOver} from "../components/organisms/ButtonConnectionOver";
 
 const CLOSED_WIDTH = '108px'
 const OPEN_WIDTH = '280px'
@@ -78,11 +79,11 @@ const NavItemStyled = styled.nav<any>`
 
     &:hover {
         background-color: white;
-        color: #715FF5;
+        color: ${props => props.theme.NewPurpleColor};
 
         svg {
-            stroke: #715FF5;
-            fill: #715FF5;
+            stroke: ${props => props.theme.NewPurpleColor};
+            fill:${props => props.theme.NewPurpleColor};
         }
     }
 `
@@ -145,14 +146,51 @@ const MainSpaceStyled = styled.main`
 const MainSpace = ({ children }) => {
     return (<MainSpaceStyled>{children}</MainSpaceStyled>)
 }
-const NavBarStyled = styled.nav`
-    padding:10px;
-    display:grid;
-    grid-template: auto / repeat(6, 1fr);
+
+const WordMarkContainerStyled = styled.nav`
+    position: absolute;
+    display: block;
+    left: 50%;
+    top: 0%;
+    transform: translate(-50%, 0%);
 `
-const NavBar = ({ children }) => {
-    return (<NavBarStyled>{children}</NavBarStyled>)
-}
+
+const ConnectButtonContainerStyled = styled.nav`
+    position: absolute;
+    display: block;
+    right: 0;
+    min-width: 160px;
+
+    & button {
+        width: 100%;
+    }
+`
+
+const NavBarStyled = styled.nav`
+    position: relative;
+    margin: 40px 30px 80px;
+    height: 20px;
+`
+const NavBar = ({ 
+    isConnected,
+    onConnect,
+    onDisconnect,
+    walletAddress,
+}) => (
+    <NavBarStyled>
+        <WordMarkContainerStyled>
+            <WordMarkIcon />
+        </WordMarkContainerStyled>
+        <ConnectButtonContainerStyled>
+            <ButtonConnection 
+                isConnected={isConnected} 
+                onConnect={onConnect} 
+                onDisconnect={onDisconnect} 
+                Account={walletAddress} 
+            />
+        </ConnectButtonContainerStyled>
+    </NavBarStyled>
+)
 
 const IconContainerStyled = styled.nav`
     grid-column: 4/5;
@@ -172,13 +210,13 @@ const TitleCellContainerStyled = styled.nav`
 const CallContainerStyled = styled.nav`
     grid-column: 6/7;
 `
+
 const CallContainer = ({ children }) => (
     <CallContainerStyled>{children}</CallContainerStyled>
 )
 
 const LogoIconStyled = styled.nav`
     & svg {
-        stroke: white;
         fill: white;
     }
 `
@@ -205,7 +243,7 @@ const NewLayout = ({ children, title = "" }) => {
         gasPriceSelected } = configState
 
     async function onConnect() {
-        onConnectConfig()
+        onConnectConfig(true)
     }
     async function onDisconnect() {
         onDisconnectWallet()
@@ -259,20 +297,12 @@ const NewLayout = ({ children, title = "" }) => {
                     </MenuCenter>
                 </NewNavigation>
                 <MainSpace>
-                    <NavBar>
-                        <IconContainer>
-                            <OctoPurple />
-                        </IconContainer>
-                        <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
-                        <CallContainer>
-                            <ButtonConnection 
-                                isConnected={isConnected} 
-                                onConnect={onConnect} 
-                                onDisconnect={onDisconnect} 
-                                Account={walletAddress} 
-                            />
-                        </CallContainer>
-                    </NavBar>
+                    <NavBar
+                        isConnected={isConnected}
+                        onConnect={onConnect}
+                        onDisconnect={onDisconnect}
+                        walletAddress={walletAddress}
+                    />
                     {children}
                 </MainSpace>
             </LayoutStyled>

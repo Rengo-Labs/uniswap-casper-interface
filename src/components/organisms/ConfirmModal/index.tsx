@@ -72,7 +72,9 @@ const ConfirmModal = ({ display, handleModal, linkExplorer }) => {
                         <AiOutlineArrowUp />
                     </TotalCenterStyled>
                     <MiddleStyled>Transaction Submitted</MiddleStyled>
-                    <MiddleStyled><AnchorStyled href={linkExplorer} target="_blank"> View on Explorer</AnchorStyled></MiddleStyled>
+                    <MiddleStyled>
+                        <AnchorStyled href={linkExplorer} target="_blank"> View on Explorer</AnchorStyled>
+                    </MiddleStyled>
                 </MidModalStyled>
             </ContainerStyled>
         </PopupStyled>
