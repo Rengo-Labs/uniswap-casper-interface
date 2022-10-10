@@ -109,7 +109,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                     </TColumn3>
                     <TColumn3>
                         <TRow>
-                            <Button style={{borderRadius: "10px", width: "90%b"}} content={'Add Liquidity'} handler={() => {
+                            <Button style={{borderRadius: "10px", width: "10vw", height: "4.6vh"}} content={'Add Liquidity'} handler={() => {
                                 goTo("/liquidity/add")
                             }}/>
                         </TRow>
@@ -119,12 +119,16 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                             <CircleButton onClick={() => {goTo("/swap")}}>
                                 <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
-                            <CircleButton onClick={() => {goTo("/liquidity/remove")}}>
-                                <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
-                            </CircleButton>
-                            <CircleButton onClick={() => {goTo("/farms")}}>
-                                <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
-                            </CircleButton>
+                            {false &&
+                                <CircleButton onClick={() => {goTo("/liquidity/remove")}}>
+                                    <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
+                                </CircleButton>
+                            }
+                            {false &&
+                                <CircleButton onClick={() => {goTo("/farms")}}>
+                                    <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
+                                </CircleButton>
+                            }
                         </TRow>
                     </TColumn3>
                     <TColumn1 />

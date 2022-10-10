@@ -479,14 +479,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 debounceConnect = true
                 throw new Error("casper signer error")
             }
-            //Load user's pool detail
-            const poolList = await getPoolList()
-            //TODO user's HASH hardcoded
-            const accountHash = getAccountHash()
-            const list = await loadPoolDetailByUser(accountHash, poolList)
-            setPoolList(list)
-
-            console.log("Try to load", list)
         } else {
             torus = new Torus();
 
@@ -646,15 +638,17 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
             const pairList = result.data.pairList
             const newList = pairList.map(d => {
+                const token0Decimals = initialStateToken.tokens[d.token0.symbol].decimals
+                const token1Decimals = initialStateToken.tokens[d.token1.symbol].decimals
                 return {
                     tokeIcon1: wethIcon,
                     tokeIcon2: casprIcon,
                     tokenName: d.token0.symbol + "-" + d.token1.symbol,
-                    tokenLiquidity: convertNumber(parseFloat(d.token0.totalLiquidity) + parseFloat(d.token1.totalLiquidity)),
-                    volume7d: parseFloat(d.volumeUSD).toFixed(2),
+                    tokenLiquidity: convertNumber(normalizeAmount(d.reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(d.reserve1, token1Decimals) * parseFloat(d.token1Price)),
+                    volume7d: normalizeAmount(d.volumeUSD, 9).toFixed(2),
                     fees24h: 0,
                     oneYFees: 0,
-                    volume: parseFloat(d.volumeUSD),
+                    volume: normalizeAmount(d.volumeUSD, 9),
                     pair: {
                         token0: d.token0.symbol,
                         token1: d.token1.symbol,
@@ -680,23 +674,46 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
         if (result.data.success) {
             const pairList = result.data.pairsdata
-            const list = pairList.map(d => {
+            const userPairs = result.data.userpairs
+
+            const list = await Promise.all(pairList.map(async d => {
+                const data = userPairs.filter(u => u.pair === d.id)
+                const token0Decimals = initialStateToken.tokens[d.token0.symbol].decimals
+                const token1Decimals = initialStateToken.tokens[d.token1.symbol].decimals
+
+                const totalLiquidity = await getLiquidityByUserAndPairDataId(getAccountHash(), d.id)
+
                 return {
                     token0: d.token0.symbol,
                     token1: d.token1.symbol,
-                    token0Liquidity: convertNumber(parseFloat(d.token0.totalLiquidity)),
-                    token1Liquidity: convertNumber(parseFloat(d.token1.totalLiquidity)),
-                    totalLiquidityPool: convertNumber(parseFloat(d.token0.totalLiquidity) + parseFloat(d.token1.totalLiquidity)),
-                    totalLiquidityUSD: convertNumber(parseFloat(d.token0.totalLiquidity) * parseFloat(d.token0Price) + parseFloat(d.token1.totalLiquidity) * parseFloat(d.token1Price)),
-                    volume: parseFloat(d.volumeUSD),
-                    totalPool: parseFloat(d.token0.totalLiquidity) + parseFloat(d.token1.totalLiquidity)
+                    token0Liquidity: convertNumber(normalizeAmount(data[0].reserve0, token0Decimals)),
+                    token1Liquidity: convertNumber(normalizeAmount(data[0].reserve1, token1Decimals)),
+                    totalLiquidityPool: convertNumber(normalizeAmount(totalLiquidity, 9)),
+                    totalLiquidityUSD: convertNumber(normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price)),
+                    volume: normalizeAmount(d.volumeUSD, 9),
+                    totalPool: normalizeAmount(data[0].reserve0, token0Decimals) + normalizeAmount(data[0].reserve1, token1Decimals)
                 }
-            })
+            }))
 
+            console.log(list)
             return list
         }
-
         return []
+    }
+
+    const getLiquidityByUserAndPairDataId = async (user, pairDataId) => {
+      try {
+          const liquidityResp = await axios.post(`${BASE_URL}/liquidityagainstuserandpair`, {pairid: pairDataId, to: user})
+
+          if (liquidityResp.data.success) {
+              return liquidityResp.data.liquidity
+          } else {
+              return "0"
+          }
+      } catch (e) {
+          console.error(`Error - it happened an error trying to get user pool liquidity`)
+          return "0"
+      }
     }
 
     const loadPoolDetailByUser = async (hash, poolList) => {
@@ -711,6 +728,26 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         })
 
         return newList
+    }
+
+    const normalizeAmount = (amount, decimalQuantity) => {
+        const strAmount = parseFloat(amount).toFixed(0).toString();
+
+        if (strAmount.length > decimalQuantity) {
+            const newReserve = strAmount.slice(0, strAmount.length - 9) + '.' + strAmount.slice(strAmount.length - 9, strAmount.length)
+            return parseFloat(newReserve)
+        } else {
+            let newReserve = strAmount
+
+            for (let i = 0; i < decimalQuantity; i++) {
+                if (newReserve.length < decimalQuantity) {
+                    newReserve = '0' + newReserve
+                } else {
+                    break
+                }
+            }
+            return parseFloat(`0.${newReserve}`)
+        }
     }
 
     const filter = (onlyStaked, row) => {
@@ -1011,6 +1048,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             poolList,
             setPoolList,
             getPoolList,
+            loadPoolDetailByUser,
             getTVLandVolume,
             gralData,
             isStaked,

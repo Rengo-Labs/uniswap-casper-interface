@@ -10,7 +10,7 @@ import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 
 const TitleBox = ({label, content}) => {
-    return <div style={{flex: "2", padding: "10px 10px 10px 20px", backgroundColor: lightTheme.secondBackgroundColor, marginRight: "1vw", fontSize: "1vw",
+    return <div style={{flex: "2.9", padding: "10px 10px 10px 20px", backgroundColor: lightTheme.secondBackgroundColor, marginRight: "1vw", fontSize: "1vw",
         height: "3vh", display: "flex", alignItems: "center"}}>{label} {content}</div>
 }
 
@@ -24,18 +24,19 @@ export const Pools = () => {
 
             const result = await getPoolList()
             if (isConnected) {
-                const newList = await loadPoolDetailByUser(getAccountHash(), result)
+                const newList = await loadPoolDetailByUser("4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab", result)
                 setPoolList(newList)
-                return;
+                console.log("pools a", newList)
+            } else {
+                setPoolList(result)
             }
-            setPoolList(result)
         }
 
         result().catch(console.error)
-    }, [])
+    }, [isConnected])
 
     return (
-        <NewLayout>
+        <NewLayout title="CASPERSWAP">
             <WrappedPool>
                 <WrappedPoolTitle>
                     <div style={{flex: "1"}} />

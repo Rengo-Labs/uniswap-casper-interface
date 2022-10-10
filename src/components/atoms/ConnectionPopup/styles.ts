@@ -36,7 +36,7 @@ export const OverlayPopup = styled.div<OverlayParam>`
 `
 
 export const PopupContainer = styled.div`
-    border: 0.5px solid black;
+    border: 1px solid black;
     margin: 70px auto;
     background: #fff;
     border-radius: 20px;
@@ -61,7 +61,7 @@ export const PopupTitle = styled.div`
     color: ${props => props.theme.secondBackgroundColor};
     font-family: EpilogueLight;
     font-size: 0.8vw;
-    border-bottom: 0.5px solid black;
+    border-bottom: 1px solid black;
 `
 
 export const PopupBottom = styled.div`
@@ -71,7 +71,7 @@ export const PopupBottom = styled.div`
     text-align: center;
     font-size: 0.8vw;
     font-family: 'EpilogueLight';
-    border-top: 0.5px solid black;
+    border-top: 1px solid black;
     border-radius: 0 0 20px 20px;
 `
 
@@ -121,6 +121,13 @@ export const PopoverButtonStyled= styled.div`
     justify-content: center;
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
+    &:hover{
+        cursor: pointer;
+    }
+    &:active{
+        background-color: ${props => props.theme.secondBackgroundColor};
+        color: ${props => props.theme.thirdBackgroundColor};
+    }
 `
 
 export const DisclaimerContent = styled.div`

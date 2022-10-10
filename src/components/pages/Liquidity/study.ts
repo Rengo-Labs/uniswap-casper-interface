@@ -17,7 +17,6 @@ import {
   ROUTER_CONTRACT_HASH,
 } from "../../../constant";
 import { Some } from "ts-results";
-import toast from "react-hot-toast";
 
 function convertToStr(a) {
   return a.toString();

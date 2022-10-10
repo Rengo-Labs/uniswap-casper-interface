@@ -4,6 +4,7 @@ export const NewIcons = ({ Icon, size, style={} }) => (
     <div style={{
         display: 'flex', 
         alignItems: 'center',
+        alignSelf: 'center',
         justifyContent: 'center',
         width: size + 'px', 
         height: size + 'px'

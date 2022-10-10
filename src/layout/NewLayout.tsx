@@ -147,9 +147,9 @@ const MainSpace = ({ children }) => {
     return (<MainSpaceStyled>{children}</MainSpaceStyled>)
 }
 const NavBarStyled = styled.nav`
-    padding:10px;
-    display:grid;
-    grid-template: auto / repeat(6, 1fr);
+    padding: 20px 10px 10px 10px;
+    display:flex;
+    /*grid-template: auto / repeat(6, 1fr);*/
 `
 const NavBar = ({ children }) => {
     return (<NavBarStyled>{children}</NavBarStyled>)
@@ -163,11 +163,13 @@ const IconContainer = ({ children }) => {
 }
 
 const TitleCellContainerStyled = styled.nav`
-    grid-column: 3;
-    grid-row: 1;
+    /*grid-column: 3;*/
+    /*grid-row: 1;*/
     color: ${props => props.theme.secondBackgroundColor};
     text-align: center;
-    font-size: 2em;
+    font-size: 1.5em;
+    width: 100%;
+    align-self: center;
 `
 
 const CallContainerStyled = styled.nav`
@@ -261,9 +263,6 @@ const NewLayout = ({ children, title = "" }) => {
                 </NewNavigation>
                 <MainSpace>
                     <NavBar>
-                        <IconContainer>
-                            <OctoPurple />
-                        </IconContainer>
                         <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
                         <CallContainer>
                             <ButtonConnectionOver

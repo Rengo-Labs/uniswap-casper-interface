@@ -11,5 +11,5 @@ export const WrappedPoolTitle = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 0 0 10px 0;
+    margin: 10vh 0 10px 0;
 `
