@@ -13,7 +13,7 @@ import { ButtonConnection, NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import { ReactComponent as WordMarkIcon } from '../assets/newIcons/casperswap-wordmark.svg'
-import {ButtonConnectionOver} from "../components/organisms/ButtonConnectionOver";
+import { ButtonConnectionOver } from "../components/organisms/ButtonConnectionOver";
 
 const CLOSED_WIDTH = '108px'
 const OPEN_WIDTH = '280px'
@@ -51,7 +51,7 @@ const NewNavigationStyled = styled.nav`
 const NewNavigation = ({ children, onMouseLeave }) => (
     <NewNavigationStyled onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>
 )
-    
+
 const MenuCenterStyled = styled.main`
     width: 100%;
     align-self: center;
@@ -88,7 +88,7 @@ const NavItemStyled = styled.nav<any>`
     }
 `
 const NavItem = ({ children, redirect, collapse }: any) => (
-    <NavItemStyled    
+    <NavItemStyled
         onClick={redirect}
         collapse={collapse}
     >
@@ -171,7 +171,7 @@ const NavBarStyled = styled.nav`
     margin: 40px 30px 80px;
     height: 20px;
 `
-const NavBar = ({ 
+const NavBar = ({
     isConnected,
     onConnect,
     onDisconnect,
@@ -182,11 +182,11 @@ const NavBar = ({
             <WordMarkIcon />
         </WordMarkContainerStyled>
         <ConnectButtonContainerStyled>
-            <ButtonConnection 
-                isConnected={isConnected} 
-                onConnect={onConnect} 
-                onDisconnect={onDisconnect} 
-                Account={walletAddress} 
+            <ButtonConnection
+                isConnected={isConnected}
+                onConnect={onConnect}
+                onDisconnect={onDisconnect}
+                Account={walletAddress}
             />
         </ConnectButtonContainerStyled>
     </NavBarStyled>
@@ -223,7 +223,7 @@ const LogoIconStyled = styled.nav`
 
 const LogoIcon = ({ collapse, children }) => (
     <LogoIconStyled>
-        { !collapse ? <NewIcons Icon={CasperIcon} size={64} /> : <div style={{height: 64}}>{ children }</div> }
+        {!collapse ? <NewIcons Icon={CasperIcon} size={64} /> : <div style={{ height: 64 }}>{children}</div>}
     </LogoIconStyled>
 )
 
