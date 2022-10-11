@@ -17,10 +17,12 @@ export const ButtonStyle = styled.button`
         background-color: ${props => props.theme.NewAquamarineColor};
     }
     &:disabled{
-        background-color: ${props => props.theme.NewAquamarineColor};
+        cursor: not-allowed;
+        background-color: rgba(200,200,200,1);
+        color: ${props => props.theme.NewPurpleColor};
     }
 `
-export const NewSwapButton = ({ content, handler,disabled=false }:{content?:any, handler?:any,disabled?:boolean }) => {
+export const NewSwapButton = ({ content, handler, disabled = false }: { content?: any, handler?: any, disabled?: boolean }) => {
   return (
     <ButtonStyle onClick={handler} disabled={disabled}>
       {content}
