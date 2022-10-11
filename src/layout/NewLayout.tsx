@@ -180,7 +180,9 @@ const NavBar = ({
 }) => (
     <NavBarStyled>
         <WordMarkContainerStyled>
-            <WordMarkIcon />
+            <a href='/'>
+                <WordMarkIcon />
+            </a>
         </WordMarkContainerStyled>
         <ConnectButtonContainerStyled>
             <ButtonConnectionOver 
@@ -264,9 +266,11 @@ const NewLayout = ({ children, title = "" }) => {
                     onMouseLeave={() => setCollapse(true)}
                 >
                     <CollapseButton>
-                        <LogoIcon collapse={false}>
-                            casperswap
-                        </LogoIcon>
+                        <a href='/'>
+                            <LogoIcon collapse={false}>
+                                casperswap
+                            </LogoIcon>
+                        </a>
                     </CollapseButton>
                     <MenuCenter>
                         {IconTexts.map(x => {
