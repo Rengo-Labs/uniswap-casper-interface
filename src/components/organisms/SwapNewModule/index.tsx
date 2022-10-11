@@ -52,6 +52,11 @@ const SwapNewModule = () => {
     async function onConnect() {
         onConnectConfig()
     }
+    function onSwitchTokensHandlers() {
+        ResetAll()
+        onSwitchTokens()
+    }
+
     async function onDisconnect() {
         onDisconnectWallet()
     }
@@ -172,7 +177,7 @@ const SwapNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <IconPlaceStyle>
-                    <SwitchSwap onClick={onSwitchTokens} />
+                    <SwitchSwap onClick={()=>{onSwitchTokens();ResetAll()}} />
                 </IconPlaceStyle>
                 <NewSwapContainer>
                     <TokenSelectStyled>
