@@ -21,9 +21,9 @@ export const ButtonConnectionOver = ({ isConnected, onConnect, onDisconnect, Acc
     }
 
     return (
-        <div>
+        <>
             <ConnectionPopup isConnected={isConnected} isOpened={isOpen} toggling={toggling} title="Connect your wallet to CasperSwap" onClose={handleCancel} onConnect={handleConnection} />
             <PopoverButton isConnected={isConnected} isOpened={isOpen} toggling={toggling}  onDisconnect={handleDisconnect} account={Account}/>
-        </div>
+        </>
     )
 }

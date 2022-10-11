@@ -11,6 +11,9 @@ export const DropDownHeader = styled("div")`
     font-size: 0.8vw;
     color: white;
     background: ${props => props.theme.secondBackgroundColor};
+    &:hover{
+        cursor: pointer;
+    }
 `
 
 export const DropDownListContainer = styled("div")`
@@ -27,6 +30,9 @@ export const DropDownList = styled("ul")`
   color: white;
   font-size: 0.8vw;
   font-weight: 500;
+  &:hover{
+        cursor: pointer;
+  }
   &:first-child {
     padding-top: 0.8em;
   }

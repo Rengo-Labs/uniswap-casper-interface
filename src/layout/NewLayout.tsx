@@ -152,7 +152,7 @@ const WordMarkContainerStyled = styled.nav`
     display: block;
     left: 50%;
     top: 0%;
-    transform: translate(-50%, 0%);
+    transform: translate(-50%, 10px);
 `
 
 const ConnectButtonContainerStyled = styled.nav`
@@ -168,9 +168,10 @@ const ConnectButtonContainerStyled = styled.nav`
 
 const NavBarStyled = styled.nav`
     position: relative;
-    margin: 40px 30px 80px;
+    margin: 30px 30px 80px;
     height: 20px;
 `
+
 const NavBar = ({
     isConnected,
     onConnect,
@@ -200,11 +201,13 @@ const IconContainer = ({ children }) => {
 }
 
 const TitleCellContainerStyled = styled.nav`
-    grid-column: 3;
-    grid-row: 1;
+    /*grid-column: 3;*/
+    /*grid-row: 1;*/
     color: ${props => props.theme.secondBackgroundColor};
     text-align: center;
-    font-size: 2em;
+    font-size: 1.5em;
+    width: 100%;
+    align-self: center;
 `
 
 const CallContainerStyled = styled.nav`

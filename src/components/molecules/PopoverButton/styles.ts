@@ -3,13 +3,15 @@ import styled from 'styled-components'
 export const PopoverContainer = styled("div")`
     position: absolute;
     width: 11.5vw;
+    margin-left: -3.5vw;
+    margin-top: 1vh;
 `
 
 export const ContainerList = styled("ul")`
   padding: 0;
   margin: 0;
   background-color: white;
-  border: 0.5px solid black;
+  border: 1px solid black;
   border-radius: 10px;
   box-sizing: border-box;
   color: black;
@@ -30,10 +32,15 @@ export const ItemList = styled("li")`
     text-align: center;
     padding-top: 0em;
     padding-bottom: 0em;
-    padding-left: 1em;
     font-family: 'EpilogueLight';
     font-size: 0.7vw;
-    border-top: 0.5px solid black;
+    border-top: 1px solid black;
+`
+
+export const ItemMenu = styled(ItemList)`
+    &:hover{
+        cursor: pointer;
+    }
 `
 
 export const WalletItemList = styled(ItemList)`
@@ -46,12 +53,7 @@ export const WalletItemList = styled(ItemList)`
     font-family: Epilogue;
 `
 
-interface ItemColumnImp {
-    flex: string;
-    position: string;
-}
-
-export const ItemColumn = styled.div<ItemColumnImp>`
+export const ItemColumn = styled.div<any>`
     flex: ${props => props.flex}
     text-align: ${props => props.position}
 `
@@ -62,7 +64,8 @@ export const ButtonStyle = styled.button<any>`
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
     padding:0px;
-    width: 65%;
+    width: 8vw;
+    height: 5vh;
     border-radius: 10px;
     border:none;
     overflow:hidden; 
