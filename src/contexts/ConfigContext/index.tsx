@@ -1012,8 +1012,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     function getAccountHash() {
-        return "4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
-        //return Buffer.from(CLPublicKey.fromHex(walletAddress).toAccountHash()).toString("hex")
+        return Buffer.from(CLPublicKey.fromHex(walletAddress).toAccountHash()).toString("hex")
     }
 
     return (
