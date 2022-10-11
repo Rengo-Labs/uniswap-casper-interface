@@ -1,27 +1,5 @@
 import styled from "styled-components";
 
-export const ButtonStyle = styled.button<any>`
-    color: rgb(120, 100, 244);
-    background-color: #70ecd4;
-    padding:10px;
-    width: 80%;
-    border-radius: 10px;
-    border:none;
-    overflow:hidden; 
-    white-space:nowrap; 
-    text-overflow: ellipsis;
-    &:hover{
-        cursor: pointer;
-    }
-    &:active{
-        background-color: ${props => props.theme.TertiaryColor2};
-    }
-
-    ${props => props.isSelected && `
-    color: red;
-    background: white;
-    `}
-`
 export const WalletContainer = styled.div`
     display: flex;
     padding: 0;
@@ -37,14 +15,14 @@ export const WalletContainer = styled.div`
     }
 `
 
-export const PopoverContainer = styled("div")`
-    position: absolute;
-    width: 11.5vw;
-`
+interface OverlayParam {
+    isOpened: boolean
+}
 
-export const OverlayPopup = styled.div`
-    visibility: hidden;
-    opacity: 0;
+export const OverlayPopup = styled.div<OverlayParam>`
+    visibility: ${props => props.isOpened ? "visible" : "hidden"};
+    opacity: ${props => props.isOpened ? "1" : "0"};
+    z-index: 2;
     backdrop-filter: blur(5px);
     position: fixed;
     top: 0;
@@ -130,4 +108,26 @@ export const CollapsingPopup = styled.div`
     display: flex;
     justify-content: center;
     font-family: EpilogueLight
+`
+
+export const PopoverButtonStyled= styled.div`
+    display: flex;
+    align-items: center; 
+    height: 5vh; 
+    border-radius: 8px;
+    width: 8vw;
+    font-weight: 500;
+    font-size: 0.8vw;
+    justify-content: center;
+    color: ${props => props.theme.secondBackgroundColor};
+    background: ${props => props.theme.thirdBackgroundColor};
+`
+
+export const DisclaimerContent = styled.div`
+    color: black;
+    padding: 5px;
+    text-align: center;
+    font-family: EpilogueLight;
+    margin-bottom: 1.5vh;
+    font-size: 0.8vw;
 `

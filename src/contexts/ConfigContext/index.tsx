@@ -2,7 +2,7 @@ import Torus from '@toruslabs/casper-embed';
 import axios from 'axios';
 import {
     AccessRights,
-    CasperServiceByJsonRPC,
+    CasperServiceByJsonRPC, CLAccountHash,
     CLByteArray,
     CLKey,
     CLList,
@@ -222,29 +222,6 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
         console.log(__filename, "getSwapDetail", error)
         return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0 }
     }
-}
-
-const getPairTokenReserve = async (tokenA, tokenB) => {
-    const response = await axios.get(`${BASE_URL}/getpairlist`)
-    if (response.data.success) {
-        const list = response.data.pairList
-
-        let pair = list.filter(p => p.token0.symbol === tokenA && p.token1.symbol === tokenB)
-        console.log(pair)
-        if (pair.length != 0)
-            return {success: true, liquidityA: parseFloat(pair[0].reserve0), liquidityB: parseFloat(pair[0].reserve1)}
-
-        pair = list.filter(p => p.token0.symbol === tokenB && p.token1.symbol === tokenA)
-        console.log(pair)
-        if (pair.length != 0)
-            return {success: true, liquidityA: parseFloat(pair[0].reserve1), liquidityB: parseFloat(pair[0].reserve0)}
-    }
-
-    return {success: false, liquidityA: 0, liquidityB: 0}
-}
-
-const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
-    return (tokensToTransfer - tokensToTransfer * slippage / 100).toFixed(8)
 }
 
 async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
@@ -481,6 +458,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const poolColumns = React.useMemo(() => columns, [])
     const [poolList, setPoolList] = useState([])
     const [gralData, setGralData] = useState({})
+    const [isStaked, setStaked] = useState(false)
 
     let debounceConnect = false
 
@@ -554,9 +532,12 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             //Load user's pool detail
             const poolList = await getPoolList()
             //TODO user's HASH hardcoded
-            const list = await loadPoolDetailByUser("4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab", poolList)
+            const accountHash = getAccountHash(walletAddress)
+            const list = await loadPoolDetailByUser(accountHash, poolList)
             setPoolList(list)
 
+            console.log("Try to load", list)
+            
             toast.dismiss(toastLoading)
             toast.success("your wallet is mounted and ready to ride!")
         } catch (e) {
@@ -596,7 +577,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         });
         window.addEventListener('signer:tabUpdated', msg => {
             console.log("signer:tabUpdated", msg)
-            onConnectConfig()
+            //onConnectConfig()
         });
         window.addEventListener('signer:activeKeyChanged', msg => {
             console.log("signer:activeKeyChanged", msg)
@@ -687,7 +668,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                         token1Liquidity: 0,
                         totalLiquidityPool: 0,
                         totalLiquidityUSD: 0,
-                        volumePercentage: 0
+                        volumePercentage: 0,
+                        totalPool: 0
                     }
                 }
             })
@@ -704,15 +686,19 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
         if (result.data.success) {
             const pairList = result.data.pairsdata
+            console.log('lol')
             const list = pairList.map(d => {
                 return {
                     token0: d.token0.symbol,
                     token1: d.token1.symbol,
+                    reserve0: d.reserve0 ?? 0,
+                    reserve1: d.reserve1 ?? 0,
                     token0Liquidity: convertNumber(parseFloat(d.token0.totalLiquidity)),
                     token1Liquidity: convertNumber(parseFloat(d.token1.totalLiquidity)),
                     totalLiquidityPool: convertNumber(parseFloat(d.token0.totalLiquidity) + parseFloat(d.token1.totalLiquidity)),
                     totalLiquidityUSD: convertNumber(parseFloat(d.token0.totalLiquidity) * parseFloat(d.token0Price) + parseFloat(d.token1.totalLiquidity) * parseFloat(d.token1Price)),
                     volume: parseFloat(d.volumeUSD),
+                    totalPool: parseFloat(d.token0.totalLiquidity) + parseFloat(d.token1.totalLiquidity)
                 }
             })
 
@@ -734,6 +720,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         })
 
         return newList
+    }
+
+    const filter = (onlyStaked, row) => {
+        if (onlyStaked) {
+            return row.original.pair.totalPool > 0
+        }
+
+        return row
     }
 
     async function fillPairs(walletAddress) {
@@ -819,6 +813,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             try {
                 const wallet = await tryToConnectSigner()
                 dispatch({ type: ConfigActions.DISCONNECT_WALLET })
+
+                const poolList = await getPoolList()
+                setPoolList(poolList)
                 toast.success("your wallet is unmounted")
             } catch (error) {
                 toast.error("Ooops we have an error")
@@ -990,8 +987,16 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     async function onAllowanceAgaintPair(pair) {
         await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
     }
+
+    function getAccountHash(wa: string | number | boolean | void = null) {
+        console.log('getAccountHash', wa ?? walletAddress)
+        //return "4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
+        return Buffer.from(CLPublicKey.fromHex(wa ?? walletAddress).toAccountHash()).toString("hex")
+    }
+
     return (
         <ConfigProviderContext.Provider value={{
+            getAccountHash,
             onConnectConfig,
             onDisconnectWallet,
             onChangeWallet,
@@ -1003,7 +1008,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSwitchTokens,
             onCalculateReserves,
             getSwapDetail,
-            calculateMinimumTokenReceived,
             tokens,
             firstTokenSelected,
             secondTokenSelected,
@@ -1023,7 +1027,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             setPoolList,
             getPoolList,
             getTVLandVolume,
-            gralData
+            gralData,
+            isStaked,
+            setStaked,
+            filter,
+            loadPoolDetailByUser
         }}>
             {children}
             <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />

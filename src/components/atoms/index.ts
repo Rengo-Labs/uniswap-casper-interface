@@ -35,4 +35,5 @@ export { SlippageBox } from './SlippageBox'
 export { NewIcons } from './NewIcons'
 export { CustomToggle } from './CustomToggle'
 export { ItemSelector } from './ItemSelector'
+export { ConnectionPopup } from './ConnectionPopup'
 
