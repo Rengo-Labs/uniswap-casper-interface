@@ -83,11 +83,11 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.reserve0} {row.original.pair.token0}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token0Liquidity} {row.original.pair.token0}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.reserve1} {row.original.pair.token1}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token0Liquidity} {row.original.pair.token1}</TColumn3>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
