@@ -34,8 +34,10 @@ import {
     selectEntryPoint,
     signdeploywithcaspersigner,
     signDeployWithTorus,
-    updateBalances
+    updateBalances,
+    withPutDeploy
 } from '../../commons/swap';
+
 import ConfirmModal from '../../components/organisms/ConfirmModal';
 import PopupModal from '../../components/organisms/PopupModal';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
@@ -476,7 +478,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 throw e
             }
             if (!walletAddress) {
-                debounceConnect = true
+                debounceConnect = false
                 throw new Error("casper signer error")
             }
         } else {
@@ -505,16 +507,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         return [csprBalance, mainPurse, walletAddress ]
     }
 
-    async function onConnectConfig() {
+    async function onConnectConfig(ignoreError = false) {
         if (debounceConnect) {
             return
         }
-        
+
         const toastLoading = toast.loading("Try to connect your wallet")
         try {
             const [ csprBalance, mainPurse, walletAddress ] = await connect()
-
-            console.log("csprBalance", csprBalance)
 
             dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
             dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
@@ -526,12 +526,24 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 firstTokenSelected,
                 csprBalance
             )
+
+            //Load user's pool detail
+            const poolList = await getPoolList()
+            //TODO user's HASH hardcoded
+            const accountHash = getAccountHash(walletAddress)
+            const list = await loadPoolDetailByUser(accountHash, poolList, walletAddress)
+            setPoolList(list)
+
+            console.log("Try to load", list)
+            
             toast.dismiss(toastLoading)
             toast.success("your wallet is mounted and ready to ride!")
         } catch (e) {
             console.log('error', e)
             toast.dismiss(toastLoading)
-            toast.error("Ooops we have an error")
+            if (!ignoreError) {
+                toast.error("Ooops we have an error")
+            }
         }
     }
 
@@ -563,7 +575,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         });
         window.addEventListener('signer:tabUpdated', msg => {
             console.log("signer:tabUpdated", msg)
-            onConnectConfig()
+            //onConnectConfig()
         });
         window.addEventListener('signer:activeKeyChanged', msg => {
             console.log("signer:activeKeyChanged", msg)
@@ -668,7 +680,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         return []
     }
 
-    const getPoolDetailByUser = async (hash) => {
+    const getPoolDetailByUser = async (hash: string, wa: string | number | boolean | void = null) => {
 
         const result = await axios.post(`${BASE_URL}/getpairagainstuser`, {user: hash})
 
@@ -681,7 +693,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 const token0Decimals = initialStateToken.tokens[d.token0.symbol].decimals
                 const token1Decimals = initialStateToken.tokens[d.token1.symbol].decimals
 
-                const totalLiquidity = await getLiquidityByUserAndPairDataId(getAccountHash(), d.id)
+                const totalLiquidity = await getLiquidityByUserAndPairDataId(getAccountHash(wa), d.id)
 
                 return {
                     token0: d.token0.symbol,
@@ -716,8 +728,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       }
     }
 
-    const loadPoolDetailByUser = async (hash, poolList) => {
-        const list = await getPoolDetailByUser(hash)
+    const loadPoolDetailByUser = async (hash, poolList, wa: string | number | boolean | void = null) => {
+        const list = await getPoolDetailByUser(hash, wa)
 
         const newList = poolList.map(d => {
             const data = list.filter(f => d.pair.token0 === f.token0 && d.pair.token1 === f.token1 || d.pair.token1 === f.token0 && d.pair.token0 === f.token1)
@@ -790,6 +802,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     const [linkExplorer, setLinkExplorer] = useState("")
+    const [deployExplorer, setDeployExplorer] = useState("")
+
     async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB, slippSwapToken) {
         setSwapModal(true)
 
@@ -807,6 +821,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
             if (walletSelected === 'torus') {
                 const signedDeploy = await signDeployWithTorus(deploy)
+                const deployHash = `https://testnet.cspr.live/deploy/${signedDeploy.deploy_hash}`
+                setDeployExplorer(deployHash || "")
                 console.log("deploy_hash", signedDeploy.deploy_hash)
                 const result = await getDeploy(signedDeploy.deploy_hash);
                 setSwapModal(false)
@@ -817,7 +833,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
-                const result = await putdeploySigner(signedDeploy);
+
+                const result = await withPutDeploy(signedDeploy, setDeployExplorer);
                 setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
                 setSwapModal(false)
                 setConfirmModal(true)
@@ -1011,8 +1028,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
     }
 
-    function getAccountHash() {
-        return Buffer.from(CLPublicKey.fromHex(walletAddress).toAccountHash()).toString("hex")
+    function getAccountHash(wa: string | number | boolean | void = null) {
+        console.log('getAccountHash', wa ?? walletAddress)
+        //return "4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
+        return Buffer.from(CLPublicKey.fromHex(wa ?? walletAddress).toAccountHash()).toString("hex")
     }
 
     return (
@@ -1052,7 +1071,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             gralData,
             isStaked,
             setStaked,
-            filter
+            filter,
         }}>
             {children}
             <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />

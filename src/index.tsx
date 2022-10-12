@@ -16,8 +16,7 @@ root.render(
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="swap" element={<Swap />} />
-          <Route path="liquidity" element={<Liquidity />} />
-          <Route path="newliquidity" element={<NewLiquidity />} />
+          <Route path="liquidity" element={<NewLiquidity />} />
           <Route path="liquidity/add" element={<Add />} />
           <Route path="pools" element={<Pools />} />
           <Route path="tokens" element={<Tokens />} />

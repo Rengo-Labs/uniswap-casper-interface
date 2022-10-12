@@ -2,6 +2,7 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { ButtonClose } from '../../atoms'
 import { AiOutlineLoading3Quarters, AiOutlineCloseCircle } from "react-icons/ai";
+import { NewButtonClose } from '../../atoms/NewButtonClose';
 
 
 const PopupStyled = styled.div<any>`
@@ -16,8 +17,8 @@ const PopupStyled = styled.div<any>`
 `
 
 const ContainerStyled = styled.div<any>`
-    background-color: ${props => props.theme.StrongColor};
-    width:30%;
+    background-color: ${props => props.theme.NewAquamarineColor};
+    width:50%;
     height:50%;
     padding:20px;
     display: grid;
@@ -28,8 +29,8 @@ const ContainerStyled = styled.div<any>`
 const MidModalStyled = styled.div<any>`
     width:100%;
     height:100%;
-    color: "white";
-    background-color: ${props => props.theme.StrongColor2};
+    color: ${props => props.theme.NewPurpleColor};
+    background-color: ${props => props.theme.NewAquamarineColor};
     display:grid;
     grid-template: auto 1fr auto auto auto / 1fr;
     border-radius: 10px;
@@ -58,6 +59,12 @@ const TotalCenterStyled = styled.div`
     font-size:5rem;
 `
 
+const AnchorStyled = styled.a`
+    color:white;
+    &:visited{
+        color:white;
+    }
+`
 
 const PopupModal = ({ display, handleModal, tokenA = 'X Y', tokenB = 'X Y' }) => {
     return (
@@ -65,9 +72,9 @@ const PopupModal = ({ display, handleModal, tokenA = 'X Y', tokenB = 'X Y' }) =>
             <ContainerStyled>
                 <MidModalStyled>
                     <CloseStyled>
-                        <ButtonClose onClickHandler={() => { handleModal(false) }}>
+                        <NewButtonClose onClickHandler={() => { handleModal(false) }}>
                             <AiOutlineCloseCircle />
-                        </ButtonClose>
+                        </NewButtonClose>
                     </CloseStyled>
 
                     <TotalCenterStyled>

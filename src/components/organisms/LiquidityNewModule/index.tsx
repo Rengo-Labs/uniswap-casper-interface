@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react'
-import { AiOutlineClose } from 'react-icons/ai'
+import React, { useContext, useEffect, useState } from 'react'
+import { AiOutlineClose, AiFillPlusCircle } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { ButtonConnection, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, NewSwapButton, SearchInputAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
@@ -10,7 +10,7 @@ import SwitchSwap from '../../atoms/SwitchSwap'
 import { SwapConfirmAtom, SwapModal, SwapToken, SwapTokens } from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
-const SwapNewModule = () => {
+const LiquidityNewModule = () => {
     const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
     const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
     const [activeModalSwap, setActiveModalSwap] = React.useState(false)
@@ -27,6 +27,7 @@ const SwapNewModule = () => {
     const [isApprovedToken, isApprovedTokenSetter] = useState(false)
     const {
         onConnectConfig,
+        onAddLiquidity,
         configState,
         tokenState,
         onSelectFirstToken,
@@ -52,11 +53,6 @@ const SwapNewModule = () => {
     async function onConnect() {
         onConnectConfig()
     }
-    function onSwitchTokensHandlers() {
-        ResetAll()
-        onSwitchTokens()
-    }
-
     async function onDisconnect() {
         onDisconnectWallet()
     }
@@ -142,7 +138,19 @@ const SwapNewModule = () => {
         }, {})
         return tokenFiltered
     }
+    async function onLiquidiy() {
+        if (await onIncreaseAllow(amountSwapTokenB)) {
+            await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
+            onConnectConfig()
+        }
+    }
 
+    async function onChangeValueToken(value) {
+        amountSwapTokenASetter(value)
+        const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
+        amountSwapTokenBSetter(secondTokenReturn)
+        slippSwapTokenSetter(minAmountReturn)
+    }
     return (
         <Container>
             <ContainerSwapActions>
@@ -177,7 +185,7 @@ const SwapNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <IconPlaceStyle>
-                    <SwitchSwap onClick={()=>{onSwitchTokens();ResetAll()}} />
+                    <AiFillPlusCircle />
                 </IconPlaceStyle>
                 <NewSwapContainer>
                     <TokenSelectStyled>
@@ -210,34 +218,36 @@ const SwapNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <ButtonSpaceStyled>
-                    {!isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
-                    {isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
+                    {!isConnected && <NewSwapButton content="Connect to Wallet" handler={() => { onConnect() }} />}
+                    {isConnected && amountSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p>}
+                    {isConnected && amountSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p>}
+                    {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
+                    {isConnected && <NewSwapButton content="Add Liquidity" handler={async () => { setActiveModalSwap(true) }} />}
                 </ButtonSpaceStyled>
                 {
                     activeModalSwap &&
                     <SwapModal >
                         <SwapContainerAtom >
                             <SwapHeaderAtom>
-                                <HeaderModalAtom>Confirm Swap</HeaderModalAtom>
+                                <HeaderModalAtom>Confirm Add Liquidity</HeaderModalAtom>
                                 <CloseButtonAtom onClick={() => { setActiveModalSwap(false) }}>
                                     <AiOutlineClose />
                                 </CloseButtonAtom>
                             </SwapHeaderAtom>
                             <SwapConfirmAtom
-                                firstToken={amountSwapTokenA}
                                 firstTokenSelected={firstTokenSelected}
                                 secondTokenSelected={secondTokenSelected}
                                 amountSwapTokenA={amountSwapTokenA}
                                 amountSwapTokenB={amountSwapTokenB}
                                 slippSwapToken={slippSwapToken}
-                                tokensToTransfer={tokensToTransfer}
-                                priceImpact={priceImpact}
-                                defaultPriceImpactLabel={defaultPriceImpactLabel}
-                                slippSwapTokenSetter={slippSwapTokenSetter}
+                                liquidity={true}
                             >
-                                <NewSwapButton content="Confirm Swap" handler={async () => { await onConfirmSwap() }} />
-                            </SwapConfirmAtom>
 
+                            </SwapConfirmAtom>
+                            <ButtonSpaceModalStyled>
+                                <NewSwapButton content={"Approve " + secondTokenSelected.symbol} handler={async () => { await onLiquidiy(); setActiveModalSwap(false) }} />
+                                <NewSwapButton disabled={true} content="Confirm Add Liquidity" handler={async () => { await onLiquidiy(); setActiveModalSwap(false) }} />
+                            </ButtonSpaceModalStyled>
                         </SwapContainerAtom>
                     </SwapModal>
                 }
@@ -318,11 +328,22 @@ const ButtonHalfMax = styled.div<any>`
 
 const IconPlaceStyle = styled.div`
     justify-self: center;
+    font-size: 3rem;
+    color: ${props => props.theme.NewPurpleColor};
 `
 const ButtonSpaceStyled = styled.div`
     justify-self: center;
     width: 100%;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:10px;
+    justify-content: center;
+`
+const ButtonSpaceModalStyled = styled.div`
+    width: 100%;
+    display: flex;
+    gap:10px;
     justify-content: center;
 `
 const TokenSelectStyled = styled.div`
@@ -386,4 +407,4 @@ const ContainerSwapActions = styled.section`
     grid-template-rows: repeat(4,auto);
 `
 
-export default SwapNewModule
+export default LiquidityNewModule

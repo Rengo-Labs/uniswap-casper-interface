@@ -1,6 +1,8 @@
 import React, { createContext, ReactNode, useState } from 'react'
 import casprIcon from '../../assets/swapIcons/casprIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
+import axios from "axios";
+import {BASE_URL} from "../../constant";
 
 export const PoolsProviderContext = createContext<any>({})
 const formatter = Intl.NumberFormat('en', {notation: 'compact'})
@@ -203,7 +205,7 @@ export const getPoolList = async () => {
 }
 
 export const getPoolDetailByUser = async (hash) => {
-  return [
+  return [    
     {
       token0: "CSPR",
       token1: "WETH",

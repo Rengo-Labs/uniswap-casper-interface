@@ -9,11 +9,11 @@ import { ReactComponent as StakingIcon } from '../assets/newIcons/stakingIcon.sv
 import { ReactComponent as SwapIcon } from '../assets/newIcons/swapIcon.svg'
 import { ReactComponent as ConfigIcon } from '../assets/newIcons/configIcon.svg'
 import { ReactComponent as CommunityIcon } from '../assets/newIcons/communityIcon.svg'
-import { ButtonConnection, NewIcons } from '../components/atoms'
+import { /*ButtonConnection,*/ NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
-import OctoPurple from '../components/atoms/OctoPurple'
-import {ButtonConnectionOver} from "../components/organisms";
+import { ReactComponent as WordMarkIcon } from '../assets/newIcons/casperswap-wordmark.svg'
+import { ButtonConnectionOver } from "../components/organisms/ButtonConnectionOver";
 
 const CLOSED_WIDTH = '108px'
 const OPEN_WIDTH = '280px'
@@ -51,7 +51,7 @@ const NewNavigationStyled = styled.nav`
 const NewNavigation = ({ children, onMouseLeave }) => (
     <NewNavigationStyled onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>
 )
-    
+
 const MenuCenterStyled = styled.main`
     width: 100%;
     align-self: center;
@@ -79,16 +79,16 @@ const NavItemStyled = styled.nav<any>`
 
     &:hover {
         background-color: white;
-        color: #715FF5;
+        color: ${props => props.theme.NewPurpleColor};
 
         svg {
-            stroke: #715FF5;
-            fill: #715FF5;
+            stroke: ${props => props.theme.NewPurpleColor};
+            fill:${props => props.theme.NewPurpleColor};
         }
     }
 `
 const NavItem = ({ children, redirect, collapse }: any) => (
-    <NavItemStyled    
+    <NavItemStyled
         onClick={redirect}
         collapse={collapse}
     >
@@ -123,9 +123,9 @@ const IconTexts = [
     { icon: SwapIcon, text: "Swap", path: "/swap" },
     { icon: LiquidityIcon, text: "Liquidity", path: "/liquidity" },
     { icon: PoolIcon, text: "Pools", path: "/pools" },
-    { icon: FarmIcon, text: "Farms", path: "/farms" },
+    /*{ icon: FarmIcon, text: "Farms", path: "/farms" },
     { icon: StakingIcon, text: "Staking", path: "/staking" },
-    { icon: NftIcon, text: "NFT", path: "/nft" },
+    { icon: NftIcon, text: "NFT", path: "/nft" },*/
 ]
 
 const IconTextsTwo = [
@@ -146,14 +146,54 @@ const MainSpaceStyled = styled.main`
 const MainSpace = ({ children }) => {
     return (<MainSpaceStyled>{children}</MainSpaceStyled>)
 }
-const NavBarStyled = styled.nav`
-    padding: 20px 10px 10px 10px;
-    display:flex;
-    /*grid-template: auto / repeat(6, 1fr);*/
+
+const WordMarkContainerStyled = styled.nav`
+    position: absolute;
+    display: block;
+    left: 50%;
+    top: 0%;
+    transform: translate(-50%, 10px);
 `
-const NavBar = ({ children }) => {
-    return (<NavBarStyled>{children}</NavBarStyled>)
-}
+
+const ConnectButtonContainerStyled = styled.nav`
+    position: absolute;
+    display: block;
+    right: 0;
+    min-width: 160px;
+
+    & button {
+        width: 100%;
+    }
+`
+
+const NavBarStyled = styled.nav`
+    position: relative;
+    margin: 30px 30px 80px;
+    height: 20px;
+`
+
+const NavBar = ({
+    isConnected,
+    onConnect,
+    onDisconnect,
+    walletAddress,
+}) => (
+    <NavBarStyled>
+        <WordMarkContainerStyled>
+            <a href='/'>
+                <WordMarkIcon />
+            </a>
+        </WordMarkContainerStyled>
+        <ConnectButtonContainerStyled>
+            <ButtonConnectionOver 
+                isConnected={isConnected} 
+                onConnect={onConnect} 
+                onDisconnect={onDisconnect} 
+                Account={walletAddress} 
+            />
+        </ConnectButtonContainerStyled>
+    </NavBarStyled>
+)
 
 const IconContainerStyled = styled.nav`
     grid-column: 4/5;
@@ -175,20 +215,20 @@ const TitleCellContainerStyled = styled.nav`
 const CallContainerStyled = styled.nav`
     grid-column: 6/7;
 `
+
 const CallContainer = ({ children }) => (
     <CallContainerStyled>{children}</CallContainerStyled>
 )
 
 const LogoIconStyled = styled.nav`
     & svg {
-        stroke: white;
         fill: white;
     }
 `
 
 const LogoIcon = ({ collapse, children }) => (
     <LogoIconStyled>
-        { !collapse ? <NewIcons Icon={CasperIcon} size={64} /> : <div style={{height: 64}}>{ children }</div> }
+        {!collapse ? <NewIcons Icon={CasperIcon} size={64} /> : <div style={{ height: 64 }}>{children}</div>}
     </LogoIconStyled>
 )
 
@@ -208,7 +248,7 @@ const NewLayout = ({ children, title = "" }) => {
         gasPriceSelected } = configState
 
     async function onConnect() {
-        onConnectConfig()
+        onConnectConfig(true)
     }
     async function onDisconnect() {
         onDisconnectWallet()
@@ -226,9 +266,11 @@ const NewLayout = ({ children, title = "" }) => {
                     onMouseLeave={() => setCollapse(true)}
                 >
                     <CollapseButton>
-                        <LogoIcon collapse={false}>
-                            casperswap
-                        </LogoIcon>
+                        <a href='/'>
+                            <LogoIcon collapse={false}>
+                                casperswap
+                            </LogoIcon>
+                        </a>
                     </CollapseButton>
                     <MenuCenter>
                         {IconTexts.map(x => {
@@ -262,17 +304,12 @@ const NewLayout = ({ children, title = "" }) => {
                     </MenuCenter>
                 </NewNavigation>
                 <MainSpace>
-                    <NavBar>
-                        <TitleCellContainerStyled>{title}</TitleCellContainerStyled>
-                        <CallContainer>
-                            <ButtonConnectionOver
-                                isConnected={isConnected} 
-                                onConnect={onConnect} 
-                                onDisconnect={onDisconnect} 
-                                Account={walletAddress} 
-                            />
-                        </CallContainer>
-                    </NavBar>
+                    <NavBar
+                        isConnected={isConnected}
+                        onConnect={onConnect}
+                        onDisconnect={onDisconnect}
+                        walletAddress={walletAddress}
+                    />
                     {children}
                 </MainSpace>
             </LayoutStyled>

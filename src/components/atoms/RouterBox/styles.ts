@@ -10,7 +10,7 @@ export const RouterColumnRight = styled.section`
 `
 export const RouterContainer = styled.section`
     width: 100%;
-    background-color: cornflowerblue;
+    background-color: white;
     border-radius: 5px;
     padding: 5px 10px 5px 5px;
 `

@@ -10,7 +10,7 @@ export const Liquidity = () => {
 
   return (
     <NewLayout>
-      <div style={{display: "grid", gridTemplateColumns: "repeat(11, 1fr)"}}>
+      <div style={{/*display: "grid", gridTemplateColumns: "repeat(11, 1fr)"*/}}>
           <CardContainer cardTitle="Liquidity">
               <LiquidityTemplate />
           </CardContainer >
