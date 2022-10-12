@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 type ConfigModalType = {
-    openModal?: boolean | Boolean;
+    openModal?: boolean | boolean;
 }
 
 export const ModalStyled = styled.section<Partial<ConfigModalType>>`
@@ -122,8 +122,8 @@ export const WalletSelectionStyled = styled.div<any>`
     `}
 `
 export const WalletSelectionImageStyled = styled.img`
-    width: 50px;
-    height: 50px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
 `
 

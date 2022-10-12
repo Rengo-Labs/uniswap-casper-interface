@@ -74,7 +74,6 @@ export const Swap = () => {
     onConnectConfig()
   }
 
-
   async function onConfirmSwap() {
     setActiveModalSwap(false);
     const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
@@ -150,19 +149,16 @@ export const Swap = () => {
   return (
     <NewLayout>
       <Container>
-        <SwapLiquidity>
-          <SwapLiquidityContainer>
-            <ExtendedCustomToggle id={uuidv4()} onChange={() => { toggleStateSetter(!toggleState) }} isChecked={toggleState} />
-          </SwapLiquidityContainer>
-        </SwapLiquidity>
-        <div>
+        <ModuleSwapStyled>
           <SwapNewModule />
-        </div>
+        </ModuleSwapStyled>
       </Container>
     </NewLayout>
   )
 }
-
+const ModuleSwapStyled = styled.div`
+  display: flex;
+`
 const ExtendedCustomToggle = styled(CustomToggle)`
   min-width: 1000px;
   width: 1000px;
@@ -199,7 +195,6 @@ function SwapLiquidity({ children }) {
   return (<SwapLiquidityStyled>{children}</SwapLiquidityStyled>)
 }
 const ContainerStyled = styled.div`
-  height: 100%;
   width: 100%;
   display:grid;
   grid-template-columns: 1fr;

@@ -1,9 +1,9 @@
-import { createGlobalStyle } from 'styled-components'
-import '../../index.css'
+import { createGlobalStyle } from "styled-components";
+import "../../index.css";
 
 interface LightThemeInterface {
   PrimaryColor: string;
-  PrimaryColor2:string;
+  PrimaryColor2: string;
   MainColor: string;
   StrongColor: string;
   StrongColor2: string;
@@ -17,32 +17,37 @@ interface LightThemeInterface {
   mainBackgroundColor: string;
   secondBackgroundColor: string;
   thirdBackgroundColor: string;
+  NewAquamarineColor: string;
+  NewPurpleColor: string;
 }
 
 export const lightTheme = {
-  PrimaryColor: 'rgba(255,255,255,1)',
-  PrimaryColor2: 'rgba(255,255,255,.5)',
-  MainColor: 'rgba(0,62,145,1)',
-  StrongColor: 'rgba(3,46,121,1)',
-  StrongColor2: 'rgba(3,70,166,1)',
-  StrongColor3: 'rgba(3,52,138,1)',
-  StrongColor4: 'rgba(3,52,138,.3)',
-  StrongColor5: 'rgba(3,52,138,.8)',
-  SecondaryColor: 'rgba(0,187,233,1)',
-  TertiaryColor: 'rgba(255,204,0,1)',
-  TertiaryColor2: 'rgba(255,204,0,.5)',
-  TertiaryColor3: 'rgba(255,204,0,.8)',
-  backgroundColor: 'linear-gradient(to bottom, rgba(0,187,233,.8), rgba(0,62,145,1))',
-  mainBackgroundColor: 'rgba(247,252,253,255)',
-  secondBackgroundColor: 'rgba(120, 100, 244, 1)',
-  thirdBackgroundColor: 'rgba(112, 236, 212, 1)'
-}
+  PrimaryColor: "rgba(255,255,255,1)",
+  PrimaryColor2: "rgba(255,255,255,.5)",
+  MainColor: "rgba(0,62,145,1)",
+  StrongColor: "rgba(3,46,121,1)",
+  StrongColor2: "rgba(3,70,166,1)",
+  StrongColor3: "rgba(3,52,138,1)",
+  StrongColor4: "rgba(3,52,138,.3)",
+  StrongColor5: "rgba(3,52,138,.8)",
+  SecondaryColor: "rgba(0,187,233,1)",
+  TertiaryColor: "rgba(255,204,0,1)",
+  TertiaryColor2: "rgba(255,204,0,.5)",
+  TertiaryColor3: "rgba(255,204,0,.8)",
+  backgroundColor:
+    "linear-gradient(to bottom, rgba(0,187,233,.8), rgba(0,62,145,1))",
+  mainBackgroundColor: "rgba(247,252,253,255)",
+  secondBackgroundColor: "rgba(120, 100, 244, 1)",
+  thirdBackgroundColor: "rgba(112, 236, 212, 1)",
+  NewAquamarineColor: "rgba(110, 235, 208, 1)",
+  NewPurpleColor: "rgba(113, 95, 245, 1)",
+};
 
 export const darkTheme = {
-  PrimaryColor: 'rgba(255,255,255,1)'
-}
+  PrimaryColor: "rgba(255,255,255,1)",
+};
 
-export const GlobalStyles = createGlobalStyle<{theme:LightThemeInterface}>`
+export const GlobalStyles = createGlobalStyle<{ theme: LightThemeInterface }>`
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
@@ -97,7 +102,7 @@ table {
     #__next{
         height: 100%;
         width: 100%;
-        color:${props => props.theme.PrimaryColor};
+        color:${(props) => props.theme.PrimaryColor};
     }
     body{
         min-height: 100vh;
@@ -105,7 +110,7 @@ table {
         width: 100%;
         margin: 0;
         box-sizing: border-box;
-        color:${props => props.theme.PrimaryColor};
-        background-image: ${props => props.theme.backgroundColor} ;
+        color:${(props) => props.theme.PrimaryColor};
+        background-image: ${(props) => props.theme.backgroundColor} ;
     }
-`
+`;

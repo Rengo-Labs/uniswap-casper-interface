@@ -66,7 +66,7 @@ export async function torusLogin() {
         await torus?.clearInit();
         console.error(error);
     }
-};
+}
 
 export const getStateRootHash = async (client) => {
     const { block } = await client.getLatestBlockInfo();

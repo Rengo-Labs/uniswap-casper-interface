@@ -14,7 +14,7 @@ export async function isConnected(Wallet: SignerInterface): Promise<boolean> {
     } catch {
         return false;
     }
-};
+}
 
 export async function disconnectFromSite(Wallet: SignerInterface): Promise<void> {
     console.log(Wallet)

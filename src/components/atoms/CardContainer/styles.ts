@@ -10,8 +10,8 @@ export const CardStyled = styled.section<CardStyledInterface>`
     grid-row: ${props => props.gridRow};
     grid-column: ${props => props.gridColumn};
     width: ${props => props.width};
-    margin: .5em auto;
-    border: 0.5px solid black;
+    margin: .5em auto 4vh auto;
+    border: 1px solid black;
     border-radius: 20px;
     background-color: ${props => props.theme.mainBackgroundColor};
     display: grid;

@@ -24,7 +24,23 @@ export interface TokensListInterface {
   amount: string;
 }
 
-export const initialStateToken = {
+export interface TokenSelected {
+  name: string,
+  chainId: number,
+  symbol: string,
+  symbolPair: string,
+  decimals: number,
+  contractHash: string,
+  packageHash: string,
+  logoURI: string,
+  amount: string,
+}
+export interface InitialStateTokenInterface {
+  tokens: any,
+  firstTokenSelected: TokenSelected,
+  secondTokenSelected: TokenSelected
+}
+export const initialStateToken: InitialStateTokenInterface = {
   tokens: {
     CSPR: {
       name: "Casper",

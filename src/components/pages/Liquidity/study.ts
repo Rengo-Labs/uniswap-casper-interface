@@ -17,7 +17,6 @@ import {
   ROUTER_CONTRACT_HASH,
 } from "../../../constant";
 import { Some } from "ts-results";
-import toast from "react-hot-toast";
 
 function convertToStr(a) {
   return a.toString();
@@ -56,25 +55,25 @@ function getDeploy(deployHash, client) {
 }
 
 async function signdeploywithcaspersigner(deploy, publicKeyHex) {
-  let deployJSON = DeployUtil.deployToJson(deploy);
+  const deployJSON = DeployUtil.deployToJson(deploy);
   console.log("deployJSON: ", deployJSON);
 
-  let signedDeployJSON = await Signer.sign(
+  const signedDeployJSON = await Signer.sign(
     deployJSON,
     publicKeyHex,
     publicKeyHex
   );
   console.log("signedDeployJSON: ", signedDeployJSON);
-  let signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
+  const signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
 
   console.log("signed deploy: ", signedDeploy);
   return signedDeploy;
 }
 
 async function makeDeployWasm(publicKey, runtimeArgs, paymentAmount, axios) {
-  let wasmData = await axios.get(`${BASE_URL}/getWasmData`);
+  const wasmData = await axios.get(`${BASE_URL}/getWasmData`);
   console.log("wasmData.data.wasmData", wasmData.data.wasmData.data);
-  let deploy = DeployUtil.makeDeploy(
+  const deploy = DeployUtil.makeDeploy(
     new DeployUtil.DeployParams(publicKey, "casper-test"),
     DeployUtil.ExecutableDeployItem.newModuleBytes(
       new Uint8Array(wasmData.data.wasmData.data),
@@ -158,6 +157,6 @@ export async function addLiquidityMakeDeploy(
     pair,
     ROUTER_PACKAGE_HASH
   );
-  let deploy = makeDeployWasm(publicKey, runtimeArgs, paymentAmount, axios);
+  const deploy = makeDeployWasm(publicKey, runtimeArgs, paymentAmount, axios);
   return deploy;
 }
