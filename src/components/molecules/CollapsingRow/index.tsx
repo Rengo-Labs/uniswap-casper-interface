@@ -35,6 +35,8 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
         navigate({pathname: path, search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
     }
 
+    console.log("POCTBody", row)
+
     return (
         <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>

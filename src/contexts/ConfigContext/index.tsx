@@ -646,6 +646,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const getPoolList = async () => {
         const result = await axios.get(`${BASE_URL}/getpairlist`)
 
+        console.log('getPoolList')
+
         if (result.data.success) {
 
             const pairList = result.data.pairList

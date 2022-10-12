@@ -9,10 +9,10 @@ import { ReactComponent as StakingIcon } from '../assets/newIcons/stakingIcon.sv
 import { ReactComponent as SwapIcon } from '../assets/newIcons/swapIcon.svg'
 import { ReactComponent as ConfigIcon } from '../assets/newIcons/configIcon.svg'
 import { ReactComponent as CommunityIcon } from '../assets/newIcons/communityIcon.svg'
+import { ReactComponent as WordMarkIcon } from '../assets/newIcons/casperswap-wordmark.svg'
 import { /*ButtonConnection,*/ NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
-import { ReactComponent as WordMarkIcon } from '../assets/newIcons/casperswap-wordmark.svg'
 import { ButtonConnectionOver } from "../components/organisms/ButtonConnectionOver";
 
 const CLOSED_WIDTH = '108px'
@@ -153,6 +153,10 @@ const WordMarkContainerStyled = styled.nav`
     left: 50%;
     top: 0%;
     transform: translate(-50%, 10px);
+
+    & svg {
+        fill: ${props => props.theme.NewPurpleColor};
+    }
 `
 
 const ConnectButtonContainerStyled = styled.nav`
