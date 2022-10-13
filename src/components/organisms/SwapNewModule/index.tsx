@@ -148,67 +148,88 @@ const SwapNewModule = () => {
             <ContainerSwapActions>
                 <NewSwapContainer>
                     <TokenSelectStyled>
-                        <div>From</div>
-                        <div>Balance: {firstTokenSelected.amount || "--"}</div>
+                        <NewTokenDetailSelectStyled>
+                            <NewTokenDetailItems1Styled>From</NewTokenDetailItems1Styled>
+                            <NewTokenDetailItems2Styled src={firstTokenSelected.logoURI} width="50" height="50" />
+                            <NewTokenDetailItems3Styled>{firstTokenSelected.symbol}</NewTokenDetailItems3Styled>
+                            <NewTokenDetailItems4Styled>
+                                <ArrowContainerStyle>
+                                    <FlechaIcon onClick={() => { searchModalASetter(true) }} />
+                                    {searchModalA && <FloatMenu
+                                        tokens={tokens}
+                                        selectToken={SelectAndCloseTokenA}
+                                        onClick={() => { searchModalASetter(false) }}
+                                    />}
+                                </ArrowContainerStyle>
+                            </NewTokenDetailItems4Styled>
+                        </NewTokenDetailSelectStyled>
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
-                        <div>
-                            <img src={firstTokenSelected.logoURI} width="50" height="50" />
-                            <div>{firstTokenSelected.symbol}</div>
-                        </div>
-                        <ArrowContainerStyle>
-                            <FlechaIcon onClick={() => { searchModalASetter(true) }} />
-                            {searchModalA && <FloatMenu
-                                tokens={tokens}
-                                selectToken={SelectAndCloseTokenA}
-                                onClick={() => { searchModalASetter(false) }}
-                            />}
-                        </ArrowContainerStyle>
-                        <StickStyle />
-                        <ButtonHalfMaxContainer>
-                            <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
-                            <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
-                        </ButtonHalfMaxContainer>
-                        <div>
-                            <BalanceInput
-                                onChange={(e) => { changeTokenA(e.target.value) }}
-                                type="number" name="" id="" value={amountSwapTokenA} />
-                        </div>
+                        <NewTokenDetailActionsStyled>
+                            <NewBalanceSpace>Balance: {firstTokenSelected.amount || "--"}</NewBalanceSpace>
+                            <ActionContainerStyled>
+                                <ButtonHalfMaxContainer>
+                                    <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
+                                    <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
+                                </ButtonHalfMaxContainer>
+                                <BalanceInputContainerStyled>
+                                    <BalanceInputItem1Styled>
+                                        <BalanceInput
+                                            onChange={(e) => { changeTokenA(e.target.value) }}
+                                            type="number" name="" id="" value={amountSwapTokenA} />
+                                    </BalanceInputItem1Styled>
+                                    <BalanceInputItem2Styled>
+                                        <p>$34.75</p>
+                                    </BalanceInputItem2Styled>
+                                </BalanceInputContainerStyled>
+                            </ActionContainerStyled>
+                        </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <IconPlaceStyle>
-                    <SwitchSwap onClick={()=>{onSwitchTokens();ResetAll()}} />
+                    <SwitchSwap onClick={() => { onSwitchTokens(); ResetAll() }} />
                 </IconPlaceStyle>
                 <NewSwapContainer>
                     <TokenSelectStyled>
-                        <div>To</div>
-                        <div>Balance: {secondTokenSelected.amount || "--"}</div>
+                        <NewTokenDetailSelectStyled>
+                            <NewTokenDetailItems1Styled>To</NewTokenDetailItems1Styled>
+                            <NewTokenDetailItems2Styled src={secondTokenSelected.logoURI} width="50" height="50" />
+                            <NewTokenDetailItems3Styled>{secondTokenSelected.symbol}</NewTokenDetailItems3Styled>
+                            <NewTokenDetailItems4Styled>
+                                <ArrowContainerStyle>
+                                    <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
+                                    {searchModalB && <FloatMenu
+                                        tokens={returnFilter(tokens, firstTokenSelected)}
+                                        selectToken={SelectAndCloseTokenB}
+                                        onClick={() => { searchModalBSetter(false) }}
+                                    />}
+                                </ArrowContainerStyle>
+                            </NewTokenDetailItems4Styled>
+                        </NewTokenDetailSelectStyled>
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
-                        <div>
-                            <img src={secondTokenSelected.logoURI} width="50" height="50" />
-                            <div>{secondTokenSelected.symbol}</div>
-                        </div>
-                        <ArrowContainerStyle>
-                            <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
-                            {searchModalB && <FloatMenu
-                                tokens={returnFilter(tokens, firstTokenSelected)}
-                                selectToken={SelectAndCloseTokenB}
-                                onClick={() => { searchModalBSetter(false) }}
-                            />}
-                        </ArrowContainerStyle>
-                        <StickStyle />
-                        <ButtonHalfMaxContainer>
-                            <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, amountSwapTokenBSetter) }}>Half</ButtonHalfMax>
-                            <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, amountSwapTokenBSetter) }}>Max</ButtonHalfMax>
-                        </ButtonHalfMaxContainer>
-                        <div>
-                            <BalanceInput
-                                onChange={(e) => { changeTokenB(e.target.value) }}
-                                type="number" name="" id="" value={amountSwapTokenB} />
-                        </div>
+                        <NewTokenDetailActionsStyled>
+                            <NewBalanceSpace>Balance: {secondTokenSelected.amount || "--"}</NewBalanceSpace>
+                            <ActionContainerStyled>
+                                <ButtonHalfMaxContainer>
+                                    <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
+                                    <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
+                                </ButtonHalfMaxContainer>
+                                <BalanceInputContainerStyled>
+                                    <BalanceInputItem1Styled>
+                                        <BalanceInput
+                                            onChange={(e) => { changeTokenA(e.target.value) }}
+                                            type="number" name="" id="" value={amountSwapTokenB} />
+                                    </BalanceInputItem1Styled>
+                                    <BalanceInputItem2Styled>
+                                        <p>$34.75</p>
+                                    </BalanceInputItem2Styled>
+                                </BalanceInputContainerStyled>
+                            </ActionContainerStyled>
+                        </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
+
                 <ButtonSpaceStyled>
                     {!isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
                     {isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
@@ -299,11 +320,33 @@ const StickStyle = styled.div`
         color:white;
     }
 `
+const BalanceInputContainerStyled = styled.div`
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto auto;
+    justify-items: end;
+    gap:10px;
+`
+const BalanceInputItem1Styled = styled.div`
+    align-self: center;
+    color:${props => props.theme.NewPurpleColor};
+    font-size: 3em;
+`
+const BalanceInputItem2Styled = styled.div`
+align-self: center;
+`
 
 const ArrowContainerStyle = styled.div`
+    padding-top:10px;
     align-self: start;
 `
+const ActionContainerStyled = styled.div`
+    display: flex;
+`
+
 const ButtonHalfMaxContainer = styled.div`
+    border-left: 3px solid ${props => props.theme.NewPurpleColor};
+    padding-left:10px;
     display: grid;
     gap:10px;
 `
@@ -345,27 +388,72 @@ const CoinContainerStyled = styled.div`
     align-items: center;
 `
 const ContainerSwapStatics = styled.section`
-    box-sizing: border-box;
-    justify-self: start;
+    width: 462px;
     padding:10px;
     border:1px solid black;
     border-radius: 10px;
+    display:grid;
+    gap:10px;
     display:flex;
     flex-direction: column;
-    justify-content: start;
-    align-items: start;
+    justify-content: center;
+    align-items: center;
     gap:10px;
 `
+const NewTokenDetailSelectStyled = styled.section`
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto;
+`
+const NewTokenDetailItems1Styled = styled.section`
+    grid-column: 1/2;
+    grid-row: 1/2;
+    justify-self: center;
+`
+const NewTokenDetailItems2Styled = styled.img`
+    grid-column: 1/2;
+    grid-row: 2/3;
+    align-self: center;
+`
+const NewTokenDetailItems3Styled = styled.section`
+    grid-column: 1/2;
+    grid-row: 3/4;
+    justify-self: center;
+`
+const NewTokenDetailItems4Styled = styled.section`
+    grid-column: 2/3;
+    grid-row: 2/3;
+    justify-self: center;
+`
+
+const NewTokenDetailActionsStyled = styled.section`
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+`
+const NewBalanceSpace = styled.section`
+    justify-self:end;
+`
+const StickAndArrowStyled = styled.section`
+    height: 100%;
+    display: flex;
+    gap:10px;
+`
+
 const NewSwapContainer = styled.section`
+    background-color:white;
     box-sizing: border-box; 
     width: 100%;
     padding: 1rem;
     border:1px solid black;
     border-radius: 10px;
     display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
 `
 
 const Container = styled.main`
+    justify-self:center;
     box-sizing: border-box;
     height:100%;
     width: 100%;
@@ -373,11 +461,11 @@ const Container = styled.main`
     padding:10px;
     color:black;
     display: grid;
-    grid-template-columns: repeat(2,auto);
-    align-items: start;
+    grid-template-rows: auto auto;
+    justify-items: center;
 `
 const ContainerSwapActions = styled.section`
-    justify-self: end;
+    width: 462px;
     padding:10px;
     border:1px solid black;
     border-radius: 10px;
