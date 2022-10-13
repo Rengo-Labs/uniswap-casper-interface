@@ -229,7 +229,7 @@ const SwapNewModule = () => {
                         </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
-
+                <NewSwapContainerDetails></NewSwapContainerDetails>                       
                 <ButtonSpaceStyled>
                     {!isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
                     {isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
@@ -361,6 +361,8 @@ const ButtonHalfMax = styled.div<any>`
 
 const IconPlaceStyle = styled.div`
     justify-self: center;
+    align-self: center;
+
 `
 const ButtonSpaceStyled = styled.div`
     justify-self: center;
@@ -389,6 +391,7 @@ const CoinContainerStyled = styled.div`
 `
 const ContainerSwapStatics = styled.section`
     width: 462px;
+    height: 193px;
     padding:10px;
     border:1px solid black;
     border-radius: 10px;
@@ -443,7 +446,9 @@ const StickAndArrowStyled = styled.section`
 const NewSwapContainer = styled.section`
     background-color:white;
     box-sizing: border-box; 
-    width: 100%;
+    justify-self: center;
+    width: 393px;
+    height: 132px;
     padding: 1rem;
     border:1px solid black;
     border-radius: 10px;
@@ -465,13 +470,27 @@ const Container = styled.main`
     justify-items: center;
 `
 const ContainerSwapActions = styled.section`
+    box-sizing: border-box;
     width: 462px;
+    height: 698px;
     padding:10px;
     border:1px solid black;
     border-radius: 10px;
-    display:grid;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
     gap:10px;
-    grid-template-rows: repeat(4,auto);
 `
+const NewSwapContainerDetails = styled.section`
+    width: 391px;
+    height: 190px;
+    /* UI Properties */
+    border: 1px solid var(--unnamed-color-000000);
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #000000;
+    border-radius: 20px;
+    opacity: 1;
+`
+
 
 export default SwapNewModule
