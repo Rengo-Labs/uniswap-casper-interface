@@ -8,6 +8,5 @@ export const Container = styled.main`
     display: grid;
     grid-template: auto 1fr / 1fr;
     background-image: url(${BackgroundImage});
-    background-image: cover;
     background-position: center;
 `
