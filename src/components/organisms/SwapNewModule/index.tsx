@@ -229,7 +229,28 @@ const SwapNewModule = () => {
                         </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
-                <NewSwapContainerDetails></NewSwapContainerDetails>                       
+                <NewSwapContainerDetails>
+                    <NewSwapContainerItemsDetails>
+                        <div>Base</div>
+                        <div>{firstTokenSelected.symbol}</div>
+                    </NewSwapContainerItemsDetails>
+                    <NewSwapContainerItemsDetails>
+                        <div>Pool liquidity ({firstTokenSelected.symbol})</div>
+                        <div>6,927,224.93 {firstTokenSelected.symbol}</div>
+                    </NewSwapContainerItemsDetails>
+                    <NewSwapContainerItemsDetails>
+                        <div>Pool liquidity ({secondTokenSelected.symbol})</div>
+                        <div>6,927,224.93 {secondTokenSelected.symbol}</div>
+                    </NewSwapContainerItemsDetails>
+                    <NewSwapContainerItemsDetails>
+                        <div>LP supply</div>
+                        <div>2,759,476.19 LP</div>
+                    </NewSwapContainerItemsDetails>
+                    <NewSwapContainerItemsDetails>
+                        <div>More information</div>
+                        <div></div>
+                    </NewSwapContainerItemsDetails>
+                </NewSwapContainerDetails>
                 <ButtonSpaceStyled>
                     {!isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
                     {isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
@@ -390,6 +411,7 @@ const CoinContainerStyled = styled.div`
     align-items: center;
 `
 const ContainerSwapStatics = styled.section`
+    box-sizing: border-box;
     width: 462px;
     height: 193px;
     padding:10px;
@@ -458,6 +480,7 @@ const NewSwapContainer = styled.section`
 `
 
 const Container = styled.main`
+    box-sizing: border-box;
     justify-self:center;
     box-sizing: border-box;
     height:100%;
@@ -482,6 +505,7 @@ const ContainerSwapActions = styled.section`
     gap:10px;
 `
 const NewSwapContainerDetails = styled.section`
+    box-sizing: border-box;
     width: 391px;
     height: 190px;
     /* UI Properties */
@@ -490,7 +514,17 @@ const NewSwapContainerDetails = styled.section`
     border: 1px solid #000000;
     border-radius: 20px;
     opacity: 1;
+    display: flex;
+    flex-direction: column;
+    padding:10px;
+    justify-content:space-around;
 `
+const NewSwapContainerItemsDetails = styled.section`
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+`
+
 
 
 export default SwapNewModule
