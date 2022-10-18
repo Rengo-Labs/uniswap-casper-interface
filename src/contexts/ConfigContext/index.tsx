@@ -527,15 +527,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 csprBalance
             )
 
-            //Load user's pool detail
-            const poolList = await getPoolList()
-            //TODO user's HASH hardcoded
-            const accountHash = getAccountHash(walletAddress)
-            const list = await loadPoolDetailByUser(accountHash, poolList, walletAddress)
-            setPoolList(list)
-
-            console.log("Try to load", list)
-            
             toast.dismiss(toastLoading)
             toast.success("your wallet is mounted and ready to ride!")
         } catch (e) {
@@ -645,6 +636,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
     const getPoolList = async () => {
         const result = await axios.get(`${BASE_URL}/getpairlist`)
+
+        console.log('getPoolList')
 
         if (result.data.success) {
 
@@ -1030,7 +1023,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
     function getAccountHash(wa: string | number | boolean | void = null) {
         console.log('getAccountHash', wa ?? walletAddress)
-        //return "4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
         return Buffer.from(CLPublicKey.fromHex(wa ?? walletAddress).toAccountHash()).toString("hex")
     }
 

@@ -35,6 +35,8 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
         navigate({pathname: path, search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
     }
 
+    console.log("POCTBody", row)
+
     return (
         <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>
@@ -83,11 +85,11 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.reserve0} {row.original.pair.token0}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token0Liquidity} {row.original.pair.token0}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.reserve1} {row.original.pair.token1}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token1Liquidity} {row.original.pair.token1}</TColumn3>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
