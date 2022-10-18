@@ -120,10 +120,14 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                             <CircleButton onClick={() => {goTo("/swap")}}>
                                 <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
-                            <LiquidityRemovingModule isConnected={false}
+                            <LiquidityRemovingModule isConnected={true}
+                                                     openedPopup={false}
                                                      onClose={() => {console.log("Cerrar")}}
-                                                     title="Remove Liquidity"
-                                                     tokenLP={{amount: 2000}}
+                                                     onRemove={() => {console.log("Remove liquidity")}}
+                                                     firstToken={row.original.pair}
+                                                     secondToken={row.original.pair}
+                                                     liquidity={parseFloat(row.original.pair.totalLiquidityPool).toFixed(8)}
+                                                     liquidityUSD={parseFloat(row.original.pair.totalLiquidityUSD)*1000}
                                                      setAmount={(value) => {console.log("Setear valor ", value)}}
 
                             />

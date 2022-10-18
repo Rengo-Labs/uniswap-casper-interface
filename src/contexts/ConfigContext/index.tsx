@@ -689,6 +689,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 return {
                     token0: d.token0.symbol,
                     token1: d.token1.symbol,
+                    contract0: d.token0.id,
+                    contract1: d.token1.id,
                     token0Liquidity: convertNumber(normalizeAmount(data[0].reserve0, token0Decimals)),
                     token1Liquidity: convertNumber(normalizeAmount(data[0].reserve1, token1Decimals)),
                     totalLiquidityPool: convertNumber(normalizeAmount(totalLiquidity, 9)),
@@ -737,7 +739,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         const strAmount = parseFloat(amount).toFixed(0).toString();
 
         if (strAmount.length > decimalQuantity) {
-            const newReserve = strAmount.slice(0, strAmount.length - 9) + '.' + strAmount.slice(strAmount.length - 9, strAmount.length)
+            const newReserve = strAmount.slice(0, strAmount.length - decimalQuantity) + '.' + strAmount.slice(strAmount.length - decimalQuantity, strAmount.length)
             return parseFloat(newReserve)
         } else {
             let newReserve = strAmount
@@ -960,19 +962,18 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onRemoveLiquidity(amountA, amountB) {
+    async function onRemoveLiquidity(contractA, contractB, liquidity, value, amountA, amountB) {
         const loadingToast = toast.loading("let me try to remove liquidity! be patient!")
         try {
-            const contractA = firstTokenSelected.contractHash
-            const contractB = secondTokenSelected.contractHash
+            console.log("Values", contractA, contractB, liquidity, value, amountA, amountB)
             const runtimeArgs = removeLiquidityArgs(
                 contractA,
                 contractB,
-                1,
-                1,
+                liquidity,
+                value,
                 slippageToleranceSelected,
-                1,
-                1,
+                amountA,
+                amountB,
                 walletAddress
             )
             const deploy = await RemoveLiquidityMakeDeploy(walletAddress, 0.1, 0.1, runtimeArgs)
