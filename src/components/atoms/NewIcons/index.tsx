@@ -9,6 +9,6 @@ export const NewIcons = ({ Icon, size, style={} }) => (
         width: size + 'px', 
         height: size + 'px'
     }}>
-        <Icon width={size} height={size}/>
+        <Icon width={size} height={size} style={style}/>
     </div>
 )
