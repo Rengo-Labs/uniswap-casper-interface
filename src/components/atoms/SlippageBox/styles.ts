@@ -5,7 +5,6 @@ export const SlippageContainer = styled.section`
     display: flex;
     width: 100%;
     align-items: center;
-    padding-top: 10px;
 `
 export const SlippageColumnLeft = styled.section`
     width: 50%;

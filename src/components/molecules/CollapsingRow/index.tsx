@@ -20,7 +20,6 @@ import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled} from "../SwapToken/styles";
 import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
-import {LiquidityRemovingModule} from "../../organisms/LiquidityRemovingModule";
 
 export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
@@ -122,17 +121,6 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                             <CircleButton onClick={() => {goTo("/swap")}}>
                                 <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
-                            <LiquidityRemovingModule isConnected={true}
-                                                     openedPopup={false}
-                                                     onClose={() => {console.log("Cerrar")}}
-                                                     onRemove={() => {console.log("Remove liquidity")}}
-                                                     firstToken={row.original.pair}
-                                                     secondToken={row.original.pair}
-                                                     liquidity={parseFloat(row.original.pair.totalLiquidityPool).toFixed(8)}
-                                                     liquidityUSD={parseFloat(row.original.pair.totalLiquidityUSD)*1000}
-                                                     setAmount={(value) => {console.log("Setear valor ", value)}}
-
-                            />
                             {false &&
                                 <CircleButton onClick={() => {goTo("/liquidity/remove")}}>
                                     <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>

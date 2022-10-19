@@ -6,7 +6,7 @@ import { SwapModulesStyled } from './styles'
 import { LiquidityProviderContext } from '../../../contexts/LiquidityContext'
 import { AiFillPlusCircle, AiOutlineClose, AiOutlinePlus } from 'react-icons/ai'
 import { SearchInputAtom } from '../../atoms/SearchInputAtom'
-import { SwapConfirmAtom, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapTokens, LPDetail } from '../../molecules'
 import casprIcon from '../../../assets/swapIcons/casprIcon.png'
 import { TokensProviderContext } from '../../../contexts/TokensContext'
 import { getStatus, putdeploy, signdeploywithcaspersigner, updateBalances } from '../../../commons/swap'
@@ -46,7 +46,8 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         onCalculateReserves,
         onIncreaseAllow,
         onAddLiquidity,
-        fillPairs
+        fillPairs,
+        getSwapDetail
     } = useContext(ConfigProviderContext)
 
     const [activeModalPrimary, setActiveModalPrimary] = useState(false)
@@ -87,6 +88,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     async function onChangeValueToken(value) {
         amountSwapTokenASetter(value)
         const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
+        const { tokensToTransfer, tokenPrice, priceImpact, exchangeRateA, exchangeRateB } = await getSwapDetail(firstTokenSelected, secondTokenSelected)
         amountSwapTokenBSetter(secondTokenReturn)
         slippSwapTokenSetter(minAmountReturn)
     }
@@ -133,7 +135,6 @@ export const LiquidityModule = ({ tokenOne }: any) => {
                 <SwapTokenBalance disabled={true} token={secondTokenSelected} amountSwapTokenSetter={amountSwapTokenBSetter} amountSwapToken={amountSwapTokenB} />
 
                 {/*<SwapTokenBalance token={primaryToken} />*/}
-
             </SwapContainer>
             {
                 activeModalSecondary &&

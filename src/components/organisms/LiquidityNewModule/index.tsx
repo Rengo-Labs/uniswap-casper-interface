@@ -5,9 +5,7 @@ import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { ButtonConnection, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, NewSwapButton, SearchInputAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
-import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
-import SwitchSwap from '../../atoms/SwitchSwap'
-import { SwapConfirmAtom, SwapModal, SwapToken, SwapTokens } from '../../molecules'
+import {LPDetail, SwapConfirmAtom, SwapModal, SwapToken, SwapTokens} from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
 const LiquidityNewModule = () => {
@@ -224,6 +222,19 @@ const LiquidityNewModule = () => {
                     {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
                     {isConnected && <NewSwapButton content="Add Liquidity" handler={async () => { setActiveModalSwap(true) }} />}
                 </ButtonSpaceStyled>
+                {
+                    amountSwapTokenA > 0 &&
+                    <LPDetail
+                        firstSymbolToken={firstTokenSelected.symbolPair}
+                        firstTokenAmount={amountSwapTokenA}
+                        secondSymbolToken={secondTokenSelected.symbolPair}
+                        secondTokenAmount={amountSwapTokenB}
+                        slippage={slippageToleranceSelected}
+                        slippageSetter={slippSwapTokenSetter}
+                        fullExpanded = {false}
+                        expandedEnabled = {false}
+                        slippageEnabled = {false} />
+                }
                 {
                     activeModalSwap &&
                     <SwapModal >
