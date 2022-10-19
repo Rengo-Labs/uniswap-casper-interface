@@ -229,7 +229,14 @@ const SwapNewModule = () => {
                         </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
-                <SwapDetail />
+                <SwapDetail
+                    firstSymbolToken={firstTokenSelected.symbol}
+                    firstTokenAmount={amountSwapTokenA}
+                    secondSymbolToken={secondTokenSelected.symbol}
+                    secondTokenAmount={amountSwapTokenB}
+                    priceImpact={1.5}
+                    fullExpanded={false}
+                />
                 <ButtonSpaceStyled>
                     {!isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
                     {isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
