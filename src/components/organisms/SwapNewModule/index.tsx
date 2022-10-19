@@ -7,7 +7,7 @@ import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
 import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import SwitchSwap from '../../atoms/SwitchSwap'
-import { SwapConfirmAtom, SwapModal, SwapToken, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapDetail, SwapModal, SwapToken, SwapTokens } from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
 const SwapNewModule = () => {
@@ -229,28 +229,7 @@ const SwapNewModule = () => {
                         </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
-                <NewSwapContainerDetails>
-                    <NewSwapContainerItemsDetails>
-                        <div>Base</div>
-                        <div>{firstTokenSelected.symbol}</div>
-                    </NewSwapContainerItemsDetails>
-                    <NewSwapContainerItemsDetails>
-                        <div>Pool liquidity ({firstTokenSelected.symbol})</div>
-                        <div>6,927,224.93 {firstTokenSelected.symbol}</div>
-                    </NewSwapContainerItemsDetails>
-                    <NewSwapContainerItemsDetails>
-                        <div>Pool liquidity ({secondTokenSelected.symbol})</div>
-                        <div>6,927,224.93 {secondTokenSelected.symbol}</div>
-                    </NewSwapContainerItemsDetails>
-                    <NewSwapContainerItemsDetails>
-                        <div>LP supply</div>
-                        <div>2,759,476.19 LP</div>
-                    </NewSwapContainerItemsDetails>
-                    <NewSwapContainerItemsDetails>
-                        <div>More information</div>
-                        <div></div>
-                    </NewSwapContainerItemsDetails>
-                </NewSwapContainerDetails>
+                <SwapDetail />
                 <ButtonSpaceStyled>
                     {!isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />}
                     {isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { setActiveModalSwap(true) }} />}
@@ -495,7 +474,6 @@ const Container = styled.main`
 const ContainerSwapActions = styled.section`
     box-sizing: border-box;
     width: 462px;
-    height: 698px;
     padding:10px;
     border:1px solid black;
     border-radius: 10px;
