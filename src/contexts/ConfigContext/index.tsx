@@ -360,6 +360,9 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
             Uint8Array.from(Buffer.from(spender, "hex"))
         );
         const paymentAmount = 5_000_000_000;
+
+        console.log('amount', spender, amount)
+
         const runtimeArgs = RuntimeArgs.fromMap({
             spender: createRecipientAddress(spenderByteArray),
             amount: CLValueBuilder.u256(convertToString(amount)),
@@ -895,13 +898,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     async function onIncreaseAllow(amount, contractHash, tokenAAmount, balance) {
         console.log("onIncreaseAllow")
         if (tokenAAmount > balance) {
-            toast.error("Your balance is more less than the amount that you want to approve")
+            toast.error("Your balance is less than the amount that you want to approve")
             return false
         }
         const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
 
         try {
-            const valueTotal = amount * 10 ** 9
+            const valueTotal = Math.ceil(amount * 10 ** 9)
             const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, valueTotal, true)
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)

@@ -168,10 +168,13 @@ const SwapNewModule = () => {
         return tokenFiltered
     }
 
+    const freeAllowance = allowanceA / Math.pow(10, 9) - parseFloat(amountSwapTokenA)
+
+    console.log(allowanceA / Math.pow(10, 9), amountSwapTokenA)
+
     const isApproved = firstTokenSelected.symbol == 'CSPR' || (
         firstTokenSelected.symbol != 'CSPR' &&
-        amountSwapTokenA > 0 &&
-        allowanceA - amountSwapTokenA >= 0
+        freeAllowance >= 0
     )
 
     return (
@@ -273,7 +276,7 @@ const SwapNewModule = () => {
                         !isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />
                     }
                     {
-                        !isApproved && isConnected && <NewSwapButton content={`Approve ${amountSwapTokenA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(amountSwapTokenA, firstTokenSelected.contractHash) }} />
+                        !isApproved && isConnected && <NewSwapButton content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowance, firstTokenSelected.contractHash) }} />
                     }
                     {
                         isApproved && isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { await onConfirmSwap() }} />

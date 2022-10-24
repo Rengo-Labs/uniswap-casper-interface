@@ -22,7 +22,8 @@ const LiquidityNewModule = () => {
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
     const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
     const [switchMovement, switchMovementSetter] = useState(false)
-    const [isApprovedToken, isApprovedTokenSetter] = useState(false)
+    const [allowanceA, setAllowanceA] = useState(0)
+    const [allowanceB, setAllowanceB] = useState(0)
     const {
         onConnectConfig,
         onAddLiquidity,
@@ -39,6 +40,7 @@ const LiquidityNewModule = () => {
         slippageToleranceSelected,
         onCalculateReserves,
         getSwapDetail,
+        getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
         onDisconnectWallet,
         ResetTokens,
@@ -73,13 +75,35 @@ const LiquidityNewModule = () => {
         amountSwapTokenASetter(0)
         onConnectConfig()
     }
-    async function updateSwapDetail(tokenA, tokenB, value) {
+    async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA) {
+        const getSwapDetailP = getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippSwapToken, feeToPay)
+        const ps = [getSwapDetailP]
+
+        if (tokenA.contractHash) {
+            ps.push(getAllowanceAgainstOwnerAndSpender(tokenA.contractHash, walletAddress))
+        } else {
+            ps.push(Promise.resolve(0))
+        }
+
+        if (tokenB.contractHash) {
+            ps.push(getAllowanceAgainstOwnerAndSpender(tokenB.contractHash, walletAddress))
+        } else {
+            ps.push(Promise.resolve(0))
+        }
+
+        const [getSwapDetailResponse, getTokenAAllowanceResponse, getTokenBAllowanceResponse] = await Promise.all(ps)
+
+        setAllowanceA(getTokenAAllowanceResponse)
+        setAllowanceB(getTokenBAllowanceResponse)
+
+        console.log('zzz', getTokenAAllowanceResponse, getTokenBAllowanceResponse)
+
         const {
             tokensToTransfer,
             priceImpact,
             exchangeRateA,
             exchangeRateB
-        } = await getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippSwapToken, feeToPay)
+        } = getSwapDetailResponse
         console.log(tokensToTransfer)
         tokensToTransferSetter(tokensToTransfer)
         priceImpactSetter(priceImpact)
@@ -90,6 +114,13 @@ const LiquidityNewModule = () => {
         switchMovementSetter(value > 0)
         return tokensToTransfer
     }
+
+    async function requestIncreaseAllowance(amount, contractHash) {
+        console.log("requestIncreaseAllowance")
+        await onIncreaseAllow(amount, contractHash, amountSwapTokenA, firstTokenSelected.amount)
+        await updateSwapDetail(firstTokenSelected, secondTokenSelected)
+    }
+
     async function changeTokenA(value) {
         amountSwapTokenASetter(value)
 
@@ -108,11 +139,13 @@ const LiquidityNewModule = () => {
     function SelectAndCloseTokenA(token) {
         onSelectFirstToken(token)
         searchModalASetter(false)
+        updateSwapDetail(token, secondTokenSelected)
     }
     const [searchModalB, searchModalBSetter] = useState(false)
     function SelectAndCloseTokenB(token) {
         onSelectSecondToken(token)
         searchModalBSetter(false)
+        updateSwapDetail(firstTokenSelected, token)
     }
 
     function makeHalf(amount, Setter) {
@@ -137,10 +170,8 @@ const LiquidityNewModule = () => {
         return tokenFiltered
     }
     async function onLiquidity() {
-        if (await onIncreaseAllow(amountSwapTokenB)) {
-            await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
-            onConnectConfig()
-        }
+        await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
+        onConnectConfig()
     }
 
     async function onChangeValueToken(value) {
@@ -149,6 +180,23 @@ const LiquidityNewModule = () => {
         amountSwapTokenBSetter(secondTokenReturn)
         slippSwapTokenSetter(minAmountReturn)
     }
+
+    const freeAllowanceA = allowanceA / Math.pow(10, 9) - parseFloat(amountSwapTokenA)
+
+    const isApprovedA = firstTokenSelected.symbol == 'CSPR' || (
+        firstTokenSelected.symbol != 'CSPR' &&
+        freeAllowanceA >= 0
+    )
+
+    const freeAllowanceB = allowanceB / Math.pow(10, 9) - parseFloat(amountSwapTokenB)
+
+    const isApprovedB = secondTokenSelected.symbol == 'CSPR' || (
+        secondTokenSelected.symbol != 'CSPR' &&
+        freeAllowanceB >= 0
+    )
+
+    console.log('1', freeAllowanceB, allowanceB)
+
     return (
         <Container>
             <ContainerSwapActions>
@@ -216,11 +264,16 @@ const LiquidityNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <ButtonSpaceStyled>
-                    { !isConnected && <NewSwapButton content="Connect to Wallet" handler={() => { onConnect() }} /> }
-                    { isConnected && amountSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p> }
                     { isConnected && amountSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p> }
-                    { isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p> }
-                    { isConnected && <NewSwapButton content="Add Liquidity" handler={async () => { await onLiquidity() }} /> }
+                    { isConnected && amountSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p> }
+                    { !isConnected && <NewSwapButton content="Connect to Wallet" handler={() => { onConnect() }} /> }
+                    {
+                        !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount && <NewSwapButton content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
+                    }
+                    {
+                        !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount && <NewSwapButton content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
+                    }
+                    { isApprovedA && isApprovedB && isConnected && <NewSwapButton content="Add Liquidity" handler={async () => { await onLiquidity() }} /> }
                 </ButtonSpaceStyled>
                 {
                     amountSwapTokenA > 0 &&
@@ -256,6 +309,7 @@ const LiquidityNewModule = () => {
 
                             </SwapConfirmAtom>
                             <ButtonSpaceModalStyled>
+                                <NewSwapButton content={ "Approve " + secondTokenSelected.symbol } handler={ async () => { await onLiquidity(); setActiveModalSwap(false) } } />
                                 <NewSwapButton content={ "Approve " + secondTokenSelected.symbol } handler={ async () => { await onLiquidity(); setActiveModalSwap(false) } } />
                                 <NewSwapButton disabled content="Confirm Add Liquidity" handler={ async () => { await onLiquidity(); setActiveModalSwap(false) } } />
                             </ButtonSpaceModalStyled>
