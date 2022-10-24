@@ -1004,7 +1004,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
         } catch (error) {
             toast.dismiss(loadingToast)
-            console.log("onAddLiquidity")
+            console.log("onAddLiquidity", error)
             toast.error("Ooops, we have a problem")
             return false
         }

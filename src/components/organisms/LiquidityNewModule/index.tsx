@@ -145,17 +145,30 @@ const LiquidityNewModule = () => {
         await updateSwapDetail(firstTokenSelected, secondTokenSelected)
     }
 
-    async function changeTokenA(value) {
-        amountSwapTokenASetter(value)
+    async function changeTokenA(value: string) {
+        let filteredValue = parseFloat(value)
+        if (isNaN(filteredValue)) {
+            filteredValue = 0
+        } else if (filteredValue < 0) {
+            filteredValue = Math.abs(filteredValue)
+        }
 
-        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value, firstTokenSelected)
+        amountSwapTokenASetter(filteredValue)
+
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
         amountSwapTokenBSetter(minTokenToReceive)
     }
 
-    async function changeTokenB(value) {
-        amountSwapTokenBSetter(value)
+    async function changeTokenB(value: string) {let filteredValue = parseFloat(value)
+        if (isNaN(filteredValue)) {
+            filteredValue = 0
+        } else if (filteredValue < 0) {
+            filteredValue = Math.abs(filteredValue)
+        }
 
-        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
+        amountSwapTokenBSetter(filteredValue)
+
+        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, filteredValue, secondTokenSelected)
         amountSwapTokenASetter(minTokenToReceive)
     }
 
@@ -199,7 +212,7 @@ const LiquidityNewModule = () => {
     }
     async function onLiquidity() {
         await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
-        onConnectConfig()
+        //onConnectConfig()
     }
 
     async function onChangeValueToken(value) {
@@ -255,6 +268,7 @@ const LiquidityNewModule = () => {
                                 <BalanceInputContainerStyled>
                                     <BalanceInputItem1Styled>
                                         <BalanceInput
+                                            min={0}
                                             onChange={(e) => { changeTokenA(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenA} />
                                     </BalanceInputItem1Styled>
@@ -304,6 +318,7 @@ const LiquidityNewModule = () => {
                                 <BalanceInputContainerStyled>
                                     <BalanceInputItem1Styled>
                                         <BalanceInput
+                                            min={0}
                                             onChange={(e) => { changeTokenA(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenB} />
                                     </BalanceInputItem1Styled>

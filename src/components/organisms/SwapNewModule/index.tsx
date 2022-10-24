@@ -120,17 +120,30 @@ const SwapNewModule = () => {
         await updateSwapDetail(firstTokenSelected, secondTokenSelected, amount, firstTokenSelected)
     }
 
-    async function changeTokenA(value) {
-        amountSwapTokenASetter(value)
+    async function changeTokenA(value: string) {
+        let filteredValue = parseFloat(value)
+        if (isNaN(filteredValue)) {
+            filteredValue = 0
+        } else if (filteredValue < 0) {
+            filteredValue = Math.abs(filteredValue)
+        }
 
-        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value, firstTokenSelected)
+        amountSwapTokenASetter(filteredValue)
+
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
         amountSwapTokenBSetter(minTokenToReceive)
     }
 
-    async function changeTokenB(value) {
-        amountSwapTokenBSetter(value)
+    async function changeTokenB(value: string) {let filteredValue = parseFloat(value)
+        if (isNaN(filteredValue)) {
+            filteredValue = 0
+        } else if (filteredValue < 0) {
+            filteredValue = Math.abs(filteredValue)
+        }
 
-        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value, secondTokenSelected)
+        amountSwapTokenBSetter(filteredValue)
+
+        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, filteredValue, secondTokenSelected)
         amountSwapTokenASetter(minTokenToReceive)
     }
 
@@ -212,6 +225,7 @@ const SwapNewModule = () => {
                                 <BalanceInputContainerStyled>
                                     <BalanceInputItem1Styled>
                                         <BalanceInput
+                                            min={0}
                                             onChange={(e) => { changeTokenA(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenA} />
                                     </BalanceInputItem1Styled>
@@ -261,6 +275,7 @@ const SwapNewModule = () => {
                                 <BalanceInputContainerStyled>
                                     <BalanceInputItem1Styled>
                                         <BalanceInput
+                                            min={0}
                                             onChange={(e) => { changeTokenA(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenB} />
                                     </BalanceInputItem1Styled>
@@ -359,7 +374,7 @@ const SwapNewModule = () => {
     )
 }
 export const SwapDetailsStyled = styled.div`
-    font-size:1.5rem;
+    font-size:16px;
     color: ${props => props.theme.NewPurpleColor}
 `
 
@@ -368,6 +383,7 @@ export const BalanceInput = styled.input`
     width: 100%;
     height: 100%;
     text-align: right;
+    font-size: 22px;
     &:active{
         border: none;
     }
