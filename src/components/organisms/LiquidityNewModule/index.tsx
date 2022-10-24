@@ -68,7 +68,7 @@ const LiquidityNewModule = () => {
         ResetTokens()
     }
     async function onConfirmSwap() {
-        setActiveModalSwap(false);
+        setActiveModalSwap(false)
         const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
         amountSwapTokenASetter(0)
         onConnectConfig()
@@ -136,7 +136,7 @@ const LiquidityNewModule = () => {
         }, {})
         return tokenFiltered
     }
-    async function onLiquidiy() {
+    async function onLiquidity() {
         if (await onIncreaseAllow(amountSwapTokenB)) {
             await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
             onConnectConfig()
@@ -216,11 +216,11 @@ const LiquidityNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <ButtonSpaceStyled>
-                    {!isConnected && <NewSwapButton content="Connect to Wallet" handler={() => { onConnect() }} />}
-                    {isConnected && amountSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p>}
-                    {isConnected && amountSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p>}
-                    {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
-                    {isConnected && <NewSwapButton content="Add Liquidity" handler={async () => { setActiveModalSwap(true) }} />}
+                    { !isConnected && <NewSwapButton content="Connect to Wallet" handler={() => { onConnect() }} /> }
+                    { isConnected && amountSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p> }
+                    { isConnected && amountSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p> }
+                    { isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p> }
+                    { isConnected && <NewSwapButton content="Add Liquidity" handler={async () => { await onLiquidity() }} /> }
                 </ButtonSpaceStyled>
                 {
                     amountSwapTokenA > 0 &&
@@ -256,8 +256,8 @@ const LiquidityNewModule = () => {
 
                             </SwapConfirmAtom>
                             <ButtonSpaceModalStyled>
-                                <NewSwapButton content={"Approve " + secondTokenSelected.symbol} handler={async () => { await onLiquidiy(); setActiveModalSwap(false) }} />
-                                <NewSwapButton disabled={true} content="Confirm Add Liquidity" handler={async () => { await onLiquidiy(); setActiveModalSwap(false) }} />
+                                <NewSwapButton content={ "Approve " + secondTokenSelected.symbol } handler={ async () => { await onLiquidity(); setActiveModalSwap(false) } } />
+                                <NewSwapButton disabled content="Confirm Add Liquidity" handler={ async () => { await onLiquidity(); setActiveModalSwap(false) } } />
                             </ButtonSpaceModalStyled>
                         </SwapContainerAtom>
                     </SwapModal>

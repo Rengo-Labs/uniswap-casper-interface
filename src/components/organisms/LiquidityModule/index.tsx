@@ -169,7 +169,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
             {isConnected && amountSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p>}
             {isConnected && amountSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p>}
             {isConnected && <p>Slippage Tolerance: {slippageToleranceSelected}%</p>}
-            {isConnected && <SwapButton content="Add Liquidity" handler={async () => { setActiveModalSwap(true) }} />}
+            {isConnected && <SwapButton content="Add Liquidity" handler={async () => { onLiquidiy() }} />}
             {
                 activeModalSwap &&
                 <SwapModal >
