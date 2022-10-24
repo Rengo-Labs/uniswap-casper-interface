@@ -244,6 +244,28 @@ async function calculateReserves(firstTokenSelected, secondTokenSelected, value)
     }
 }
 
+async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey) {
+    if (!contractHash || !activePublicKey) {
+        return 0
+    }
+
+    const allowanceParam = {
+        contractHash: contractHash.slice(5),
+        owner: CLPublicKey.fromHex(activePublicKey)
+            .toAccountHashStr()
+            .slice(13),
+        spender: ROUTER_PACKAGE_HASH,
+    };
+    try {
+        const res = await axios.post(`${BASE_URL}/allowanceagainstownerandspender`, allowanceParam)
+        console.log(res.data)
+        return res.data.allowance;            
+    } catch(error) {
+        console.log(error);
+        console.log(error.response);
+    }
+}
+
 async function allowanceAgainstOwnerAndSpenderPaircontract(pair, activePublicKey) {
     const allowanceParam = {
         contractHash: pair,
@@ -1041,6 +1063,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSwitchTokens,
             onCalculateReserves,
             getSwapDetail,
+            getAllowanceAgainstOwnerAndSpender,
             tokens,
             firstTokenSelected,
             secondTokenSelected,
