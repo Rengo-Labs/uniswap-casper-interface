@@ -5,8 +5,34 @@ import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { ButtonConnection, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, NewSwapButton, SearchInputAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
+import LoadersSwap from '../../atoms/LoadersSwap'
+import SwitchSwap from '../../atoms/SwitchSwap'
 import {LPDetail, SwapConfirmAtom, SwapModal, SwapToken, SwapTokens} from '../../molecules'
 import FloatMenu from '../FloatMenu'
+
+import {
+    TokenSelectStyled,
+    TokenSelectionStyled,
+    NewTokenDetailSelectStyled,
+    NewTokenDetailItems1Styled,
+    NewTokenDetailItems2Styled,
+    NewTokenDetailItems3Styled,
+    NewTokenDetailItems4Styled,
+    NewSwapContainer,
+    NewTokenDetailActionsStyled,
+    NewBalanceSpace,
+    ArrowContainerStyle,
+    ActionContainerStyled,
+    BalanceInput,
+    BalanceInputContainerStyled,
+    BalanceInputItem1Styled,
+    BalanceInputItem2Styled,
+    SwapDetailsStyled,    
+    ButtonHalfMaxContainer,
+    ButtonHalfMax,
+    IconPlaceStyle,
+    ButtonSpaceStyled,
+} from '../SwapNewModule'
 
 const LiquidityNewModule = () => {
     const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
@@ -119,17 +145,30 @@ const LiquidityNewModule = () => {
         await updateSwapDetail(firstTokenSelected, secondTokenSelected)
     }
 
-    async function changeTokenA(value) {
-        amountSwapTokenASetter(value)
+    async function changeTokenA(value: string) {
+        let filteredValue = parseFloat(value)
+        if (isNaN(filteredValue)) {
+            filteredValue = 0
+        } else if (filteredValue < 0) {
+            filteredValue = Math.abs(filteredValue)
+        }
 
-        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value, firstTokenSelected)
+        amountSwapTokenASetter(filteredValue)
+
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
         amountSwapTokenBSetter(minTokenToReceive)
     }
 
-    async function changeTokenB(value) {
-        amountSwapTokenBSetter(value)
+    async function changeTokenB(value: string) {let filteredValue = parseFloat(value)
+        if (isNaN(filteredValue)) {
+            filteredValue = 0
+        } else if (filteredValue < 0) {
+            filteredValue = Math.abs(filteredValue)
+        }
 
-        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
+        amountSwapTokenBSetter(filteredValue)
+
+        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, filteredValue, secondTokenSelected)
         amountSwapTokenASetter(minTokenToReceive)
     }
 
@@ -173,7 +212,7 @@ const LiquidityNewModule = () => {
     }
     async function onLiquidity() {
         await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
-        onConnectConfig()
+        //onConnectConfig()
     }
 
     async function onChangeValueToken(value) {
@@ -202,65 +241,93 @@ const LiquidityNewModule = () => {
             <ContainerSwapActions>
                 <NewSwapContainer>
                     <TokenSelectStyled>
-                        <div>From</div>
-                        <div>Balance: {firstTokenSelected.amount || "--"}</div>
+                        <NewTokenDetailSelectStyled>
+                            <NewTokenDetailItems1Styled>From</NewTokenDetailItems1Styled>
+                            <NewTokenDetailItems2Styled src={firstTokenSelected.logoURI} width="50" height="50" />
+                            <NewTokenDetailItems3Styled>{firstTokenSelected.symbol}</NewTokenDetailItems3Styled>
+                            <NewTokenDetailItems4Styled>
+                                <ArrowContainerStyle>
+                                    <FlechaIcon onClick={() => { searchModalASetter(true) }} />
+                                    {searchModalA && <FloatMenu
+                                        tokens={tokens}
+                                        selectToken={SelectAndCloseTokenA}
+                                        onClick={() => { searchModalASetter(false) }}
+                                    />}
+                                </ArrowContainerStyle>
+                            </NewTokenDetailItems4Styled>
+                        </NewTokenDetailSelectStyled>
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
-                        <div>
-                            <img src={firstTokenSelected.logoURI} width="50" height="50" />
-                            <div>{firstTokenSelected.symbol}</div>
-                        </div>
-                        <ArrowContainerStyle>
-                            <FlechaIcon onClick={() => { searchModalASetter(true) }} />
-                            {searchModalA && <FloatMenu
-                                tokens={tokens}
-                                selectToken={SelectAndCloseTokenA}
-                                onClick={() => { searchModalASetter(false) }}
-                            />}
-                        </ArrowContainerStyle>
-                        <StickStyle />
-                        <ButtonHalfMaxContainer>
-                            <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
-                            <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
-                        </ButtonHalfMaxContainer>
-                        <div>
-                            <BalanceInput
-                                onChange={(e) => { changeTokenA(e.target.value) }}
-                                type="number" name="" id="" value={amountSwapTokenA} />
-                        </div>
+                        <NewTokenDetailActionsStyled>
+                            <NewBalanceSpace>Balance: {firstTokenSelected.amount || "--"}</NewBalanceSpace>
+                            <ActionContainerStyled>
+                                <ButtonHalfMaxContainer>
+                                    <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
+                                    <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
+                                </ButtonHalfMaxContainer>
+                                <BalanceInputContainerStyled>
+                                    <BalanceInputItem1Styled>
+                                        <BalanceInput
+                                            min={0}
+                                            onChange={(e) => { changeTokenA(e.target.value) }}
+                                            type="number" name="" id="" value={amountSwapTokenA} />
+                                    </BalanceInputItem1Styled>
+                                    <BalanceInputItem2Styled>
+                                        <p>$34.75</p>
+                                    </BalanceInputItem2Styled>
+                                </BalanceInputContainerStyled>
+                            </ActionContainerStyled>
+                        </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <IconPlaceStyle>
-                    <AiFillPlusCircle />
+                    <SwitchSwap onClick={() => { onSwitchTokens(); ResetAll() }} />
+                    <SwapDetailsStyled>
+                        <p>
+                        {amountSwapTokenB}{" " + secondTokenSelected.symbol + " "}={" " + amountSwapTokenA + " "}{firstTokenSelected.symbol}
+                        </p>
+                    </SwapDetailsStyled>
+                    <LoadersSwap />
                 </IconPlaceStyle>
                 <NewSwapContainer>
                     <TokenSelectStyled>
-                        <div>To</div>
-                        <div>Balance: {secondTokenSelected.amount || "--"}</div>
+                        <NewTokenDetailSelectStyled>
+                            <NewTokenDetailItems1Styled>To</NewTokenDetailItems1Styled>
+                            <NewTokenDetailItems2Styled src={secondTokenSelected.logoURI} width="50" height="50" />
+                            <NewTokenDetailItems3Styled>{secondTokenSelected.symbol}</NewTokenDetailItems3Styled>
+                            <NewTokenDetailItems4Styled>
+                                <ArrowContainerStyle>
+                                    <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
+                                    {searchModalB && <FloatMenu
+                                        tokens={returnFilter(tokens, firstTokenSelected)}
+                                        selectToken={SelectAndCloseTokenB}
+                                        onClick={() => { searchModalBSetter(false) }}
+                                    />}
+                                </ArrowContainerStyle>
+                            </NewTokenDetailItems4Styled>
+                        </NewTokenDetailSelectStyled>
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
-                        <div>
-                            <img src={secondTokenSelected.logoURI} width="50" height="50" />
-                            <div>{secondTokenSelected.symbol}</div>
-                        </div>
-                        <ArrowContainerStyle>
-                            <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
-                            {searchModalB && <FloatMenu
-                                tokens={returnFilter(tokens, firstTokenSelected)}
-                                selectToken={SelectAndCloseTokenB}
-                                onClick={() => { searchModalBSetter(false) }}
-                            />}
-                        </ArrowContainerStyle>
-                        <StickStyle />
-                        <ButtonHalfMaxContainer>
-                            <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, amountSwapTokenBSetter) }}>Half</ButtonHalfMax>
-                            <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, amountSwapTokenBSetter) }}>Max</ButtonHalfMax>
-                        </ButtonHalfMaxContainer>
-                        <div>
-                            <BalanceInput
-                                onChange={(e) => { changeTokenB(e.target.value) }}
-                                type="number" name="" id="" value={amountSwapTokenB} />
-                        </div>
+                        <NewTokenDetailActionsStyled>
+                            <NewBalanceSpace>Balance: {secondTokenSelected.amount || "--"}</NewBalanceSpace>
+                            <ActionContainerStyled>
+                                <ButtonHalfMaxContainer>
+                                    <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
+                                    <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
+                                </ButtonHalfMaxContainer>
+                                <BalanceInputContainerStyled>
+                                    <BalanceInputItem1Styled>
+                                        <BalanceInput
+                                            min={0}
+                                            onChange={(e) => { changeTokenA(e.target.value) }}
+                                            type="number" name="" id="" value={amountSwapTokenB} />
+                                    </BalanceInputItem1Styled>
+                                    <BalanceInputItem2Styled>
+                                        <p>$34.75</p>
+                                    </BalanceInputItem2Styled>
+                                </BalanceInputContainerStyled>
+                            </ActionContainerStyled>
+                        </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <ButtonSpaceStyled>
@@ -273,7 +340,7 @@ const LiquidityNewModule = () => {
                     {
                         !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount && <NewSwapButton content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
                     }
-                    { isApprovedA && isApprovedB && isConnected && <NewSwapButton content="Add Liquidity" handler={async () => { await onLiquidity() }} /> }
+                    { isApprovedA && isApprovedB && isConnected && <NewSwapButton disabled={ amountSwapTokenA <= 0 || amountSwapTokenB  <= 0}content="Add Liquidity" handler={async () => { await onLiquidity() }} /> }
                 </ButtonSpaceStyled>
                 {
                     amountSwapTokenA > 0 &&
@@ -287,34 +354,6 @@ const LiquidityNewModule = () => {
                         fullExpanded = {false}
                         expandedEnabled = {false}
                         slippageEnabled = {false} />
-                }
-                {
-                    activeModalSwap &&
-                    <SwapModal >
-                        <SwapContainerAtom >
-                            <SwapHeaderAtom>
-                                <HeaderModalAtom>Confirm Add Liquidity</HeaderModalAtom>
-                                <CloseButtonAtom onClick={() => { setActiveModalSwap(false) }}>
-                                    <AiOutlineClose />
-                                </CloseButtonAtom>
-                            </SwapHeaderAtom>
-                            <SwapConfirmAtom
-                                firstTokenSelected={firstTokenSelected}
-                                secondTokenSelected={secondTokenSelected}
-                                amountSwapTokenA={amountSwapTokenA}
-                                amountSwapTokenB={amountSwapTokenB}
-                                slippSwapToken={slippSwapToken}
-                                liquidity={true}
-                            >
-
-                            </SwapConfirmAtom>
-                            <ButtonSpaceModalStyled>
-                                <NewSwapButton content={ "Approve " + secondTokenSelected.symbol } handler={ async () => { await onLiquidity(); setActiveModalSwap(false) } } />
-                                <NewSwapButton content={ "Approve " + secondTokenSelected.symbol } handler={ async () => { await onLiquidity(); setActiveModalSwap(false) } } />
-                                <NewSwapButton disabled content="Confirm Add Liquidity" handler={ async () => { await onLiquidity(); setActiveModalSwap(false) } } />
-                            </ButtonSpaceModalStyled>
-                        </SwapContainerAtom>
-                    </SwapModal>
                 }
 
             </ContainerSwapActions>
@@ -355,70 +394,12 @@ const LiquidityNewModule = () => {
         </Container>
     )
 }
-const BalanceInput = styled.input`
-    all: unset;
-    width: 100%;
-    height: 100%;
-    text-align: right;
-    &:active{
-        border: none;
-    }
-`
 
-const StickStyle = styled.div`
-    color:${props => props.theme.NewPurpleColor};
-    font-size: 5em;
-    border-left:3px solid ${props => props.theme.NewPurpleColor};
-    &::before{
-        content: ".";
-        color:white;
-    }
-`
-
-const ArrowContainerStyle = styled.div`
-    align-self: start;
-`
-const ButtonHalfMaxContainer = styled.div`
-    display: grid;
-    gap:10px;
-`
-
-const ButtonHalfMax = styled.div<any>`
-    background-color: ${props => props.theme.NewAquamarineColor};
-    color: ${props => props.theme.NewPurpleColor};
-    padding:10px;
-    border-radius: 12px;
-    cursor: pointer;
-`
-
-const IconPlaceStyle = styled.div`
-    justify-self: center;
-    font-size: 3rem;
-    color: ${props => props.theme.NewPurpleColor};
-`
-const ButtonSpaceStyled = styled.div`
-    justify-self: center;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap:10px;
-    justify-content: center;
-`
 const ButtonSpaceModalStyled = styled.div`
     width: 100%;
     display: flex;
     gap:10px;
     justify-content: center;
-`
-const TokenSelectStyled = styled.div`
-    display: flex;
-    justify-content: space-between;
-`
-const TokenSelectionStyled = styled.div`
-    display: flex;
-    align-items: center;
-    gap:10px;
 `
 
 const CoinContainerStyled = styled.div`
@@ -441,14 +422,6 @@ const ContainerSwapStatics = styled.section`
     justify-content: start;
     align-items: start;
     gap:10px;
-`
-const NewSwapContainer = styled.section`
-    box-sizing: border-box; 
-    width: 100%;
-    padding: 1rem;
-    border:1px solid black;
-    border-radius: 10px;
-    display: grid;
 `
 
 const Container = styled.main`
