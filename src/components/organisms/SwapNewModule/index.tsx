@@ -83,19 +83,19 @@ const SwapNewModule = () => {
         onConnectConfig()
     }
 
-    async function updateSwapDetail(value = amountSwapTokenA, token = firstTokenSelected) {
-        const getSwapDetailP = getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippSwapToken, feeToPay)
+    async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
+        const getSwapDetailP = getSwapDetail(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
         const ps = [getSwapDetailP]
 
         if (token.contractHash) {
             ps.push(getAllowanceAgainstOwnerAndSpender(token.contractHash, walletAddress))
+        } else {
+            ps.push(Promise.resolve(0))
         }
 
         const [getSwapDetailResponse, getAllowanceAgainstOwnerAndSpenderResponse] = await Promise.all(ps)
 
-        if (getAllowanceAgainstOwnerAndSpenderResponse != null) {
-            setAllowanceA(getAllowanceAgainstOwnerAndSpenderResponse)
-        }
+        setAllowanceA(getAllowanceAgainstOwnerAndSpenderResponse)
 
         const {
             tokensToTransfer,
@@ -117,34 +117,38 @@ const SwapNewModule = () => {
     async function requestIncreaseAllowance(amount, contractHash) {
         console.log("requestIncreaseAllowance")
         await onIncreaseAllow(amount, contractHash, amountSwapTokenA, firstTokenSelected.amount)
-        await updateSwapDetail(amountSwapTokenA)
+        await updateSwapDetail(firstTokenSelected, secondTokenSelected, amount, firstTokenSelected)
     }
 
     async function changeTokenA(value) {
         amountSwapTokenASetter(value)
 
-        const minTokenToReceive = await updateSwapDetail(value)
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value, firstTokenSelected)
         amountSwapTokenBSetter(minTokenToReceive)
     }
 
     async function changeTokenB(value) {
         amountSwapTokenBSetter(value)
 
-        const minTokenToReceive = await updateSwapDetail(amountSwapTokenA)
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value, secondTokenSelected)
         amountSwapTokenASetter(minTokenToReceive)
     }
 
     const [searchModalA, searchModalASetter] = useState(false)
-    function SelectAndCloseTokenA(token) {
+    async function SelectAndCloseTokenA(token) {
         onSelectFirstToken(token)
         searchModalASetter(false)
-        updateSwapDetail(amountSwapTokenA, token)
+
+        const minTokenToReceive = await updateSwapDetail(token, secondTokenSelected, amountSwapTokenA, token)
+        amountSwapTokenBSetter(minTokenToReceive)
+
     }
     const [searchModalB, searchModalBSetter] = useState(false)
-    function SelectAndCloseTokenB(token) {
+    async function SelectAndCloseTokenB(token) {
         onSelectSecondToken(token)
         searchModalBSetter(false)
-        updateSwapDetail(amountSwapTokenB)
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, token, amountSwapTokenB, token)
+        amountSwapTokenASetter(minTokenToReceive)
     }
 
     function makeHalf(amount, Setter) {
@@ -170,8 +174,6 @@ const SwapNewModule = () => {
     }
 
     const freeAllowance = allowanceA / Math.pow(10, 9) - parseFloat(amountSwapTokenA)
-
-    console.log(allowanceA / Math.pow(10, 9), amountSwapTokenA)
 
     const isApproved = firstTokenSelected.symbol == 'CSPR' || (
         firstTokenSelected.symbol != 'CSPR' &&

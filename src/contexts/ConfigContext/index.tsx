@@ -190,7 +190,7 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue
         })
         if (response.data.success) {
 
-            const isA2B = token.symbol !== firstTokenSelected.symbol
+            const isA2B = token.symbol == firstTokenSelected.symbol
 
             const liquidityA = new Decimal(response.data.reserve0)
             const liquidityB = new Decimal(response.data.reserve1)

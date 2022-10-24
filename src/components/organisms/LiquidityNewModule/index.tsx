@@ -96,8 +96,6 @@ const LiquidityNewModule = () => {
         setAllowanceA(getTokenAAllowanceResponse)
         setAllowanceB(getTokenBAllowanceResponse)
 
-        console.log('zzz', getTokenAAllowanceResponse, getTokenBAllowanceResponse)
-
         const {
             tokensToTransfer,
             priceImpact,
@@ -124,28 +122,32 @@ const LiquidityNewModule = () => {
     async function changeTokenA(value) {
         amountSwapTokenASetter(value)
 
-        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value)
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value, firstTokenSelected)
         amountSwapTokenBSetter(minTokenToReceive)
     }
 
     async function changeTokenB(value) {
         amountSwapTokenBSetter(value)
 
-        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, value)
+        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
         amountSwapTokenASetter(minTokenToReceive)
     }
 
     const [searchModalA, searchModalASetter] = useState(false)
-    function SelectAndCloseTokenA(token) {
+    async function SelectAndCloseTokenA(token) {
         onSelectFirstToken(token)
         searchModalASetter(false)
-        updateSwapDetail(token, secondTokenSelected)
+
+        const minTokenToReceive = await updateSwapDetail(token, secondTokenSelected, amountSwapTokenA, token)
+        amountSwapTokenBSetter(minTokenToReceive)
+
     }
     const [searchModalB, searchModalBSetter] = useState(false)
-    function SelectAndCloseTokenB(token) {
+    async function SelectAndCloseTokenB(token) {
         onSelectSecondToken(token)
         searchModalBSetter(false)
-        updateSwapDetail(firstTokenSelected, token)
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, token, amountSwapTokenB, token)
+        amountSwapTokenASetter(minTokenToReceive)
     }
 
     function makeHalf(amount, Setter) {
@@ -194,8 +196,6 @@ const LiquidityNewModule = () => {
         secondTokenSelected.symbol != 'CSPR' &&
         freeAllowanceB >= 0
     )
-
-    console.log('1', freeAllowanceB, allowanceB)
 
     return (
         <Container>
