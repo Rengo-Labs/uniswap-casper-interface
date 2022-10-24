@@ -358,12 +358,12 @@ const SwapNewModule = () => {
         </Container>
     )
 }
-const SwapDetailsStyled = styled.div`
+export const SwapDetailsStyled = styled.div`
     font-size:1.5rem;
     color: ${props => props.theme.NewPurpleColor}
 `
 
-const BalanceInput = styled.input`
+export const BalanceInput = styled.input`
     all: unset;
     width: 100%;
     height: 100%;
@@ -373,38 +373,38 @@ const BalanceInput = styled.input`
     }
 `
 
-const BalanceInputContainerStyled = styled.div`
+export const BalanceInputContainerStyled = styled.div`
     width: 100%;
     display: grid;
     grid-template-rows: auto auto;
     justify-items: end;
     gap:10px;
 `
-const BalanceInputItem1Styled = styled.div`
+export const BalanceInputItem1Styled = styled.div`
     align-self: center;
     color:${props => props.theme.NewPurpleColor};
     font-size: 3em;
 `
-const BalanceInputItem2Styled = styled.div`
+export const BalanceInputItem2Styled = styled.div`
 align-self: center;
 `
 
-const ArrowContainerStyle = styled.div`
+export const ArrowContainerStyle = styled.div`
     padding-top:10px;
     align-self: start;
 `
-const ActionContainerStyled = styled.div`
+export const ActionContainerStyled = styled.div`
     display: flex;
 `
 
-const ButtonHalfMaxContainer = styled.div`
+export const ButtonHalfMaxContainer = styled.div`
     border-left: 3px solid ${props => props.theme.NewPurpleColor};
     padding-left:10px;
     display: grid;
     gap:10px;
 `
 
-const ButtonHalfMax = styled.div<any>`
+export const ButtonHalfMax = styled.div<any>`
     background-color: ${props => props.theme.NewAquamarineColor};
     color: ${props => props.theme.NewPurpleColor};
     padding:10px;
@@ -412,12 +412,12 @@ const ButtonHalfMax = styled.div<any>`
     cursor: pointer;
 `
 
-const IconPlaceStyle = styled.div`
+export const IconPlaceStyle = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
 `
-const ButtonSpaceStyled = styled.div`
+export const ButtonSpaceStyled = styled.div`
     justify-self: center;
     width: 100%;
     display: flex;
@@ -426,11 +426,11 @@ const ButtonSpaceStyled = styled.div`
     flex-direction: column;
     gap: 10px;
 `
-const TokenSelectStyled = styled.div`
+export const TokenSelectStyled = styled.div`
     display: flex;
     justify-content: space-between;
 `
-const TokenSelectionStyled = styled.div`
+export const TokenSelectionStyled = styled.div`
     display: flex;
     align-items: center;
     gap:10px;
@@ -461,42 +461,42 @@ const ContainerSwapStatics = styled.section`
     align-items: center;
     gap:10px;
 `
-const NewTokenDetailSelectStyled = styled.section`
+export const NewTokenDetailSelectStyled = styled.section`
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: auto auto auto;
 `
-const NewTokenDetailItems1Styled = styled.section`
+export const NewTokenDetailItems1Styled = styled.section`
     grid-column: 1/2;
     grid-row: 1/2;
     justify-self: center;
 `
-const NewTokenDetailItems2Styled = styled.img`
+export const NewTokenDetailItems2Styled = styled.img`
     grid-column: 1/2;
     grid-row: 2/3;
     align-self: center;
 `
-const NewTokenDetailItems3Styled = styled.section`
+export const NewTokenDetailItems3Styled = styled.section`
     grid-column: 1/2;
     grid-row: 3/4;
     justify-self: center;
 `
-const NewTokenDetailItems4Styled = styled.section`
+export const NewTokenDetailItems4Styled = styled.section`
     grid-column: 2/3;
     grid-row: 2/3;
     justify-self: center;
 `
 
-const NewTokenDetailActionsStyled = styled.section`
+export const NewTokenDetailActionsStyled = styled.section`
     width: 100%;
     display: grid;
     grid-template-rows: auto 1fr;
 `
-const NewBalanceSpace = styled.section`
+export const NewBalanceSpace = styled.section`
     justify-self:end;
 `
 
-const NewSwapContainer = styled.section`
+export const NewSwapContainer = styled.section`
     background-color:white;
     box-sizing: border-box; 
     justify-self: center;
