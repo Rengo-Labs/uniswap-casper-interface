@@ -408,7 +408,7 @@ export async function removeLiquidityPutDeploy(signedDeploy, activePublicKey) {
 }
 
 export function CLBArray(token) {
-  return new CLByteArray(Uint8Array.from(Buffer.from(token.slice(5), "hex")));
+  return new CLByteArray(Uint8Array.from(Buffer.from(token, "hex")));
 }
 
 export function removeLiquidityArgs(
@@ -429,11 +429,11 @@ export function removeLiquidityArgs(
   const token_BAmount = (1 / 100).toFixed(9); //tokenBAmountPercent.toFixed(9);
   try {
     return RuntimeArgs.fromMap({
-      token_a: new CLKey(_token_a),
-      token_b: new CLKey(_token_b),
-      liquidity: CLValueBuilder.u256(normilizeAmountToString(1)),
-      amount_a_min: CLValueBuilder.u256(normilizeAmountToString(10)),
-      amount_b_min: CLValueBuilder.u256(normilizeAmountToString(10)),
+      token_a: CLValueBuilder.key(_token_a),
+      token_b: CLValueBuilder.key(_token_b),
+      liquidity: CLValueBuilder.u256(normilizeAmountToString(liquidity)),
+      amount_a_min: CLValueBuilder.u256(normilizeAmountToString(token_AAmount_)),
+      amount_b_min: CLValueBuilder.u256(normilizeAmountToString(token_BAmount_)),
       to: createRecipientAddress(publicKey),
       deadline: CLValueBuilder.u256(deadline),
     });
