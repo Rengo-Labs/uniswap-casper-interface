@@ -1,5 +1,6 @@
 import Torus from '@toruslabs/casper-embed';
 import axios from 'axios';
+import Decimal from 'decimal.js'
 import {
     AccessRights,
     CasperServiceByJsonRPC, CLAccountHash,
@@ -178,7 +179,7 @@ async function swapMakeDeploy(
  * @param slippage
  * @param fee
  */
-async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) {
+async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue, token, slippage = 0.005, fee = 0.003) {
     try {
         //const response = await getPairTokenReserve(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
@@ -189,32 +190,52 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
         })
         if (response.data.success) {
 
-            const liquidityA = parseFloat(response.data.reserve0)
-            const liquidityB = parseFloat(response.data.reserve1)
-            const tokenToTrade = parseFloat(value) * (1 - fee)
+            const isA2B = token.symbol !== firstTokenSelected.symbol
 
-            const constantProduct = liquidityA * liquidityB
-            console.log("liquidityA", liquidityA, "liquidityB", liquidityB, "constant_product", constantProduct, "tokenToTrade", tokenToTrade)
+            const liquidityA = new Decimal(response.data.reserve0)
+            const liquidityB = new Decimal(response.data.reserve1)
+            const inputValueMinusFee = new Decimal(inputValue).mul(1 - fee)
 
-            const newLiquidityAPool = liquidityA + tokenToTrade
-            const newLiquidityBPool = constantProduct / newLiquidityAPool
-            console.log("new_liquidity_a_pool", newLiquidityAPool, "new_liquidity_b_pool", newLiquidityBPool)
+            const inputLiquidity = isA2B ? liquidityA : liquidityB
+            const outputLiquidity = isA2B ? liquidityB : liquidityA
 
-            const tokensToTransfer = (liquidityB - newLiquidityBPool)
+            const constantProduct = liquidityA.mul(liquidityB)
+            console.log("liquidityA", liquidityA.toNumber(), "liquidityB", liquidityB.toNumber(), "constant_product", constantProduct.toNumber(), "tokenToTrade", inputValueMinusFee.toNumber())
+
+            let newLiquidityAPool = liquidityA
+            let newLiquidityBPool = liquidityB
+
+            if (isA2B) {
+                newLiquidityAPool = liquidityA.add(inputValueMinusFee)
+                newLiquidityBPool = constantProduct.div(newLiquidityAPool)
+            } else {
+                newLiquidityBPool = liquidityB.add(inputValueMinusFee)
+                newLiquidityAPool = constantProduct.div(newLiquidityBPool)
+            }
+
+            const newLiquidityInputPool = isA2B ? newLiquidityAPool : newLiquidityBPool
+            const newLiquidityOutputPool = isA2B ? newLiquidityBPool : newLiquidityAPool
+
+            console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
+
+            const tokensToTransfer = (outputLiquidity.sub(newLiquidityOutputPool))
             console.log("tokensToTransfer", tokensToTransfer)
 
-            const exchangeRateA = tokensToTransfer / parseFloat(value)
-            const exchangeRateB = parseFloat(value) / tokensToTransfer
+            const inputExchangeRate = tokensToTransfer.div(inputValue)
+            const outputExchangeRate = new Decimal(1).div(inputExchangeRate)
+
+            const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
+            const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
             console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
-            const priceImpact = ((tokenToTrade / (liquidityA + tokenToTrade)) * 100)
+            const priceImpact = inputValueMinusFee.div(inputLiquidity.add(inputValueMinusFee)).mul(100).toNumber()
             console.log("priceImpact", priceImpact)
 
             return {
-                tokensToTransfer: tokensToTransfer.toFixed(8),
+                tokensToTransfer: tokensToTransfer.toNumber(),
                 priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
-                exchangeRateA,
-                exchangeRateB
+                exchangeRateA: exchangeRateA.toNumber(),
+                exchangeRateB : exchangeRateB.toNumber()
             }
         }
         throw Error()

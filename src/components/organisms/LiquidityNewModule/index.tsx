@@ -75,8 +75,8 @@ const LiquidityNewModule = () => {
         amountSwapTokenASetter(0)
         onConnectConfig()
     }
-    async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA) {
-        const getSwapDetailP = getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippSwapToken, feeToPay)
+    async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
+        const getSwapDetailP = getSwapDetail(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
         const ps = [getSwapDetailP]
 
         if (tokenA.contractHash) {
