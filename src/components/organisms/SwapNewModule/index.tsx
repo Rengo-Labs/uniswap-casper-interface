@@ -5,6 +5,7 @@ import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { ButtonConnection, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, NewSwapButton, SearchInputAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
+import LoadersSwap from '../../atoms/LoadersSwap'
 import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import SwitchSwap from '../../atoms/SwitchSwap'
 import { SwapConfirmAtom, SwapDetail, SwapModal, SwapToken, SwapTokens } from '../../molecules'
@@ -188,6 +189,12 @@ const SwapNewModule = () => {
                 </NewSwapContainer>
                 <IconPlaceStyle>
                     <SwitchSwap onClick={() => { onSwitchTokens(); ResetAll() }} />
+                    <SwapDetailsStyled>
+                        <p>
+                        {amountSwapTokenB}{" " + secondTokenSelected.symbol + " "}={" " + amountSwapTokenA + " "}{firstTokenSelected.symbol}
+                        </p>
+                    </SwapDetailsStyled>
+                    <LoadersSwap />
                 </IconPlaceStyle>
                 <NewSwapContainer>
                     <TokenSelectStyled>
@@ -308,6 +315,11 @@ const SwapNewModule = () => {
         </Container>
     )
 }
+const SwapDetailsStyled = styled.div`
+    font-size:1.5rem;
+    color: ${props => props.theme.NewPurpleColor}
+`
+
 const BalanceInput = styled.input`
     all: unset;
     width: 100%;
@@ -318,15 +330,6 @@ const BalanceInput = styled.input`
     }
 `
 
-const StickStyle = styled.div`
-    color:${props => props.theme.NewPurpleColor};
-    font-size: 5em;
-    border-left:3px solid ${props => props.theme.NewPurpleColor};
-    &::before{
-        content: ".";
-        color:white;
-    }
-`
 const BalanceInputContainerStyled = styled.div`
     width: 100%;
     display: grid;
@@ -367,9 +370,9 @@ const ButtonHalfMax = styled.div<any>`
 `
 
 const IconPlaceStyle = styled.div`
-    justify-self: center;
-    align-self: center;
-
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `
 const ButtonSpaceStyled = styled.div`
     justify-self: center;
@@ -388,23 +391,24 @@ const TokenSelectionStyled = styled.div`
 `
 
 const CoinContainerStyled = styled.div`
+    width: 27rem;
+    height: 3.5rem;
     box-sizing: border-box;
     border:1px solid black;
-    border-radius: 10px;
+    border-radius: 20px;
     padding:10px;
     display: flex;
     gap:10px;
     align-items: center;
 `
 const ContainerSwapStatics = styled.section`
+    justify-self: start;
     box-sizing: border-box;
-    width: 462px;
-    height: 193px;
-    padding:10px;
+    width: 29rem;
+    height: 10rem;
+    padding:2rem;
     border:1px solid black;
-    border-radius: 10px;
-    display:grid;
-    gap:10px;
+    border-radius: 20px;
     display:flex;
     flex-direction: column;
     justify-content: center;
@@ -445,21 +449,16 @@ const NewTokenDetailActionsStyled = styled.section`
 const NewBalanceSpace = styled.section`
     justify-self:end;
 `
-const StickAndArrowStyled = styled.section`
-    height: 100%;
-    display: flex;
-    gap:10px;
-`
 
 const NewSwapContainer = styled.section`
     background-color:white;
     box-sizing: border-box; 
     justify-self: center;
-    width: 393px;
-    height: 132px;
+    width: 24rem;
+    height: 8rem;
     padding: 1rem;
     border:1px solid black;
-    border-radius: 10px;
+    border-radius: 20px;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 10px;
@@ -472,44 +471,23 @@ const Container = styled.main`
     height:100%;
     width: 100%;
     gap:10px;
-    padding:10px;
     color:black;
     display: grid;
-    grid-template-rows: auto auto;
-    justify-items: center;
+    grid-template-columns: auto auto;
 `
 const ContainerSwapActions = styled.section`
+    justify-self: end;
     box-sizing: border-box;
-    width: 462px;
-    padding:10px;
+    width: 29rem;
+    height: 42rem;
     border:1px solid black;
-    border-radius: 10px;
-    display:flex;
+    border-radius: 20px;
+    display:grid;
     flex-direction: column;
+    justify-content:center;
     align-items: center;
     gap:10px;
+    padding:2rem;
 `
-const NewSwapContainerDetails = styled.section`
-    box-sizing: border-box;
-    width: 391px;
-    height: 190px;
-    /* UI Properties */
-    border: 1px solid var(--unnamed-color-000000);
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 1px solid #000000;
-    border-radius: 20px;
-    opacity: 1;
-    display: flex;
-    flex-direction: column;
-    padding:10px;
-    justify-content:space-around;
-`
-const NewSwapContainerItemsDetails = styled.section`
-    box-sizing: border-box;
-    display: flex;
-    justify-content: space-between;
-`
-
-
 
 export default SwapNewModule

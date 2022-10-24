@@ -2,9 +2,9 @@ import styled from 'styled-components'
 
 export const CollapsingContainerStyled = styled.div`
     box-sizing: border-box;
-    width: 391px;
+    width: 24rem;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 20px;
     border: 1px solid black;
     grid-template-rows: auto auto;
     background-color: white;
