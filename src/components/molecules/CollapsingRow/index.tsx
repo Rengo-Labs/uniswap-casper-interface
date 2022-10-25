@@ -31,11 +31,15 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
         setExpanded(!isExpanded);
     }
 
-    const goTo = (path) => {
-        navigate({pathname: path, search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
+    const goTo = (path, optional='') => {
+        navigate({pathname: path, search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}${optional}`})
+        /*navigate('/liquidity',  {
+            state: {
+                itemId: 86,
+                otherParam: 'anything you want here',
+            }
+        })*/
     }
-
-    console.log("POCTBody", row)
 
     return (
         <TWrapRow className="collapsible" {...row.getRowProps()} >
@@ -112,7 +116,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                     <TColumn3>
                         <TRow>
                             <Button style={{borderRadius: "10px", width: "10vw", height: "4.6vh"}} content={'Add Liquidity'} handler={() => {
-                                goTo("/liquidity/add")
+                                goTo("/liquidity")
                             }}/>
                         </TRow>
                     </TColumn3>
@@ -121,11 +125,9 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                             <CircleButton onClick={() => {goTo("/swap")}}>
                                 <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
-                            {false &&
-                                <CircleButton onClick={() => {goTo("/liquidity/remove")}}>
-                                    <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
-                                </CircleButton>
-                            }
+                            <CircleButton disabled={row.original.pair.totalPool <= 0} onClick={() => {goTo("/liquidity", '&remove=true')}}>
+                                <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
+                            </CircleButton>
                             {false &&
                                 <CircleButton onClick={() => {goTo("/farms")}}>
                                     <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />

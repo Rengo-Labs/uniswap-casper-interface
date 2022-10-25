@@ -1,5 +1,6 @@
 import Torus from '@toruslabs/casper-embed';
 import axios from 'axios';
+import Decimal from 'decimal.js'
 import {
     AccessRights,
     CasperServiceByJsonRPC, CLAccountHash,
@@ -178,7 +179,7 @@ async function swapMakeDeploy(
  * @param slippage
  * @param fee
  */
-async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippage = 0.005, fee = 0.003) {
+async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue, token, slippage = 0.005, fee = 0.003) {
     try {
         //const response = await getPairTokenReserve(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
@@ -189,32 +190,52 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, value, sli
         })
         if (response.data.success) {
 
-            const liquidityA = parseFloat(response.data.reserve0)
-            const liquidityB = parseFloat(response.data.reserve1)
-            const tokenToTrade = parseFloat(value) * (1 - fee)
+            const isA2B = token.symbol == firstTokenSelected.symbol
 
-            const constantProduct = liquidityA * liquidityB
-            console.log("liquidityA", liquidityA, "liquidityB", liquidityB, "constant_product", constantProduct, "tokenToTrade", tokenToTrade)
+            const liquidityA = new Decimal(response.data.reserve0)
+            const liquidityB = new Decimal(response.data.reserve1)
+            const inputValueMinusFee = new Decimal(inputValue).mul(1 - fee)
 
-            const newLiquidityAPool = liquidityA + tokenToTrade
-            const newLiquidityBPool = constantProduct / newLiquidityAPool
-            console.log("new_liquidity_a_pool", newLiquidityAPool, "new_liquidity_b_pool", newLiquidityBPool)
+            const inputLiquidity = isA2B ? liquidityA : liquidityB
+            const outputLiquidity = isA2B ? liquidityB : liquidityA
 
-            const tokensToTransfer = (liquidityB - newLiquidityBPool)
+            const constantProduct = liquidityA.mul(liquidityB)
+            console.log("liquidityA", liquidityA.toNumber(), "liquidityB", liquidityB.toNumber(), "constant_product", constantProduct.toNumber(), "tokenToTrade", inputValueMinusFee.toNumber())
+
+            let newLiquidityAPool = liquidityA
+            let newLiquidityBPool = liquidityB
+
+            if (isA2B) {
+                newLiquidityAPool = liquidityA.add(inputValueMinusFee)
+                newLiquidityBPool = constantProduct.div(newLiquidityAPool)
+            } else {
+                newLiquidityBPool = liquidityB.add(inputValueMinusFee)
+                newLiquidityAPool = constantProduct.div(newLiquidityBPool)
+            }
+
+            const newLiquidityInputPool = isA2B ? newLiquidityAPool : newLiquidityBPool
+            const newLiquidityOutputPool = isA2B ? newLiquidityBPool : newLiquidityAPool
+
+            console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
+
+            const tokensToTransfer = (outputLiquidity.sub(newLiquidityOutputPool))
             console.log("tokensToTransfer", tokensToTransfer)
 
-            const exchangeRateA = tokensToTransfer / parseFloat(value)
-            const exchangeRateB = parseFloat(value) / tokensToTransfer
+            const inputExchangeRate = tokensToTransfer.div(inputValue)
+            const outputExchangeRate = new Decimal(1).div(inputExchangeRate)
+
+            const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
+            const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
             console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
-            const priceImpact = ((tokenToTrade / (liquidityA + tokenToTrade)) * 100)
+            const priceImpact = inputValueMinusFee.div(inputLiquidity.add(inputValueMinusFee)).mul(100).toNumber()
             console.log("priceImpact", priceImpact)
 
             return {
-                tokensToTransfer: tokensToTransfer.toFixed(8),
+                tokensToTransfer: tokensToTransfer.toNumber(),
                 priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
-                exchangeRateA,
-                exchangeRateB
+                exchangeRateA: exchangeRateA.toNumber(),
+                exchangeRateB : exchangeRateB.toNumber()
             }
         }
         throw Error()
@@ -241,6 +262,28 @@ async function calculateReserves(firstTokenSelected, secondTokenSelected, value)
     } catch (error) {
         console.log(__filename, "onCalculateReserves", error)
         return { secondTokenReturn: 0, minAmountReturn: 0 }
+    }
+}
+
+async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey) {
+    if (!contractHash || !activePublicKey) {
+        return 0
+    }
+
+    const allowanceParam = {
+        contractHash: contractHash.slice(5),
+        owner: CLPublicKey.fromHex(activePublicKey)
+            .toAccountHashStr()
+            .slice(13),
+        spender: ROUTER_PACKAGE_HASH,
+    };
+    try {
+        const res = await axios.post(`${BASE_URL}/allowanceagainstownerandspender`, allowanceParam)
+        console.log(res.data)
+        return res.data.allowance;            
+    } catch(error) {
+        console.log(error);
+        console.log(error.response);
     }
 }
 
@@ -330,6 +373,21 @@ async function RemoveLiquidityCSPRMakeDeploy(publicKeyHex, tokenA, tokenB, token
     );
 }
 
+const normilizeAmountToString = (amount) => {
+    const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
+    const amountArr = strAmount.split('.')
+    if (amountArr[1] === undefined) {
+        const concatedAmount = amountArr[0].concat('000000000')
+        return concatedAmount
+    } else {
+        let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
+        for (let i = 0; i < 9 - amountArr[1].length; i++) {
+            concatedAmount = concatedAmount.concat('0')
+        }
+        return concatedAmount
+    }
+}
+
 async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
     try {
         const publicKey = CLPublicKey.fromHex(activePublicKey);
@@ -338,9 +396,12 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
             Uint8Array.from(Buffer.from(spender, "hex"))
         );
         const paymentAmount = 5_000_000_000;
+
+        console.log('amount', spender, amount)
+
         const runtimeArgs = RuntimeArgs.fromMap({
             spender: createRecipientAddress(spenderByteArray),
-            amount: CLValueBuilder.u256(convertToString(amount)),
+            amount: CLValueBuilder.u256(normilizeAmountToString(amount)),
         });
         const contractHashAsByteArray = Uint8Array.from(
             Buffer.from(contractHash.slice(5), "hex")
@@ -396,6 +457,7 @@ async function addLiquidityMakeDeploy(
         pair,
         ROUTER_PACKAGE_HASH
     );
+    console.log("datos", runtimeArgs)
     const deploy = makeDeployWasm(
         publicKey,
         runtimeArgs,
@@ -637,8 +699,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const getPoolList = async () => {
         const result = await axios.get(`${BASE_URL}/getpairlist`)
 
-        console.log('getPoolList')
-
         if (result.data.success) {
 
             const pairList = result.data.pairList
@@ -654,6 +714,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                     fees24h: 0,
                     oneYFees: 0,
                     volume: normalizeAmount(d.volumeUSD, 9),
+                    reserve0: parseFloat(d.reserve0) > 0 ? normalizeAmount(d.reserve0, token0Decimals) : 0.00001,
+                    reserve1: parseFloat(d.reserve1) > 0 ? normalizeAmount(d.reserve1, token0Decimals) : 0.00001,
+                    totalSupply: parseFloat(d.totalSupply) > 0 ? normalizeAmount(d.totalSupply, token0Decimals) : 0.00001,
+                    token0Price: parseFloat(d.token0Price),
+                    token1Price: parseFloat(d.token1Price),
                     pair: {
                         token0: d.token0.symbol,
                         token1: d.token1.symbol,
@@ -691,19 +756,33 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 return {
                     token0: d.token0.symbol,
                     token1: d.token1.symbol,
+                    contract0: d.token0.id,
+                    contract1: d.token1.id,
                     token0Liquidity: convertNumber(normalizeAmount(data[0].reserve0, token0Decimals)),
                     token1Liquidity: convertNumber(normalizeAmount(data[0].reserve1, token1Decimals)),
                     totalLiquidityPool: convertNumber(normalizeAmount(totalLiquidity, 9)),
                     totalLiquidityUSD: convertNumber(normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price)),
                     volume: normalizeAmount(d.volumeUSD, 9),
-                    totalPool: normalizeAmount(data[0].reserve0, token0Decimals) + normalizeAmount(data[0].reserve1, token1Decimals)
+                    totalPoolId: d.id,
+                    totalPool: normalizeAmount(totalLiquidity, token1Decimals),
+                    totalPoolUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
+                    totalSupply: normalizeAmount(d.totalSupply, token0Decimals),
                 }
             }))
 
-            console.log(list)
             return list
         }
         return []
+    }
+
+    const getContractHashAgainstPackageHash = async (pairId) => {
+        const result = await axios.post(`${BASE_URL}/getContractHashAgainstPackageHash`, {packageHash: pairId})
+
+        if (result.data.success) {
+            return result.data["Data"].contractHash
+        } else {
+            return null
+        }
     }
 
     const getLiquidityByUserAndPairDataId = async (user, pairDataId) => {
@@ -739,7 +818,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         const strAmount = parseFloat(amount).toFixed(0).toString();
 
         if (strAmount.length > decimalQuantity) {
-            const newReserve = strAmount.slice(0, strAmount.length - 9) + '.' + strAmount.slice(strAmount.length - 9, strAmount.length)
+            const newReserve = strAmount.slice(0, strAmount.length - decimalQuantity) + '.' + strAmount.slice(strAmount.length - decimalQuantity, strAmount.length)
             return parseFloat(newReserve)
         } else {
             let newReserve = strAmount
@@ -868,17 +947,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onIncreaseAllow(amount, contractHash, tokenAAmount, balance) {
+    async function onIncreaseAllow(amount, contractHash) {
         console.log("onIncreaseAllow")
-        if (tokenAAmount > balance) {
-            toast.error("Your balance is more less than the amount that you want to approve")
-            return false
-        }
         const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
 
         try {
-            const valueTotal = amount * 10 ** 9
-            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, valueTotal, true)
+
+            console.log("amount", amount, "contract", contractHash)
+            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, amount, true)
             if (walletSelected === 'casper') {
                 const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
                 const result = await putdeploySigner(signedDeploy);
@@ -933,6 +1009,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     async function onAddLiquidity(amountA, amountB) {
+        console.log("Enviando datos ")
         const loadingToast = toast.loading("let me try to add liquidity! be patient!")
         try {
             const deploy = await addLiquidityMakeDeploy(walletAddress, secondTokenSelected, amountA, amountB, slippageToleranceSelected, mainPurse)
@@ -956,25 +1033,24 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
         } catch (error) {
             toast.dismiss(loadingToast)
-            console.log("onAddLiquidity")
+            console.log("onAddLiquidity", error)
             toast.error("Ooops, we have a problem")
             return false
         }
     }
 
-    async function onRemoveLiquidity(amountA, amountB) {
+    async function onRemoveLiquidity(contractA, contractB, liquidity, value, amountA, amountB) {
         const loadingToast = toast.loading("let me try to remove liquidity! be patient!")
         try {
-            const contractA = firstTokenSelected.contractHash
-            const contractB = secondTokenSelected.contractHash
+            console.log("Values", contractA, contractB, liquidity, value, amountA, amountB)
             const runtimeArgs = removeLiquidityArgs(
                 contractA,
                 contractB,
-                1,
-                1,
+                liquidity,
+                value,
                 slippageToleranceSelected,
-                1,
-                1,
+                amountA,
+                amountB,
                 walletAddress
             )
             const deploy = await RemoveLiquidityMakeDeploy(walletAddress, 0.1, 0.1, runtimeArgs)
@@ -1022,7 +1098,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     function getAccountHash(wa: string | number | boolean | void = null) {
-        console.log('getAccountHash', wa ?? walletAddress)
         return Buffer.from(CLPublicKey.fromHex(wa ?? walletAddress).toAccountHash()).toString("hex")
     }
 
@@ -1040,6 +1115,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSwitchTokens,
             onCalculateReserves,
             getSwapDetail,
+            getAllowanceAgainstOwnerAndSpender,
             tokens,
             firstTokenSelected,
             secondTokenSelected,
@@ -1064,6 +1140,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             isStaked,
             setStaked,
             filter,
+            getPoolDetailByUser,
+            getContractHashAgainstPackageHash
         }}>
             {children}
             <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />

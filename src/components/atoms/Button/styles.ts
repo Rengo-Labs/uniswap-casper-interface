@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
-export const ButtonStyle = styled.button`
-    color: ${props => props.theme.secondBackgroundColor};
-    background-color: ${props => props.theme.thirdBackgroundColor};
+export const ButtonStyle = styled.button<any>`
+    color: ${props => props.enabled ? props.theme.secondBackgroundColor : props.theme.NewGrayColor};
+    background-color: ${props => props.enabled ? props.theme.thirdBackgroundColor : props.theme.NewGreyColor};
     padding: 1.7vh 1.7em;
     border-radius: 10px;
     border:none;
@@ -16,7 +16,7 @@ export const ButtonStyle = styled.button`
         cursor: pointer;
     }
     &:active{
-        color: #70ecd4;
-        background-color: rgb(120,100,244);
+        color: ${props => props.enabled ? props.theme.thirdBackgroundColor : props.theme.NewGrayColor};
+        background-color: ${props => props.enabled ? props.theme.secondBackgroundColor : props.theme.NewGreyColor};
     }
 `

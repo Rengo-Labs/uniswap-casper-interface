@@ -12,6 +12,28 @@ const getAxiosResponse = async (firstTokenSelected, secondTokenSelected) => {
     });
 }
 
+function calculatePriceImpact(liquidityA, liquidityB, value, fee: number) {
+    const tokenToTrade = value * (1 - fee)
+
+    const constantProduct = liquidityA * liquidityB
+    const newLiquidityAPool = liquidityA + tokenToTrade
+    const newLiquidityBPool = constantProduct / newLiquidityAPool
+
+    const tokensToTransfer = (liquidityB - newLiquidityBPool)
+
+    const exchangeRateA = tokensToTransfer / value
+    const exchangeRateB = value / tokensToTransfer
+
+    const priceImpact = ((tokenToTrade / (liquidityA + tokenToTrade)) * 100)
+
+    return {
+        tokensToTransfer: tokensToTransfer.toFixed(8),
+        priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
+        exchangeRateA,
+        exchangeRateB
+    }
+}
+
 /***
  * it returns tokensToTransfer, priceImpact, minTokenBToTransfer, exchangeRateA and exchangeRateB that belong to the swap detail
  * @param firstTokenSelected
@@ -27,31 +49,8 @@ const getSwapDetail = async (firstTokenSelected, secondTokenSelected, value, sli
 
             const liquidityA = parseFloat(response.data.reserve0)
             const liquidityB = parseFloat(response.data.reserve1)
-            const tokenToTrade = parseFloat(value) * (1 - fee)
 
-            const constantProduct = liquidityA * liquidityB
-            console.log("liquidityA", liquidityA, "liquidityB", liquidityB, "constant_product", constantProduct, "tokenToTrade", tokenToTrade)
-
-            const newLiquidityAPool = liquidityA + tokenToTrade
-            const newLiquidityBPool = constantProduct / newLiquidityAPool
-            console.log("new_liquidity_a_pool", newLiquidityAPool, "new_liquidity_b_pool", newLiquidityBPool)
-
-            const tokensToTransfer = (liquidityB - newLiquidityBPool)
-            console.log("tokensToTransfer", tokensToTransfer)
-
-            const exchangeRateA = tokensToTransfer / parseFloat(value)
-            const exchangeRateB = parseFloat(value) / tokensToTransfer
-            console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
-
-            const priceImpact = ((tokenToTrade / (liquidityA + tokenToTrade)) * 100)
-            console.log("priceImpact", priceImpact)
-
-            return {
-                tokensToTransfer: tokensToTransfer.toFixed(8),
-                priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
-                exchangeRateA,
-                exchangeRateB
-            }
+            return calculatePriceImpact(liquidityA, liquidityB, parseFloat(value), fee);
         }
         throw Error()
     } catch (error) {
@@ -82,6 +81,8 @@ const getPairTokenReserve = async (tokenA, tokenB) => {
 export const calculateMinimumTokenReceived = (tokensToTransfer, slippage) => {
     return (tokensToTransfer - tokensToTransfer * slippage / 100).toFixed(8)
 }
+
+export const calculateLPPercentage = (value, liquidity) => value / liquidity
 
 const calculateReserves = async (firstTokenSelected, secondTokenSelected, value) => {
     try {
