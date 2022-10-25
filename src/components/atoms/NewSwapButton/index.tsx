@@ -23,9 +23,9 @@ export const ButtonStyle = styled.button`
         color: #999999;
     }
 `
-export const NewSwapButton = ({ content, handler, disabled = false }: { content?: any, handler?: any, disabled?: boolean }) => {
+export const NewSwapButton = ({ content, handler, disabled = false, style = {} }: { content?: any, handler?: any, disabled?: boolean, style?: any }) => {
   return (
-    <ButtonStyle onClick={handler} disabled={disabled}>
+    <ButtonStyle style={style} onClick={handler} disabled={disabled}>
       {content}
     </ButtonStyle>
   )

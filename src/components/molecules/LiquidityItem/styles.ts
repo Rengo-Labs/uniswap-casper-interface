@@ -1,5 +1,10 @@
 import styled from 'styled-components'
 
+export const CollapsingRow = styled.div`
+    display: flex;
+    padding-top: 10px;
+`
+
 export const TBody = styled.div`
     display: flex;
     flex-direction: column;
@@ -11,22 +16,25 @@ export const TBody = styled.div`
 `
 
 export const TWrapRow = styled.div`
-    border-radius: 7px;
+    background-color: white;
+    border-radius: 20px;
     border: 1px solid black;
     padding: 7px 0px 7px 0px;
     margin: 2px 0 2px 0;
+    width: 462px;
 `
 
 export const WrappedRow = styled.div`
     display: flex;
-    width: 100%;
+    padding-top: 10px;
+    padding-left: 35px;
+    padding-right: 35px;
 `
 
 export const TRow = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 3px 0px 3px 0px;
 `
 
 export const TColumn6 = styled.div`
@@ -42,15 +50,15 @@ export const TColumn1 = styled.div`
 `
 
 export const TBodyExpanded = styled.div`
-    display: flex;
+    
 `
 
 export const CircleButton = styled.button`
-    background-color: ${props => props.disabled ? "grey" : props.theme.secondBackgroundColor};
+    background-color: ${props => props.theme.secondBackgroundColor};
     display: flex;
     padding: 0;
     border: 0;
-    cursor: ${props => props.disabled ? "auto" : "pointer"};
+    cursor: pointer;
     justify-content: center;
     border-radius: 45%;
     margin: 5px;
