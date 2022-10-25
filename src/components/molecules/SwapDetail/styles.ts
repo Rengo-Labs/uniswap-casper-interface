@@ -1,13 +1,14 @@
 import styled from 'styled-components'
 
 export const CollapsingContainerStyled = styled.div`
-    box-sizing: border-box;
-    width: 24rem;
-    padding: 20px;
+    background-color:white;
+    box-sizing: border-box; 
+    justify-self: center;
+    width: 100%;
+    padding: 1rem;
+    border:1px solid black;
     border-radius: 20px;
-    border: 1px solid black;
-    grid-template-rows: auto auto;
-    background-color: white;
+    gap: 10px;
 `
 export const CollapsingHeader = styled.section`
     cursor: pointer;
