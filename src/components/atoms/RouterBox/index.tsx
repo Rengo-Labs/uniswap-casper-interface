@@ -4,15 +4,18 @@ import {RouterContainer, RouterRow, RouterColumnLeft, RouterColumnRight} from '.
 
 export const RouterBox = ({ tokenASymbol, tokenBSymbol }:any) => {
     return (
-        <RouterContainer>
-            <RouterRow>
-                <RouterColumnLeft>Swap router</RouterColumnLeft>
-                <RouterColumnRight><AiFillQuestionCircle/></RouterColumnRight>
-            </RouterRow>
+        <>
+            {
+                false &&
+                <RouterRow>
+                    <RouterColumnLeft>Swap router</RouterColumnLeft>
+                    <RouterColumnRight><AiFillQuestionCircle/></RouterColumnRight>
+                </RouterRow>
+            }
             <RouterRow>
                 <RouterColumnLeft>Route</RouterColumnLeft>
                 <RouterColumnRight>{tokenASymbol} {` > `} {tokenBSymbol}</RouterColumnRight>
             </RouterRow>
-        </RouterContainer>
+        </>
     )
 }
