@@ -2,6 +2,23 @@ import React from 'react'
 import { AiOutlineSearch, AiFillCloseCircle } from "react-icons/ai";
 
 const FloatMenu = ({ tokens, selectToken, onClick }) => {
+    const leTokens = Object.keys(tokens)
+    const [filteredTokens, setFilteredTokens] = React.useState(leTokens)
+    const [filter, setFilter] = React.useState('')
+
+    function useFilter(e) {
+        const inputUser = e.target.value.toUpperCase().trim()
+        if (inputUser.length === 0) { return setFilteredTokens(leTokens) }
+        const filter = new RegExp(inputUser)
+        const filtered = leTokens.filter((value) => {
+            if (filter.test(value)) {
+                return inputUser
+            }
+        })
+        console.log("filtered", filtered)
+        setFilteredTokens(filtered)
+    }
+
     return (
         <Container>
             <ContainerCenter>
@@ -12,7 +29,7 @@ const FloatMenu = ({ tokens, selectToken, onClick }) => {
                 <UnderlineStyled />
                 <SearchAndFavoritesStyled>
                     <SearchStyle>
-                        <SearchInputStyle type="text" name="" id="" placeholder="Search name or Mint address" />
+                        <SearchInputStyle type="text" name="" id="" placeholder="Search name or Mint address" onChange={(e) => { useFilter(e) }} />
                         <SearchIconStyle>
                             <AiOutlineSearch />
                         </SearchIconStyle>
@@ -20,10 +37,10 @@ const FloatMenu = ({ tokens, selectToken, onClick }) => {
                     <PopularContainer>
                         <div>Popular Token</div>
                         <FavoritesTokensStyles>
-                            {Object.keys(tokens).map((x) => {
+                            {filteredTokens.map((x) => {
                                 return (
                                     <LeToken key={tokens[x].name} onClick={() => { selectToken(tokens[x]) }}>
-                                        <LeTokenImage src={tokens[x].logoURI} alt=""/>
+                                        <LeTokenImage src={tokens[x].logoURI} alt="" />
                                         <LeTokenTitle>{tokens[x].symbol}</LeTokenTitle>
                                     </LeToken>
                                 )
@@ -37,17 +54,17 @@ const FloatMenu = ({ tokens, selectToken, onClick }) => {
                         <div></div>
                         <div>Balance</div>
                     </SpacerStyled>
-                    {Object.keys(tokens).map((x) => {
+                    {filteredTokens.map((x) => {
                         return (
                             <SpacerWithTokenStyled key={tokens[x].name} onClick={() => { selectToken(tokens[x]) }}>
                                 <TokenShortStyle >
-                                    <SelectTokenImage src={tokens[x].logoURI} alt=""/>
+                                    <SelectTokenImage src={tokens[x].logoURI} alt="" />
                                     <div>
                                         <div>{tokens[x].symbol}</div>
                                         <div>{tokens[x].name}</div>
                                     </div>
                                 </TokenShortStyle>
-                                <div>{tokens[x].balance}</div>
+                                <div>{tokens[x].amount}</div>
                             </SpacerWithTokenStyled>
                         )
                     })}
