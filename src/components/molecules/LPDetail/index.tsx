@@ -10,8 +10,6 @@ import {
 } from './styles'
 import {RouterBox, SlippageBox} from '../../atoms'
 
-import { calculateMinimumTokenReceived } from '../../../contexts/PriceImpactContext'
-
 export const LPDetail = ({
                              firstSymbolToken = 'CSPR',
                              firstTokenAmount = 10,
@@ -53,7 +51,7 @@ export const LPDetail = ({
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>LP supply</CollapsingColumnLeft>
-                    <CollapsingColumnRight data-testid="collapsing_min_received">{calculateMinimumTokenReceived(secondTokenAmount, slippage)} {secondSymbolToken}</CollapsingColumnRight>
+                    <CollapsingColumnRight data-testid="collapsing_min_received">{liquidity} {secondSymbolToken}</CollapsingColumnRight>
                 </CollapsingRow>
 
                 <CollapsingRow>

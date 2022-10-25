@@ -373,6 +373,21 @@ async function RemoveLiquidityCSPRMakeDeploy(publicKeyHex, tokenA, tokenB, token
     );
 }
 
+const normilizeAmountToString = (amount) => {
+    const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
+    const amountArr = strAmount.split('.')
+    if (amountArr[1] === undefined) {
+        const concatedAmount = amountArr[0].concat('000000000')
+        return concatedAmount
+    } else {
+        let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
+        for (let i = 0; i < 9 - amountArr[1].length; i++) {
+            concatedAmount = concatedAmount.concat('0')
+        }
+        return concatedAmount
+    }
+}
+
 async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
     try {
         const publicKey = CLPublicKey.fromHex(activePublicKey);
@@ -386,7 +401,7 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
 
         const runtimeArgs = RuntimeArgs.fromMap({
             spender: createRecipientAddress(spenderByteArray),
-            amount: CLValueBuilder.u256(convertToString(amount)),
+            amount: CLValueBuilder.u256(normilizeAmountToString(amount)),
         });
         const contractHashAsByteArray = Uint8Array.from(
             Buffer.from(contractHash.slice(5), "hex")
@@ -442,6 +457,7 @@ async function addLiquidityMakeDeploy(
         pair,
         ROUTER_PACKAGE_HASH
     );
+    console.log("datos", runtimeArgs)
     const deploy = makeDeployWasm(
         publicKey,
         runtimeArgs,
@@ -700,6 +716,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                     fees24h: 0,
                     oneYFees: 0,
                     volume: normalizeAmount(d.volumeUSD, 9),
+                    reserve0: parseFloat(d.reserve0) > 0 ? normalizeAmount(d.reserve0, token0Decimals) : 0.00001,
+                    reserve1: parseFloat(d.reserve1) > 0 ? normalizeAmount(d.reserve1, token0Decimals) : 0.00001,
+                    totalSupply: parseFloat(d.totalSupply) > 0 ? normalizeAmount(d.totalSupply, token0Decimals) : 0.00001,
                     pair: {
                         token0: d.token0.symbol,
                         token1: d.token1.symbol,
@@ -744,7 +763,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                     totalLiquidityPool: convertNumber(normalizeAmount(totalLiquidity, 9)),
                     totalLiquidityUSD: convertNumber(normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price)),
                     volume: normalizeAmount(d.volumeUSD, 9),
-                    totalPool: normalizeAmount(data[0].reserve0, token0Decimals) + normalizeAmount(data[0].reserve1, token1Decimals)
+                    totalPoolId: d.id,
+                    totalPool: normalizeAmount(totalLiquidity, token1Decimals),
+                    totalPoolUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
+                    totalSupply: normalizeAmount(d.totalSupply, token0Decimals),
                 }
             }))
 
@@ -916,12 +938,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onIncreaseAllow(amount, contractHash, tokenAAmount, balance) {
+    async function onIncreaseAllow(amount, contractHash) {
         console.log("onIncreaseAllow")
-        if (tokenAAmount > balance) {
-            toast.error("Your balance is less than the amount that you want to approve")
-            return false
-        }
         const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
 
         try {
@@ -981,6 +999,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     async function onAddLiquidity(amountA, amountB) {
+        console.log("Enviando datos ")
         const loadingToast = toast.loading("let me try to add liquidity! be patient!")
         try {
             const deploy = await addLiquidityMakeDeploy(walletAddress, secondTokenSelected, amountA, amountB, slippageToleranceSelected, mainPurse)
@@ -1112,6 +1131,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             isStaked,
             setStaked,
             filter,
+            getPoolDetailByUser
         }}>
             {children}
             <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />

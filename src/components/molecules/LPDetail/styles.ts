@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 export const CollapsingContainerStyled = styled.div`
+    background-color: white;
     width: 366px;
     padding: 20px;
     border-radius: 10px;
