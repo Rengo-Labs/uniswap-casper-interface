@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {
     OverlayPopup,
     PopupBottom,
@@ -24,52 +24,64 @@ import {Button} from "../../atoms"
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
 
-export const LiquidityRemovingModule = ({isConnected, openedPopup, onClose, onRemove, firstSymbol, firstLiquidity, firstHash, secondSymbol, secondLiquidity, secondHash, liquidityId, liquidity, liquidityUSD, setAmount, slippage = 0.003, children}: any) => {
+export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, firstLiquidity, firstHash, secondSymbol, secondLiquidity, secondHash, liquidityId, liquidity, liquidityUSD, slippage = 0.003, children}: any) => {
 
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState("0")
+    const [contractHash, setContractHash] = useState("")
+    const [allowanceLiq, setAllowanceLiq] = useState(0)
 
     const {
+        configState,
         onRemoveLiquidity,
-        onIncreaseAllow
+        onIncreaseAllow,
+        getAllowanceAgainstOwnerAndSpender,
+        getContractHashAgainstPackageHash
     } = useContext(ConfigProviderContext)
 
-    const closeHandler = (e) => {
-        onClose()
+    const {
+        walletAddress
+    } = configState
+
+    const closeHandler = () => {
         setIsOpened(!isOpened)
         setValue("")
     }
 
+    useEffect(() => {
+        const promise = async () => {
+            const result = await getContractHashAgainstPackageHash(liquidityId)
+            setContractHash(result)
+        }
+        promise().catch(e => console.log("Error retrieving contract hash"))
+    }, [])
+
+
+
     async function onEnable() {
-        await onIncreaseAllow(value, "hash-" + liquidityId)
-        onRemove()
+        await onIncreaseAllow(value, "hash-" + contractHash)
     }
 
     const removeLiquidity = async () => {
         const per = calculateLPPercentage(value, liquidity)
         const t0 = per * parseFloat(firstLiquidity)
         const t1 = per * parseFloat(secondLiquidity)
-        //TODO to check if the lp percentage impact into total liquidity pool or user liquidity pool.
-        console.log(firstSymbol, "=>", t0, "|", secondSymbol, "=>", t1)
-        //await onIncreaseAllow(t1)
+
+        await getAllowanceAgainstOwnerAndSpender(contractHash, walletAddress)
         await onRemoveLiquidity(firstHash, secondHash, value, value, t0, t1)
-        onRemove()
-        setValue("")
+        closeHandler()
     }
 
     const setHalf = () => {
         const halfValue = liquidity / 2
-        setAmount(halfValue.toFixed(8))
         setValue((halfValue).toFixed(8))
     }
 
     const setMax = () => {
-        setAmount(liquidity)
         setValue((liquidity * 1).toString())
     }
 
     const setInputValue = (e) => {
-        setAmount(parseFloat(e.target.value))
         setValue(e.target.value)
     }
 
@@ -80,6 +92,8 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, onClose, onRe
     const calculateUSD = (value) => {
         return (calculateLPPercentage(value, liquidity) * liquidityUSD).toFixed(2)
     }
+
+    const freeAllowanceLiq = allowanceLiq / Math.pow(10, 9) - parseFloat(value)
 
     return (
         <>
@@ -112,8 +126,12 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, onClose, onRe
                                 </InputContainer>
                             </LPContainer>
                             <RemoveButtonContainer>
-                                <Button data-testid="liq_remove" enabled={enableButton(value)} style={{width: "391px", height: "57px",fontSize: "16px"}} handler={onEnable} content="Enable"/>
-                                <Button data-testid="liq_remove" enabled={enableButton(value)} style={{width: "391px", height: "57px",fontSize: "16px"}} handler={removeLiquidity} content="Remove Liquidity"/>
+                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px"}}
+                                        enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
+                            </RemoveButtonContainer>
+                            <RemoveButtonContainer>
+                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px", marginTop: "10px"}}
+                                        enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
                             </RemoveButtonContainer>
                         </PopupContent>
                         <PopupBottom>

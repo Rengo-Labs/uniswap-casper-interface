@@ -699,8 +699,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const getPoolList = async () => {
         const result = await axios.get(`${BASE_URL}/getpairlist`)
 
-        console.log('getPoolList')
-
         if (result.data.success) {
 
             const pairList = result.data.pairList
@@ -719,6 +717,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                     reserve0: parseFloat(d.reserve0) > 0 ? normalizeAmount(d.reserve0, token0Decimals) : 0.00001,
                     reserve1: parseFloat(d.reserve1) > 0 ? normalizeAmount(d.reserve1, token0Decimals) : 0.00001,
                     totalSupply: parseFloat(d.totalSupply) > 0 ? normalizeAmount(d.totalSupply, token0Decimals) : 0.00001,
+                    token0Price: parseFloat(d.token0Price),
+                    token1Price: parseFloat(d.token1Price),
                     pair: {
                         token0: d.token0.symbol,
                         token1: d.token1.symbol,
@@ -770,10 +770,19 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 }
             }))
 
-            console.log(list)
             return list
         }
         return []
+    }
+
+    const getContractHashAgainstPackageHash = async (pairId) => {
+        const result = await axios.post(`${BASE_URL}/getContractHashAgainstPackageHash`, {packageHash: pairId})
+
+        if (result.data.success) {
+            return result.data["Data"].contractHash
+        } else {
+            return null
+        }
     }
 
     const getLiquidityByUserAndPairDataId = async (user, pairDataId) => {
@@ -1088,7 +1097,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     function getAccountHash(wa: string | number | boolean | void = null) {
-        console.log('getAccountHash', wa ?? walletAddress)
         return Buffer.from(CLPublicKey.fromHex(wa ?? walletAddress).toAccountHash()).toString("hex")
     }
 
@@ -1131,7 +1139,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             isStaked,
             setStaked,
             filter,
-            getPoolDetailByUser
+            getPoolDetailByUser,
+            getContractHashAgainstPackageHash
         }}>
             {children}
             <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />

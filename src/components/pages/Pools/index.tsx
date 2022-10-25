@@ -26,7 +26,6 @@ export const Pools = () => {
             if (isConnected) {
                 const newList = await loadPoolDetailByUser(getAccountHash(), result)
                 setPoolList(newList)
-                console.log('pools a', newList)
             } else {
                 setPoolList(result)
             }

@@ -2,12 +2,20 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AiOutlineClose, AiFillPlusCircle } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
-import { CloseButtonAtom, HeaderModalAtom, NewSwapButton, SwapContainerAtom, SwapHeaderAtom } from '../../atoms'
+import {
+    CloseButtonAtom,
+    ExchangeRateBox,
+    HeaderModalAtom,
+    NewSwapButton,
+    SwapContainerAtom,
+    SwapHeaderAtom
+} from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
+
 import Graphics from '../../atoms/Graphics'
 import LoadersSwap from '../../atoms/LoadersSwap'
 import SwitchSwap from '../../atoms/SwitchSwap'
-import {LPDetail, SwapConfirmAtom, SwapModal} from '../../molecules'
+import {LPDetail, SwapConfirmAtom, SwapModal, SwapToken, SwapTokens} from '../../molecules'
 import FloatMenu from '../FloatMenu'
 import {useSearchParams} from "react-router-dom";
 import {LiquidityRemovingModule} from "../LiquidityRemovingModule";
@@ -92,6 +100,7 @@ const LiquidityNewModule = () => {
     const [userLiquidity, setUserLiquidity] = useState(0)
     const [isOpenedRemoving, setOpenedRemoving] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams()
+    const [valueUSD, setValueUSD] = useState("0")
 
     useEffect( () => {
         const t0 = searchParams.get("token0")
@@ -103,6 +112,8 @@ const LiquidityNewModule = () => {
         const isOpened = searchParams.get("remove")
         if (isOpened) {
             setOpenedRemoving(true)
+            searchParams.delete('remove')
+            setSearchParams(searchParams)
         }
 
         const result = async () => {
@@ -130,6 +141,19 @@ const LiquidityNewModule = () => {
             return userLP
         }
     }
+
+    const calculateUSDtokens = (token0, token1, amount0, amount1) => {
+        const filter = pools.filter(r => r.pair.token0 === token0 && r.pair.token1 === token1)
+        if (filter.length > 0) {
+            return (amount0 * filter[0].token0Price).toFixed(2)
+        }
+
+        const filter2 = pools.filter(r => r.pair.token1 === token0 && r.pair.token0 === token1)
+        if (filter2.length > 0) {
+            return (amount1 * filter2[0].token1Price).toFixed(2)
+        }
+    }
+
     async function onConnect() {
         onConnectConfig()
     }
@@ -182,7 +206,6 @@ const LiquidityNewModule = () => {
             exchangeRateA,
             exchangeRateB
         } = getSwapDetailResponse
-        console.log(tokensToTransfer)
         tokensToTransferSetter(tokensToTransfer)
         priceImpactSetter(priceImpact)
         exchangeRateASetter(exchangeRateA)
@@ -213,6 +236,8 @@ const LiquidityNewModule = () => {
         const userLP = calculateUserLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, filteredValue, minTokenToReceive)
 
         setUserLiquidity(userLP)
+        setValueUSD(calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, filteredValue, minTokenToReceive))
+
         amountSwapTokenBSetter(minTokenToReceive)
     }
 
@@ -229,6 +254,8 @@ const LiquidityNewModule = () => {
         const userLP = calculateUserLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, filteredValue, minTokenToReceive)
 
         setUserLiquidity(userLP)
+        setValueUSD(calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, filteredValue, minTokenToReceive))
+
         amountSwapTokenASetter(minTokenToReceive)
     }
 
@@ -271,14 +298,10 @@ const LiquidityNewModule = () => {
         return tokenFiltered
     }
 
-    async function onEnable() {
-        await onIncreaseAllow(amountSwapTokenB, secondTokenSelected.contractHash)
-        onConnectConfig()
-    }
-
     async function onLiquidity() {
+
         await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
-        onConnectConfig()
+        //onConnectConfig()
     }
 
     async function onChangeValueToken(value) {
@@ -286,6 +309,18 @@ const LiquidityNewModule = () => {
         const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
         amountSwapTokenBSetter(secondTokenReturn)
         slippSwapTokenSetter(minAmountReturn)
+    }
+
+    const enableButton = (amount0, amount1) => {
+        if (!isConnected) {
+            return true
+        }
+        if (amount0 <= 0 || amount0 > firstTokenSelected.amount) {
+            return true
+        }
+        if (amount1 <= 0 || amount1 > secondTokenSelected.amount) {
+            return true
+        }
     }
 
     const freeAllowanceA = allowanceA / Math.pow(10, 9) - parseFloat(amountSwapTokenA)
@@ -301,18 +336,6 @@ const LiquidityNewModule = () => {
         secondTokenSelected.symbol != 'CSPR' &&
         freeAllowanceB >= 0
     )
-    
-    const enableButton = (amount0, amount1) => {
-        if (!isConnected) {
-            return true
-        }
-        if (amount0 <= 0 || amount0 > firstTokenSelected.amount) {
-            return true
-        }
-        if (amount1 <= 0 || amount1 > secondTokenSelected.amount) {
-            return true
-        }
-    }
 
     return (
         <Container>
@@ -351,7 +374,7 @@ const LiquidityNewModule = () => {
                                             type="number" name="" id="" value={amountSwapTokenA} />
                                     </BalanceInputItem1Styled>
                                     <BalanceInputItem2Styled>
-                                        <p>$34.75</p>
+                                        <p>$ {valueUSD}</p>
                                     </BalanceInputItem2Styled>
                                 </BalanceInputContainerStyled>
                             </ActionContainerStyled>
@@ -361,9 +384,12 @@ const LiquidityNewModule = () => {
                 <IconPlaceStyle>
                     <SwitchSwap onClick={() => { onSwitchTokens(); ResetAll() }} />
                     <SwapDetailsStyled>
-                        <p>
-                        {amountSwapTokenB}{" " + secondTokenSelected.symbol + " "}={" " + amountSwapTokenA + " "}{firstTokenSelected.symbol}
-                        </p>
+                        <ExchangeRateBox
+                            tokenASymbol={firstTokenSelected.symbol}
+                            tokenBSymbol={secondTokenSelected.symbol}
+                            exchangeRateA={exchangeRateA}
+                            exchangeRateB={exchangeRateB}
+                        />
                     </SwapDetailsStyled>
                     <LoadersSwap />
                 </IconPlaceStyle>
@@ -401,7 +427,7 @@ const LiquidityNewModule = () => {
                                             type="number" name="" id="" value={amountSwapTokenB} />
                                     </BalanceInputItem1Styled>
                                     <BalanceInputItem2Styled>
-                                        <p>$34.75</p>
+                                        <p>$ {valueUSD}</p>
                                     </BalanceInputItem2Styled>
                                 </BalanceInputContainerStyled>
                             </ActionContainerStyled>
@@ -419,62 +445,30 @@ const LiquidityNewModule = () => {
                         slippage={slippageToleranceSelected}
                         slippageSetter={slippSwapTokenSetter} />
                 }
-                { 
-                    <ButtonSpaceStyled>
-                        { 
-                            /*
-                                <NewSwapButton style={{height: "8.7vh", width: "20.4vw"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content="Enable" handler={async () => { await onEnable() }} />
-                                <NewSwapButton style={{height: "8.7vh", width: "20.4vw"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
-                            */
-                        }
-                        { isConnected && amountSwapTokenA > firstTokenSelected.amount && <p>you don't have enough {firstTokenSelected.symbol} to add</p> }
-                        { isConnected && amountSwapTokenB > secondTokenSelected.amount && <p>you don't have enough {secondTokenSelected.symbol} to add</p> }
-                        { !isConnected && <NewSwapButton content="Connect to Wallet" handler={() => { onConnect() }} /> }
-                        {
-                            !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount && <NewSwapButton content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
-                        }
-                        {
-                            !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount && <NewSwapButton content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
-                        }
-                        { isApprovedA && isApprovedB && isConnected && <NewSwapButton disabled={ amountSwapTokenA <= 0 || amountSwapTokenB  <= 0}content="Add Liquidity" handler={async () => { await onLiquidity() }} /> }
-                    </ButtonSpaceStyled>
-                }
-                {
-                    activeModalSwap &&
-                    <SwapModal >
-                        <SwapContainerAtom >
-                            <SwapHeaderAtom>
-                                <HeaderModalAtom>Confirm Add Liquidity</HeaderModalAtom>
-                                <CloseButtonAtom onClick={() => { setActiveModalSwap(false) }}>
-                                    <AiOutlineClose />
-                                </CloseButtonAtom>
-                            </SwapHeaderAtom>
-                            <SwapConfirmAtom
-                                firstTokenSelected={firstTokenSelected}
-                                secondTokenSelected={secondTokenSelected}
-                                amountSwapTokenA={amountSwapTokenA}
-                                amountSwapTokenB={amountSwapTokenB}
-                                slippSwapToken={slippSwapToken}
-                                liquidity={true}
-                            >
+                <ButtonSpaceStyled>
+                    {
+                        !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount &&
+                        <NewSwapButton style={{height: "8.7vh", width: "20.4vw"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
+                    }
+                    {
+                        !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount &&
+                        <NewSwapButton style={{height: "8.7vh", width: "20.4vw"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
+                    }
+                    <NewSwapButton style={{height: "8.7vh", width: "20.4vw"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
+                </ButtonSpaceStyled>
 
-                            </SwapConfirmAtom>
-                            <ButtonSpaceModalStyled>
-                                <NewSwapButton disabled={true} content="Confirm Add Liquidity" handler={async () => { await onLiquidity(); setActiveModalSwap(false) }} />
-                            </ButtonSpaceModalStyled>
-                        </SwapContainerAtom>
-                    </SwapModal>
-                }
             </ContainerSwapActions>
             {
                 usersLP.length > 0 &&
                 <ContainerSwapStatics>
                     {// Loop over the table rows
                         usersLP.map(row => {
+                            const openPopup = isOpenedRemoving && row.token0 == firstTokenSelected.symbol && row.token1 == secondTokenSelected.symbol
+
                             return (
                                 // Apply the row props
                                 <LiquidityItem
-                                    fullExpanded={isOpenedRemoving}
+                                    fullExpanded={openPopup}
                                     firstIcon={casprIcon}
                                     firstSymbol={row.token0}
                                     firstLiquidity={row.token0Liquidity}
@@ -485,9 +479,7 @@ const LiquidityNewModule = () => {
                                     perLiquidity={((row.totalPool / row.totalSupply)*100).toFixed(2)} >
 
                                     <LiquidityRemovingModule isConnected={true}
-                                                             openedPopup={isOpenedRemoving}
-                                                             onClose={() => {console.log("Cerrar")}}
-                                                             onRemove={() => {onConnectConfig(); console.log("Remove liquidity")}}
+                                                             openedPopup={openPopup}
                                                              firstHash={row.contract0}
                                                              firstSymbol={row.token0}
                                                              firstLiquidity={row.token0Liquidity}
@@ -497,7 +489,6 @@ const LiquidityNewModule = () => {
                                                              liquidityId={row.totalPoolId}
                                                              liquidity={row.totalPool}
                                                              liquidityUSD={row.totalPoolUSD}
-                                                             setAmount={(value) => {console.log("Setear valor ", value)}}
                                     >
                                         <CircleButton>
                                             <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
