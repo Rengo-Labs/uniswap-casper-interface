@@ -28,6 +28,7 @@ import Torus from "@toruslabs/casper-embed";
 import { Some } from "ts-results";
 import { entryPointEnum } from "../../types";
 import { tokenReducerEnum } from "../../reducers/TokenReducers";
+import Decimal from 'decimal.js'
 
 const normilizeAmountToString = (amount) => {
   const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();

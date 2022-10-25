@@ -23,6 +23,7 @@ import {Button} from "../../atoms"
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
+import Decimal from 'decimal.js'
 
 export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, firstLiquidity, firstHash, secondSymbol, secondLiquidity, secondHash, liquidityId, liquidity, liquidityUSD, slippage = 0.003, children}: any) => {
 
@@ -63,9 +64,9 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
     }
 
     const removeLiquidity = async () => {
-        const per = calculateLPPercentage(value, liquidity)
-        const t0 = per * parseFloat(firstLiquidity)
-        const t1 = per * parseFloat(secondLiquidity)
+        const per = new Decimal(value).div(liquidity)
+        const t0 = per.mul(firstLiquidity)
+        const t1 = per.mul(secondLiquidity)
 
         await getAllowanceAgainstOwnerAndSpender(contractHash, walletAddress)
         await onRemoveLiquidity(firstHash, secondHash, value, value, t0, t1)

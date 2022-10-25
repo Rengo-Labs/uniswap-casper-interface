@@ -25,6 +25,7 @@ import casprIcon from "../../../assets/swapIcons/casprIcon.png";
 import {TbTrash} from "react-icons/tb";
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {CircleButton} from "../../molecules/POCTBody/styles";
+import Decimal from 'decimal.js'
 
 import {
     TokenSelectStyled,
@@ -131,13 +132,13 @@ const LiquidityNewModule = () => {
     const calculateUserLP = (token0, token1, amount0, amount1) => {
         const filter = pools.filter(r => r.pair.token0 === token0 && r.pair.token1 === token1)
         if (filter.length > 0) {
-            const userLP = Math.max(amount0*filter[0].totalSupply/filter[0].reserve0, amount1*filter[0].totalSupply/filter[0].reserve1)
+            const userLP = Decimal.max(new Decimal(amount0).mul(filter[0].totalSupply).div(filter[0].reserve0), new Decimal(amount1).mul(filter[0].totalSupply).div(filter[0].reserve1)).toNumber()
             return userLP
         }
 
         const filter2 = pools.filter(r => r.pair.token1 === token0 && r.pair.token0 === token1)
         if (filter2.length > 0) {
-            const userLP = Math.max(amount1*filter2[0].totalSupply/filter2[0].reserve1, amount0*filter2[0].totalSupply/filter2[0].reserve0)
+            const userLP = Decimal.max(new Decimal(amount1).mul(filter2[0].totalSupply).div(filter2[0].reserve1), new Decimal(amount0).mul(filter2[0].totalSupply).div(filter2[0].reserve0)).toNumber()
             return userLP
         }
     }
