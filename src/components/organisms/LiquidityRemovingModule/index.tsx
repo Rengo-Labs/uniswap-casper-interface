@@ -122,11 +122,11 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
                                                      onChange={setInputValue}
                                                      placeholder={`0.00000000`} />
                                     </InputAmountStyled>
-                                    <USDLabelStyled>$ {calculateUSD(value)}</USDLabelStyled>
+                                    <USDLabelStyled data-testid="liq_usd">$ {calculateUSD(value)}</USDLabelStyled>
                                 </InputContainer>
                             </LPContainer>
                             <RemoveButtonContainer>
-                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px"}}
+                                <Button data-testid="liq_enable" style={{width: "391px", height: "57px",fontSize: "16px"}}
                                         enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
                             </RemoveButtonContainer>
                             <RemoveButtonContainer>

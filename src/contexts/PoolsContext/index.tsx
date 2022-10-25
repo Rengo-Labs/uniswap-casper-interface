@@ -1,8 +1,7 @@
-import React, { createContext, ReactNode, useState } from 'react'
+import React, {createContext, ReactNode, useReducer, useState} from 'react'
 import casprIcon from '../../assets/swapIcons/casprIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
-import axios from "axios";
-import {BASE_URL} from "../../constant";
+import {initialConfigState} from "../../reducers";
 
 export const PoolsProviderContext = createContext<any>({})
 const formatter = Intl.NumberFormat('en', {notation: 'compact'})
@@ -350,6 +349,22 @@ export function getColumns() {
   ]
 }
 
+export const onRemoveLiquidity = async () => {
+
+}
+
+export const onIncreaseAllow = async () => {
+
+}
+
+export const getAllowanceAgainstOwnerAndSpender = async () => {
+  return new Promise(() => 100)
+}
+
+export const getContractHashAgainstPackageHash = async () => {
+  return new Promise(() => 100)
+}
+
 export const PoolsContext = ({ children }:{children:ReactNode}) => {
   const [gralData, setGralData] = useState(getTVLandVolume())
 
@@ -357,7 +372,18 @@ export const PoolsContext = ({ children }:{children:ReactNode}) => {
   const columns = React.useMemo(() => headers, [])
 
   return (
-    <PoolsProviderContext.Provider value={{ gralData, columns, getPoolList, getPoolDetailByUser, loadPoolDetailByUser }}>
+    <PoolsProviderContext.Provider value={{
+      gralData,
+      columns,
+      getPoolList,
+      getPoolDetailByUser,
+      loadPoolDetailByUser,
+      onRemoveLiquidity,
+      onIncreaseAllow,
+      getAllowanceAgainstOwnerAndSpender,
+      getContractHashAgainstPackageHash,
+      configState: initialConfigState
+    }}>
       {children}
     </PoolsProviderContext.Provider>
   )
