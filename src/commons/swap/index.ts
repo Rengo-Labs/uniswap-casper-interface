@@ -489,6 +489,7 @@ export async function signdeploywithcaspersigner(deploy, publicKeyHex) {
     const signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
 
     console.log("signed deploy: ", signedDeploy);
+    (signedDeploy as any).deploy_hash = (signedDeployJSON.deploy as any).hash
     return signedDeploy;
   } catch (error) {
     console.log("signdeploywithcaspersigner", error);

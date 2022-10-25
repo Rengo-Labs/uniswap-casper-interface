@@ -39,8 +39,7 @@ import {
     withPutDeploy
 } from '../../commons/swap';
 
-import ConfirmModal from '../../components/organisms/ConfirmModal';
-import PopupModal from '../../components/organisms/PopupModal';
+import { PopupsModule } from '../../components/organisms';
 import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
@@ -514,7 +513,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
     const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
     const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
-    const [swapModal, setSwapModal] = useState(false)
+    const [progressModal, setProgressModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const columns = getColumns()
     const poolColumns = React.useMemo(() => columns, [])
@@ -877,8 +876,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [deployExplorer, setDeployExplorer] = useState("")
 
     async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB, slippSwapToken) {
-        setSwapModal(true)
-
         try {
             const deploy = await swapMakeDeploy(walletAddress,
                 DEADLINE,
@@ -892,29 +889,37 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             );
 
             if (walletSelected === 'torus') {
-                const signedDeploy = await signDeployWithTorus(deploy)
-                const deployHash = `https://testnet.cspr.live/deploy/${signedDeploy.deploy_hash}`
-                setDeployExplorer(deployHash || "")
-                console.log("deploy_hash", signedDeploy.deploy_hash)
+                const signedDeploy: any = await signDeployWithTorus(deploy)
+                const deployHash = signedDeploy.deploy_hash
+
+                setProgressModal(true)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
                 const result = await getDeploy(signedDeploy.deploy_hash);
-                setSwapModal(false)
+                setProgressModal(false)
                 setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
                 setConfirmModal(true)
+
                 console.log("result", result)
                 return true
             }
             if (walletSelected === 'casper') {
-                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
+                const deployHash = signedDeploy.deploy_hash
 
-                const result = await withPutDeploy(signedDeploy, setDeployExplorer);
+                setProgressModal(true)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
+                const result = await putdeploySigner(signedDeploy);
+                setProgressModal(false)
                 setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setSwapModal(false)
                 setConfirmModal(true)
+
                 console.log(result)
                 return true
             }
         } catch (error) {
-            setSwapModal(false)
+            setProgressModal(false)
             console.log("onConfirmSwapConfig")
             return false
         }
@@ -956,19 +961,35 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             console.log("amount", amount, "contract", contractHash)
             const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, amount, true)
             if (walletSelected === 'casper') {
-                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
+                const deployHash = signedDeploy.deploy_hash
+
+                setProgressModal(true)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
                 const result = await putdeploySigner(signedDeploy);
+                setProgressModal(false)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setConfirmModal(true)
+
                 toast.dismiss(loadingToast)
                 toast.success("Got it! token was allowed!")
                 return true
             }
             if (walletSelected === 'torus') {
                 const signedDeploy = await signDeployWithTorus(deploy)
-                console.log("deploy_hash", signedDeploy.deploy_hash)
+                const deployHash = signedDeploy.deploy_hash
+
+                setProgressModal(true)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
                 const result = await getDeploy(signedDeploy.deploy_hash);
+                setProgressModal(false)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setConfirmModal(true)
+
                 toast.dismiss(loadingToast)
                 toast.success(`Got it! take your swap!`)
-                console.log(result)
                 return true
             }
         } catch (error) {
@@ -1015,8 +1036,17 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             const deploy = await addLiquidityMakeDeploy(walletAddress, secondTokenSelected, amountA, amountB, slippageToleranceSelected, mainPurse)
             if (walletSelected === 'casper') {
                 console.log("signing add liquidity")
-                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
+                const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
+                const deployHash = signedDeploy.deploy_hash
+
+                setProgressModal(true)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
                 const result = await putdeploySigner(signedDeploy);
+                setProgressModal(false)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setConfirmModal(true)
+
                 toast.dismiss(loadingToast)
                 toast.success("Got it! both token were added!!")
                 console.log(result)
@@ -1024,8 +1054,17 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             }
             if (walletSelected === 'torus') {
                 console.log("signing add liquidity")
-                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
-                const result = await putdeploySigner(signedDeploy);
+                const signedDeploy = await signDeployWithTorus(deploy)
+                const deployHash = signedDeploy.deploy_hash
+
+                setProgressModal(true)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
+                const result = await getDeploy(signedDeploy.deploy_hash);
+                setProgressModal(false)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setConfirmModal(true)
+
                 toast.dismiss(loadingToast)
                 toast.success("Got it! both token were added!!")
                 console.log(result)
@@ -1055,18 +1094,36 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             )
             const deploy = await RemoveLiquidityMakeDeploy(walletAddress, 0.1, 0.1, runtimeArgs)
             if (walletSelected === 'casper') {
-                console.log("signing add liquidity")
-                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
-                const result = await removeLiquidityPutDeploy(signedDeploy, walletAddress);
+                console.log("signing remove liquidity")
+                const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
+                const deployHash = signedDeploy.deploy_hash
+
+                setProgressModal(true)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
+                const result = await putdeploySigner(signedDeploy);
+                setProgressModal(false)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setConfirmModal(true)
+
                 toast.dismiss(loadingToast)
                 toast.success("Got it! both token were added!!")
                 console.log(result)
                 return true
             }
             if (walletSelected === 'torus') {
-                console.log("signing add liquidity")
-                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
-                const result = await putdeploySigner(signedDeploy);
+                console.log("signing remove liquidity")
+                const signedDeploy = await signDeployWithTorus(deploy)
+                const deployHash = signedDeploy.deploy_hash
+
+                setProgressModal(true)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
+                const result = await getDeploy(signedDeploy.deploy_hash);
+                setProgressModal(false)
+                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
+                setConfirmModal(true)
+
                 toast.dismiss(loadingToast)
                 toast.success("Got it! both token were added!!")
                 console.log(result)
@@ -1144,8 +1201,12 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             getContractHashAgainstPackageHash
         }}>
             {children}
-            <PopupModal display={swapModal ? 1 : 0} handleModal={setSwapModal} tokenA={firstTokenSelected.symbol} tokenB={secondTokenSelected.symbol} />
-            <ConfirmModal display={confirmModal ? 1 : 0} handleModal={setConfirmModal} linkExplorer={linkExplorer} />
+            <PopupsModule isOpen={progressModal} handleOpen={setProgressModal}>
+                Check the progress of your <a href={linkExplorer} target='_blank'>deploy</a>.
+            </PopupsModule>
+            <PopupsModule isOpen={confirmModal} handleOpen={setConfirmModal}>
+                Your <a href={linkExplorer} target='_blank'>deploy</a> was successful.
+            </PopupsModule>
         </ConfigProviderContext.Provider>
     )
 }
