@@ -50,10 +50,15 @@ import { initialStateWallet, reducerWallet } from '../../reducers/WalletReducers
 import { entryPointEnum } from '../../types';
 import wethIcon from "../../assets/swapIcons/wethIcon.svg";
 import casprIcon from "../../assets/swapIcons/casprIcon.png";
-import {convertNumber} from "../PoolsContext";
 
 export const ConfigProviderContext = createContext<any>({})
 let torus;
+
+const formatter = Intl.NumberFormat('en', {notation: 'compact'})
+
+export const convertNumber = (number) => {
+    return formatter.format(number)
+}
 
 function convertToStr(x) { return x.toString() }
 
@@ -193,7 +198,7 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue
 
             const liquidityA = new Decimal(response.data.reserve0)
             const liquidityB = new Decimal(response.data.reserve1)
-            const inputValueMinusFee = new Decimal(inputValue).mul(1 - fee)
+            const inputValueMinusFee = new Decimal(inputValue).mul(Math.pow(10,9)).mul(1 - fee)
 
             const inputLiquidity = isA2B ? liquidityA : liquidityB
             const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -231,7 +236,7 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue
             console.log("priceImpact", priceImpact)
 
             return {
-                tokensToTransfer: tokensToTransfer.toNumber(),
+                tokensToTransfer: tokensToTransfer.div(Math.pow(10,9)).toNumber().toFixed(9),
                 priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
                 exchangeRateA: exchangeRateA.toNumber(),
                 exchangeRateB : exchangeRateB.toNumber()
@@ -708,7 +713,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                     tokeIcon1: wethIcon,
                     tokeIcon2: casprIcon,
                     tokenName: d.token0.symbol + "-" + d.token1.symbol,
-                    tokenLiquidity: convertNumber(normalizeAmount(d.reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(d.reserve1, token1Decimals) * parseFloat(d.token1Price)),
+                    tokenLiquidity: normalizeAmount(d.reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(d.reserve1, token1Decimals) * parseFloat(d.token1Price),
                     volume7d: normalizeAmount(d.volumeUSD, 9).toFixed(2),
                     fees24h: 0,
                     oneYFees: 0,
@@ -757,10 +762,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                     token1: d.token1.symbol,
                     contract0: d.token0.id,
                     contract1: d.token1.id,
-                    token0Liquidity: convertNumber(normalizeAmount(data[0].reserve0, token0Decimals)),
-                    token1Liquidity: convertNumber(normalizeAmount(data[0].reserve1, token1Decimals)),
-                    totalLiquidityPool: convertNumber(normalizeAmount(totalLiquidity, 9)),
-                    totalLiquidityUSD: convertNumber(normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price)),
+                    token0Liquidity: normalizeAmount(data[0].reserve0, token0Decimals),
+                    token1Liquidity: normalizeAmount(data[0].reserve1, token1Decimals),
+                    totalLiquidityPool: normalizeAmount(totalLiquidity, 9),
+                    totalLiquidityUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
                     volume: normalizeAmount(d.volumeUSD, 9),
                     totalPoolId: d.id,
                     totalPool: normalizeAmount(totalLiquidity, token1Decimals),
@@ -1086,8 +1091,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 contractA,
                 contractB,
                 liquidity,
-                value,
-                slippageToleranceSelected,
                 amountA,
                 amountB,
                 walletAddress
