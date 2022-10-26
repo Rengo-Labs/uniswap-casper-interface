@@ -305,23 +305,27 @@ const SwapNewModule = () => {
                         </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
-                <SwapDetail
-                    firstSymbolToken={firstTokenSelected.symbol}
-                    firstTokenAmount={amountSwapTokenA}
-                    secondSymbolToken={secondTokenSelected.symbol}
-                    secondTokenAmount={amountSwapTokenB}
-                    priceImpact={1.5}
-                    fullExpanded={false}
-                />
+                {
+                    amountSwapTokenB > 0 &&
+                    <SwapDetail
+                        firstSymbolToken={firstTokenSelected.symbol}
+                        firstTokenAmount={amountSwapTokenA}
+                        secondSymbolToken={secondTokenSelected.symbol}
+                        secondTokenAmount={amountSwapTokenB}
+                        priceImpactMessage={defaultPriceImpactLabel}
+                        priceImpact={priceImpact}
+                        fullExpanded={false}
+                    />
+                }
                 <ButtonSpaceStyled>
                     {
-                        !isConnected && <NewSwapButton content="Connect to Wallet" handler={async () => { onConnect() }} />
+                        !isConnected && <NewSwapButton style={{width: "391px", height: "57px"}} content="Connect to Wallet" handler={async () => { onConnect() }} />
                     }
                     {
-                        !isApproved && isConnected && <NewSwapButton content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowance, firstTokenSelected.contractHash) }} />
+                        !isApproved && isConnected && <NewSwapButton style={{width: "391px", height: "57px"}} content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowance, firstTokenSelected.contractHash) }} />
                     }
                     {
-                        isApproved && isConnected && <NewSwapButton content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { await onConfirmSwap() }} />
+                        isApproved && isConnected && <NewSwapButton style={{width: "391px", height: "57px"}} content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { await onConfirmSwap() }} />
                     }
                 </ButtonSpaceStyled>
                 {
@@ -393,7 +397,7 @@ const SwapNewModule = () => {
 }
 export const SwapDetailsStyled = styled.div`
     font-size:16px;
-    color: ${props => props.theme.NewPurpleColor}
+    color: ${props => props.theme.NewPurpleColor};
 `
 
 export const BalanceInput = styled.input`
@@ -439,11 +443,14 @@ export const ButtonHalfMaxContainer = styled.div`
 `
 
 export const ButtonHalfMax = styled.div<any>`
-    background-color: ${props => props.theme.NewAquamarineColor};
-    color: ${props => props.theme.NewPurpleColor};
+    background-color: ${props => props.theme.NewPurpleColor};
+    color: white;
     padding:10px;
     border-radius: 12px;
+    width: 21px;
+    height: 12px;
     cursor: pointer;
+    font-size: 12px;
 `
 
 export const IconPlaceStyle = styled.div`
@@ -473,6 +480,7 @@ export const TokenSelectionStyled = styled.div`
 const CoinContainerStyled = styled.div`
     width: 27rem;
     height: 3.5rem;
+    background-color: white;
     box-sizing: border-box;
     border:1px solid black;
     border-radius: 20px;
@@ -535,7 +543,6 @@ export const NewSwapContainer = styled.section`
     background-color:white;
     box-sizing: border-box; 
     justify-self: center;
-    width: 24rem;
     height: 8rem;
     padding: 1rem;
     border:1px solid black;
@@ -549,18 +556,17 @@ const Container = styled.main`
     box-sizing: border-box;
     justify-self:center;
     box-sizing: border-box;
-    height:100%;
     width: 100%;
     gap:10px;
     color:black;
     display: grid;
     grid-template-columns: auto auto;
+    padding: 10px;
 `
 const ContainerSwapActions = styled.section`
     justify-self: end;
     box-sizing: border-box;
-    width: 29rem;
-    height: 42rem;
+    width: 462px;
     border:1px solid black;
     border-radius: 20px;
     display:grid;
@@ -568,8 +574,8 @@ const ContainerSwapActions = styled.section`
     justify-content:center;
     align-items: center;
     gap:10px;
-    padding:2rem;
-    z-index: 2;
+    padding: 20px 25px;
+    z-index: 3;
 `
 
 export default SwapNewModule

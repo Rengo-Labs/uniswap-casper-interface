@@ -13,6 +13,7 @@ import { RouterBox, SlippageBox } from '../../atoms'
 import { PriceImpactLabel } from "../../atoms/ExchangeRateBox/styles";
 
 import { calculateMinimumTokenReceived } from '../../../contexts/PriceImpactContext'
+import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 
 export const SwapDetail = ({
     firstSymbolToken = 'CSPR',
@@ -47,15 +48,7 @@ export const SwapDetail = ({
                         <PriceImpactLabel priceImpactTitle={priceImpactMessage} priceImpact={priceImpact} style={{ justifyContent: "flex-start" }} />
                     </CollapsingColumnLeft>
                     <CollapsingColumnRight data-testid="collapsing_column_right_id">
-                        {
-                            !isExpanded && `${firstSymbolToken}`
-                        }
-                        {
-                            isExpanded && <PriceImpactLabel priceImpactTitle={priceImpact + ' %'} priceImpact={priceImpact} style={{ justifyContent: "flex-end" }} />
-                        }
-                        {
-                            isExpanded ? '' : <AiOutlineCaretDown />
-                        }
+                        <PriceImpactLabel priceImpactTitle={priceImpact + ' %'} priceImpact={priceImpact} style={{ justifyContent: "flex-end" }} />
                     </CollapsingColumnRight>
                 </CollapsingRow>
                 <CollapsingRow>
@@ -70,7 +63,9 @@ export const SwapDetail = ({
                 <CollapsingRow>
                     <div style={{ width: "100%" }} className="collapsible">
                         <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({ onClick: handleOnClick })}>
-                            <CollapsingRow style={{ color: "rgba(120, 100, 244, 1)" }}>more information</CollapsingRow>
+                            <CollapsingRow style={{ paddingTop: "0", color: "rgba(120, 100, 244, 1)" }}>
+                                more information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
+                            </CollapsingRow>
                         </CollapsingHeader>
                         <div {...getCollapseProps()}>
                             <CollapsingRow>

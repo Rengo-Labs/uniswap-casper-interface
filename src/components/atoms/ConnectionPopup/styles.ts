@@ -22,7 +22,7 @@ interface OverlayParam {
 export const OverlayPopup = styled.div<OverlayParam>`
     visibility: ${props => props.isOpened ? "visible" : "hidden"};
     opacity: ${props => props.isOpened ? "1" : "0"};
-    z-index: 2;
+    z-index: 10;
     backdrop-filter: blur(5px);
     position: fixed;
     top: 0;

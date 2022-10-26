@@ -23,6 +23,7 @@ import {Button} from "../../atoms"
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
+import Decimal from 'decimal.js'
 
 export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, firstLiquidity, firstHash, secondSymbol, secondLiquidity, secondHash, liquidityId, liquidity, liquidityUSD, slippage = 0.003, children}: any) => {
 
@@ -63,9 +64,9 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
     }
 
     const removeLiquidity = async () => {
-        const per = calculateLPPercentage(value, liquidity)
-        const t0 = per * parseFloat(firstLiquidity)
-        const t1 = per * parseFloat(secondLiquidity)
+        const per = new Decimal(value).div(liquidity)
+        const t0 = per.mul(firstLiquidity)
+        const t1 = per.mul(secondLiquidity)
 
         await getAllowanceAgainstOwnerAndSpender(contractHash, walletAddress)
         await onRemoveLiquidity(firstHash, secondHash, value, value, t0, t1)
@@ -122,11 +123,11 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
                                                      onChange={setInputValue}
                                                      placeholder={`0.00000000`} />
                                     </InputAmountStyled>
-                                    <USDLabelStyled>$ {calculateUSD(value)}</USDLabelStyled>
+                                    <USDLabelStyled data-testid="liq_usd">$ {calculateUSD(value)}</USDLabelStyled>
                                 </InputContainer>
                             </LPContainer>
                             <RemoveButtonContainer>
-                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px"}}
+                                <Button data-testid="liq_enable" style={{width: "391px", height: "57px",fontSize: "16px"}}
                                         enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
                             </RemoveButtonContainer>
                             <RemoveButtonContainer>

@@ -2,8 +2,8 @@ import styled from 'styled-components'
 
 export const CollapsingContainerStyled = styled.div`
     background-color: white;
-    width: 366px;
-    padding: 20px;
+    width: 90%;
+    padding: 5%;
     border-radius: 10px;
     border: 1px solid black;
     grid-template-rows: auto auto;

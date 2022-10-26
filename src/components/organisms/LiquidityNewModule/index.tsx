@@ -1,21 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { AiOutlineClose, AiFillPlusCircle } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
-    CloseButtonAtom,
     ExchangeRateBox,
-    HeaderModalAtom,
-    NewSwapButton,
-    SwapContainerAtom,
-    SwapHeaderAtom
+    NewSwapButton
 } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
-
-import Graphics from '../../atoms/Graphics'
 import LoadersSwap from '../../atoms/LoadersSwap'
 import SwitchSwap from '../../atoms/SwitchSwap'
-import {LPDetail, SwapConfirmAtom, SwapModal, SwapToken, SwapTokens} from '../../molecules'
+import {LPDetail} from '../../molecules'
 import FloatMenu from '../FloatMenu'
 import {useSearchParams} from "react-router-dom";
 import {LiquidityRemovingModule} from "../LiquidityRemovingModule";
@@ -25,6 +18,7 @@ import casprIcon from "../../../assets/swapIcons/casprIcon.png";
 import {TbTrash} from "react-icons/tb";
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {CircleButton} from "../../molecules/POCTBody/styles";
+import Decimal from 'decimal.js'
 
 import {
     TokenSelectStyled,
@@ -43,9 +37,7 @@ import {
     BalanceInputContainerStyled,
     BalanceInputItem1Styled,
     BalanceInputItem2Styled,
-    SwapDetailsStyled,    
-    ButtonHalfMaxContainer,
-    ButtonHalfMax,
+    SwapDetailsStyled,
     IconPlaceStyle,
     ButtonSpaceStyled,
 } from '../SwapNewModule'
@@ -57,20 +49,15 @@ const LiquidityNewModule = () => {
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0.5)
-    const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
-    const [priceImpact, priceImpactSetter] = useState<any>(0)
     const [feeToPay, feeToPaySetter] = useState<any>(0.03)
     const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
-    const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
-    const [switchMovement, switchMovementSetter] = useState(false)
     const [allowanceA, setAllowanceA] = useState(0)
     const [allowanceB, setAllowanceB] = useState(0)
     const {
         onConnectConfig,
         onAddLiquidity,
         configState,
-        tokenState,
         onSelectFirstToken,
         onSelectSecondToken,
         onSwitchTokens,
@@ -86,7 +73,6 @@ const LiquidityNewModule = () => {
         onIncreaseAllow,
         onDisconnectWallet,
         ResetTokens,
-        onListenerFirstInput,
         getAccountHash,
         getPoolDetailByUser,
         getPoolList
@@ -131,13 +117,13 @@ const LiquidityNewModule = () => {
     const calculateUserLP = (token0, token1, amount0, amount1) => {
         const filter = pools.filter(r => r.pair.token0 === token0 && r.pair.token1 === token1)
         if (filter.length > 0) {
-            const userLP = Math.max(amount0*filter[0].totalSupply/filter[0].reserve0, amount1*filter[0].totalSupply/filter[0].reserve1)
+            const userLP = Decimal.max(new Decimal(amount0).mul(filter[0].totalSupply).div(filter[0].reserve0), new Decimal(amount1).mul(filter[0].totalSupply).div(filter[0].reserve1)).toNumber()
             return userLP
         }
 
         const filter2 = pools.filter(r => r.pair.token1 === token0 && r.pair.token0 === token1)
         if (filter2.length > 0) {
-            const userLP = Math.max(amount1*filter2[0].totalSupply/filter2[0].reserve1, amount0*filter2[0].totalSupply/filter2[0].reserve0)
+            const userLP = Decimal.max(new Decimal(amount1).mul(filter2[0].totalSupply).div(filter2[0].reserve1), new Decimal(amount0).mul(filter2[0].totalSupply).div(filter2[0].reserve0)).toNumber()
             return userLP
         }
     }
@@ -206,13 +192,9 @@ const LiquidityNewModule = () => {
             exchangeRateA,
             exchangeRateB
         } = getSwapDetailResponse
-        tokensToTransferSetter(tokensToTransfer)
-        priceImpactSetter(priceImpact)
         exchangeRateASetter(exchangeRateA)
         exchangeRateBSetter(exchangeRateB)
 
-        defaultPriceImpactLabelSetter(priceImpact > 1 ? 'Price Impact Warning' : 'Low Price Impact')
-        switchMovementSetter(value > 0)
         return tokensToTransfer
     }
 
@@ -340,7 +322,7 @@ const LiquidityNewModule = () => {
     return (
         <Container>
             <ContainerSwapActions>
-                <NewSwapContainer style={{backgroundColor: "white"}}>
+                <NewSwapContainer>
                     <TokenSelectStyled>
                         <NewTokenDetailSelectStyled>
                             <NewTokenDetailItems1Styled>From</NewTokenDetailItems1Styled>
@@ -448,13 +430,13 @@ const LiquidityNewModule = () => {
                 <ButtonSpaceStyled>
                     {
                         !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount &&
-                        <NewSwapButton style={{height: "8.7vh", width: "20.4vw"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
+                        <NewSwapButton style={{height: "57px", width: "100%"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
                     }
                     {
                         !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount &&
-                        <NewSwapButton style={{height: "8.7vh", width: "20.4vw"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
+                        <NewSwapButton style={{height: "57px", width: "100%"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
                     }
-                    <NewSwapButton style={{height: "8.7vh", width: "20.4vw"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
+                    <NewSwapButton style={{height: "57px", width: "100%"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
                 </ButtonSpaceStyled>
 
             </ContainerSwapActions>
@@ -546,12 +528,30 @@ const Container = styled.main`
 `
 const ContainerSwapActions = styled.section`
     justify-self: end;
-    padding:10px;
+    padding: 20px 25px 10px 25px;
     border:1px solid black;
     border-radius: 10px;
     display:grid;
     gap:10px;
-    grid-template-rows: repeat(4,auto);
+    grid-template-rows: repeat(6,auto);
+`
+
+const ButtonHalfMaxContainer = styled.div`
+    border-left: 3px solid ${props => props.theme.NewPurpleColor};
+    padding-left:10px;
+    display: grid;
+    gap:10px;
+`
+
+const ButtonHalfMax = styled.div<any>`
+    background-color: ${props => props.theme.NewPurpleColor};
+    color: white;
+    padding:10px;
+    border-radius: 12px;
+    width: 21px;
+    height: 12px;
+    cursor: pointer;
+    font-size: 12px;
 `
 
 export default LiquidityNewModule
