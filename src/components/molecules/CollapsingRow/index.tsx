@@ -33,12 +33,6 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
 
     const goTo = (path, optional='') => {
         navigate({pathname: path, search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}${optional}`})
-        /*navigate('/liquidity',  {
-            state: {
-                itemId: 86,
-                otherParam: 'anything you want here',
-            }
-        })*/
     }
 
     return (
