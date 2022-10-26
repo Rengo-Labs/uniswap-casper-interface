@@ -294,7 +294,7 @@ const SwapNewModule = () => {
                                     <BalanceInputItem1Styled>
                                         <BalanceInput
                                             min={0}
-                                            onChange={(e) => { changeTokenA(e.target.value) }}
+                                            onChange={(e) => { changeTokenB(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenB} />
                                     </BalanceInputItem1Styled>
                                     <BalanceInputItem2Styled>

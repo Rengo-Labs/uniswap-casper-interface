@@ -65,8 +65,8 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
 
     const removeLiquidity = async () => {
         const per = new Decimal(value).div(liquidity)
-        const t0 = per.mul(firstLiquidity)
-        const t1 = per.mul(secondLiquidity)
+        const t0 = per.mul(firstLiquidity).mul(1 - slippage)
+        const t1 = per.mul(secondLiquidity).mul(1 - slippage)
 
         await getAllowanceAgainstOwnerAndSpender(contractHash, walletAddress)
         await onRemoveLiquidity(firstHash, secondHash, value, value, t0, t1)

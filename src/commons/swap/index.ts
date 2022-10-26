@@ -415,25 +415,23 @@ export function removeLiquidityArgs(
   tokenAAddress,
   tokenBAddress,
   liquidity,
-  value,
-  slippage,
-  token_AAmount_,
-  token_BAmount_,
+  token_AAmount,
+  token_BAmount,
   publicKeyWallet
 ) {
   const _token_a = CLBArray(tokenAAddress);
   const _token_b = CLBArray(tokenBAddress);
   const publicKey = CLPublicKey.fromHex(publicKeyWallet);
   const deadline = 1739598100811;
-  const token_AAmount = (1 / 100).toFixed(9); //tokenAAmountPercent.toFixed(9);
-  const token_BAmount = (1 / 100).toFixed(9); //tokenBAmountPercent.toFixed(9);
+  /*const token_AAmount = (1 / 100).toFixed(9); //tokenAAmountPercent.toFixed(9);
+  const token_BAmount = (1 / 100).toFixed(9); //tokenBAmountPercent.toFixed(9);*/
   try {
     return RuntimeArgs.fromMap({
       token_a: CLValueBuilder.key(_token_a),
       token_b: CLValueBuilder.key(_token_b),
       liquidity: CLValueBuilder.u256(normilizeAmountToString(liquidity)),
-      amount_a_min: CLValueBuilder.u256(normilizeAmountToString(token_AAmount_)),
-      amount_b_min: CLValueBuilder.u256(normilizeAmountToString(token_BAmount_)),
+      amount_a_min: CLValueBuilder.u256(normilizeAmountToString(token_AAmount)),
+      amount_b_min: CLValueBuilder.u256(normilizeAmountToString(token_BAmount)),
       to: createRecipientAddress(publicKey),
       deadline: CLValueBuilder.u256(deadline),
     });

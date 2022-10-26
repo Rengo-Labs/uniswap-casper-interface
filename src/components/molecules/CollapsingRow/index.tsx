@@ -20,6 +20,7 @@ import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled} from "../SwapToken/styles";
 import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
+import {convertNumber} from "../../../contexts/ConfigContext";
 
 export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
@@ -49,7 +50,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                 <TColumn3 style={{display: "flex"}}>
                     <TColumn1 />
                     <TColumn3 style={{textAlign: "left"}}>
-                        $ {row.original.tokenLiquidity}
+                        $ {convertNumber(row.original.tokenLiquidity)}
                     </TColumn3>
                 </TColumn3>
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
@@ -68,12 +69,12 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         <TRow>
                             <TColumn1 />
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>$ {row.original.pair.totalLiquidityUSD}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>$ {convertNumber(row.original.pair.totalLiquidityUSD)}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.totalLiquidityPool} LP</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(row.original.pair.totalLiquidityPool)} LP</TColumn3>
                         </TRow>
                     </TColumn6>
                     <TColumn3>
@@ -83,11 +84,11 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token0Liquidity} {row.original.pair.token0}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(row.original.pair.token0Liquidity)} {row.original.pair.token0}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token1Liquidity} {row.original.pair.token1}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(row.original.pair.token1Liquidity)} {row.original.pair.token1}</TColumn3>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
