@@ -18,5 +18,4 @@ export const RouterRow = styled.section`
     position: relative;
     display: flex;
     width: 100%;
-    padding: 3px;
 `

@@ -2,7 +2,22 @@ import React, { useContext, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
-import { ButtonConnection, CloseButtonAtom, ConfirmSwapButton, HeaderModalAtom, NewSwapButton, SearchInputAtom, SearchSectionAtom, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, SwapTokenBalance, SwapTokenSelect } from '../../atoms'
+import {
+    ButtonConnection,
+    CloseButtonAtom,
+    ConfirmSwapButton,
+    ExchangeRateBox,
+    HeaderModalAtom,
+    NewSwapButton,
+    SearchInputAtom,
+    SearchSectionAtom,
+    SwapButton,
+    SwapContainer,
+    SwapContainerAtom,
+    SwapHeaderAtom,
+    SwapTokenBalance,
+    SwapTokenSelect
+} from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
 import LoadersSwap from '../../atoms/LoadersSwap'
@@ -240,9 +255,12 @@ const SwapNewModule = () => {
                 <IconPlaceStyle>
                     <SwitchSwap onClick={() => { onSwitchTokens(); ResetAll() }} />
                     <SwapDetailsStyled>
-                        <p>
-                        {amountSwapTokenB}{" " + secondTokenSelected.symbol + " "}={" " + amountSwapTokenA + " "}{firstTokenSelected.symbol}
-                        </p>
+                        <ExchangeRateBox
+                            tokenASymbol={firstTokenSelected.symbol}
+                            tokenBSymbol={secondTokenSelected.symbol}
+                            exchangeRateA={exchangeRateA}
+                            exchangeRateB={exchangeRateB}
+                        />
                     </SwapDetailsStyled>
                     <LoadersSwap />
                 </IconPlaceStyle>
@@ -476,6 +494,7 @@ const ContainerSwapStatics = styled.section`
     justify-content: center;
     align-items: center;
     gap:10px;
+    z-index: 2;
 `
 export const NewTokenDetailSelectStyled = styled.section`
     display: grid;
@@ -550,6 +569,7 @@ const ContainerSwapActions = styled.section`
     align-items: center;
     gap:10px;
     padding:2rem;
+    z-index: 2;
 `
 
 export default SwapNewModule

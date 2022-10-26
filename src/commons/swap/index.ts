@@ -98,9 +98,9 @@ export function createRuntimeArgs(
   try {
     const amount = normilizeAmountToString(amount_in);
     const amount_out_min = amount_out - (amount_out * slippSwapToken) / 100
-    console.log("amount_out",amount_out)
-    console.log("slippSwapToken",slippSwapToken)
-    console.log("amount_out_min",amount_out_min)
+    console.log("amount_out", amount_out)
+    console.log("slippSwapToken", slippSwapToken)
+    console.log("amount_out_min", amount_out_min)
     return RuntimeArgs.fromMap({
       amount: CLValueBuilder.u512(amount),
       destination_entrypoint: CLValueBuilder.string(entryPoint),
@@ -197,7 +197,7 @@ export async function createSwapRuntimeArgs(
   const contractHashAsByteArray = Uint8Array.from(
     Buffer.from(ROUTER_CONTRACT_HASH, "hex")
   );
-  
+
   const entryPoint = entryPointEnum.Swap_exact_tokens_for_tokens_js_client;
   // Set contract installation deploy (unsigned).
   return await makeDeploySwap(
@@ -658,7 +658,6 @@ export function updateBalances(
   firstTokenSelected,
   casperBalance
 ) {
-  console.log("Load balance")
   if ("CSPR" === secondTokenSelected.symbol) {
     tokenDispatch({ type: "BALANCE_SECOND_TOKEN", payload: casperBalance });
   }
@@ -675,6 +674,7 @@ export function updateBalances(
           CLPublicKey.fromHex(walletAddress).toAccountHash()
         ).toString("hex"),
       };
+      console.log(casperBalance)
       axios
         .post(`${BASE_URL}/balanceagainstuser`, param)
         .then((res) => {
@@ -690,13 +690,26 @@ export function updateBalances(
           if (x === firstTokenSelected.symbol) {
             tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: x, data: balance } })
           }
+          if (x === "WCSPR") {
+            tokenDispatch({
+              type: "LOAD_BALANCE_TOKEN",
+              payload: { name: x, data: casperBalance },
+            })
+          }
+          if (x === "CSPR") {
+            tokenDispatch({
+              type: "LOAD_BALANCE_TOKEN",
+              payload: { name: x, data: casperBalance },
+            })
+          }
         })
         .catch((error) => {
           console.log(error);
           console.log(error.response);
         });
     }
-  });
+  })
+
 }
 
 export async function getStatus(casperService, walletAddress, setMainPurse) {
