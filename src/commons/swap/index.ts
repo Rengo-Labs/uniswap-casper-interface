@@ -691,10 +691,16 @@ export function updateBalances(
             tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: x, data: balance } })
           }
           if (x === "WCSPR") {
-            tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: x, data: casperBalance } })
+            tokenDispatch({
+              type: "LOAD_BALANCE_TOKEN",
+              payload: { name: x, data: casperBalance },
+            })
           }
           if (x === "CSPR") {
-            tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: x, data: casperBalance } })
+            tokenDispatch({
+              type: "LOAD_BALANCE_TOKEN",
+              payload: { name: x, data: casperBalance },
+            })
           }
         })
         .catch((error) => {

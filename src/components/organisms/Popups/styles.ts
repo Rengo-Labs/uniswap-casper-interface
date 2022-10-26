@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
 interface OverlayParam {
-    isOpened: boolean
+    isOpen: boolean
 }
 
-export const OverlayPopup = styled.div<any>`
-    visibility: ${props => props.isOpened ? 'visible' : 'hidden'};
-    opacity: ${props => props.isOpened ? '1' : '0'};
-    z-index: 2;
+export const OverlayPopup = styled.div<OverlayParam>`
+    visibility: ${props => props.isOpen ? 'visible' : 'hidden'};
+    opacity: ${props => props.isOpen ? '1' : '0'};
+    z-index: 100;
     backdrop-filter: blur(5px);
     position: fixed;
     top: 0;
@@ -17,15 +17,14 @@ export const OverlayPopup = styled.div<any>`
     background: rgba(0, 0, 0, 0.7);
     transition: opacity 500ms;
     display: flex;
+    align-items: center;
     justify-content: center;
 `
 
 export const PopupContainer = styled.div`
     border: 1px solid black;
     border-radius: 20px;
-    width: 462px;
-    height: 370px;
-    top: 20%;
+    min-width: 300px;
     position: relative;
     transition: all 1s ease-in-out;
     background-color: ${props => props.theme.mainBackgroundColor};
@@ -72,8 +71,9 @@ export const PopupClose = styled.span`
 
 export const PopupContent = styled.div`
     overflow: auto;
-    padding: 0.5vw;
-`
+    color: ${props => props.theme.secondBackgroundColor};
+    padding: 10px 56px;
+  `
 
 export const PopupButtonStyled= styled.div`
     display: flex;
@@ -109,7 +109,6 @@ export const ButtonHalfMaxContainer = styled.div`
     flex: 1;
     align-self: center;
     gap:10px;
-    height: 55px;
     border-left: 2px solid ${props => props.theme.secondBackgroundColor};
     padding-left: 10px;
 `

@@ -51,7 +51,7 @@ export const LPDetail = ({
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>LP supply</CollapsingColumnLeft>
-                    <CollapsingColumnRight data-testid="collapsing_min_received">{liquidity} {secondSymbolToken}</CollapsingColumnRight>
+                    <CollapsingColumnRight data-testid="collapsing_min_received">{liquidity} {firstSymbolToken}-{secondSymbolToken}</CollapsingColumnRight>
                 </CollapsingRow>
 
                 <CollapsingRow>
