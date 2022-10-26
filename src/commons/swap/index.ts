@@ -690,18 +690,8 @@ export function updateBalances(
           if (x === firstTokenSelected.symbol) {
             tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: x, data: balance } })
           }
-          if (x === "WCSPR") {
-            tokenDispatch({
-              type: "LOAD_BALANCE_TOKEN",
-              payload: { name: x, data: casperBalance },
-            })
-          }
-          if (x === "CSPR") {
-            tokenDispatch({
-              type: "LOAD_BALANCE_TOKEN",
-              payload: { name: x, data: casperBalance },
-            })
-          }
+          tokenDispatch({ type: "UPDATE_CASPER", payload: { amount: casperBalance } });
+          tokenDispatch({ type: "UPDATE_WCASPER", payload: { amount: casperBalance } });
         })
         .catch((error) => {
           console.log(error);
