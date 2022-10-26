@@ -205,23 +205,37 @@ const LiquidityNewModule = () => {
     }
 
     async function changeTokenA(value) {
-        amountSwapTokenASetter(value)
-        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, value)
-        const userLP = calculateUserLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, parseFloat(value), parseFloat(minTokenToReceive))
+        let filteredValue = parseFloat(value)
+        if (isNaN(filteredValue)) {
+            filteredValue = 0
+        } else if (filteredValue < 0) {
+            filteredValue = Math.abs(filteredValue)
+        }
+
+        amountSwapTokenASetter(filteredValue)
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
+        const userLP = calculateUserLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, filteredValue, parseFloat(minTokenToReceive))
 
         setUserLiquidity(userLP)
-        setValueUSD(calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, parseFloat(value), parseFloat(minTokenToReceive)))
+        setValueUSD(calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, filteredValue, parseFloat(minTokenToReceive)))
 
         amountSwapTokenBSetter(minTokenToReceive)
     }
 
     async function changeTokenB(value) {
-        amountSwapTokenBSetter(value)
-        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, value)
-        const userLP = calculateUserLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, parseFloat(value), parseFloat(minTokenToReceive))
+        let filteredValue = parseFloat(value)
+        if (isNaN(filteredValue)) {
+            filteredValue = 0
+        } else if (filteredValue < 0) {
+            filteredValue = Math.abs(filteredValue)
+        }
+
+        amountSwapTokenBSetter(filteredValue)
+        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
+        const userLP = calculateUserLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, filteredValue, parseFloat(minTokenToReceive))
 
         setUserLiquidity(userLP)
-        setValueUSD(calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, parseFloat(value), parseFloat(minTokenToReceive)))
+        setValueUSD(calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, filteredValue, parseFloat(minTokenToReceive)))
 
         amountSwapTokenASetter(minTokenToReceive)
     }
@@ -390,7 +404,7 @@ const LiquidityNewModule = () => {
                                     <BalanceInputItem1Styled>
                                         <BalanceInput
                                             min={0}
-                                            onChange={(e) => { changeTokenA(e.target.value) }}
+                                            onChange={(e) => { changeTokenB(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenB} />
                                     </BalanceInputItem1Styled>
                                     <BalanceInputItem2Styled>
