@@ -962,9 +962,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
 
         try {
-
-            console.log("amount", amount, "contract", contractHash)
-            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, amount, true)
+            const valueTotal = Math.ceil(amount * 10 ** 9)
+            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, valueTotal, true)
             if (walletSelected === 'casper') {
                 const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
                 const deployHash = signedDeploy.deploy_hash

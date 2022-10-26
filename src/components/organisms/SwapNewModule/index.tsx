@@ -397,7 +397,7 @@ const SwapNewModule = () => {
 }
 export const SwapDetailsStyled = styled.div`
     font-size:16px;
-    color: ${props => props.theme.NewPurpleColor}
+    color: ${props => props.theme.NewPurpleColor};
 `
 
 export const BalanceInput = styled.input`

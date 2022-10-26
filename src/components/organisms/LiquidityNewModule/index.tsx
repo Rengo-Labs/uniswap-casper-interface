@@ -204,7 +204,7 @@ const LiquidityNewModule = () => {
         await updateSwapDetail(firstTokenSelected, secondTokenSelected)
     }
 
-    async function changeTokenA(value) {
+    async function changeTokenA(value: string) {
         let filteredValue = parseFloat(value)
         if (isNaN(filteredValue)) {
             filteredValue = 0

@@ -118,6 +118,8 @@ export const initialStateToken: InitialStateTokenInterface = {
 
 export enum tokenReducerEnum {
   UPDATE_TOKENS = "UPDATE_TOKENS",
+  UPDATE_CASPER = "UPDATE_CASPER",
+  UPDATE_WCASPER = "UPDATE_WCASPER",
   SELECT_FIRST_TOKEN = "SELECT_FIRST_TOKEN",
   SELECT_SECOND_TOKEN = "SELECT_SECOND_TOKEN",
   BALANCE_SECOND_TOKEN = "BALANCE_SECOND_TOKEN",
@@ -135,6 +137,28 @@ export function TokenReducer(state, action) {
       };
     case tokenReducerEnum.SELECT_FIRST_TOKEN:
       return { ...state, firstTokenSelected: action.payload };
+    case tokenReducerEnum.UPDATE_CASPER:
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          CSPR: {
+            ...state.tokens.CSPR,
+            amount: action.payload.amount,
+          },
+        },
+      };
+    case tokenReducerEnum.UPDATE_WCASPER:
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          WCSPR: {
+            ...state.tokens.WCSPR,
+            amount: action.payload.amount,
+          },
+        },
+      };
     case tokenReducerEnum.SELECT_SECOND_TOKEN:
       return { ...state, secondTokenSelected: action.payload };
     case tokenReducerEnum.BALANCE_SECOND_TOKEN:
