@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { Button, CloseButtonAtom, ConfigModalBody, HeaderModalAtom, PillowDiv, SwapButton, SwapContainer, SwapContainerAtom, SwapHeaderAtom, WalletSelectionDiv } from '../../atoms';
 import { ConfigProviderContext } from '../../../contexts/ConfigContext';
-import { SwapModal } from '../../molecules';
+import {SwapDetail, SwapModal} from '../../molecules';
 import { AiOutlineClose,AiFillSetting } from 'react-icons/ai';
 import { WalletSelectionImageStyled } from '../../molecules/ConfigModal/styles';
 

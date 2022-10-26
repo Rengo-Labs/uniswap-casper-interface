@@ -20,6 +20,7 @@ import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled} from "../SwapToken/styles";
 import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
+import {convertNumber} from "../../../contexts/ConfigContext";
 
 export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
@@ -31,11 +32,9 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
         setExpanded(!isExpanded);
     }
 
-    const goTo = (path) => {
-        navigate({pathname: path, search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}`})
+    const goTo = (path, optional='') => {
+        navigate({pathname: path, search: `token0=${row.original.pair.token0}&token1=${row.original.pair.token1}${optional}`})
     }
-
-    console.log("POCTBody", row)
 
     return (
         <TWrapRow className="collapsible" {...row.getRowProps()} >
@@ -51,7 +50,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                 <TColumn3 style={{display: "flex"}}>
                     <TColumn1 />
                     <TColumn3 style={{textAlign: "left"}}>
-                        $ {row.original.tokenLiquidity}
+                        $ {convertNumber(row.original.tokenLiquidity)}
                     </TColumn3>
                 </TColumn3>
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
@@ -70,12 +69,12 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         <TRow>
                             <TColumn1 />
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>$ {row.original.pair.totalLiquidityUSD}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>$ {convertNumber(row.original.pair.totalLiquidityUSD)}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.totalLiquidityPool} LP</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(row.original.pair.totalLiquidityPool)} LP</TColumn3>
                         </TRow>
                     </TColumn6>
                     <TColumn3>
@@ -85,11 +84,11 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token0Liquidity} {row.original.pair.token0}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(row.original.pair.token0Liquidity)} {row.original.pair.token0}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
-                            <TColumn3 style={{textAlign: "left"}}>{row.original.pair.token1Liquidity} {row.original.pair.token1}</TColumn3>
+                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(row.original.pair.token1Liquidity)} {row.original.pair.token1}</TColumn3>
                         </TRow>
                     </TColumn3>
                     <TColumn3>
@@ -112,7 +111,7 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                     <TColumn3>
                         <TRow>
                             <Button style={{borderRadius: "10px", width: "10vw", height: "4.6vh"}} content={'Add Liquidity'} handler={() => {
-                                goTo("/liquidity/add")
+                                goTo("/liquidity")
                             }}/>
                         </TRow>
                     </TColumn3>
@@ -121,11 +120,9 @@ export const CollapsingRow = ({row, fullExpanded = false}:any)  => {
                             <CircleButton onClick={() => {goTo("/swap")}}>
                                 <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
-                            {false &&
-                                <CircleButton onClick={() => {goTo("/liquidity/remove")}}>
-                                    <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
-                                </CircleButton>
-                            }
+                            <CircleButton disabled={row.original.pair.totalPool <= 0} onClick={() => {goTo("/liquidity", '&remove=true')}}>
+                                <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
+                            </CircleButton>
                             {false &&
                                 <CircleButton onClick={() => {goTo("/farms")}}>
                                     <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />

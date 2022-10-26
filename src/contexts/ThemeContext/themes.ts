@@ -19,6 +19,8 @@ interface LightThemeInterface {
   thirdBackgroundColor: string;
   NewAquamarineColor: string;
   NewPurpleColor: string;
+  NewGrayColor: string;
+  NewGreyColor: string;
 }
 
 export const lightTheme = {
@@ -41,6 +43,8 @@ export const lightTheme = {
   thirdBackgroundColor: "rgba(112, 236, 212, 1)",
   NewAquamarineColor: "rgba(110, 235, 208, 1)",
   NewPurpleColor: "rgba(113, 95, 245, 1)",
+  NewGrayColor: "#999999",
+  NewGreyColor: "#CCCCCC"
 };
 
 export const darkTheme = {

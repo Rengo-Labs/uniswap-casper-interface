@@ -157,7 +157,6 @@ export const Swap = () => {
   )
 }
 const ModuleSwapStyled = styled.div`
-  display: flex;
 `
 const ExtendedCustomToggle = styled(CustomToggle)`
   min-width: 1000px;
@@ -198,7 +197,8 @@ const ContainerStyled = styled.div`
   width: 100%;
   display:grid;
   grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
+  background-color: #F7FCFE;
 `
 function Container({ children }) {
   return (<ContainerStyled>{children}</ContainerStyled>)
