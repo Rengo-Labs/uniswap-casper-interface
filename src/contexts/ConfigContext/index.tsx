@@ -198,7 +198,7 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue
 
             const liquidityA = new Decimal(response.data.reserve0)
             const liquidityB = new Decimal(response.data.reserve1)
-            const inputValueMinusFee = new Decimal(inputValue).mul(1 - fee)
+            const inputValueMinusFee = new Decimal(inputValue).mul(Math.pow(10,9)).mul(1 - fee)
 
             const inputLiquidity = isA2B ? liquidityA : liquidityB
             const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -236,7 +236,7 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue
             console.log("priceImpact", priceImpact)
 
             return {
-                tokensToTransfer: tokensToTransfer.toNumber(),
+                tokensToTransfer: tokensToTransfer.div(Math.pow(10,9)).toNumber().toFixed(9),
                 priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
                 exchangeRateA: exchangeRateA.toNumber(),
                 exchangeRateB : exchangeRateB.toNumber()
@@ -1091,8 +1091,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 contractA,
                 contractB,
                 liquidity,
-                value,
-                slippageToleranceSelected,
                 amountA,
                 amountB,
                 walletAddress
