@@ -9,6 +9,7 @@ import {
     CollapsingBody
 } from './styles'
 import {RouterBox, SlippageBox} from '../../atoms'
+import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 
 export const LPDetail = ({
                              firstSymbolToken = 'CSPR',
@@ -57,7 +58,9 @@ export const LPDetail = ({
                 <CollapsingRow>
                     <div style={{width: "100%"}} className="collapsible">
                         <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({onClick: handleOnClick})}>
-                            <CollapsingRow style={{color: "rgba(120, 100, 244, 1)"}}>more information</CollapsingRow>
+                            <CollapsingRow style={{paddingTop: "0", color: "rgba(120, 100, 244, 1)"}}>
+                                more information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
+                            </CollapsingRow>
                         </CollapsingHeader>
                         <div {...getCollapseProps()}>
                             <CollapsingRow>
