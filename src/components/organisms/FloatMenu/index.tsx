@@ -1,8 +1,18 @@
 import React from 'react'
 import { AiOutlineSearch, AiFillCloseCircle } from "react-icons/ai";
 
-const FloatMenu = ({ tokens, selectToken, onClick }) => {
-    const leTokens = Object.keys(tokens)
+const FloatMenu = ({ tokens, selectToken, onClick, lefilter = false, lesymbol = "" }) => {
+    let leTokens = Object.keys(tokens)
+    if (lefilter) {
+        const filter = new RegExp(lesymbol)
+        const filtered = leTokens.filter((value) => {
+            if (!filter.test(value)) {
+                return lesymbol
+            }
+        })
+        leTokens = filtered
+    }
+
     const [filteredTokens, setFilteredTokens] = React.useState(leTokens)
     const [filter, setFilter] = React.useState('')
 
