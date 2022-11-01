@@ -1,6 +1,6 @@
 import Torus from '@toruslabs/casper-embed';
 import axios from 'axios';
-import Decimal from 'decimal.js'
+import BigNumber from 'bignumber.js'
 import {
     AccessRights,
     CasperServiceByJsonRPC, CLAccountHash,
@@ -196,24 +196,24 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue
 
             const isA2B = token.symbol == firstTokenSelected.symbol
 
-            const liquidityA = new Decimal(response.data.reserve0)
-            const liquidityB = new Decimal(response.data.reserve1)
-            const inputValueMinusFee = new Decimal(inputValue).mul(Math.pow(10,9)).mul(1 - fee)
+            const liquidityA = new BigNumber(response.data.reserve0)
+            const liquidityB = new BigNumber(response.data.reserve1)
+            const inputValueMinusFee = new BigNumber(inputValue).times(Math.pow(10,9)).times(1 - fee)
 
             const inputLiquidity = isA2B ? liquidityA : liquidityB
             const outputLiquidity = isA2B ? liquidityB : liquidityA
 
-            const constantProduct = liquidityA.mul(liquidityB)
+            const constantProduct = liquidityA.times(liquidityB)
             console.log("liquidityA", liquidityA.toNumber(), "liquidityB", liquidityB.toNumber(), "constant_product", constantProduct.toNumber(), "tokenToTrade", inputValueMinusFee.toNumber())
 
             let newLiquidityAPool = liquidityA
             let newLiquidityBPool = liquidityB
 
             if (isA2B) {
-                newLiquidityAPool = liquidityA.add(inputValueMinusFee)
+                newLiquidityAPool = liquidityA.plus(inputValueMinusFee)
                 newLiquidityBPool = constantProduct.div(newLiquidityAPool)
             } else {
-                newLiquidityBPool = liquidityB.add(inputValueMinusFee)
+                newLiquidityBPool = liquidityB.plus(inputValueMinusFee)
                 newLiquidityAPool = constantProduct.div(newLiquidityBPool)
             }
 
@@ -222,17 +222,17 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue
 
             console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
 
-            const tokensToTransfer = (outputLiquidity.sub(newLiquidityOutputPool))
+            const tokensToTransfer = (outputLiquidity.minus(newLiquidityOutputPool))
             console.log("tokensToTransfer", tokensToTransfer)
 
             const inputExchangeRate = tokensToTransfer.div(inputValue)
-            const outputExchangeRate = new Decimal(1).div(inputExchangeRate)
+            const outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
 
             const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
             const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
             console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
-            const priceImpact = inputValueMinusFee.div(inputLiquidity.add(inputValueMinusFee)).mul(100).toNumber()
+            const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
             console.log("priceImpact", priceImpact)
 
             return {
