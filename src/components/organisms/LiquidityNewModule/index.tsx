@@ -19,6 +19,7 @@ import {TbTrash} from "react-icons/tb";
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {CircleButton} from "../../molecules/POCTBody/styles";
 import Decimal from 'decimal.js'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
     TokenSelectStyled,
@@ -103,16 +104,20 @@ const LiquidityNewModule = () => {
         }
 
         const result = async () => {
-            const list = await getPoolList()
-            setPools(list)
-            if (isConnected) {
-                const newList = await getPoolDetailByUser(getAccountHash())
-                setUsersLP(newList)
-            }
+            await loadUserLP()
         }
         result().catch(() => console.log("Error"))
 
     }, [isConnected])
+
+    const loadUserLP = async () => {
+        const list = await getPoolList()
+        setPools(list)
+        if (isConnected) {
+            const newList = await getPoolDetailByUser(getAccountHash())
+            setUsersLP(newList)
+        }
+    }
 
     const calculateUserLP = (token0, token1, amount0, amount1) => {
         const filter = pools.filter(r => r.pair.token0 === token0 && r.pair.token1 === token1)
@@ -268,6 +273,7 @@ const LiquidityNewModule = () => {
     async function onLiquidity() {
 
         await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
+        await loadUserLP()
         //onConnectConfig()
     }
 
@@ -276,6 +282,11 @@ const LiquidityNewModule = () => {
         const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
         amountSwapTokenBSetter(secondTokenReturn)
         slippSwapTokenSetter(minAmountReturn)
+    }
+
+    const onRemoveLiquidity = async () => {
+        console.log("Recargando loadUser LP")
+        await loadUserLP()
     }
 
     const enableButton = (amount0, amount1) => {
@@ -434,7 +445,7 @@ const LiquidityNewModule = () => {
 
                             return (
                                 // Apply the row props
-                                <LiquidityItem
+                                <LiquidityItem key={uuidv4()}
                                     fullExpanded={openPopup}
                                     firstIcon={casprIcon}
                                     firstSymbol={row.token0}
@@ -456,6 +467,7 @@ const LiquidityNewModule = () => {
                                                              liquidityId={row.totalPoolId}
                                                              liquidity={row.totalPool}
                                                              liquidityUSD={row.totalPoolUSD}
+                                                             onRemove={onRemoveLiquidity}
                                     >
                                         <CircleButton>
                                             <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>

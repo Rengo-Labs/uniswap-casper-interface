@@ -25,7 +25,7 @@ import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
 import Decimal from 'decimal.js'
 
-export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, firstLiquidity, firstHash, secondSymbol, secondLiquidity, secondHash, liquidityId, liquidity, liquidityUSD, slippage = 0.003, children}: any) => {
+export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, firstLiquidity, firstHash, secondSymbol, secondLiquidity, secondHash, liquidityId, liquidity, liquidityUSD, onRemove= () => {}, slippage = 0.003, children}: any) => {
 
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState("0")
@@ -71,6 +71,7 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
         await getAllowanceAgainstOwnerAndSpender(contractHash, walletAddress)
         await onRemoveLiquidity(firstHash, secondHash, value, value, t0, t1)
         closeHandler()
+        onRemove()
     }
 
     const setHalf = () => {

@@ -30,7 +30,7 @@ import { entryPointEnum } from "../../types";
 import { tokenReducerEnum } from "../../reducers/TokenReducers";
 import Decimal from 'decimal.js'
 
-const normilizeAmountToString = (amount) => {
+export const normilizeAmountToString = (amount) => {
   const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
   const amountArr = strAmount.split('.')
   if (amountArr[1] === undefined) {

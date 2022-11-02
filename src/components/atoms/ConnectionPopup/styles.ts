@@ -21,6 +21,7 @@ interface OverlayParam {
 
 export const OverlayPopup = styled.div<OverlayParam>`
     visibility: ${props => props.isOpened ? "visible" : "hidden"};
+    visibility: ${props => props.isOpened ? "visible" : "hidden"};
     opacity: ${props => props.isOpened ? "1" : "0"};
     z-index: 10;
     backdrop-filter: blur(5px);
@@ -30,70 +31,66 @@ export const OverlayPopup = styled.div<OverlayParam>`
     left: 0;
     right: 0;
     background: rgba(0, 0, 0, 0.7);
-    transition: opacity 500ms;
     display: flex;
     justify-content: center;
 `
 
 export const PopupContainer = styled.div`
     border: 1px solid black;
-    margin: 70px auto;
     background: #fff;
     border-radius: 20px;
-    width: 30%;
-    height: 32vh;
-    top: 20%;
-    position: relative;
-    transition: all 1s ease-in-out;
-    
-    @media screen and (max-width: 700px) {
-    .popup {
-        width: 70%;
-    }
-}
+    width: 608px;
+    height: 262px;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
 `
 
 export const PopupTitle = styled.div`
     border-radius: 20px 20px 0 0;
-    padding: 2.5vh;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    padding: 10px;
     margin-top: 0;
     background-color: ${props => props.theme.mainBackgroundColor};
     color: ${props => props.theme.secondBackgroundColor};
     font-family: EpilogueLight;
-    font-size: 0.8vw;
-    border-bottom: 1px solid black;
+    font-size: 19px;
+    border-bottom: .5px solid black;
 `
 
 export const PopupBottom = styled.div`
     background-color: ${props => props.theme.mainBackgroundColor};
-    padding: 2vh;
+    height: 30px;
+    padding: 10px;
     color: black;
     text-align: center;
-    font-size: 0.8vw;
+    font-size: 16px;
     font-family: 'EpilogueLight';
-    border-top: 1px solid black;
+    border-top: .5px solid black;
     border-radius: 0 0 20px 20px;
+    display: flex;
 `
 
 export const PopupClose = styled.span`
-    position: absolute;
-    top: 1.5vh;
-    right: 30px;
-    transition: all 200ms;
+    text-align: end;
+    flex: 0.5;
     font-size: 30px;
     font-weight: bold;
+    margin-right: 15px;
     text-decoration: none;
     color: ${props => props.theme.secondBackgroundColor};
     :hover {
         cursor: pointer;
-        color: #000;
     }
 `
 
 export const PopupContent = styled.div`
-    overflow: auto;
-    margin-top: 2vh;
-    padding: 0.5vw;
+    padding: 10px;
+    margin: 0;
+    border-radius: 0;
+    height: 162px;
 `
 
 export const HRefLink = styled.button`
@@ -104,7 +101,7 @@ export const HRefLink = styled.button`
 
 export const CollapsingPopup = styled.div`
     color: black;
-    margin-top: 10px;
+    margin-top: 25px;
     display: flex;
     justify-content: center;
     font-family: EpilogueLight

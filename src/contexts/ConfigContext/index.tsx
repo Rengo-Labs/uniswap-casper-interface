@@ -40,7 +40,11 @@ import {
 } from '../../commons/swap';
 
 import { PopupsModule } from '../../components/organisms';
-import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
+import {
+    createRuntimeeArgsPool,
+    liquidityRuntimeForCSPR,
+    liquidityRuntimeForERC20
+} from '../../components/pages/Liquidity/study';
 import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
@@ -430,6 +434,7 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
 
 async function addLiquidityMakeDeploy(
     activePublicKey,
+    tokenA,
     tokenB,
     tokenAAmount,
     tokenBAmount,
@@ -444,30 +449,61 @@ async function addLiquidityMakeDeploy(
     const deadline = 1739598100811;
     const paymentAmount = 10000000000;
 
+    console.log("tokenA", tokenA?.symbol, tokenA?.packageHash, "tokenB", tokenB?.symbol, tokenB?.packageHash)
+
     const _token_b = new CLByteArray(
         Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
     );
     const pair = new CLByteArray(
         Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
     );
-    const runtimeArgs = createRuntimeeArgsPool(
-        token_AAmount,
-        _token_b,
-        token_BAmount,
-        slippage,
-        publicKey,
-        mainPurse,
-        deadline,
-        pair,
-        ROUTER_PACKAGE_HASH
-    );
-    console.log("datos", runtimeArgs)
-    const deploy = makeDeployWasm(
-        publicKey,
-        runtimeArgs,
-        paymentAmount
-    );
-    return deploy;
+
+    if (tokenA?.symbol === 'CSPR' || tokenA?.symbol === 'WCSPR') {
+        return liquidityRuntimeForCSPR(
+            token_AAmount,
+            _token_b,
+            token_BAmount,
+            slippage,
+            publicKey,
+            mainPurse,
+            deadline,
+            pair,
+            paymentAmount,
+            ROUTER_PACKAGE_HASH
+        )
+    } else if (tokenB?.symbol === 'CSPR' || tokenB?.symbol === 'WCSPR') {
+        const _token_a = new CLByteArray(
+            Uint8Array.from(Buffer.from(tokenA?.packageHash.slice(5), "hex"))
+        );
+
+        return await liquidityRuntimeForCSPR(
+            token_BAmount,
+            _token_a,
+            token_AAmount,
+            slippage,
+            publicKey,
+            mainPurse,
+            deadline,
+            pair,
+            paymentAmount,
+            ROUTER_PACKAGE_HASH
+        )
+    } else {
+        const _token_a = new CLByteArray(
+            Uint8Array.from(Buffer.from(tokenA?.packageHash.slice(5), "hex"))
+        );
+        return liquidityRuntimeForERC20(
+            _token_a,
+            _token_b,
+            token_AAmount,
+            token_BAmount,
+            slippage,
+            publicKey,
+            deadline,
+            pair,
+            paymentAmount
+        )
+    }
 }
 
 async function liquidityAgainstUserAndPair(activePublicKey, pairId) {
@@ -1035,10 +1071,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     async function onAddLiquidity(amountA, amountB) {
-        console.log("Enviando datos ")
         const loadingToast = toast.loading("let me try to add liquidity! be patient!")
         try {
-            const deploy = await addLiquidityMakeDeploy(walletAddress, secondTokenSelected, amountA, amountB, slippageToleranceSelected, mainPurse)
+            const deploy = await addLiquidityMakeDeploy(walletAddress, firstTokenSelected, secondTokenSelected, amountA, amountB, slippageToleranceSelected, mainPurse)
+
             if (walletSelected === 'casper') {
                 console.log("signing add liquidity")
                 const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
