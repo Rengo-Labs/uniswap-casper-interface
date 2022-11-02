@@ -185,7 +185,10 @@ async function swapMakeDeploy(
  */
 async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue, token, slippage = 0.005, fee = 0.003) {
     try {
-        //const response = await getPairTokenReserve(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
+        if (inputValue <= 0) {
+            return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0 }
+        }
+
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
             path: [
                 firstTokenSelected.symbolPair,

@@ -164,6 +164,10 @@ const SwapNewModule = () => {
 
     const [searchModalA, searchModalASetter] = useState(false)
     async function SelectAndCloseTokenA(token) {
+        if (token.symbol === secondTokenSelected.symbol) {
+            return;
+        }
+
         onSelectFirstToken(token)
         searchModalASetter(false)
 
@@ -173,6 +177,10 @@ const SwapNewModule = () => {
     }
     const [searchModalB, searchModalBSetter] = useState(false)
     async function SelectAndCloseTokenB(token) {
+        if (token.symbol === firstTokenSelected.symbol) {
+            return;
+        }
+
         onSelectSecondToken(token)
         searchModalBSetter(false)
         const minTokenToReceive = await updateSwapDetail(firstTokenSelected, token, amountSwapTokenB, token)
