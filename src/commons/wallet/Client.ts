@@ -69,6 +69,34 @@ export class Client {
   }
 
   /**
+   * Async attempt to retrieve main purse
+   * 
+   * @param wallet wallet whose public key is being used
+   * 
+   * @returns the main purse or throw error
+   */
+   async getMainPurse(wallet: Wallet): Promise<string> {
+    try {
+      const casperService = this.casperClient.nodeClient
+
+      const stateRootHash = await casperService.getStateRootHash();
+      const result = await casperService.getBlockState(
+          stateRootHash,
+          wallet.accountHashString,
+          []
+      );
+      const mainPurse = result.Account.mainPurse
+
+      return mainPurse
+    } catch(err) {
+      log.warn(`Casper Client - getMainPurse error: ${err}`)
+      
+      // rethrow error
+      throw err
+    }
+  }
+
+  /**
    * Async attempt to retrieve deploy
    * 
    * @param deployHash string deploy hash

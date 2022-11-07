@@ -1,24 +1,16 @@
-import Torus from '@toruslabs/casper-embed';
 import axios from 'axios';
 import BigNumber from 'bignumber.js'
 import {
-    AccessRights,
-    CasperServiceByJsonRPC, CLAccountHash,
     CLByteArray,
     CLKey,
-    CLList,
-    CLOption,
     CLPublicKey,
     CLValueBuilder,
     RuntimeArgs,
-    Signer
 } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
 
 import {
-    CLBArray,
-    convertToString,
     createRecipientAddress,
     createRuntimeArgs,
     createSwapRuntimeArgs, createSwapRuntimeArgs2, createSwapToReceiveCSPRRuntimeArgs,
@@ -46,13 +38,25 @@ import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
 import { initialPairsState, PairsReducer } from '../../reducers/PairsReducer';
 import { initialStateToken, TokenReducer, tokenReducerEnum } from '../../reducers/TokenReducers';
-import { initialStateWallet, reducerWallet } from '../../reducers/WalletReducers';
 import { entryPointEnum } from '../../types';
+
+import { 
+    Client as CasperClient,
+    CasperSignerWallet,
+    Network,
+    Wallet,
+    convertBigNumberToUIString,
+} from '../../commons'
+
 import wethIcon from "../../assets/swapIcons/wethIcon.svg";
 import casprIcon from "../../assets/swapIcons/casprIcon.png";
+import { getActivePublicKey } from '../../reducers/WalletReducers/signerFunctions';
+
+type MaybeWallet = Wallet | undefined
 
 export const ConfigProviderContext = createContext<any>({})
-let torus;
+
+export const casperClient = new CasperClient(Network.CASPER_TESTNET, NODE_ADDRESS)
 
 const formatter = Intl.NumberFormat('en', {notation: 'compact'})
 
@@ -62,33 +66,28 @@ export const convertNumber = (number) => {
 
 function convertToStr(x) { return x.toString() }
 
-async function tryToConnectSigner() {
-    try {
-        return await Signer.getActivePublicKey()
-    } catch (error) {
-        await Signer.sendConnectionRequest()
-        return false
-    }
-}
-export function clientDispatcher() {
-    return new CasperServiceByJsonRPC(NODE_ADDRESS);
+/**
+ * Return type for GetStatus
+ */
+export type GetStatusType = {
+    // network token balance of the account
+    balance: string,
+    // uref of the main purse
+    mainPurse: string,
 }
 
-export async function getStatus(walletAddress) {
-    const casperService = clientDispatcher()
-    const stateRootHash = await casperService.getStateRootHash();
-    const result = await casperService.getBlockState(
-        stateRootHash,
-        CLPublicKey.fromHex(walletAddress).toAccountHashStr(),
-        []
-    );
-    const mainPurse = result.Account.mainPurse
-    const balance: any = await casperService.getAccountBalance(
-        stateRootHash,
-        result.Account.mainPurse
-    );
-    const csprBalance = balance / 10 ** 9;
-    return { csprBalance, mainPurse };
+/**
+ * Get the balance and main purse of the wallet
+ * 
+ * @param wallet Wallet whose account is being used
+ * @returns 
+ */
+export async function getStatus(wallet: Wallet) {
+    const balance = await casperClient.getBalance(wallet)
+    const mainPurse = await casperClient.getMainPurse(wallet)
+
+    const csprBalance = convertBigNumberToUIString(balance)
+    return { balance: csprBalance, mainPurse };
 }
 
 function loadTokens(dispatch) {
@@ -526,6 +525,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [gralData, setGralData] = useState({})
     const [isStaked, setStaked] = useState(false)
 
+    const [wallet, setWallet] = useState<MaybeWallet>(undefined)
+
     let debounceConnect = false
 
     async function connect() {
@@ -534,46 +535,54 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
 
         debounceConnect = true
-        let walletAddress: string | false
+        let w: MaybeWallet
 
         if (walletSelected === 'casper') {
             try {
-                walletAddress = await tryToConnectSigner()
+                if (wallet) {
+                    wallet.disconnect()
+                }
+
+                w = new CasperSignerWallet()
+                await w.connect()
+                setWallet(w)
             } catch (e) {
                 debounceConnect = false
                 throw e
             }
-            if (!walletAddress) {
+            if (!w?.publicKey) {
                 debounceConnect = false
                 throw new Error("casper signer error")
             }
         } else {
-            torus = new Torus();
+            /*
+                torus = new Torus();
 
-            if (!torus) {
-                throw new Error("torus error")
-            }
-            
-            try {
-                await torus.init({
-                    buildEnv: "testing",
-                    showTorusButton: true,
-                    network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-                });
-            } catch (e) {
-                debounceConnect = false
-                throw e
-            }
-            
-            walletAddress = (await torus.login())[0];
+                if (!torus) {
+                    throw new Error("torus error")
+                }
+                
+                try {
+                    await torus.init({
+                        buildEnv: "testing",
+                        showTorusButton: true,
+                        network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+                    });
+                } catch (e) {
+                    debounceConnect = false
+                    throw e
+                }
+                
+                walletAddress = (await torus.login())[0];
+            */
         }
 
-        const { csprBalance, mainPurse } = await getStatus(walletAddress)
+        const { balance, mainPurse } = await getStatus(w)
         debounceConnect = false
-        return [csprBalance, mainPurse, walletAddress ]
+        return [balance, mainPurse, w.publicKeyHex]
     }
 
-    async function onConnectConfig(ignoreError = false) {
+    async function onConnectWallet(ignoreError = false) {
         if (debounceConnect) {
             return
         }
@@ -624,7 +633,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         // if (props.selectedWallet === "Casper" || localStorage.getItem("selectedWallet") === "Casper") {
         window.addEventListener('signer:connected', msg => {
             console.log("signer:connected", msg)
-            onConnectConfig()
+            //onConnectConfig()
         });
         window.addEventListener('signer:disconnected', msg => {
             console.log("signer:disconnected", msg)
@@ -636,7 +645,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         });
         window.addEventListener('signer:activeKeyChanged', msg => {
             console.log("signer:activeKeyChanged", msg)
-            onConnectConfig()
+            //onConnectConfig()
         });
         window.addEventListener('signer:locked', msg => {
             console.log("signer:locked", msg)
@@ -644,11 +653,12 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         });
         window.addEventListener('signer:unlocked', msg => {
             console.log("signer:unlocked", msg)
-            onConnectConfig()
+            //onConnectConfig()
         });
+        
         window.addEventListener('signer:initialState', msg => {
             console.log("signer:initialState", msg)
-            connect()
+            //connect()
         });
         // }
     }, []);
@@ -933,19 +943,19 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     async function onDisconnectWallet() {
         if (isConnected && walletSelected === "casper") {
             try {
-                const wallet = await tryToConnectSigner()
+                /* const wallet = await tryToConnectSigner()
                 dispatch({ type: ConfigActions.DISCONNECT_WALLET })
 
                 const poolList = await getPoolList()
-                setPoolList(poolList)
+                setPoolList(poolList) */
                 toast.success("your wallet is unmounted")
             } catch (error) {
                 toast.error("Ooops we have an error")
             }
         } else if (isConnected && walletSelected === "torus") {
-            await torus.logout();
+            /* await torus.logout();
             dispatch({ type: ConfigActions.DISCONNECT_WALLET })
-            toast.success("your wallet is unmounted")
+            toast.success("your wallet is unmounted") */
         }
     }
 
@@ -1163,7 +1173,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     return (
         <ConfigProviderContext.Provider value={{
             getAccountHash,
-            onConnectConfig,
+            onConnectWallet,
             onDisconnectWallet,
             onChangeWallet,
             configState: state,

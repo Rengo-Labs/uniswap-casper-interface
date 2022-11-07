@@ -1,6 +1,6 @@
 
 import BigNumber from 'bignumber.js'
-import { Logger } from 'tslog'
+import { Logger } from './log'
 
 export const log = new Logger()
 

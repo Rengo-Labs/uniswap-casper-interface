@@ -12,13 +12,21 @@ import {
 
 import { WalletName } from './types'
 
-export const CASPERSIGNER_PUBKEY_KEY = 'cs-pubk' 
+export const CASPERSIGNER_PUBKEY_KEY = 'cs-pubk'
+
+export enum CasperSignerEvents {
+  CONNECT = 'signer:connected',
+  DISCONNECT = 'signer:disconnected'
+}
 
 /**
  * Casper Signer Wallet
  */
 export class CasperSignerWallet implements Wallet{
   private _connectPromise?: Promise<string>
+  private _connectEventHandler: any
+  private _disconnectEventHandler: any
+  private _previousConnectReject: any
   private _publicKey?: CLPublicKey
   private _isConnected = false
 
@@ -41,7 +49,7 @@ export class CasperSignerWallet implements Wallet{
 
   // (getter) name for identifying the wallet
   get name(): WalletName {
-    return WalletName.CasperSigner
+    return WalletName.CASPER_SIGNER
   }
 
   // (getter) public key for connected wallet
@@ -70,31 +78,95 @@ export class CasperSignerWallet implements Wallet{
    * @returns the the public key on success or throw error
    */
   async connect(): Promise<string> {
-    // if connecting just return the connect promise
+    if (this.isConnected) {
+      return
+    }
+
+    // If connecting just return the connect promise
     if (this._connectPromise) {
       return this._connectPromise
     }
 
     try {
-      // clear the promise
-      this._connectPromise = Signer.getActivePublicKey()
+      // check if we're connected 
+      const signerIsConnected = await Signer.isConnected()
 
-      // get key
-      const key = await this._connectPromise
+      // if it is connected then set connect to true
+      if (signerIsConnected) {
+        this._isConnected = true
+        return
+      }
 
-      // store key
-      store.set(CASPERSIGNER_PUBKEY_KEY, key)
+      this._connectPromise = new Promise((resolve, reject) => {
+        // reject any previous promises if they exist
+        if (this._previousConnectReject) {
+          this._previousConnectReject()
+          this._previousConnectReject = undefined
+        }
 
-      // convert key to CLPublicKey type
-      this._publicKey = CLPublicKey.fromHex(key)
+        // set the new promise reject
+        this._previousConnectReject = reject
 
-      // clear the promise
-      this._connectPromise = undefined
+        // if there is a connect event handler then stop listening to it
+        if (this._connectEventHandler) {
+          window.removeEventListener(
+            CasperSignerEvents.CONNECT, 
+            this._connectEventHandler,
+          )
+        }
 
-      // set connected
-      this._isConnected = true
+        // if there is a disconnect event handler then stop listening to it
+        if (this._disconnectEventHandler) {
+          window.removeEventListener(
+            CasperSignerEvents.DISCONNECT, 
+            this._disconnectEventHandler,
+          )
+        }
+        
+        // create a new connect event handler
+        this._connectEventHandler = async (msg) => {
+          try {
+            // get the active key
+            const key = await this.getActiveKey()
+            
+            this._isConnected = true
+            log.info('CasperSigner: Connected')
+            this._connectEventHandler = undefined
+            this._connectPromise = undefined
 
-      return key
+            resolve(key)
+          } catch (err) {
+            log.error(`Casper Signer - connect error: ${err}`)
+          }
+        }
+
+        // create a new disconnect event handler
+        this._disconnectEventHandler = (msg) => {
+          this._isConnected = false
+          log.info('CasperSigner: Disconnected')
+          this._disconnectEventHandler = undefined
+        }
+
+        // start litening to connect
+        window.addEventListener(
+          CasperSignerEvents.CONNECT, 
+          this._connectEventHandler, 
+          { once: true },
+        )
+        
+        // start listening to disconnect
+        window.addEventListener(
+          CasperSignerEvents.DISCONNECT, 
+          this._disconnectEventHandler, 
+          { once: true },
+        )
+      })      
+
+      // finally try and connect
+      Signer.sendConnectionRequest()
+
+      // return the connect promise
+      return this._connectPromise
     } catch (err) {
       log.error(`Casper Signer - connect error: ${err}`)
       this._connectPromise = undefined
@@ -104,6 +176,24 @@ export class CasperSignerWallet implements Wallet{
     }
   }
 
+  /** 
+   * Async try and read the active key
+   * 
+   * @returns the the public key on success or throw error
+   */
+  async getActiveKey(): Promise<string> {
+    // clear the promise
+    const key = await Signer.getActivePublicKey()
+
+    // store key
+    store.set(CASPERSIGNER_PUBKEY_KEY, key)
+
+    // convert key to CLPublicKey type
+    this._publicKey = CLPublicKey.fromHex(key)
+
+    return key
+  }
+  
   /** 
    * Async try and disconnect from the current wallet
    * 

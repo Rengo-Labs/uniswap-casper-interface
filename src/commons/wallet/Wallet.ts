@@ -34,6 +34,13 @@ export interface Wallet {
   connect: () => Promise<string>
 
   /** 
+   * Async try and read the active key
+   * 
+   * @returns the the public key on success or throw error
+   */
+  getActiveKey: () => Promise<string>
+
+  /** 
    * Async try and disconnect from the current wallet
    * 
    * @returns a promise for pass/fail

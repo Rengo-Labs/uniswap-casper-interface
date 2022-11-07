@@ -1,11 +1,11 @@
 export const enum WalletName {
-  CasperSigner = 'Casper Signer',
-  Torus = 'Torus',
-  Mock = 'Mock',
+  CASPER_SIGNER = 'Casper Signer',
+  TORUS = 'Torus',
+  MOCK = 'Mock',
 }
 
 export const enum Network {
-  CasperTestnet = 'casper-test',
-  CasperMainnet = 'casper',
-  None = 'none',
+  CASPER_TESTNET = 'casper-test',
+  CASPER_MAINNET = 'casper',
+  NONE = 'none',
 }
