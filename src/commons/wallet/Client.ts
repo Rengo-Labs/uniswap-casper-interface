@@ -210,7 +210,7 @@ export class Client {
     try {
       // Create the deploy item using wasm + args
       const deployItem = DeployUtil.ExecutableDeployItem.newModuleBytes(
-        new Uint8Array(wasm.data.wasmData.data),
+        new Uint8Array(wasm.wasmData.data),
         args,
       )
 

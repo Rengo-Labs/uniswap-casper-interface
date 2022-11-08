@@ -12,23 +12,15 @@ import toast from 'react-hot-toast';
 
 import {
     createRecipientAddress,
-    createRuntimeArgs,
-    createSwapRuntimeArgs, createSwapRuntimeArgs2, createSwapToReceiveCSPRRuntimeArgs,
     getDeploy,
-    getswapPath,
     makeDeploy,
     makeDeployLiquidity,
-    makeDeployLiquidityWasm,
     makeDeployWasm,
-    putdeploy,
     putdeploySigner,
     removeLiquidityArgs,
-    removeLiquidityPutDeploy,
-    selectEntryPoint,
     signdeploywithcaspersigner,
     signDeployWithTorus,
     updateBalances,
-    withPutDeploy
 } from '../../commons/swap';
 
 import { PopupsModule } from '../../components/organisms';
@@ -40,36 +32,41 @@ import { initialPairsState, PairsReducer } from '../../reducers/PairsReducer';
 import { initialStateToken, TokenReducer, tokenReducerEnum } from '../../reducers/TokenReducers';
 import { entryPointEnum } from '../../types';
 
-import { 
+import {
+    APIClient,
     Client as CasperClient,
     CasperSignerWallet,
     Network,
+    Token,
     Wallet,
     convertBigNumberToUIString,
+    signAndDeploySwap,
+    log,
+    convertUIStringToBigNumber,
 } from '../../commons'
 
 import wethIcon from "../../assets/swapIcons/wethIcon.svg";
 import casprIcon from "../../assets/swapIcons/casprIcon.png";
 import { getActivePublicKey } from '../../reducers/WalletReducers/signerFunctions';
+import { FiberNew } from '@mui/icons-material';
 
 type MaybeWallet = Wallet | undefined
 
 export const ConfigProviderContext = createContext<any>({})
 
 export const casperClient = new CasperClient(Network.CASPER_TESTNET, NODE_ADDRESS)
+export const apiClient = new APIClient(BASE_URL)
 
 const formatter = Intl.NumberFormat('en', {notation: 'compact'})
 
-export const convertNumber = (number) => {
+export const convertNumber = (number: number) => {
     return formatter.format(number)
 }
-
-function convertToStr(x) { return x.toString() }
 
 /**
  * Return type for GetStatus
  */
-export type GetStatusType = {
+export type StatusResponseType = {
     // network token balance of the account
     balance: string,
     // uref of the main purse
@@ -80,9 +77,9 @@ export type GetStatusType = {
  * Get the balance and main purse of the wallet
  * 
  * @param wallet Wallet whose account is being used
- * @returns 
+ * @returns the balance and make purse uref
  */
-export async function getStatus(wallet: Wallet) {
+export async function getStatus(wallet: Wallet): Promise<StatusResponseType> {
     const balance = await casperClient.getBalance(wallet)
     const mainPurse = await casperClient.getMainPurse(wallet)
 
@@ -90,16 +87,13 @@ export async function getStatus(wallet: Wallet) {
     return { balance: csprBalance, mainPurse };
 }
 
-function loadTokens(dispatch) {
-    fetch(`${BASE_URL}/tokensList`)
-        .then(data => data.json())
-        .then(tokenList => {
-            dispatch({ type: "UPDATE_TOKENS", payload: { tokens: tokensToObject(tokenList.tokens) } })
-        })
-        .catch(err => console.error(err))
-}
-
-function tokensToObject(listTokens) {
+/**
+ * Convert Token array to Token Record
+ * 
+ * @param listTokens an array of tokens
+ * @returns a Record of tokens indexed by symbol
+ */
+function tokensToObject(listTokens: Token[]): Record<string, Token> {
     return listTokens.reduce((acc, token) => {
         return {
             ...acc, [token.symbol]: {
@@ -111,140 +105,81 @@ function tokensToObject(listTokens) {
     }, {})
 }
 
-async function swapMakeDeploy(
-    publicKeyHex,
-    deadline,
-    paymentAmount,
-    amount_in,
-    amount_out_min,
-    tokenASymbol,
-    tokenBSymbol,
-    slippSwapToken,
-    mainPurse,
-) {
-    try {
-        const publicKey = CLPublicKey.fromHex(publicKeyHex);
-        const _paths = await getswapPath(tokenASymbol, tokenBSymbol);
-        const entryPoint = selectEntryPoint(tokenASymbol, tokenBSymbol)
-        console.log("EntryPoint", entryPoint, tokenASymbol, tokenBSymbol, amount_out_min)
-        if (tokenASymbol !== "WCSPR" && tokenBSymbol !== "WCSPR") {
-            return createSwapRuntimeArgs(
-                amount_in,
-                amount_out_min,
-                slippSwapToken,
-                _paths,
-                publicKey,
-                mainPurse,
-                deadline,
-                entryPoint
-            )
-        } if (tokenBSymbol === "WCSPR") {
-            return createSwapRuntimeArgs2(
-                amount_in,
-                amount_out_min,
-                slippSwapToken,
-                _paths,
-                publicKey,
-                mainPurse,
-                deadline,
-                entryPoint
-            )
-        } else {
-            const runtimeArgs = createRuntimeArgs(
-                amount_in,
-                amount_out_min,
-                slippSwapToken,
-                _paths,
-                publicKey,
-                mainPurse,
-                deadline,
-                entryPoint
-            );
-
-            return await makeDeployWasm(
-                publicKey,
-                runtimeArgs,
-                paymentAmount,
-            );
-        }
-
-    } catch (error) {
-        console.log("Paso error")
-        return false
-    }
+/**
+ * Swap details
+ */
+export interface SwapDetails {
+    tokensToTransfer: string,
+    priceImpact: string,
+    exchangeRateA: number,
+    exchangeRateB: number,
 }
 
 /***
  * it returns tokensToTransfer, priceImpact, minTokenBToTransfer, exchangeRateA and exchangeRateB that belong to the swap detail
- * @param firstTokenSelected
- * @param secondTokenSelected
- * @param value
- * @param slippage
- * @param fee
+ * @param tokenA first token
+ * @param tokenB second token
+ * @param inputValue input tokens
+ * @param token input token types matching one of tokenA or tokenB
+ * @param slippage decimal slippage
+ * @param fee decimal fee
+ * 
+ * @return SwapDetails
  */
-async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue, token, slippage = 0.005, fee = 0.003) {
+async function getSwapDetails(tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<SwapDetails> {
     try {
-        //const response = await getPairTokenReserve(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
-        const response = await axios.post(`${BASE_URL}/getpathreserves`, {
-            path: [
-                firstTokenSelected.symbolPair,
-                secondTokenSelected.symbolPair,
-            ]
-        })
-        if (response.data.success) {
+        const data = await apiClient.getPathReserves(tokenA.symbol, tokenB.symbol)
+        
+        const isA2B = token.symbol == tokenA.symbol
 
-            const isA2B = token.symbol == firstTokenSelected.symbol
+        const liquidityA = new BigNumber(data.reserve0)
+        const liquidityB = new BigNumber(data.reserve1)
+        const inputValueMinusFee = new BigNumber(inputValue).times(Math.pow(10,9)).times(1 - fee)
 
-            const liquidityA = new BigNumber(response.data.reserve0)
-            const liquidityB = new BigNumber(response.data.reserve1)
-            const inputValueMinusFee = new BigNumber(inputValue).times(Math.pow(10,9)).times(1 - fee)
+        const inputLiquidity = isA2B ? liquidityA : liquidityB
+        const outputLiquidity = isA2B ? liquidityB : liquidityA
 
-            const inputLiquidity = isA2B ? liquidityA : liquidityB
-            const outputLiquidity = isA2B ? liquidityB : liquidityA
+        const constantProduct = liquidityA.times(liquidityB)
+        console.log("liquidityA", liquidityA.toNumber(), "liquidityB", liquidityB.toNumber(), "constant_product", constantProduct.toNumber(), "tokenToTrade", inputValueMinusFee.toNumber())
 
-            const constantProduct = liquidityA.times(liquidityB)
-            console.log("liquidityA", liquidityA.toNumber(), "liquidityB", liquidityB.toNumber(), "constant_product", constantProduct.toNumber(), "tokenToTrade", inputValueMinusFee.toNumber())
+        let newLiquidityAPool = liquidityA
+        let newLiquidityBPool = liquidityB
 
-            let newLiquidityAPool = liquidityA
-            let newLiquidityBPool = liquidityB
-
-            if (isA2B) {
-                newLiquidityAPool = liquidityA.plus(inputValueMinusFee)
-                newLiquidityBPool = constantProduct.div(newLiquidityAPool)
-            } else {
-                newLiquidityBPool = liquidityB.plus(inputValueMinusFee)
-                newLiquidityAPool = constantProduct.div(newLiquidityBPool)
-            }
-
-            const newLiquidityInputPool = isA2B ? newLiquidityAPool : newLiquidityBPool
-            const newLiquidityOutputPool = isA2B ? newLiquidityBPool : newLiquidityAPool
-
-            console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
-
-            const tokensToTransfer = (outputLiquidity.minus(newLiquidityOutputPool))
-            console.log("tokensToTransfer", tokensToTransfer)
-
-            const inputExchangeRate = tokensToTransfer.div(inputValue)
-            const outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
-
-            const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
-            const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
-            console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
-
-            const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
-            console.log("priceImpact", priceImpact)
-
-            return {
-                tokensToTransfer: tokensToTransfer.div(Math.pow(10,9)).toNumber().toFixed(9),
-                priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
-                exchangeRateA: exchangeRateA.toNumber(),
-                exchangeRateB : exchangeRateB.toNumber()
-            }
+        if (isA2B) {
+            newLiquidityAPool = liquidityA.plus(inputValueMinusFee)
+            newLiquidityBPool = constantProduct.div(newLiquidityAPool)
+        } else {
+            newLiquidityBPool = liquidityB.plus(inputValueMinusFee)
+            newLiquidityAPool = constantProduct.div(newLiquidityBPool)
         }
-        throw Error()
+
+        const newLiquidityInputPool = isA2B ? newLiquidityAPool : newLiquidityBPool
+        const newLiquidityOutputPool = isA2B ? newLiquidityBPool : newLiquidityAPool
+
+        console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
+
+        const tokensToTransfer = (outputLiquidity.minus(newLiquidityOutputPool))
+        console.log("tokensToTransfer", tokensToTransfer)
+
+        const inputExchangeRate = tokensToTransfer.div(inputValue)
+        const outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
+
+        const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
+        const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
+        console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
+
+        const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
+        console.log("priceImpact", priceImpact)
+
+        return {
+            tokensToTransfer: tokensToTransfer.div(Math.pow(10,9)).toNumber().toFixed(9),
+            priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
+            exchangeRateA: exchangeRateA.toNumber(),
+            exchangeRateB : exchangeRateB.toNumber()
+        }
     } catch (error) {
         console.log(__filename, "getSwapDetail", error)
-        return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0 }
+        return { tokensToTransfer: '0', priceImpact: '0', exchangeRateA: 0, exchangeRateB: 0 }
     }
 }
 
@@ -350,20 +285,16 @@ async function RemoveLiquidityCSPRMakeDeploy(publicKeyHex, tokenA, tokenB, token
     );
 
     const runtimeArgs = RuntimeArgs.fromMap({
-        amount: CLValueBuilder.u512(convertToStr(Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9))),
+        amount: CLValueBuilder.u512(Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9)),
         destination_entrypoint: CLValueBuilder.string("remove_liquidity_cspr"),
         router_hash: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))),
         token: new CLKey(_token),
-        liquidity: CLValueBuilder.u256(convertToStr((liquidity * value) / 100)),
+        liquidity: CLValueBuilder.u256((liquidity * value) / 100),
         amount_cspr_min: CLValueBuilder.u256(
-            convertToStr(
-                Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9)
-            )
+            Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9)
         ),
         amount_token_min: CLValueBuilder.u256(
-            convertToStr(
-                Number(token_Amount - (token_Amount * slippage) / 100).toFixed(9)
-            )
+            Number(token_Amount - (token_Amount * slippage) / 100).toFixed(9)
         ),
         to: createRecipientAddress(publicKey),
         deadline: CLValueBuilder.u256(deadline),
@@ -583,6 +514,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     async function onConnectWallet(ignoreError = false) {
+        if (wallet?.isConnected) {
+            return
+        }
+        
         if (debounceConnect) {
             return
         }
@@ -625,7 +560,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     } = state
 
     useEffect(() => {
-        loadTokens(tokenDispatch)
+        const fn = async () => {
+            const data = await apiClient.getTokenList()
+            const tokens = tokensToObject(data.tokens)
+            console.log('TOKENS', tokens);
+            dispatch({ type: "UPDATE_TOKENS", payload: { tokens } })
+        }
+
+        fn().catch((e) => log.error(`UPDATE_TOKENS error": ${e}`))
     }, [])
 
     useEffect(() => {
@@ -637,7 +579,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         });
         window.addEventListener('signer:disconnected', msg => {
             console.log("signer:disconnected", msg)
-            onDisconnectWallet()
+            //onDisconnectWallet()
         });
         window.addEventListener('signer:tabUpdated', msg => {
             console.log("signer:tabUpdated", msg)
@@ -890,49 +832,30 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [linkExplorer, setLinkExplorer] = useState("")
     const [deployExplorer, setDeployExplorer] = useState("")
 
-    async function onConfirmSwapConfig(amoutSwapTokenA, amoutSwapTokenB, slippSwapToken) {
+    async function onConfirmSwapConfig(amountA: string, amountB: string, slippage: number) {
         try {
-            const deploy = await swapMakeDeploy(walletAddress,
+            const [deployHash, deployResult] = await signAndDeploySwap(
+                apiClient,
+                casperClient,
+                wallet,
                 DEADLINE,
-                gasPriceSelected,
-                amoutSwapTokenA,
-                amoutSwapTokenB,
+                convertUIStringToBigNumber(amountA),
+                convertUIStringToBigNumber(amountB),
                 firstTokenSelected.symbolPair,
                 secondTokenSelected.symbolPair,
-                slippSwapToken,
+                slippage / 100,
                 mainPurse,
             );
 
-            if (walletSelected === 'torus') {
-                const signedDeploy: any = await signDeployWithTorus(deploy)
-                const deployHash = signedDeploy.deploy_hash
+            setProgressModal(true)
+            setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
 
-                setProgressModal(true)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+            const result = await casperClient.waitForDeployExecution(deployHash)
+            setProgressModal(false)
+            setConfirmModal(true)
 
-                const result = await getDeploy(signedDeploy.deploy_hash);
-                setProgressModal(false)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setConfirmModal(true)
-
-                console.log("result", result)
-                return true
-            }
-            if (walletSelected === 'casper') {
-                const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
-                const deployHash = signedDeploy.deploy_hash
-
-                setProgressModal(true)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-                const result = await putdeploySigner(signedDeploy);
-                setProgressModal(false)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setConfirmModal(true)
-
-                console.log(result)
-                return true
-            }
+            console.log("result", result)
+            return true
         } catch (error) {
             setProgressModal(false)
             console.log("onConfirmSwapConfig")
@@ -941,21 +864,16 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     async function onDisconnectWallet() {
-        if (isConnected && walletSelected === "casper") {
-            try {
-                /* const wallet = await tryToConnectSigner()
+        try {
+            if (wallet) {
+                wallet.disconnect()
+                
                 dispatch({ type: ConfigActions.DISCONNECT_WALLET })
 
-                const poolList = await getPoolList()
-                setPoolList(poolList) */
-                toast.success("your wallet is unmounted")
-            } catch (error) {
-                toast.error("Ooops we have an error")
+                toast.success("Your wallet is disconnected")
             }
-        } else if (isConnected && walletSelected === "torus") {
-            /* await torus.logout();
-            dispatch({ type: ConfigActions.DISCONNECT_WALLET })
-            toast.success("your wallet is unmounted") */
+        } catch (error) {
+            toast.error("Error disconnecting wallet")
         }
     }
 
@@ -1183,7 +1101,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSelectSecondToken,
             onSwitchTokens,
             onCalculateReserves,
-            getSwapDetail,
+            getSwapDetails,
             getAllowanceAgainstOwnerAndSpender,
             tokens,
             firstTokenSelected,

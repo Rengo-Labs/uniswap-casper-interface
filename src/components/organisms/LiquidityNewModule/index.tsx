@@ -68,7 +68,7 @@ const LiquidityNewModule = () => {
         onConfirmSwapConfig,
         slippageToleranceSelected,
         onCalculateReserves,
-        getSwapDetail,
+        getSwapDetails,
         getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
         onDisconnectWallet,
@@ -166,7 +166,7 @@ const LiquidityNewModule = () => {
         onConnectConfig()
     }
     async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
-        const getSwapDetailP = getSwapDetail(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
+        const getSwapDetailP = getSwapDetails(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
         const ps = [getSwapDetailP]
 
         if (tokenA.contractHash) {

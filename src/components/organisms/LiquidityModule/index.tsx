@@ -47,7 +47,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         onIncreaseAllow,
         onAddLiquidity,
         fillPairs,
-        getSwapDetail
+        getSwapDetails,
     } = useContext(ConfigProviderContext)
 
     const [activeModalPrimary, setActiveModalPrimary] = useState(false)
@@ -89,7 +89,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     async function onChangeValueToken(value) {
         amountSwapTokenASetter(value)
         const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
-        const { tokensToTransfer, tokenPrice, priceImpact, exchangeRateA, exchangeRateB } = await getSwapDetail(firstTokenSelected, secondTokenSelected)
+        const { tokensToTransfer, tokenPrice, priceImpact, exchangeRateA, exchangeRateB } = await getSwapDetails(firstTokenSelected, secondTokenSelected)
         amountSwapTokenBSetter(secondTokenReturn)
         slippSwapTokenSetter(minAmountReturn)
     }

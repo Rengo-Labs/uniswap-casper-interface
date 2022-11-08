@@ -66,7 +66,7 @@ export const Swap = () => {
     onConfirmSwapConfig,
     slippageToleranceSelected,
     onCalculateReserves,
-    getSwapDetail,
+    getSwapDetails,
     onIncreaseAllow
   } = useContext(ConfigProviderContext)
 
@@ -116,7 +116,7 @@ export const Swap = () => {
       priceImpact,
       exchangeRateA,
       exchangeRateB
-    } = await getSwapDetail(firstTokenSelected, secondTokenSelected, value, slippSwapToken, feeToPay)
+    } = await getSwapDetails(firstTokenSelected, secondTokenSelected, value, slippSwapToken, feeToPay)
     console.log(tokensToTransfer)
     tokensToTransferSetter(tokensToTransfer)
     priceImpactSetter(priceImpact)
