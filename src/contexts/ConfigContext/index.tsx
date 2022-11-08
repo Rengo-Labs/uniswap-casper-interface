@@ -40,15 +40,20 @@ import {
     Token,
     Wallet,
     convertBigNumberToUIString,
-    signAndDeploySwap,
-    log,
     convertUIStringToBigNumber,
+    SwapDetails,
+    getSwapDetails as getSwapDetailsFull,
+    
+    log,
 } from '../../commons'
+
+import {
+    signAndDeploySwap,
+    signAndDeployAllowance,
+} from '../../commons/deploys'
 
 import wethIcon from "../../assets/swapIcons/wethIcon.svg";
 import casprIcon from "../../assets/swapIcons/casprIcon.png";
-import { getActivePublicKey } from '../../reducers/WalletReducers/signerFunctions';
-import { FiberNew } from '@mui/icons-material';
 
 type MaybeWallet = Wallet | undefined
 
@@ -105,16 +110,6 @@ function tokensToObject(listTokens: Token[]): Record<string, Token> {
     }, {})
 }
 
-/**
- * Swap details
- */
-export interface SwapDetails {
-    tokensToTransfer: string,
-    priceImpact: string,
-    exchangeRateA: number,
-    exchangeRateB: number,
-}
-
 /***
  * it returns tokensToTransfer, priceImpact, minTokenBToTransfer, exchangeRateA and exchangeRateB that belong to the swap detail
  * @param tokenA first token
@@ -127,80 +122,7 @@ export interface SwapDetails {
  * @return SwapDetails
  */
 async function getSwapDetails(tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<SwapDetails> {
-    try {
-        const data = await apiClient.getPathReserves(tokenA.symbol, tokenB.symbol)
-        
-        const isA2B = token.symbol == tokenA.symbol
-
-        const liquidityA = new BigNumber(data.reserve0)
-        const liquidityB = new BigNumber(data.reserve1)
-        const inputValueMinusFee = new BigNumber(inputValue).times(Math.pow(10,9)).times(1 - fee)
-
-        const inputLiquidity = isA2B ? liquidityA : liquidityB
-        const outputLiquidity = isA2B ? liquidityB : liquidityA
-
-        const constantProduct = liquidityA.times(liquidityB)
-        console.log("liquidityA", liquidityA.toNumber(), "liquidityB", liquidityB.toNumber(), "constant_product", constantProduct.toNumber(), "tokenToTrade", inputValueMinusFee.toNumber())
-
-        let newLiquidityAPool = liquidityA
-        let newLiquidityBPool = liquidityB
-
-        if (isA2B) {
-            newLiquidityAPool = liquidityA.plus(inputValueMinusFee)
-            newLiquidityBPool = constantProduct.div(newLiquidityAPool)
-        } else {
-            newLiquidityBPool = liquidityB.plus(inputValueMinusFee)
-            newLiquidityAPool = constantProduct.div(newLiquidityBPool)
-        }
-
-        const newLiquidityInputPool = isA2B ? newLiquidityAPool : newLiquidityBPool
-        const newLiquidityOutputPool = isA2B ? newLiquidityBPool : newLiquidityAPool
-
-        console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
-
-        const tokensToTransfer = (outputLiquidity.minus(newLiquidityOutputPool))
-        console.log("tokensToTransfer", tokensToTransfer)
-
-        const inputExchangeRate = tokensToTransfer.div(inputValue)
-        const outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
-
-        const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
-        const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
-        console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
-
-        const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
-        console.log("priceImpact", priceImpact)
-
-        return {
-            tokensToTransfer: tokensToTransfer.div(Math.pow(10,9)).toNumber().toFixed(9),
-            priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
-            exchangeRateA: exchangeRateA.toNumber(),
-            exchangeRateB : exchangeRateB.toNumber()
-        }
-    } catch (error) {
-        console.log(__filename, "getSwapDetail", error)
-        return { tokensToTransfer: '0', priceImpact: '0', exchangeRateA: 0, exchangeRateB: 0 }
-    }
-}
-
-async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
-    try {
-        const response = await axios.post(`${BASE_URL}/getpathreserves`, {
-            path: [
-                firstTokenSelected.symbolPair,
-                secondTokenSelected.symbolPair,
-            ]
-        })
-        if (response.data.success) {
-            const secondTokenReturn = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 10))
-            const minAmountReturn = (secondTokenReturn - (secondTokenReturn * 0.5) / 100).toString().slice(0, 5)
-            return { secondTokenReturn, minAmountReturn }
-        }
-        throw Error()
-    } catch (error) {
-        console.log(__filename, "onCalculateReserves", error)
-        return { secondTokenReturn: 0, minAmountReturn: 0 }
-    }
+    return getSwapDetailsFull(apiClient, tokenA, tokenB, inputValue, token, slippage, fee)
 }
 
 async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey) {
@@ -208,41 +130,29 @@ async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey)
         return 0
     }
 
-    const allowanceParam = {
-        contractHash: contractHash.slice(5),
-        owner: CLPublicKey.fromHex(activePublicKey)
-            .toAccountHashStr()
-            .slice(13),
-        spender: ROUTER_PACKAGE_HASH,
-    };
     try {
-        const res = await axios.post(`${BASE_URL}/allowanceagainstownerandspender`, allowanceParam)
-        console.log(res.data)
-        return res.data.allowance;            
+        const res = await apiClient.getAllowanceAgainstOwnerAndSpender(contractHash, CLPublicKey.fromHex(activePublicKey).toAccountHashStr())
+        console.log(res)
+        return res.allowance;            
     } catch(error) {
         console.log(error);
         console.log(error.response);
     }
 }
 
-async function allowanceAgainstOwnerAndSpenderPaircontract(pair, activePublicKey) {
-    const allowanceParam = {
-        contractHash: pair,
-        owner: CLPublicKey.fromHex(activePublicKey)
-            .toAccountHashStr()
-            .slice(13),
-        spender: ROUTER_PACKAGE_HASH,
-    };
-    axios
-        .post(`${BASE_URL}/allowanceagainstownerandspenderpaircontract`, allowanceParam)
-        .then((res) => {
-            console.log("allowanceagainstownerandspenderpaircontract", res);
-            console.log(res.data);
-        })
-        .catch((error) => {
-            console.log(error);
-            console.log(error.response);
-        });
+async function allowanceAgainstOwnerAndSpenderPaircontract(contractHash, activePublicKey) {
+    if (!contractHash || !activePublicKey) {
+        return 0
+    }
+
+    try {
+        const res = await apiClient.getAllowanceAgainstOwnerAndSpenderPairContract(contractHash, CLPublicKey.fromHex(activePublicKey).toAccountHashStr())
+        console.log(res)
+        return res.allowance;            
+    } catch(error) {
+        console.log(error);
+        console.log(error.response);
+    }
 }
 
 async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, tokenBAmountPercent, runtimeArgs) {
@@ -263,6 +173,7 @@ async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, toke
         paymentAmount
     );
 }
+
 async function RemoveLiquidityCSPRMakeDeploy(publicKeyHex, tokenA, tokenB, tokenAAmountPercent, tokenBAmountPercent, liquidity, slippage, value) {
     const publicKey = CLPublicKey.fromHex(publicKeyHex);
     let token;
@@ -305,57 +216,6 @@ async function RemoveLiquidityCSPRMakeDeploy(publicKeyHex, tokenA, tokenB, token
         runtimeArgs,
         paymentAmount
     );
-}
-
-const normilizeAmountToString = (amount) => {
-    const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
-    const amountArr = strAmount.split('.')
-    if (amountArr[1] === undefined) {
-        const concatedAmount = amountArr[0].concat('000000000')
-        return concatedAmount
-    } else {
-        let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
-        for (let i = 0; i < 9 - amountArr[1].length; i++) {
-            concatedAmount = concatedAmount.concat('0')
-        }
-        return concatedAmount
-    }
-}
-
-async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
-    try {
-        const publicKey = CLPublicKey.fromHex(activePublicKey);
-        const spender = ROUTER_PACKAGE_HASH;
-        const spenderByteArray = new CLByteArray(
-            Uint8Array.from(Buffer.from(spender, "hex"))
-        );
-        const paymentAmount = 5_000_000_000;
-
-        console.log('amount', spender, amount)
-
-        const runtimeArgs = RuntimeArgs.fromMap({
-            spender: createRecipientAddress(spenderByteArray),
-            amount: CLValueBuilder.u256(normilizeAmountToString(amount)),
-        });
-        const contractHashAsByteArray = Uint8Array.from(
-            Buffer.from(contractHash.slice(5), "hex")
-        );
-        const entryPoint = increase ? entryPointEnum.Increase_allowance : entryPointEnum.Decrease_allowance;
-        // Set contract installation deploy (unsigned).
-        const deploy = await makeDeployLiquidity(
-            publicKey,
-            contractHashAsByteArray,
-            entryPoint,
-            runtimeArgs,
-            paymentAmount
-        );
-
-        //const deploy = await makeDeployLiquidityWasm(publicKey, runtimeArgs, paymentAmount)
-        return deploy
-    } catch (error) {
-        console.log(__filename, "increaseAndDecreaseAllowanceMakeDeploy", error);
-        throw Error()
-    }
 }
 
 async function addLiquidityMakeDeploy(
@@ -406,28 +266,6 @@ async function liquidityAgainstUserAndPair(activePublicKey, pairId) {
         pairid: pairId
     }
     return await axios.post(`${BASE_URL}/liquidityagainstuserandpair`, param)
-}
-
-async function getPairAgainstUser(activePublicKey) {
-    const param = {
-        user: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")
-    }
-    console.log(JSON.stringify(param))
-    const resp = await axios.post(`${BASE_URL}/getpairagainstuser`, param)
-    return resp
-}
-
-async function getPathReserves(resp) {
-    for (let i = 0; i < resp.data.userpairs.length; i++) {
-        const pathParamsArr = [
-            resp.data.pairsdata[i].token0.symbol,
-            resp.data.pairsdata[i].token1.symbol,
-        ]
-        const pathResParam = {
-            path: pathParamsArr
-        }
-        return await axios.post(`${BASE_URL}/getpathreserves`, pathResParam)
-    }
 }
 
 function ObjectToArray(object) {
@@ -563,7 +401,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         const fn = async () => {
             const data = await apiClient.getTokenList()
             const tokens = tokensToObject(data.tokens)
-            console.log('TOKENS', tokens);
+            console.log('TOKENS', tokens)
             dispatch({ type: "UPDATE_TOKENS", payload: { tokens } })
         }
 
@@ -832,7 +670,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [linkExplorer, setLinkExplorer] = useState("")
     const [deployExplorer, setDeployExplorer] = useState("")
 
-    async function onConfirmSwapConfig(amountA: string, amountB: string, slippage: number) {
+    async function onConfirmSwapConfig(amountA: number | string, amountB: number | string, slippage: number) {
         try {
             const [deployHash, deployResult] = await signAndDeploySwap(
                 apiClient,
@@ -863,6 +701,36 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
+    async function onIncreaseAllow(amount: number | string, contractHash) {
+        console.log("onIncreaseAllow")
+        const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
+
+        try {
+            const [deployHash, deployResult] = await signAndDeployAllowance(
+                casperClient,
+                wallet,
+                contractHash,
+                convertUIStringToBigNumber(amount),
+            )
+           
+            setProgressModal(true)
+            setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
+            const result = await casperClient.waitForDeployExecution(deployHash)
+            setProgressModal(false)
+            setConfirmModal(true)
+
+            toast.dismiss(loadingToast)
+            toast.success("Got it! token was allowed!")
+            return true
+        } catch (error) {
+            toast.dismiss(loadingToast)
+            console.log("onIncreaseAllow")
+            toast.error("Ooops, we have a problem")
+            return false
+        }
+    }
+
     async function onDisconnectWallet() {
         try {
             if (wallet) {
@@ -882,82 +750,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             dispatch({ type: ConfigActions.SELECT_WALLET, payload: { walletSelected: 'torus' } })
         } else {
             dispatch({ type: ConfigActions.SELECT_WALLET, payload: { walletSelected: 'casper' } })
-        }
-    }
-
-    async function onIncreaseAllow(amount, contractHash) {
-        console.log("onIncreaseAllow")
-        const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
-
-        try {
-            const valueTotal = Math.ceil(amount * 10 ** 9)
-            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, contractHash, valueTotal, true)
-            if (walletSelected === 'casper') {
-                const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
-                const deployHash = signedDeploy.deploy_hash
-
-                setProgressModal(true)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-                const result = await putdeploySigner(signedDeploy);
-                setProgressModal(false)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setConfirmModal(true)
-
-                toast.dismiss(loadingToast)
-                toast.success("Got it! token was allowed!")
-                return true
-            }
-            if (walletSelected === 'torus') {
-                const signedDeploy = await signDeployWithTorus(deploy)
-                const deployHash = signedDeploy.deploy_hash
-
-                setProgressModal(true)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-                const result = await getDeploy(signedDeploy.deploy_hash);
-                setProgressModal(false)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setConfirmModal(true)
-
-                toast.dismiss(loadingToast)
-                toast.success(`Got it! take your swap!`)
-                return true
-            }
-        } catch (error) {
-            toast.dismiss(loadingToast)
-            console.log("onIncreaseAllow")
-            toast.error("Ooops, we have a problem")
-            return false
-        }
-    }
-
-    async function onDecreaseAllow(amount) {
-        const loadingToast = toast.loading("let me try to remove liquidity! be patient!")
-        try {
-            const valueTotal = amount * 10 ** 9
-            const deploy = await increaseAndDecreaseAllowanceMakeDeploy(walletAddress, secondTokenSelected.contractHash, valueTotal, false)
-            if (walletSelected === 'casper') {
-                const signedDeploy = await signdeploywithcaspersigner(deploy, walletAddress)
-                const result = await putdeploySigner(signedDeploy);
-                toast.dismiss(loadingToast)
-                toast.success("Got it! token was allowed!")
-                return true
-            }
-            if (walletSelected === 'torus') {
-                const signedDeploy = await signDeployWithTorus(deploy)
-                console.log("deploy_hash", signedDeploy.deploy_hash)
-                const result = await getDeploy(signedDeploy.deploy_hash);
-                toast.dismiss(loadingToast)
-                toast.success(`Got it! take your swap!`)
-                console.log(result)
-                return true
-            }
-        } catch (error) {
-            toast.dismiss(loadingToast)
-            console.log("onDecreaseAllow")
-            toast.error("Ooops, we have a problem")
-            return false
         }
     }
 
@@ -1067,19 +859,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onCalculateReserves(value, reverse) {
-        try {
-            if (!reverse) {
-                return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
-            } else {
-                return await calculateReserves(secondTokenSelected, firstTokenSelected, value)
-            }
-        } catch (error) {
-            console.log(__filename, "onCalculateReserves", error)
-            return { secondTokenReturn: 0, minAmountReturn: 0 }
-        }
-    }
-
     async function onAllowanceAgaintPair(pair) {
         await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
     }
@@ -1100,7 +879,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSelectFirstToken,
             onSelectSecondToken,
             onSwitchTokens,
-            onCalculateReserves,
             getSwapDetails,
             getAllowanceAgainstOwnerAndSpender,
             tokens,
@@ -1110,7 +888,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onConfirmSwapConfig,
             slippageToleranceSelected,
             onIncreaseAllow,
-            onDecreaseAllow,
             onAllowanceAgaintPair,
             onAddLiquidity,
             fillPairs,

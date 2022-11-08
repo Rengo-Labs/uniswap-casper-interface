@@ -65,7 +65,6 @@ export const Swap = () => {
     isConnected,
     onConfirmSwapConfig,
     slippageToleranceSelected,
-    onCalculateReserves,
     getSwapDetails,
     onIncreaseAllow
   } = useContext(ConfigProviderContext)

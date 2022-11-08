@@ -43,7 +43,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         isConnected,
         onConfirmSwapConfig,
         slippageToleranceSelected,
-        onCalculateReserves,
+        //onCalculateReserves,
         onIncreaseAllow,
         onAddLiquidity,
         fillPairs,
@@ -88,10 +88,10 @@ export const LiquidityModule = ({ tokenOne }: any) => {
 
     async function onChangeValueToken(value) {
         amountSwapTokenASetter(value)
-        const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
+        //const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
         const { tokensToTransfer, tokenPrice, priceImpact, exchangeRateA, exchangeRateB } = await getSwapDetails(firstTokenSelected, secondTokenSelected)
-        amountSwapTokenBSetter(secondTokenReturn)
-        slippSwapTokenSetter(minAmountReturn)
+        //amountSwapTokenBSetter(secondTokenReturn)
+        //slippSwapTokenSetter(minAmountReturn)
     }
 
     return (

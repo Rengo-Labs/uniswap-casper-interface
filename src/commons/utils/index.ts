@@ -7,7 +7,7 @@ export const log = new Logger()
 export const ONE_BILLION = 10 ** 9
 
 export const convertBigNumberToUIString = (amount: BigNumber): string => amount.div(ONE_BILLION).toString()
-export const convertUIStringToBigNumber = (amount: string): BigNumber => new BigNumber(amount).times(ONE_BILLION)
+export const convertUIStringToBigNumber = (amount: BigNumber.Value): BigNumber => new BigNumber(amount).times(ONE_BILLION)
 
 /**
  * 

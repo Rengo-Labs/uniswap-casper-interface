@@ -67,7 +67,6 @@ const LiquidityNewModule = () => {
         isConnected,
         onConfirmSwapConfig,
         slippageToleranceSelected,
-        onCalculateReserves,
         getSwapDetails,
         getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
@@ -283,13 +282,6 @@ const LiquidityNewModule = () => {
 
         await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
         //onConnectConfig()
-    }
-
-    async function onChangeValueToken(value) {
-        amountSwapTokenASetter(value)
-        const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
-        amountSwapTokenBSetter(secondTokenReturn)
-        slippSwapTokenSetter(minAmountReturn)
     }
 
     const enableButton = (amount0, amount1) => {

@@ -57,3 +57,21 @@ export interface DeployWasmDataResponse {
   wasmData: any,
   success: boolean,
 }
+
+/**
+ * Allowance Against Owner And Spender response
+ */
+export interface AllowanceAgainstOwnerAndSpenderResponse {
+  allowance: string,
+  message: string,
+  success: boolean,
+}
+
+/**
+ * Allowance Against Owner And Spender Pair Contract response
+ */
+export interface AllowanceAgainstOwnerAndSpenderPairContractResponse {
+  allowance: string,
+  message: string,
+  success: boolean,
+}

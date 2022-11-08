@@ -1,12 +1,14 @@
 import axios from 'axios'
 
 import { 
+  AllowanceAgainstOwnerAndSpenderResponse,
   DeployWasmDataResponse,
-  Token,
   TokenList,
   PathResponse,
   PathReservesResponse,
 } from './types'
+
+import { ROUTER_PACKAGE_HASH } from '../../constant';
 
 /**
  * Client for working with Caspwerswap API
@@ -72,6 +74,48 @@ export class APIClient {
    */
   async getDeployWasmData(): Promise<DeployWasmDataResponse> {
     const response = await axios.get(`${this._baseURL}/getWasmData`);
+
+    return response.data
+  }
+
+  /**
+   * Get the allowance for the router contract for a CEP-18 allowed by a user
+   * 
+   * @param contractHash CEP-18 contract hash
+   * @param ownerPublicKeyHex owner's account hash string  
+   * 
+   * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
+   */
+   async getAllowanceAgainstOwnerAndSpender(contractHash: string, ownerAccountHashString: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
+
+    const allowanceParam = {
+      contractHash: contractHash.slice(5),
+      owner: ownerAccountHashString.slice(13),
+      spender: ROUTER_PACKAGE_HASH,
+    };
+
+    const response = await axios.post(`${this._baseURL}/allowanceagainstownerandspender`, allowanceParam)
+
+    return response.data
+  }
+  
+  /**
+   * Get the allowance for the router contract for a CEP-18 Pair allowed by a user
+   * 
+   * @param contractHash CEP-18 pair contract hash
+   * @param ownerPublicKeyHex owner's account hash string  
+   * 
+   * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
+   */
+   async getAllowanceAgainstOwnerAndSpenderPairContract(contractHash: string, ownerAccountHashString: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
+
+    const allowanceParam = {
+      contractHash: contractHash.slice(5),
+      owner: ownerAccountHashString.slice(13),
+      spender: ROUTER_PACKAGE_HASH,
+    };
+
+    const response = await axios.post(`${this._baseURL}/allowanceagainstownerandspenderpaircontract`, allowanceParam)
 
     return response.data
   }
