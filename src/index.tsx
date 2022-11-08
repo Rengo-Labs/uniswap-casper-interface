@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { Home, Swap, Pools, Tokens, Liquidity, Add } from './components/pages'
+import { Home, Swap, Pools, Tokens, Add } from './components/pages'
 import { NewLiquidity } from './components/pages/NewLiquidity';
 import { BigContext } from './contexts';
 const root = ReactDOM.createRoot(
