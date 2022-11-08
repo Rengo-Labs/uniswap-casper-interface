@@ -34,8 +34,7 @@ export const ConnectionPopup = ({isConnected, title, onClose, onConnect, isOpene
                 !isConnected &&
                 <OverlayPopup isOpened={isOpened}>
                     <PopupContainer>
-                        <PopupTitle>{title}</PopupTitle>
-                        <PopupClose onClick={closeHandler}>&times;</PopupClose>
+                        <PopupTitle><div style={{flex: "1"}}>{title}</div><PopupClose onClick={closeHandler}>&times;</PopupClose></PopupTitle>
                         <PopupContent>
                             <DisclaimerContent>
                                 By connecting your wallet, you acknowledge that you have read, understand and accept the terms in the Disclaimer
@@ -52,7 +51,7 @@ export const ConnectionPopup = ({isConnected, title, onClose, onConnect, isOpene
                             </WalletContainer>
                             <CollapsingPopup>show uninstall wallets <HiChevronDown /></CollapsingPopup>
                         </PopupContent>
-                        <PopupBottom><HRefLink>New Here?</HRefLink> Get started on Casperswap</PopupBottom>
+                        <PopupBottom><HRefLink>New Here? Get started on Casperswap</HRefLink></PopupBottom>
                     </PopupContainer>
                 </OverlayPopup>
             }

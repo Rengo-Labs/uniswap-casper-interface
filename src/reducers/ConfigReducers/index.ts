@@ -9,6 +9,16 @@ export const initialConfigState = {
   mainPurse: "",
 };
 
+export const initialLPPair = [{
+  t0: 'CSX', t1: 'WCSPR'
+}, {
+  t0: 'CSX', t1: 'CSPR'
+}, {
+  t0: 'WETH', t1: 'WCSPR'
+}, {
+  t0: 'WETH', t1: 'CSPR'
+}]
+
 export enum ConfigActions {
   CONNECT_WALLET = "CONNECT_WALLET",
   DISCONNECT_WALLET = "DISCONNECT_WALLET",

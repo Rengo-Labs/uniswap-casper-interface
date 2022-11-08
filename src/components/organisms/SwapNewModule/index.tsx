@@ -1,30 +1,22 @@
-import React, { useContext, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
-    ButtonConnection,
     CloseButtonAtom,
-    ConfirmSwapButton,
     ExchangeRateBox,
     HeaderModalAtom,
     NewSwapButton,
-    SearchInputAtom,
-    SearchSectionAtom,
-    SwapButton,
-    SwapContainer,
     SwapContainerAtom,
-    SwapHeaderAtom,
-    SwapTokenBalance,
-    SwapTokenSelect
+    SwapHeaderAtom
 } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
 import LoadersSwap from '../../atoms/LoadersSwap'
-import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import SwitchSwap from '../../atoms/SwitchSwap'
-import { SwapConfirmAtom, SwapDetail, SwapModal, SwapToken, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapDetail, SwapModal } from '../../molecules'
 import FloatMenu from '../FloatMenu'
+import {useSearchParams} from "react-router-dom";
 
 const SwapNewModule = () => {
     const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
@@ -65,6 +57,17 @@ const SwapNewModule = () => {
     const {
         walletAddress
     } = configState
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    useEffect( () => {
+        const t0 = searchParams.get("token0")
+        const t1 = searchParams.get("token1")
+        if (t0) {
+            onSelectFirstToken(tokens[t0])
+            onSelectSecondToken(tokens[t1])
+        }
+
+    }, [])
 
     async function onConnect() {
         onConnectConfig()

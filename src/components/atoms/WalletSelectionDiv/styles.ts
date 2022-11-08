@@ -9,8 +9,8 @@ export const WalletSelectionStyled = styled.div<any>`
     gap: 10px;
     background-color: ${props => props.theme.StrongColor5};
     border-radius: 10px;
-    width: 100%;
-    height: 5.5vh;
+    width: 258px;
+    height: 42px;
     &:hover{
         cursor: pointer;
     }
