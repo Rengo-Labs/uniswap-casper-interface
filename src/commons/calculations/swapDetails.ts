@@ -17,20 +17,28 @@ export interface SwapDetails {
   exchangeRateB: number,
 }
 
-/***
-* Calculate all the swap details for display
-*
-* @param apiClient API client
-* @param tokenA first token
-* @param tokenB second token
-* @param inputValue input tokens
-* @param token input token types matching one of tokenA or tokenB
-* @param slippage decimal slippage
-* @param fee decimal fee
-* 
-* @return SwapDetails
-*/
-export const calculateSwapDetails = async (apiClient: APIClient, tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<SwapDetails> => {
+/**
+ * Calculate all the swap details for display
+ *
+ * @param apiClient API client
+ * @param tokenA first token
+ * @param tokenB second token
+ * @param inputValue input tokens
+ * @param token input token types matching one of tokenA or tokenB
+ * @param slippage decimal slippage
+ * @param fee decimal fee
+ * 
+ * @return SwapDetails
+ */
+export const calculateSwapDetails = async (
+    apiClient: APIClient, 
+    tokenA: Token, 
+    tokenB: Token, 
+    inputValue: BigNumber.Value, 
+    token: Token, 
+    slippage = 0.005, 
+    fee = 0.003
+): Promise<SwapDetails> => {
   try {
       const data = await apiClient.getPathReserves(tokenA.symbol, tokenB.symbol)
       

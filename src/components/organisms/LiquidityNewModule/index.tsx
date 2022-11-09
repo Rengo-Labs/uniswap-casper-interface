@@ -67,7 +67,7 @@ const LiquidityNewModule = () => {
         isConnected,
         onConfirmSwapConfig,
         slippageToleranceSelected,
-        getSwapDetails,
+        getLiquidityDetails,
         getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
         onDisconnectWallet,
@@ -165,8 +165,15 @@ const LiquidityNewModule = () => {
         onConnectConfig()
     }
     async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
-        const getSwapDetailP = getSwapDetails(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
-        const ps = [getSwapDetailP]
+        const getLiquidityDetailP = getLiquidityDetails(
+            tokenA, 
+            tokenB, 
+            value, 
+            token, 
+            slippSwapToken, 
+            feeToPay
+        )
+        const ps = [getLiquidityDetailP]
 
         if (tokenA.contractHash) {
             ps.push(getAllowanceAgainstOwnerAndSpender(tokenA.contractHash, walletAddress))
@@ -280,7 +287,7 @@ const LiquidityNewModule = () => {
 
     async function onLiquidity() {
 
-        await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
+        await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippageToleranceSelected)
         //onConnectConfig()
     }
 
@@ -437,6 +444,8 @@ const LiquidityNewModule = () => {
                     {// Loop over the table rows
                         usersLP.map(row => {
                             const openPopup = isOpenedRemoving && row.token0 == firstTokenSelected.symbol && row.token1 == secondTokenSelected.symbol
+
+                            console.log('ROW', row)
 
                             return (
                                 // Apply the row props

@@ -81,7 +81,7 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     async function onLiquidiy() {
         if (await onIncreaseAllow(amountSwapTokenB)) {
             console.log("Paso pagina")
-            await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
+            await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippageToleranceSelected)
             onConnectConfig()
         }
     }

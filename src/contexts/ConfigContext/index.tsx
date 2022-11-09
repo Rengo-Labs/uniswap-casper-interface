@@ -37,6 +37,9 @@ import {
 
     SwapDetails,
     calculateSwapDetails,
+
+    LiquidityDetails,
+    calculateLiquidityDetails,
     
     log,
 } from '../../commons'
@@ -45,6 +48,7 @@ import {
     signAndDeploySwap,
     signAndDeployAllowance,
     signAndDeployAddLiquidity,
+    signAndDeployRemoveLiquidity,
 } from '../../commons/deploys'
 
 import wethIcon from "../../assets/swapIcons/wethIcon.svg";
@@ -118,6 +122,10 @@ function tokensToObject(listTokens: Token[]): Record<string, Token> {
  */
 async function getSwapDetails(tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<SwapDetails> {
     return calculateSwapDetails(apiClient, tokenA, tokenB, inputValue, token, slippage, fee)
+}
+
+async function getLiquidityDetails(tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<LiquidityDetails> {
+    return calculateLiquidityDetails(apiClient, tokenA, tokenB, inputValue, token, slippage, fee)
 }
 
 async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey) {
@@ -602,11 +610,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             setProgressModal(false)
             setConfirmModal(true)
 
-            console.log("result", result)
+            toast.dismiss(loadingToast)
             return true
-        } catch (error) {
+        } catch (err) {
             setProgressModal(false)
+            toast.dismiss(loadingToast)
             console.log("onConfirmSwapConfig")
+            toast.error(`${err}`)
             return false
         }
     }
@@ -630,12 +640,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             setConfirmModal(true)
 
             toast.dismiss(loadingToast)
-            toast.success("Got it! token was allowed!")
+            toast.success("Success.")
             return true
-        } catch (error) {
+        } catch (err) {
+            setProgressModal(false)
             toast.dismiss(loadingToast)
             console.log("onIncreaseAllow")
-            toast.error("Ooops, we have a problem")
+            toast.error(`${err}`)
             return false
         }
     }
@@ -665,13 +676,48 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             setConfirmModal(true)
 
             toast.dismiss(loadingToast)
-            toast.success("Got it! both token were added!!")
-            console.log(result)
+            toast.success("Success.")
             return true
-        } catch (error) {
+        } catch (err) {
+            setProgressModal(false)
             toast.dismiss(loadingToast)
-            console.log("onAddLiquidity", error)
-            toast.error("Ooops, we have a problem")
+            console.log("onAddLiquidity")
+            toast.error(`${err}`)
+            return false
+        }
+    }  
+
+    async function onRemoveLiquidity(liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number) {
+        const loadingToast = toast.loading("Removing liquidity.")
+        try {
+            const [deployHash, deployResult] = await signAndDeployRemoveLiquidity(
+                apiClient,
+                casperClient,
+                wallet,
+                DEADLINE,
+                convertUIStringToBigNumber(liquidity),
+                convertUIStringToBigNumber(amountA),
+                convertUIStringToBigNumber(amountB),
+                tokenA,
+                tokenB,
+                slippage / 100,
+            )
+            
+            setProgressModal(true)
+            setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
+            const result = await getDeploy(deployHash)
+            setProgressModal(false)
+            setConfirmModal(true)
+
+            toast.dismiss(loadingToast)
+            toast.success("Success.")
+            return true
+        } catch (err) {
+            setProgressModal(false)
+            toast.dismiss(loadingToast)
+            console.log("onRemoveLiquidity")
+            toast.error(`${err}`)
             return false
         }
     }
@@ -698,63 +744,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onRemoveLiquidity(contractA, contractB, liquidity, value, amountA, amountB) {
-        const loadingToast = toast.loading("let me try to remove liquidity! be patient!")
-        try {
-            console.log("Values", contractA, contractB, liquidity, value, amountA, amountB)
-            const runtimeArgs = removeLiquidityArgs(
-                contractA,
-                contractB,
-                liquidity,
-                amountA,
-                amountB,
-                walletAddress
-            )
-            const deploy = await RemoveLiquidityMakeDeploy(walletAddress, 0.1, 0.1, runtimeArgs)
-            if (walletSelected === 'casper') {
-                console.log("signing remove liquidity")
-                const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
-                const deployHash = signedDeploy.deploy_hash
-
-                setProgressModal(true)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-                const result = await putdeploySigner(signedDeploy);
-                setProgressModal(false)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setConfirmModal(true)
-
-                toast.dismiss(loadingToast)
-                toast.success("Got it! both token were added!!")
-                console.log(result)
-                return true
-            }
-            if (walletSelected === 'torus') {
-                console.log("signing remove liquidity")
-                const signedDeploy = await signDeployWithTorus(deploy)
-                const deployHash = signedDeploy.deploy_hash
-
-                setProgressModal(true)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-                const result = await getDeploy(signedDeploy.deploy_hash);
-                setProgressModal(false)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setConfirmModal(true)
-
-                toast.dismiss(loadingToast)
-                toast.success("Got it! both token were added!!")
-                console.log(result)
-                return true
-            }
-        } catch (error) {
-            toast.dismiss(loadingToast)
-            console.log("onRemoveLiquidity")
-            toast.error("Ooops, we have a problem")
-            return false
-        }
-    }
-
     async function onAllowanceAgaintPair(pair) {
         await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
     }
@@ -776,6 +765,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             onSelectSecondToken,
             onSwitchTokens,
             getSwapDetails,
+            getLiquidityDetails,
             getAllowanceAgainstOwnerAndSpender,
             tokens,
             firstTokenSelected,

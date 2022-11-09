@@ -54,9 +54,9 @@ export enum AddLiquidityEntryPoint {
  * @returns which swap endpoint should be used
  */
  export const selectAddLiquidityEntryPoint = (tokenASymbol: string, tokenBSymbol: string): AddLiquidityEntryPoint => {
-  if (tokenASymbol === 'WCSPR' || tokenBSymbol === 'WCSPR') {
+  if (tokenASymbol === 'CSPR' || tokenBSymbol === 'CSPR') {
     return AddLiquidityEntryPoint.ADD_LIQUIDITY_CSPR
-  } else if (tokenASymbol !== 'WCSPR' && tokenBSymbol !== 'WCSPR') {
+  } else if (tokenASymbol !== 'CSPR' && tokenBSymbol !== 'CSPR') {
     return AddLiquidityEntryPoint.ADD_LIQUIDITY_JS_CLIENT
   }
 }
@@ -95,14 +95,14 @@ export enum AddLiquidityEntryPoint {
     switch (entryPoint) {
       case AddLiquidityEntryPoint.ADD_LIQUIDITY_CSPR:
         // When adding cspr and token
-        const token = tokenA.symbol === 'WCSPR' ? new CLByteArray(
-            Uint8Array.from(Buffer.from(tokenB.contractHash.slice(5), "hex"))
+        const token = tokenA.symbol === 'CSPR' ? new CLByteArray(
+            Uint8Array.from(Buffer.from(tokenB.packageHash.slice(5), "hex"))
           ) : new CLByteArray(
-            Uint8Array.from(Buffer.from(tokenA.contractHash.slice(5), "hex"))
+            Uint8Array.from(Buffer.from(tokenA.packageHash.slice(5), "hex"))
           )
         
-        const amountCSPRDesired = tokenA.symbol === 'WCSPR' ? amountADesired : amountBDesired
-        const amountTokenDesired = tokenA.symbol !== 'WCSPR' ? amountADesired : amountBDesired
+        const amountCSPRDesired = tokenA.symbol === 'CSPR' ? amountADesired : amountBDesired
+        const amountTokenDesired = tokenA.symbol !== 'CSPR' ? amountADesired : amountBDesired
         
         return await casperClient.signAndDeployWasm(
           wallet,
@@ -111,14 +111,14 @@ export enum AddLiquidityEntryPoint {
             token: new CLKey(token),
             amount_cspr_desired: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
             amount_token_desired: CLValueBuilder.u256(new BigNumber(amountTokenDesired).toFixed(0)),
-            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(.96 - slippage).toFixed(0)),
-            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(.96 - slippage).toFixed(0)),
+            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(1 - slippage).toFixed(0)),
+            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0)),
             pair: new CLOption(Some(new CLKey(token))),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
 
             // Deploy wasm params
-            amount: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
+            amount: CLValueBuilder.u512(new BigNumber(amountCSPRDesired).toFixed(0)),
             destination_entrypoint: CLValueBuilder.string(entryPoint),
             router_hash: new CLKey(
               new CLByteArray(
@@ -151,8 +151,8 @@ export enum AddLiquidityEntryPoint {
             token_b: new CLKey(tokenBContract),
             amount_a_desired: CLValueBuilder.u256(new BigNumber(amountADesired).toFixed(0)),
             amount_b_desired: CLValueBuilder.u256(new BigNumber(amountBDesired).toFixed(0)),
-            amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(.96 - slippage).toFixed(0)),
-            amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(.96 - slippage).toFixed(0)),
+            amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(1 - slippage).toFixed(0)),
+            amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(1 - slippage).toFixed(0)),
             pair: new CLOption(Some(new CLKey(tokenBContract))),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),

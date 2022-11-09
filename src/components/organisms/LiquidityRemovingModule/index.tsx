@@ -37,7 +37,8 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
         onRemoveLiquidity,
         onIncreaseAllow,
         getAllowanceAgainstOwnerAndSpender,
-        getContractHashAgainstPackageHash
+        getContractHashAgainstPackageHash,
+        slippageToleranceSelected,
     } = useContext(ConfigProviderContext)
 
     const {
@@ -57,19 +58,24 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
         promise().catch(e => console.log("Error retrieving contract hash"))
     }, [])
 
-
-
     async function onEnable() {
         await onIncreaseAllow(value, "hash-" + contractHash)
     }
 
     const removeLiquidity = async () => {
-        const per = new Decimal(value).div(liquidity)
-        const t0 = per.mul(firstLiquidity).mul(1 - slippage)
-        const t1 = per.mul(secondLiquidity).mul(1 - slippage)
-
         await getAllowanceAgainstOwnerAndSpender(contractHash, walletAddress)
-        await onRemoveLiquidity(firstHash, secondHash, value, value, t0, t1)
+        await onRemoveLiquidity(value, 
+            {
+                symbol: firstSymbol.replace('WCSPR', 'CSPR'),
+                packageHash: `hash-${firstHash}`,
+            }, {
+                symbol: secondSymbol.replace('WCSPR', 'CSPR'),
+                packageHash: `hash-${secondHash}`,
+            }, 
+            firstLiquidity, 
+            secondLiquidity, 
+            slippageToleranceSelected,
+        )
         closeHandler()
     }
 

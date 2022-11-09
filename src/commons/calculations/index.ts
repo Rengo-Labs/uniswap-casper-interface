@@ -1,1 +1,2 @@
-export * from './SwapDetails'
+export * from './swapDetails'
+export * from './liquidityDetails'
