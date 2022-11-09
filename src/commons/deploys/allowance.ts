@@ -33,12 +33,12 @@ export enum AllowanceEntryPoint {
 }
 
 /**
- * Determine which swap endpoint should be used
+ * Determine which allowance endpoint should be used
  * 
  * @param tokenASymbol tokenA symbol
  * @param tokenBSymbol tokenB symbol
  * 
- * @returns which swap endpoint should be used
+ * @returns which allowance endpoint should be used
  */
 export const selectAllowanceEntryPoint = (amount: BigNumber.Value): AllowanceEntryPoint => {
   if (new BigNumber(amount).gt(0)) {
@@ -49,7 +49,7 @@ export const selectAllowanceEntryPoint = (amount: BigNumber.Value): AllowanceEnt
 }
 
 /**
- * Sign and deploy swap 
+ * Sign and deploy allowance 
  * 
  * @param apiClient APIClient
  * @param casperClient Casper Client

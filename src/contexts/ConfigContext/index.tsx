@@ -50,6 +50,7 @@ import {
 import {
     signAndDeploySwap,
     signAndDeployAllowance,
+    signAndDeployAddLiquidity,
 } from '../../commons/deploys'
 
 import wethIcon from "../../assets/swapIcons/wethIcon.svg";
@@ -174,92 +175,6 @@ async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, toke
     );
 }
 
-async function RemoveLiquidityCSPRMakeDeploy(publicKeyHex, tokenA, tokenB, tokenAAmountPercent, tokenBAmountPercent, liquidity, slippage, value) {
-    const publicKey = CLPublicKey.fromHex(publicKeyHex);
-    let token;
-    let cspr_Amount;
-    let token_Amount;
-    if (tokenA.symbol === "WCSPR") {
-        token = tokenB.packageHash;
-        cspr_Amount = tokenAAmountPercent.toFixed(9);
-        token_Amount = tokenBAmountPercent.toFixed(9);
-    } else {
-        token = tokenA.packageHash;
-        cspr_Amount = tokenBAmountPercent.toFixed(9);
-        token_Amount = tokenAAmountPercent.toFixed(9);
-    }
-    const deadline = 1739598100811;
-    const paymentAmount = 8000000000;
-
-    const _token = new CLByteArray(
-        Uint8Array.from(Buffer.from(token.slice(5), "hex"))
-    );
-
-    const runtimeArgs = RuntimeArgs.fromMap({
-        amount: CLValueBuilder.u512(Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9)),
-        destination_entrypoint: CLValueBuilder.string("remove_liquidity_cspr"),
-        router_hash: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))),
-        token: new CLKey(_token),
-        liquidity: CLValueBuilder.u256((liquidity * value) / 100),
-        amount_cspr_min: CLValueBuilder.u256(
-            Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9)
-        ),
-        amount_token_min: CLValueBuilder.u256(
-            Number(token_Amount - (token_Amount * slippage) / 100).toFixed(9)
-        ),
-        to: createRecipientAddress(publicKey),
-        deadline: CLValueBuilder.u256(deadline),
-    });
-
-    return await makeDeployWasm(
-        publicKey,
-        runtimeArgs,
-        paymentAmount
-    );
-}
-
-async function addLiquidityMakeDeploy(
-    activePublicKey,
-    tokenB,
-    tokenAAmount,
-    tokenBAmount,
-    slippage,
-    mainPurse,
-) {
-    const publicKeyHex = activePublicKey;
-    const publicKey = CLPublicKey.fromHex(publicKeyHex);
-    const tokenBAddress = tokenB?.packageHash;
-    const token_AAmount = tokenAAmount;
-    const token_BAmount = tokenBAmount;
-    const deadline = 1739598100811;
-    const paymentAmount = 10000000000;
-
-    const _token_b = new CLByteArray(
-        Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
-    );
-    const pair = new CLByteArray(
-        Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
-    );
-    const runtimeArgs = createRuntimeeArgsPool(
-        token_AAmount,
-        _token_b,
-        token_BAmount,
-        slippage,
-        publicKey,
-        mainPurse,
-        deadline,
-        pair,
-        ROUTER_PACKAGE_HASH
-    );
-    console.log("datos", runtimeArgs)
-    const deploy = makeDeployWasm(
-        publicKey,
-        runtimeArgs,
-        paymentAmount
-    );
-    return deploy;
-}
-
 async function liquidityAgainstUserAndPair(activePublicKey, pairId) {
     const param = {
         to: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex"),
@@ -279,7 +194,6 @@ function ObjectToArray(object) {
 function PairsWithBalance(pairs) {
     return ObjectToArray(pairs).filter(x => x.balance > 0)
 }
-
 
 export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) => {
     const [state, dispatch] = useReducer(ConfigReducer, initialConfigState)
@@ -671,6 +585,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [deployExplorer, setDeployExplorer] = useState("")
 
     async function onConfirmSwapConfig(amountA: number | string, amountB: number | string, slippage: number) {
+        const loadingToast = toast.loading("Swapping.")
+
         try {
             const [deployHash, deployResult] = await signAndDeploySwap(
                 apiClient,
@@ -702,8 +618,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     async function onIncreaseAllow(amount: number | string, contractHash) {
-        console.log("onIncreaseAllow")
-        const loadingToast = toast.loading("let me try to allow liquidity! be patient!")
+        const loadingToast = toast.loading("Increasing allowance.")
 
         try {
             const [deployHash, deployResult] = await signAndDeployAllowance(
@@ -730,6 +645,42 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             return false
         }
     }
+    
+
+    async function onAddLiquidity(amountA: number | string, amountB: number | string, slippage: number) {
+        const loadingToast = toast.loading("Adding liquidity.")
+        try {
+            const [deployHash, deployResult] = await signAndDeployAddLiquidity(
+                apiClient,
+                casperClient,
+                wallet,
+                DEADLINE,
+                convertUIStringToBigNumber(amountA),
+                convertUIStringToBigNumber(amountB),
+                firstTokenSelected,
+                secondTokenSelected,
+                slippage / 100,
+                mainPurse,
+            )
+
+            setProgressModal(true)
+            setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
+
+            const result = await getDeploy(deployHash);
+            setProgressModal(false)
+            setConfirmModal(true)
+
+            toast.dismiss(loadingToast)
+            toast.success("Got it! both token were added!!")
+            console.log(result)
+            return true
+        } catch (error) {
+            toast.dismiss(loadingToast)
+            console.log("onAddLiquidity", error)
+            toast.error("Ooops, we have a problem")
+            return false
+        }
+    }
 
     async function onDisconnectWallet() {
         try {
@@ -750,55 +701,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             dispatch({ type: ConfigActions.SELECT_WALLET, payload: { walletSelected: 'torus' } })
         } else {
             dispatch({ type: ConfigActions.SELECT_WALLET, payload: { walletSelected: 'casper' } })
-        }
-    }
-
-    async function onAddLiquidity(amountA, amountB) {
-        console.log("Enviando datos ")
-        const loadingToast = toast.loading("let me try to add liquidity! be patient!")
-        try {
-            const deploy = await addLiquidityMakeDeploy(walletAddress, secondTokenSelected, amountA, amountB, slippageToleranceSelected, mainPurse)
-            if (walletSelected === 'casper') {
-                console.log("signing add liquidity")
-                const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)
-                const deployHash = signedDeploy.deploy_hash
-
-                setProgressModal(true)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-                const result = await putdeploySigner(signedDeploy);
-                setProgressModal(false)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setConfirmModal(true)
-
-                toast.dismiss(loadingToast)
-                toast.success("Got it! both token were added!!")
-                console.log(result)
-                return true
-            }
-            if (walletSelected === 'torus') {
-                console.log("signing add liquidity")
-                const signedDeploy = await signDeployWithTorus(deploy)
-                const deployHash = signedDeploy.deploy_hash
-
-                setProgressModal(true)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-                const result = await getDeploy(signedDeploy.deploy_hash);
-                setProgressModal(false)
-                setLinkExplorer(`https://testnet.cspr.live/deploy/${result}`)
-                setConfirmModal(true)
-
-                toast.dismiss(loadingToast)
-                toast.success("Got it! both token were added!!")
-                console.log(result)
-                return true
-            }
-        } catch (error) {
-            toast.dismiss(loadingToast)
-            console.log("onAddLiquidity", error)
-            toast.error("Ooops, we have a problem")
-            return false
         }
     }
 

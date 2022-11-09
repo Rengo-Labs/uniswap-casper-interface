@@ -36,12 +36,7 @@ import {
 /**
  * All swap smart contract endpoints
  */
-export enum SwapEntryPoint {
-  APPROVE = "approve",
-  
-  ADD_LIQUIDITY_JS_CLIENT = "add_liquidity_js_client",
-  REMOVE_LIQUIDITY_JS_CLIENT = "remove_liquidity_js_client",
-  
+export enum SwapEntryPoint {  
   SWAP_EXACT_CSPR_FOR_TOKENS = "swap_exact_cspr_for_tokens",
   SWAP_TOKENS_FOR_EXACT_CSPR = "swap_tokens_for_exact_cspr",
   SWAP_EXACT_TOKENS_FOR_CSPR = "swap_exact_tokens_for_cspr",
