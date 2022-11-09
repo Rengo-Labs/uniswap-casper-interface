@@ -1,7 +1,7 @@
 import React from 'react'
 import NewLayout from '../../../layout/NewLayout'
 import styled from 'styled-components'
-import LiquidityNewModule from '../../organisms/LiquidityNewModule'
+import {LiquidityNewModule} from '../../organisms/LiquidityNewModule'
 export const NewLiquidity = () => {
     return (
         <NewLayout>

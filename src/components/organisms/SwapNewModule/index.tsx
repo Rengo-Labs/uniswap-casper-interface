@@ -19,20 +19,6 @@ import FloatMenu from '../FloatMenu'
 import {useSearchParams} from "react-router-dom";
 
 const SwapNewModule = () => {
-    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
-    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
-    const [activeModalSwap, setActiveModalSwap] = React.useState(false)
-    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
-    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
-    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0.5)
-    const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
-    const [priceImpact, priceImpactSetter] = useState<any>(0)
-    const [feeToPay, feeToPaySetter] = useState<any>(0.03)
-    const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
-    const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
-    const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
-    const [switchMovement, switchMovementSetter] = useState(false)
-    const [allowanceA, setAllowanceA] = useState(0)
     const {
         onConnectConfig,
         configState,
@@ -57,6 +43,21 @@ const SwapNewModule = () => {
     const {
         walletAddress
     } = configState
+
+    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
+    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
+    const [activeModalSwap, setActiveModalSwap] = React.useState(false)
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
+    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(slippageToleranceSelected)
+    const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
+    const [priceImpact, priceImpactSetter] = useState<any>(0)
+    const [feeToPay, feeToPaySetter] = useState<any>(0.03)
+    const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
+    const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
+    const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
+    const [switchMovement, switchMovementSetter] = useState(false)
+    const [allowanceA, setAllowanceA] = useState(0)
     const [searchParams, setSearchParams] = useSearchParams()
 
     useEffect( () => {
@@ -325,6 +326,9 @@ const SwapNewModule = () => {
                         secondTokenAmount={amountSwapTokenB}
                         priceImpactMessage={defaultPriceImpactLabel}
                         priceImpact={priceImpact}
+                        slippage={slippSwapToken}
+                        slippageEnabled={true}
+                        slippageSetter={slippSwapTokenSetter}
                         fullExpanded={false}
                     />
                 }
@@ -503,7 +507,7 @@ const CoinContainerStyled = styled.div`
 const ContainerSwapStatics = styled.section`
     justify-self: start;
     box-sizing: border-box;
-    width: 29rem;
+    width: 28.2rem;
     height: 10rem;
     padding:2rem;
     border:1px solid black;

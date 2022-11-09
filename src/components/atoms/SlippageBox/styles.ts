@@ -16,12 +16,12 @@ export const SlippageColumnRight = styled.section`
 `
 export const Input = styled.input`
     background: transparent;
-    color: white;
-    width: 25%;
-    border: solid 1px;
+    color: black;
+    width: 30%;
+    border: solid .5px black;
 `
 export const Span = styled.span`
     position: absolute;
     right: 0.5vw;
-    top: 15px;
+    top: 3px;
 `

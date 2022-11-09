@@ -133,16 +133,13 @@ export async function liquidityRuntimeForCSPR(
     ROUTER_PACKAGE_HASH
 ) {
   const tokenA = token_AAmount * 10 ** 9;
-  const tokenB = token_BAmount * 10 ** 9;
-
-  console.log(_token_b)
 
   const runtimeArgs = RuntimeArgs.fromMap({
     amount: CLValueBuilder.u512(normilizeAmountToString(tokenA)),
     destination_entrypoint: CLValueBuilder.string("add_liquidity_cspr"),
     token: new CLKey(_token_b),
-    amount_cspr_desired: CLValueBuilder.u256(normilizeAmountToString(tokenA)),
-    amount_token_desired: CLValueBuilder.u256(normilizeAmountToString(tokenB)),
+    amount_cspr_desired: CLValueBuilder.u256(normilizeAmountToString(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
+    amount_token_desired: CLValueBuilder.u256(normilizeAmountToString(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
     amount_cspr_min: CLValueBuilder.u256(normilizeAmountToString(10)),
     amount_token_min: CLValueBuilder.u256(normilizeAmountToString(10)),
     to: createRecipientAddress(publicKey),
@@ -181,10 +178,10 @@ export async function liquidityRuntimeForERC20(
   const runtimeArgs = RuntimeArgs.fromMap({
     token_a: new CLKey(tokenAAddress),
     token_b: new CLKey(tokenBAddress),
-    amount_a_desired: CLValueBuilder.u256(normilizeAmountToString(token_AAmount)),
-    amount_b_desired: CLValueBuilder.u256(normilizeAmountToString(token_BAmount)),
-    amount_a_min: CLValueBuilder.u256(normilizeAmountToString(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
-    amount_b_min: CLValueBuilder.u256(normilizeAmountToString(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
+    amount_a_desired: CLValueBuilder.u256(normilizeAmountToString(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
+    amount_b_desired: CLValueBuilder.u256(normilizeAmountToString(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
+    amount_a_min: CLValueBuilder.u256(normilizeAmountToString(10)),
+    amount_b_min: CLValueBuilder.u256(normilizeAmountToString(10)),
     to: createRecipientAddress(publicKey),
     deadline: CLValueBuilder.u256(deadline),
     pair: new CLOption(Some(new CLKey(pair))),
@@ -201,48 +198,4 @@ export async function liquidityRuntimeForERC20(
       runtimeArgs,
       paymentAmount
   );
-}
-
-export async function addLiquidityMakeDeploy(
-  axios,
-  activePublicKey,
-  tokenA,
-  tokenB,
-  tokenAAmount,
-  tokenBAmount,
-  slippage,
-  mainPurse,
-  ROUTER_PACKAGE_HASH,
-  countSetter,
-  toastLoading,
-  casperService
-) {
-  const publicKeyHex = activePublicKey;
-  const selectedWallet = "Casper";
-  const publicKey = CLPublicKey.fromHex(publicKeyHex);
-  const tokenBAddress = tokenB?.packageHash;
-  const token_AAmount = tokenAAmount;
-  const token_BAmount = tokenBAmount;
-  const deadline = 1739598100811;
-  const paymentAmount = 10000000000;
-
-  const _token_b = new CLByteArray(
-    Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
-  );
-  const pair = new CLByteArray(
-    Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
-  );
-  const runtimeArgs = createRuntimeeArgsPool(
-    token_AAmount,
-    _token_b,
-    token_BAmount,
-    slippage,
-    publicKey,
-    mainPurse,
-    deadline,
-    pair,
-    ROUTER_PACKAGE_HASH
-  );
-  const deploy = makeDeployWasm(publicKey, runtimeArgs, paymentAmount, axios);
-  return deploy;
 }

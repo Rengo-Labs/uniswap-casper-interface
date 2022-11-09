@@ -41,7 +41,6 @@ import {
 
 import { PopupsModule } from '../../components/organisms';
 import {
-    createRuntimeeArgsPool,
     liquidityRuntimeForCSPR,
     liquidityRuntimeForERC20
 } from '../../components/pages/Liquidity/study';
@@ -190,7 +189,7 @@ async function swapMakeDeploy(
 async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue, token, slippage = 0.005, fee = 0.003) {
     try {
         if (inputValue <= 0) {
-            return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0 }
+            return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0, firstReserve: 0, secondReserve: 0  }
         }
 
         const response = await axios.post(`${BASE_URL}/getpathreserves`, {
@@ -246,13 +245,15 @@ async function getSwapDetail(firstTokenSelected, secondTokenSelected, inputValue
                 tokensToTransfer: tokensToTransfer.div(Math.pow(10,9)).toNumber().toFixed(9),
                 priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
                 exchangeRateA: exchangeRateA.toNumber(),
-                exchangeRateB : exchangeRateB.toNumber()
+                exchangeRateB : exchangeRateB.toNumber(),
+                firstReserve: normalizeAmount(inputLiquidity.toString(), 9),
+                secondReserve: normalizeAmount(outputLiquidity.toString(), 9)
             }
         }
         throw Error()
     } catch (error) {
         console.log(__filename, "getSwapDetail", error)
-        return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0 }
+        return { tokensToTransfer: 0, tokenPrice: 0, priceImpact: 0, exchangeRateA: 0, exchangeRateB: 0, firstReserve: 0, secondReserve: 0 }
     }
 }
 
@@ -479,7 +480,7 @@ async function addLiquidityMakeDeploy(
             Uint8Array.from(Buffer.from(tokenA?.packageHash.slice(5), "hex"))
         );
 
-        return await liquidityRuntimeForCSPR(
+        return liquidityRuntimeForCSPR(
             token_BAmount,
             _token_a,
             token_AAmount,
@@ -549,6 +550,26 @@ function ObjectToArray(object) {
 
 function PairsWithBalance(pairs) {
     return ObjectToArray(pairs).filter(x => x.balance > 0)
+}
+
+const normalizeAmount = (amount, decimalQuantity) => {
+    const strAmount = parseFloat(amount).toFixed(0).toString();
+
+    if (strAmount.length > decimalQuantity) {
+        const newReserve = strAmount.slice(0, strAmount.length - decimalQuantity) + '.' + strAmount.slice(strAmount.length - decimalQuantity, strAmount.length)
+        return parseFloat(newReserve)
+    } else {
+        let newReserve = strAmount
+
+        for (let i = 0; i < decimalQuantity; i++) {
+            if (newReserve.length < decimalQuantity) {
+                newReserve = '0' + newReserve
+            } else {
+                break
+            }
+        }
+        return parseFloat(`0.${newReserve}`)
+    }
 }
 
 
@@ -857,26 +878,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         return newList
     }
 
-    const normalizeAmount = (amount, decimalQuantity) => {
-        const strAmount = parseFloat(amount).toFixed(0).toString();
-
-        if (strAmount.length > decimalQuantity) {
-            const newReserve = strAmount.slice(0, strAmount.length - decimalQuantity) + '.' + strAmount.slice(strAmount.length - decimalQuantity, strAmount.length)
-            return parseFloat(newReserve)
-        } else {
-            let newReserve = strAmount
-
-            for (let i = 0; i < decimalQuantity; i++) {
-                if (newReserve.length < decimalQuantity) {
-                    newReserve = '0' + newReserve
-                } else {
-                    break
-                }
-            }
-            return parseFloat(`0.${newReserve}`)
-        }
-    }
-
     const filter = (onlyStaked, row) => {
         if (onlyStaked) {
             return row.original.pair.totalPool > 0
@@ -1072,11 +1073,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onAddLiquidity(amountA, amountB) {
+    async function onAddLiquidity(amountA, amountB, slippage) {
         const loadingToast = toast.loading("let me try to add liquidity! be patient!")
         try {
-            const deploy = await addLiquidityMakeDeploy(walletAddress, firstTokenSelected, secondTokenSelected, amountA, amountB, slippageToleranceSelected, mainPurse)
-
+            const deploy = await addLiquidityMakeDeploy(walletAddress, firstTokenSelected, secondTokenSelected, amountA, amountB, slippage, mainPurse)
             if (walletSelected === 'casper') {
                 console.log("signing add liquidity")
                 const signedDeploy: any = await signdeploywithcaspersigner(deploy, walletAddress)

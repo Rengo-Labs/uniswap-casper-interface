@@ -13,10 +13,11 @@ import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 
 export const LPDetail = ({
                              firstSymbolToken = 'CSPR',
-                             firstTokenAmount = 10,
                              secondSymbolToken = 'ETH',
                              secondTokenAmount = 200,
                              liquidity = 10,
+                             firstReserve = 0.00,
+                             secondReserve = 0.00,
                              slippage = 0.005,
                              slippageSetter = () => {},
                              className = '',
@@ -40,15 +41,19 @@ export const LPDetail = ({
             <CollapsingBody>
                 <CollapsingRow>
                     <CollapsingColumnLeft>Base</CollapsingColumnLeft>
-                    <CollapsingColumnRight>CSPR</CollapsingColumnRight>
+                    <CollapsingColumnRight>{firstSymbolToken}</CollapsingColumnRight>
+                </CollapsingRow>
+                <CollapsingRow>
+                    <CollapsingColumnLeft>Max Amount</CollapsingColumnLeft>
+                    <CollapsingColumnRight>{(secondTokenAmount * (1 - slippage/100)).toFixed(9)} {secondSymbolToken}</CollapsingColumnRight>
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>Pool Liquidity ({firstSymbolToken})</CollapsingColumnLeft>
-                    <CollapsingColumnRight>{firstTokenAmount} {firstSymbolToken}</CollapsingColumnRight>
+                    <CollapsingColumnRight>{firstReserve} {firstSymbolToken}</CollapsingColumnRight>
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>Pool Liquidity ({secondSymbolToken}) </CollapsingColumnLeft>
-                    <CollapsingColumnRight>{secondTokenAmount} {secondSymbolToken}</CollapsingColumnRight>
+                    <CollapsingColumnRight>{secondReserve} {secondSymbolToken}</CollapsingColumnRight>
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>LP supply</CollapsingColumnLeft>
@@ -65,10 +70,6 @@ export const LPDetail = ({
                         <div {...getCollapseProps()}>
                             <CollapsingRow>
                                 <SlippageBox slippageEnabled={slippageEnabled} onSlippageChange={updateSlippage} slippage={slippage} />
-                            </CollapsingRow>
-                            <CollapsingRow>
-                                <CollapsingColumnLeft>Swap fee</CollapsingColumnLeft>
-                                <CollapsingColumnRight>{firstTokenAmount * 0.003} CSPR</CollapsingColumnRight>
                             </CollapsingRow>
                             <CollapsingRow>
                                 <CollapsingColumnLeft>Network gas fee</CollapsingColumnLeft>

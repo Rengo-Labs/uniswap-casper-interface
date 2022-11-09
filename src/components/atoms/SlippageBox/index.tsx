@@ -7,7 +7,7 @@ import {
     Span
 } from './styles'
 
-export const SlippageBox = ({ onSlippageChange, slippage, slippageEnabled, className }:any) => {
+export const SlippageBox = ({ onSlippageChange, slippage, slippageEnabled = false, className }:any) => {
     return (
         <SlippageContainer className={className}>
             <SlippageColumnLeft>Slippage tolerance</SlippageColumnLeft>
@@ -15,8 +15,8 @@ export const SlippageBox = ({ onSlippageChange, slippage, slippageEnabled, class
                 {
                     slippageEnabled &&
                     <label>
-                        <Span>%</Span>
                         <Input onChange={onSlippageChange} value={slippage} type="number" placeholder="%"/>
+                        <Span>%</Span>
                     </label>
                 }
                 {

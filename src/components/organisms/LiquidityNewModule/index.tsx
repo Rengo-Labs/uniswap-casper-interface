@@ -43,18 +43,7 @@ import {
     ButtonSpaceStyled,
 } from '../SwapNewModule'
 
-const LiquidityNewModule = () => {
-    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
-    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
-    const [activeModalSwap, setActiveModalSwap] = React.useState(false)
-    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
-    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
-    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0.5)
-    const [feeToPay, feeToPaySetter] = useState<any>(0.03)
-    const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
-    const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
-    const [allowanceA, setAllowanceA] = useState(0)
-    const [allowanceB, setAllowanceB] = useState(0)
+export const LiquidityNewModule = () => {
     const {
         onConnectConfig,
         onAddLiquidity,
@@ -81,6 +70,17 @@ const LiquidityNewModule = () => {
     const {
         walletAddress
     } = configState
+    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
+    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
+    const [activeModalSwap, setActiveModalSwap] = React.useState(false)
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
+    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(slippageToleranceSelected)
+    const [feeToPay, feeToPaySetter] = useState<any>(0.03)
+    const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
+    const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
+    const [allowanceA, setAllowanceA] = useState(0)
+    const [allowanceB, setAllowanceB] = useState(0)
 
     const [usersLP, setUsersLP] = useState([])
     const [pools, setPools] = useState([])
@@ -88,6 +88,8 @@ const LiquidityNewModule = () => {
     const [isOpenedRemoving, setOpenedRemoving] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams()
     const [valueUSD, setValueUSD] = useState("0")
+    const [currentFReserve, setFirstReserve] = useState(0)
+    const [currentSReserve, setSecondReserve] = useState(0)
 
     useEffect( () => {
         const t0 = searchParams.get("token0")
@@ -122,14 +124,14 @@ const LiquidityNewModule = () => {
     const calculateUserLP = (token0, token1, amount0, amount1) => {
         const filter = pools.filter(r => r.pair.token0 === token0 && r.pair.token1 === token1)
         if (filter.length > 0) {
-            const userLP = Decimal.max(new Decimal(amount0).mul(filter[0].totalSupply).div(filter[0].reserve0), new Decimal(amount1).mul(filter[0].totalSupply).div(filter[0].reserve1)).toNumber()
-            return userLP
+            //const userLP = Decimal.max(new Decimal(amount0).mul(filter[0].totalSupply).div(filter[0].reserve0), new Decimal(amount1).mul(filter[0].totalSupply).div(filter[0].reserve1)).toNumber()
+            return new Decimal(filter[0].totalSupply.toFixed(9)).toNumber()
         }
 
         const filter2 = pools.filter(r => r.pair.token1 === token0 && r.pair.token0 === token1)
         if (filter2.length > 0) {
-            const userLP = Decimal.max(new Decimal(amount1).mul(filter2[0].totalSupply).div(filter2[0].reserve1), new Decimal(amount0).mul(filter2[0].totalSupply).div(filter2[0].reserve0)).toNumber()
-            return userLP
+            //const userLP = Decimal.max(new Decimal(amount1).mul(filter2[0].totalSupply).div(filter2[0].reserve1), new Decimal(amount0).mul(filter2[0].totalSupply).div(filter2[0].reserve0)).toNumber()
+            return new Decimal(filter2[0].totalSupply.toFixed(9)).toNumber()
         }
     }
 
@@ -195,10 +197,14 @@ const LiquidityNewModule = () => {
             tokensToTransfer,
             priceImpact,
             exchangeRateA,
-            exchangeRateB
+            exchangeRateB,
+            firstReserve,
+            secondReserve
         } = getSwapDetailResponse
         exchangeRateASetter(exchangeRateA)
         exchangeRateBSetter(exchangeRateB)
+        setFirstReserve(firstReserve)
+        setSecondReserve(secondReserve)
 
         return tokensToTransfer
     }
@@ -294,7 +300,7 @@ const LiquidityNewModule = () => {
 
     async function onLiquidity() {
 
-        await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
+        await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
         await loadUserLP()
         //onConnectConfig()
     }
@@ -437,12 +443,14 @@ const LiquidityNewModule = () => {
                 {
                     amountSwapTokenA > 0 &&
                     <LPDetail
-                        firstSymbolToken={firstTokenSelected.symbolPair}
-                        firstTokenAmount={amountSwapTokenA}
-                        secondSymbolToken={secondTokenSelected.symbolPair}
+                        firstSymbolToken={firstTokenSelected.symbol}
+                        secondSymbolToken={secondTokenSelected.symbol}
                         secondTokenAmount={amountSwapTokenB}
-                        liquidity={userLiquidity.toFixed(8)}
-                        slippage={slippageToleranceSelected}
+                        liquidity={userLiquidity}
+                        firstReserve={currentFReserve}
+                        secondReserve={currentSReserve}
+                        slippage={slippSwapToken}
+                        slippageEnabled={true}
                         slippageSetter={slippSwapTokenSetter} />
                 }
                 <ButtonSpaceStyled>
@@ -562,7 +570,7 @@ const ButtonHalfMaxContainer = styled.div`
     gap:10px;
 `
 
-const ButtonHalfMax = styled.div<any>`
+const ButtonHalfMax = styled.div`
     background-color: ${props => props.theme.NewPurpleColor};
     color: white;
     padding:10px;
@@ -572,5 +580,3 @@ const ButtonHalfMax = styled.div<any>`
     cursor: pointer;
     font-size: 12px;
 `
-
-export default LiquidityNewModule

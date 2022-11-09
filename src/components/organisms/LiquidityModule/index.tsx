@@ -15,7 +15,6 @@ import { CasperServiceByJsonRPC, Signer } from 'casper-js-sdk'
 import axios from 'axios'
 import toast from 'react-hot-toast';
 import { clientDispatcher } from '../../../reducers/WalletReducers/signerFunctions'
-import { addLiquidityMakeDeploy } from '../../pages/Liquidity/study'
 import { BASE_URL, CHAINS, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS } from '../../../constant'
 import Torus from '@toruslabs/casper-embed'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
