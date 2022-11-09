@@ -38,35 +38,36 @@ import {
 } from './utils'
 
 /**
- * All add liquidity smart contract endpoints
+ * All remove liquidity smart contract endpoints
  */
-export enum AddLiquidityEntryPoint {  
-  ADD_LIQUIDITY_CSPR = "add_liquidity_cspr",
-  ADD_LIQUIDITY_JS_CLIENT = "add_liquidity_js_client",
+export enum RemoveLiquidityEntryPoint {  
+  REMOVE_LIQUIDITY_CSPR = "remove_liquidity_cspr",
+  REMOVE_LIQUIDITY_JS_CLIENT = "remove_liquidity_js_client",
 }
 
 /**
- * Determine which add liquidity endpoint should be used
+ * Determine which remove liquidity endpoint should be used
  * 
  * @param tokenASymbol tokenA symbol
  * @param tokenBSymbol tokenB symbol
  * 
  * @returns which swap endpoint should be used
  */
- export const selectAddLiquidityEntryPoint = (tokenASymbol: string, tokenBSymbol: string): AddLiquidityEntryPoint => {
+ export const selectRemoveLiquidityEntryPoint = (tokenASymbol: string, tokenBSymbol: string): RemoveLiquidityEntryPoint => {
   if (tokenASymbol === 'WCSPR' || tokenBSymbol === 'WCSPR') {
-    return AddLiquidityEntryPoint.ADD_LIQUIDITY_CSPR
+    return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_CSPR
   } else if (tokenASymbol !== 'WCSPR' && tokenBSymbol !== 'WCSPR') {
-    return AddLiquidityEntryPoint.ADD_LIQUIDITY_JS_CLIENT
+    return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_JS_CLIENT
   }
 }
 
 /**
- * Sign and deploy add liquidity 
+ * Sign and deploy remove liquidity 
  * 
  * @param casperClient Casper Client
  * @param wallet current Casper Wallet 
  * @param deadline length of time before giving up
+ * @param liquidity amount of liquidity tokens to remove
  * @param amountADesired desired amount tokenA
  * @param amountBDesired desired amount tokenB
  * @param tokenA tokenA
@@ -81,6 +82,7 @@ export enum AddLiquidityEntryPoint {
   casperClient: CasperClient,
   wallet: Wallet,
   deadline: BigNumber.Value,
+  liquidity: BigNumber.Value,
   amountADesired: BigNumber.Value,
   amountBDesired: BigNumber.Value,
   tokenA: Token,
@@ -90,10 +92,10 @@ export enum AddLiquidityEntryPoint {
 ): Promise<[string, GetDeployResult]> => {
   try {
     const publicKey = wallet.publicKey;
-    const entryPoint = selectAddLiquidityEntryPoint(tokenA.symbol, tokenB.symbol)
+    const entryPoint = selectRemoveLiquidityEntryPoint(tokenA.symbol, tokenB.symbol)
 
     switch (entryPoint) {
-      case AddLiquidityEntryPoint.ADD_LIQUIDITY_CSPR:
+      case RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_CSPR:
         // When adding cspr and token
         const token = tokenA.symbol === 'WCSPR' ? new CLByteArray(
             Uint8Array.from(Buffer.from(tokenB.contractHash.slice(5), "hex"))
@@ -109,30 +111,24 @@ export enum AddLiquidityEntryPoint {
           await apiClient.getDeployWasmData(),
           RuntimeArgs.fromMap({
             token: new CLKey(token),
-            amount_cspr_desired: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
-            amount_token_desired: CLValueBuilder.u256(new BigNumber(amountTokenDesired).toFixed(0)),
+            liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0)),            
             amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(.96 - slippage).toFixed(0)),
             amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(.96 - slippage).toFixed(0)),
-            pair: new CLOption(Some(new CLKey(token))),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
 
             // Deploy wasm params
-            amount: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
+            //amount: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
             destination_entrypoint: CLValueBuilder.string(entryPoint),
             router_hash: new CLKey(
               new CLByteArray(
                 Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
               )
             ),
-            purse: CLValueBuilder.uref(
-              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-              AccessRights.READ_ADD_WRITE
-            ),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(5000000000),
         )
-      case AddLiquidityEntryPoint.ADD_LIQUIDITY_JS_CLIENT:
+      case RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_JS_CLIENT:
         // When adding token and token
         const tokenAContract = new CLByteArray(
           Uint8Array.from(Buffer.from(tokenA.packageHash.slice(5), "hex"))
@@ -149,15 +145,13 @@ export enum AddLiquidityEntryPoint {
           RuntimeArgs.fromMap({
             token_a: new CLKey(tokenAContract),
             token_b: new CLKey(tokenBContract),
-            amount_a_desired: CLValueBuilder.u256(new BigNumber(amountADesired).toFixed(0)),
-            amount_b_desired: CLValueBuilder.u256(new BigNumber(amountBDesired).toFixed(0)),
+            liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0)),
             amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(.96 - slippage).toFixed(0)),
             amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(.96 - slippage).toFixed(0)),
-            pair: new CLOption(Some(new CLKey(tokenBContract))),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(5000000000),
         )
       default: 
         throw new Error(`this shouldn't happen`)

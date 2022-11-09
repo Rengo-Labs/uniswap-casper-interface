@@ -30,7 +30,7 @@ export interface SwapDetails {
 * 
 * @return SwapDetails
 */
-export const getSwapDetails = async (apiClient: APIClient, tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<SwapDetails> => {
+export const calculateSwapDetails = async (apiClient: APIClient, tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<SwapDetails> => {
   try {
       const data = await apiClient.getPathReserves(tokenA.symbol, tokenB.symbol)
       

@@ -1,21 +1,14 @@
 import axios from 'axios';
 import BigNumber from 'bignumber.js'
 import {
-    CLByteArray,
-    CLKey,
     CLPublicKey,
-    CLValueBuilder,
-    RuntimeArgs,
 } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
 
 import {
-    createRecipientAddress,
     getDeploy,
     makeDeploy,
-    makeDeployLiquidity,
-    makeDeployWasm,
     putdeploySigner,
     removeLiquidityArgs,
     signdeploywithcaspersigner,
@@ -24,8 +17,7 @@ import {
 } from '../../commons/swap';
 
 import { PopupsModule } from '../../components/organisms';
-import { createRuntimeeArgsPool } from '../../components/pages/Liquidity/study';
-import { BASE_URL, CHAINS, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS, URL_DEPLOY } from '../../constant';
+import { BASE_URL, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH } from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
 import { initialPairsState, PairsReducer } from '../../reducers/PairsReducer';
@@ -39,10 +31,12 @@ import {
     Network,
     Token,
     Wallet,
+
     convertBigNumberToUIString,
     convertUIStringToBigNumber,
+
     SwapDetails,
-    getSwapDetails as getSwapDetailsFull,
+    calculateSwapDetails,
     
     log,
 } from '../../commons'
@@ -123,7 +117,7 @@ function tokensToObject(listTokens: Token[]): Record<string, Token> {
  * @return SwapDetails
  */
 async function getSwapDetails(tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<SwapDetails> {
-    return getSwapDetailsFull(apiClient, tokenA, tokenB, inputValue, token, slippage, fee)
+    return calculateSwapDetails(apiClient, tokenA, tokenB, inputValue, token, slippage, fee)
 }
 
 async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey) {
@@ -765,8 +759,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
     }
 
-    function getAccountHash(wa: string | number | boolean | void = null) {
-        return Buffer.from(CLPublicKey.fromHex(wa ?? walletAddress).toAccountHash()).toString("hex")
+    function getAccountHash(wa: string | number | boolean | void = null): string {
+        return Buffer.from(CLPublicKey.fromHex(wa as any ?? wallet.publicKeyHex).toAccountHash()).toString("hex")
     }
 
     return (
