@@ -21,9 +21,8 @@ import {
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
 import LoadersSwap from '../../atoms/LoadersSwap'
-import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import SwitchSwap from '../../atoms/SwitchSwap'
-import { SwapConfirmAtom, SwapDetail, SwapModal, SwapToken, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapDetail, SwapModal} from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
 const SwapNewModule = () => {
