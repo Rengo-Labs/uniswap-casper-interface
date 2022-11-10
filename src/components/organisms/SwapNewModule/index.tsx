@@ -215,9 +215,6 @@ const SwapNewModule = () => {
         return filtered
     }
     const freeAllowance = allowanceA / Math.pow(10, 9) - parseFloat(amountSwapTokenA)
-
-    console.log('freeAllowance', allowanceA / Math.pow(10, 9), amountSwapTokenA, freeAllowance)
-
     const isApproved = firstTokenSelected.symbol == 'CSPR' || (
         firstTokenSelected.symbol != 'CSPR' &&
         freeAllowance >= 0
