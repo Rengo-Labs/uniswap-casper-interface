@@ -25,6 +25,7 @@ const FloatMenu = ({ tokens, selectToken, onClick, lefilter = false, lesymbol = 
                 return inputUser
             }
         })
+        //filter added
         console.log("filtered", filtered)
         setFilteredTokens(filtered)
     }
