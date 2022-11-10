@@ -4,7 +4,7 @@ export const initialConfigState = {
   walletSelected: "casper",
   languagesSelected: "en",
   visualModeSelected: "light",
-  slippageToleranceSelected: "0.5",
+  slippageToleranceSelected: 0.5,
   gasPriceSelected: 10_000_000_000,
   mainPurse: "",
 };

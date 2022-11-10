@@ -1,4 +1,5 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react"
+import ProgressImg from '../../../assets/newIcons/success.png'
 import {
     OverlayPopup,
     PopupBottom,
@@ -6,6 +7,7 @@ import {
     PopupContainer,
     PopupContent,
     PopupTitle,
+    LDSRing,
     ButtonHalfMaxContainer,
     ButtonHalfMax,
     InputContainer,
@@ -18,12 +20,12 @@ import {
     LPLabelDetail,
     InputStyled,
     RemoveButtonContainer
-} from "./styles";
+} from "./styles"
 import {Button} from "../../atoms"
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 
-export const PopupsModule = ({isOpen, handleOpen, children}: any) => {
+export const PopupsModule = ({isOpen, handleOpen, progress, children}: any) => {
 
     const {
         configState,
@@ -42,6 +44,21 @@ export const PopupsModule = ({isOpen, handleOpen, children}: any) => {
             <PopupContainer>
                 <PopupTitle>Processing...</PopupTitle>
                 <PopupClose onClick={closeHandler}>&times;</PopupClose>
+                {
+                    progress && (<LDSRing>
+                        <div className="lds-ring">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </LDSRing>)
+                }
+                {
+                    !progress && (<LDSRing>
+                        <img src={ProgressImg} />
+                    </LDSRing>)
+                }
                 <PopupContent>
                   {children}
                 </PopupContent>
