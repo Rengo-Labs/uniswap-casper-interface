@@ -200,9 +200,22 @@ const SwapNewModule = () => {
         }, {})
         return tokenFiltered
     }
-
+    function returnFilterB(tokens, firstTokenSelected) {
+        const tokenHead = Object.keys(tokens)
+        let tokenFiltered = {}
+        const filtered = tokenHead.reduce((acc, keya) => {
+            const filter = new RegExp(firstTokenSelected.symbol)
+            if (filter.test(keya)) { return }
+            tokenFiltered = {
+                ...acc,
+                [keya]: tokens[keya]
+            }
+            return tokenFiltered
+        }, {})
+        return filtered
+    }
     const freeAllowance = allowanceA / Math.pow(10, 9) - parseFloat(amountSwapTokenA)
-
+    //update
     const isApproved = firstTokenSelected.symbol == 'CSPR' || (
         firstTokenSelected.symbol != 'CSPR' &&
         freeAllowance >= 0
@@ -221,6 +234,8 @@ const SwapNewModule = () => {
                                 <ArrowContainerStyle>
                                     <FlechaIcon onClick={() => { searchModalASetter(true) }} />
                                     {searchModalA && <FloatMenu
+                                        lefilter={true}
+                                        lesymbol={secondTokenSelected.symbol}
                                         tokens={tokens}
                                         selectToken={SelectAndCloseTokenA}
                                         onClick={() => { searchModalASetter(false) }}
