@@ -43,11 +43,11 @@ export const LiquidityModule = ({ tokenOne }: any) => {
         isConnected,
         onConfirmSwapConfig,
         slippageToleranceSelected,
-        onCalculateReserves,
+        //onCalculateReserves,
         onIncreaseAllow,
         onAddLiquidity,
         fillPairs,
-        getSwapDetail
+        getSwapDetails,
     } = useContext(ConfigProviderContext)
 
     const [activeModalPrimary, setActiveModalPrimary] = useState(false)
@@ -81,17 +81,17 @@ export const LiquidityModule = ({ tokenOne }: any) => {
     async function onLiquidiy() {
         if (await onIncreaseAllow(amountSwapTokenB)) {
             console.log("Paso pagina")
-            await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
+            await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippageToleranceSelected)
             onConnectConfig()
         }
     }
 
     async function onChangeValueToken(value) {
         amountSwapTokenASetter(value)
-        const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
-        const { tokensToTransfer, tokenPrice, priceImpact, exchangeRateA, exchangeRateB } = await getSwapDetail(firstTokenSelected, secondTokenSelected)
-        amountSwapTokenBSetter(secondTokenReturn)
-        slippSwapTokenSetter(minAmountReturn)
+        //const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
+        const { tokensToTransfer, tokenPrice, priceImpact, exchangeRateA, exchangeRateB } = await getSwapDetails(firstTokenSelected, secondTokenSelected)
+        //amountSwapTokenBSetter(secondTokenReturn)
+        //slippSwapTokenSetter(minAmountReturn)
     }
 
     return (

@@ -42,7 +42,7 @@ const SwapNewModule = () => {
     const [switchMovement, switchMovementSetter] = useState(false)
     const [allowanceA, setAllowanceA] = useState(0)
     const {
-        onConnectConfig,
+        onConnectWallet,
         configState,
         tokenState,
         onSelectFirstToken,
@@ -55,7 +55,7 @@ const SwapNewModule = () => {
         onConfirmSwapConfig,
         slippageToleranceSelected,
         onCalculateReserves,
-        getSwapDetail,
+        getSwapDetails,
         getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
         onDisconnectWallet,
@@ -67,7 +67,7 @@ const SwapNewModule = () => {
     } = configState
 
     async function onConnect() {
-        onConnectConfig()
+        onConnectWallet()
     }
     function onSwitchTokensHandlers() {
         ResetAll()
@@ -95,15 +95,15 @@ const SwapNewModule = () => {
         setActiveModalSwap(false);
         const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
         amountSwapTokenASetter(0)
-        onConnectConfig()
+        onConnectWallet()
     }
 
     async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
-        const getSwapDetailP = getSwapDetail(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
+        const getSwapDetailP = getSwapDetails(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
         const ps = [getSwapDetailP]
 
-        if (token.contractHash) {
-            ps.push(getAllowanceAgainstOwnerAndSpender(token.contractHash, walletAddress))
+        if (tokenA.contractHash) {
+            ps.push(getAllowanceAgainstOwnerAndSpender(tokenA.contractHash, walletAddress))
         } else {
             ps.push(Promise.resolve(0))
         }
@@ -158,7 +158,7 @@ const SwapNewModule = () => {
 
         amountSwapTokenBSetter(filteredValue)
 
-        const minTokenToReceive = await updateSwapDetail(secondTokenSelected, firstTokenSelected, filteredValue, secondTokenSelected)
+        const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, secondTokenSelected)
         amountSwapTokenASetter(minTokenToReceive)
     }
 
@@ -215,7 +215,6 @@ const SwapNewModule = () => {
         return filtered
     }
     const freeAllowance = allowanceA / Math.pow(10, 9) - parseFloat(amountSwapTokenA)
-    //update
     const isApproved = firstTokenSelected.symbol == 'CSPR' || (
         firstTokenSelected.symbol != 'CSPR' &&
         freeAllowance >= 0

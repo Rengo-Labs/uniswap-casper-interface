@@ -18,7 +18,7 @@ import casprIcon from "../../../assets/swapIcons/casprIcon.png";
 import {TbTrash} from "react-icons/tb";
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {CircleButton} from "../../molecules/POCTBody/styles";
-import Decimal from 'decimal.js'
+import BigNumber from 'bignumber.js'
 
 import {
     TokenSelectStyled,
@@ -67,8 +67,7 @@ const LiquidityNewModule = () => {
         isConnected,
         onConfirmSwapConfig,
         slippageToleranceSelected,
-        onCalculateReserves,
-        getSwapDetail,
+        getLiquidityDetails,
         getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
         onDisconnectWallet,
@@ -117,13 +116,13 @@ const LiquidityNewModule = () => {
     const calculateUserLP = (token0, token1, amount0, amount1) => {
         const filter = pools.filter(r => r.pair.token0 === token0 && r.pair.token1 === token1)
         if (filter.length > 0) {
-            const userLP = Decimal.max(new Decimal(amount0).mul(filter[0].totalSupply).div(filter[0].reserve0), new Decimal(amount1).mul(filter[0].totalSupply).div(filter[0].reserve1)).toNumber()
+            const userLP = BigNumber.max(new BigNumber(amount0).times(filter[0].totalSupply).div(filter[0].reserve0), new BigNumber(amount1).times(filter[0].totalSupply).div(filter[0].reserve1)).toNumber()
             return userLP
         }
 
         const filter2 = pools.filter(r => r.pair.token1 === token0 && r.pair.token0 === token1)
         if (filter2.length > 0) {
-            const userLP = Decimal.max(new Decimal(amount1).mul(filter2[0].totalSupply).div(filter2[0].reserve1), new Decimal(amount0).mul(filter2[0].totalSupply).div(filter2[0].reserve0)).toNumber()
+            const userLP = BigNumber.max(new BigNumber(amount1).times(filter2[0].totalSupply).div(filter2[0].reserve1), new BigNumber(amount0).times(filter2[0].totalSupply).div(filter2[0].reserve0)).toNumber()
             return userLP
         }
     }
@@ -166,8 +165,15 @@ const LiquidityNewModule = () => {
         onConnectConfig()
     }
     async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
-        const getSwapDetailP = getSwapDetail(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
-        const ps = [getSwapDetailP]
+        const getLiquidityDetailP = getLiquidityDetails(
+            tokenA, 
+            tokenB, 
+            value, 
+            token, 
+            slippSwapToken, 
+            feeToPay
+        )
+        const ps = [getLiquidityDetailP]
 
         if (tokenA.contractHash) {
             ps.push(getAllowanceAgainstOwnerAndSpender(tokenA.contractHash, walletAddress))
@@ -281,15 +287,8 @@ const LiquidityNewModule = () => {
 
     async function onLiquidity() {
 
-        await onAddLiquidity(amountSwapTokenA, amountSwapTokenB)
+        await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippageToleranceSelected)
         //onConnectConfig()
-    }
-
-    async function onChangeValueToken(value) {
-        amountSwapTokenASetter(value)
-        const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
-        amountSwapTokenBSetter(secondTokenReturn)
-        slippSwapTokenSetter(minAmountReturn)
     }
 
     const enableButton = (amount0, amount1) => {
@@ -445,6 +444,8 @@ const LiquidityNewModule = () => {
                     {// Loop over the table rows
                         usersLP.map(row => {
                             const openPopup = isOpenedRemoving && row.token0 == firstTokenSelected.symbol && row.token1 == secondTokenSelected.symbol
+
+                            console.log('ROW', row)
 
                             return (
                                 // Apply the row props
