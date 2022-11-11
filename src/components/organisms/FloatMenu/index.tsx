@@ -19,7 +19,6 @@ const FloatMenu = ({ tokens, selectToken, onClick, lefilter = false, lesymbol = 
     }
 
     const [filteredTokens, setFilteredTokens] = React.useState(leTokens)
-    const [filter, setFilter] = React.useState('')
 
     function useFilter(e) {
         const inputUser = e.target.value.toUpperCase().trim()
