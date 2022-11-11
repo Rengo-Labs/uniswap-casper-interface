@@ -42,6 +42,7 @@ const SwapNewModule = () => {
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
     const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
     const [switchMovement, switchMovementSetter] = useState(false)
+    const [lastChanged, setLastChanged] = useState('')
     const {
         onConnectWallet,
         configState,
@@ -70,9 +71,16 @@ const SwapNewModule = () => {
     async function onConnect() {
         onConnectWallet()
     }
-    function onSwitchTokensHandlers() {
-        ResetAll()
+    function onSwitchTokensHandler() {
         onSwitchTokens()
+        
+        if(lastChanged == 'A') {
+            changeTokenB(amountSwapTokenA)
+            setLastChanged('B')
+        } else if(lastChanged == 'B') {
+            changeTokenA(amountSwapTokenB)
+            setLastChanged('A')
+        }
     }
 
     async function onDisconnect() {
@@ -89,7 +97,6 @@ const SwapNewModule = () => {
     function ResetAll() {
         amountSwapTokenASetter(0)
         amountSwapTokenBSetter(0)
-        ResetTokens()
     }
 
     async function onConfirmSwap() {
@@ -142,6 +149,8 @@ const SwapNewModule = () => {
             filteredValue = Math.abs(filteredValue)
         }
 
+        setLastChanged('A')
+
         amountSwapTokenASetter(filteredValue)
 
         const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
@@ -154,6 +163,8 @@ const SwapNewModule = () => {
         } else if (filteredValue < 0) {
             filteredValue = Math.abs(filteredValue)
         }
+
+        setLastChanged('B')
 
         amountSwapTokenBSetter(filteredValue)
 
@@ -270,7 +281,7 @@ const SwapNewModule = () => {
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <IconPlaceStyle>
-                    <SwitchSwap onClick={() => { onSwitchTokens(); ResetAll() }} />
+                    <SwitchSwap onClick={onSwitchTokensHandler} />
                     <SwapDetailsStyled>
                         <ExchangeRateBox
                             tokenASymbol={firstTokenSelected.symbol}
