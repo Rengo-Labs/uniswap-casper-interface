@@ -11,10 +11,8 @@ const SpacerWithTokenStyled = styled.div`
         cursor: pointer;
     }
 `
-const SpacerWithToken = ({children,onClick}) => {
+export const SpacerWithToken = ({children,onClick}) => {
   return (
     <SpacerWithTokenStyled onClick={onClick}>{children}</SpacerWithTokenStyled>
   )
 }
-
-export default SpacerWithToken

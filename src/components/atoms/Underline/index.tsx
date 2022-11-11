@@ -8,10 +8,8 @@ const UnderlineStyled = styled.div`
     width: 29rem;
     border-bottom: 1px solid black;
 `
-const Underline = () => {
+export const Underline = () => {
   return (
     <UnderlineStyled></UnderlineStyled>
   )
 }
-
-export default Underline

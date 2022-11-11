@@ -37,3 +37,23 @@ export { CustomToggle } from './CustomToggle'
 export { ItemSelector } from './ItemSelector'
 export { ConnectionPopup } from './ConnectionPopup'
 
+export { IconContainer } from './IconContainer'
+export { TokenShort } from './TokenShort'
+export { Spacer } from './Spacer'
+export { ContainerSwapModuleNew } from './ContainerSwapModuleNew'
+export { SpacerWithToken } from './SpacerWithToken'
+export { Underline } from './Underline'
+export { ContainerCenter } from './ContainerCenter';
+export { HeaderSwapNewModule } from './HeaderSwapNewModule';
+export { SearchAndFavorites } from './SearchAndFavorites';
+export { Search } from './Search';
+export { SearchInput } from './SearchInput';
+export { PopularContainer } from './PopularContainer';
+export { SearchIcon } from './SearchIcon';
+export { FavoritesTokens } from './FavoritesTokens';
+export { LeToken } from './LeToken';
+export { LeTokenImage } from './LeTokenImage';
+export { LeTokenTitle } from './LeTokenTitle';
+export { TokenListContainer } from './TokenListContainer';
+export { SelectTokenImage } from './SelectTokenImage';
+export { FooterSwapModuleNew } from './FooterSwapModuleNew';

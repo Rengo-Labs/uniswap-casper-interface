@@ -2,26 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { AiOutlineSearch, AiFillCloseCircle } from "react-icons/ai";
-import { IconContainer } from '../../atoms/IconContainer';
-import { TokenShort } from '../../atoms/TokenShort';
-import { Spacer } from '../../atoms/Spacer';
-import { ContainerSwapModuleNew } from '../../atoms/ContainerSwapModuleNew';
-import SpacerWithToken from '../../atoms/SpacerWithToken';
-import Underline from '../../atoms/Underline';
-import { ContainerCenter } from '../../atoms/ContainerCenter';
-import { HeaderSwapNewModule } from '../../atoms/HeaderSwapNewModule';
-import { SearchAndFavorites } from '../../atoms/SearchAndFavorites';
-import { Search } from '../../atoms/Search';
-import { SearchInput } from '../../atoms/SearchInput';
-import { PopularContainer } from '../../atoms/PopularContainer';
-import { SearchIcon } from '../../atoms/SearchIcon';
-import { FavoritesTokens } from '../../atoms/FavoritesTokens';
-import { LeToken } from '../../atoms/LeToken';
-import { LeTokenImage } from '../../atoms/LeTokenImage';
-import { LeTokenTitle } from '../../atoms/LeTokenTitle';
-import { TokenListContainer } from '../../atoms/TokenListContainer';
-import { SelectTokenImage } from '../../atoms/SelectTokenImage';
-import { FooterSwapModuleNew } from '../../atoms/FooterSwapModuleNew';
+import { ContainerSwapModuleNew, ContainerCenter, HeaderSwapNewModule, IconContainer, Underline, SearchAndFavorites, SearchInput, SearchIcon, PopularContainer, FavoritesTokens, LeToken, LeTokenImage, LeTokenTitle, TokenListContainer, Spacer, SpacerWithToken, TokenShort, SelectTokenImage, FooterSwapModuleNew, Search } from '../../atoms';
+
 
 
 const FloatMenu = ({ tokens, selectToken, onClick, lefilter = false, lesymbol = "" }) => {
