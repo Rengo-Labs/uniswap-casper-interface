@@ -7,7 +7,10 @@ import {
     CloseButtonAtom,
     ConfirmSwapButton,
     ExchangeRateBox,
+    FlechaIcon,
+    Graphics,
     HeaderModalAtom,
+    LoadersSwap,
     NewSwapButton,
     SearchInputAtom,
     SearchSectionAtom,
@@ -16,12 +19,9 @@ import {
     SwapContainerAtom,
     SwapHeaderAtom,
     SwapTokenBalance,
-    SwapTokenSelect
+    SwapTokenSelect,
+    SwitchSwap
 } from '../../atoms'
-import FlechaIcon from '../../atoms/FlechaIcon/indext'
-import Graphics from '../../atoms/Graphics'
-import LoadersSwap from '../../atoms/LoadersSwap'
-import SwitchSwap from '../../atoms/SwitchSwap'
 import { SwapConfirmAtom, SwapDetail, SwapModal} from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
