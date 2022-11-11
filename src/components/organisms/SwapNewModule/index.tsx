@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js'
+
 import React, { useContext, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
@@ -40,7 +42,6 @@ const SwapNewModule = () => {
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
     const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
     const [switchMovement, switchMovementSetter] = useState(false)
-    const [allowanceA, setAllowanceA] = useState(0)
     const {
         onConnectWallet,
         configState,
@@ -109,8 +110,6 @@ const SwapNewModule = () => {
         }
 
         const [getSwapDetailResponse, getAllowanceAgainstOwnerAndSpenderResponse] = await Promise.all(ps)
-
-        setAllowanceA(getAllowanceAgainstOwnerAndSpenderResponse)
 
         const {
             tokensToTransfer,
@@ -214,7 +213,11 @@ const SwapNewModule = () => {
         }, {})
         return filtered
     }
-    const freeAllowance = allowanceA / Math.pow(10, 9) - parseFloat(amountSwapTokenA)
+
+    console.log('firstTokenSelected', firstTokenSelected)
+
+    const freeAllowance = new BigNumber(firstTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenA)).toNumber()
+
     const isApproved = firstTokenSelected.symbol == 'CSPR' || (
         firstTokenSelected.symbol != 'CSPR' &&
         freeAllowance >= 0
@@ -248,8 +251,8 @@ const SwapNewModule = () => {
                             <NewBalanceSpace>Balance: {firstTokenSelected.amount || "--"}</NewBalanceSpace>
                             <ActionContainerStyled>
                                 <ButtonHalfMaxContainer>
-                                    <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
-                                    <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
+                                    <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, changeTokenA) }}>Half</ButtonHalfMax>
+                                    <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, changeTokenA) }}>Max</ButtonHalfMax>
                                 </ButtonHalfMaxContainer>
                                 <BalanceInputContainerStyled>
                                     <BalanceInputItem1Styled>
@@ -301,8 +304,8 @@ const SwapNewModule = () => {
                             <NewBalanceSpace>Balance: {secondTokenSelected.amount || "--"}</NewBalanceSpace>
                             <ActionContainerStyled>
                                 <ButtonHalfMaxContainer>
-                                    <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
-                                    <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
+                                    <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, changeTokenB) }}>Half</ButtonHalfMax>
+                                    <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, changeTokenB) }}>Max</ButtonHalfMax>
                                 </ButtonHalfMaxContainer>
                                 <BalanceInputContainerStyled>
                                     <BalanceInputItem1Styled>

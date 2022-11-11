@@ -49,7 +49,7 @@ export const calculateLiquidityDetails = async (
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
 
-      const inputExchangeRate = inputLiquidity.div(outputLiquidity)
+      const inputExchangeRate = outputLiquidity.div(inputLiquidity)
       const outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
 
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
@@ -57,7 +57,7 @@ export const calculateLiquidityDetails = async (
       console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
       return {
-          tokensToTransfer: inputValueClean.div(inputExchangeRate).div(Math.pow(10,9)).toNumber().toFixed(9),
+          tokensToTransfer: inputValueClean.times(inputExchangeRate).div(Math.pow(10,9)).toNumber().toFixed(9),
           exchangeRateA: exchangeRateA.toNumber(),
           exchangeRateB : exchangeRateB.toNumber()
       }

@@ -1,12 +1,27 @@
-export const initialConfigState = {
+import { Wallet, WalletName } from '../../commons/wallet'
+
+export type ConfigState = {
+  isConnected?: boolean,
+  wallet?: Wallet,
+  walletAddress?: string,
+  mainPurse?: string,
+  walletSelected?: WalletName,
+  languagesSelected?: string,
+  visualModeSelected?: string,
+  slippageToleranceSelected?: number,
+  gasPriceSelected?: number
+}
+
+export const initialConfigState: ConfigState = {
   isConnected: false,
+  wallet: undefined,
   walletAddress: "",
-  walletSelected: "casper",
+  mainPurse: "",
+  walletSelected: WalletName.CASPER_SIGNER,
   languagesSelected: "en",
   visualModeSelected: "light",
   slippageToleranceSelected: 0.5,
   gasPriceSelected: 10_000_000_000,
-  mainPurse: "",
 };
 
 export enum ConfigActions {
@@ -19,27 +34,36 @@ export enum ConfigActions {
   SELECT_GAS_PRICE = "SELECT_GAS_PRICE",
   SELECT_MAIN_PURSE = "SELECT_MAIN_PURSE",
 }
-export function ConfigReducer(state, action) {
+
+export type ConfigAction = {
+  type: ConfigActions,
+  payload: ConfigState,
+}
+
+
+export function ConfigReducer(state: ConfigState, action: ConfigAction) {
   switch (action.type) {
     case ConfigActions.CONNECT_WALLET:
       return {
         ...state,
-        isConnected: true,
-        walletAddress: action.payload.walletAddress,
+        isConnected: action.payload.wallet.isConnected,
+        walletAddress: action.payload.wallet.publicKeyHex,
+        //walletSelected: action.payload.wallet.name,
+        wallet: action.payload.wallet,
       };
     case ConfigActions.DISCONNECT_WALLET:
       return {
         ...state,
         isConnected: false,
         walletAddress: "",
+        //walletSelected: undefined,
+        wallet: undefined,
       };
-    case ConfigActions.SELECT_WALLET:
+    /*case ConfigActions.SELECT_WALLET:
       return {
         ...state,
-        isConnected: false,
-        walletAddress: "",
         walletSelected: action.payload.walletSelected,
-      };
+      };*/
     case ConfigActions.SELECT_LANGUAGE:
       return {
         ...state,

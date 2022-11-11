@@ -1,4 +1,7 @@
 import axios from 'axios'
+import {
+  CLPublicKey,
+} from 'casper-js-sdk'
 
 import { 
   AllowanceAgainstOwnerAndSpenderResponse,
@@ -6,6 +9,8 @@ import {
   TokenList,
   PathResponse,
   PathReservesResponse,
+  LiquidityAgainstUserAndPairResponse,
+  BalanceAgainstUserResponse,
 } from './types'
 
 import { ROUTER_PACKAGE_HASH } from '../../constant';
@@ -116,6 +121,42 @@ export class APIClient {
     };
 
     const response = await axios.post(`${this._baseURL}/allowanceagainstownerandspenderpaircontract`, allowanceParam)
+
+    return response.data
+  }
+  
+  /**
+   * Get the user's liquidity for a specific pair
+   * 
+   * @param accountHashHex user account hash
+   * @param pairPackageHash pair package hash
+   * @returns the liquidity for a pair contract
+   */
+  async getLiquidityAgainstUserAndPair(accountHashHex: string, pairPackageHash: string): Promise<LiquidityAgainstUserAndPairResponse>{
+    const liquidityParam = {
+      to: Buffer.from(CLPublicKey.fromHex(accountHashHex).toAccountHash()).toString('hex'),
+      pairid: pairPackageHash.slice(5),
+    };
+
+    const response = await axios.post(`${this._baseURL}/liquidityagainstuserandpair`, liquidityParam)
+
+    return response.data
+  }
+
+  /**
+   * Get the user's balance for a contract hash
+   * 
+   * @param accountHashHex user account hash
+   * @param contractHash pair package hash
+   * @returns the balance for a contract
+   */
+   async getBalanceAgainstUser(accountHashHex: string, contractHash: string): Promise<BalanceAgainstUserResponse>{
+    const balanceParam = {
+      user: Buffer.from(CLPublicKey.fromHex(accountHashHex).toAccountHash()).toString('hex'),
+      contractHash: contractHash.slice(5),
+    };
+
+    const response = await axios.post(`${this._baseURL}/balanceagainstuser`, balanceParam)
 
     return response.data
   }

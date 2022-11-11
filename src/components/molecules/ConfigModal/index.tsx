@@ -66,7 +66,7 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
     const [activeWallet, activeWalletSetter] = useState(walletSelector.activeWallet)
 
     function switchWallet() {
-        onChangeWallet()
+        //onChangeWallet()
     }
 
     async function onConnect() {

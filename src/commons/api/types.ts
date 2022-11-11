@@ -19,6 +19,7 @@ export interface TokenList {
  */
 export interface Token {
   amount?: string
+  allowance?: string
   symbolPair?: string
   chainId: number
   contractHash: string
@@ -72,6 +73,25 @@ export interface AllowanceAgainstOwnerAndSpenderResponse {
  */
 export interface AllowanceAgainstOwnerAndSpenderPairContractResponse {
   allowance: string,
+  message: string,
+  success: boolean,
+}
+
+/**
+ * Liquidity Against User And Pair response
+ */
+ export interface LiquidityAgainstUserAndPairResponse {
+  liquidity: string,
+  message: string,
+  success: boolean,
+}
+
+
+/**
+ * Balance Against User response
+ */
+ export interface BalanceAgainstUserResponse {
+  balance: string,
   message: string,
   success: boolean,
 }
