@@ -77,13 +77,15 @@ export const calculateSwapDetails = async (
       let inputExchangeRate = tokensToTransfer.div(inputValue)
       let outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
 
-      if (inputExchangeRate.isNaN() || outputExchangeRate.isNaN()) {
+      // ignore the post-transfer rate
+      //if (inputExchangeRate.isNaN() || outputExchangeRate.isNaN()) {
         inputExchangeRate = outputLiquidity.div(inputLiquidity)
         outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
-      }
+      //}
       
       console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
 
+      
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
 
@@ -93,7 +95,8 @@ export const calculateSwapDetails = async (
       console.log("priceImpact", priceImpact)
 
       return {
-          tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
+          tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** 9).toNumber().toFixed(9),
+          //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
           priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
           exchangeRateA: exchangeRateA.toNumber(),
           exchangeRateB : exchangeRateB.toNumber()

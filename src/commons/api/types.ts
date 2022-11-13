@@ -90,8 +90,53 @@ export interface AllowanceAgainstOwnerAndSpenderPairContractResponse {
 /**
  * Balance Against User response
  */
- export interface BalanceAgainstUserResponse {
+export interface BalanceAgainstUserResponse {
   balance: string,
+  message: string,
+  success: boolean,
+}
+
+/**
+ * Pair Token
+ */
+export interface PairToken {
+  derivedETH: string,
+  id: string,
+  name: string,
+  symbol: string,
+  totalLiquidity: string,
+}
+
+/**
+ * Pair
+ */
+export interface Pair {
+  createdAtBlockNumber: string,
+  createdAtTimestamp: number,
+  id: string,
+  liquidityProviderCount: string,
+  reserve0: string,
+  reserve1: string,
+  reserveETH: string,
+  reserveUSD: string,
+  token0: PairToken,
+  token1: PairToken,
+  token0Price: string,
+  token1Price: string,
+  totalSupply: string,
+  trackedReserveETH: string,
+  txCount: string,
+  untrackedVolumeUSD: string,
+  volumeToken0: string,
+  volumeToken1: string,
+  volumeUSD: string,
+}
+
+/**
+ * Pair List response
+ */
+export interface PairListResponse {
+  pairList: Pair[],
   message: string,
   success: boolean,
 }

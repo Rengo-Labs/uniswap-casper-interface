@@ -10,7 +10,7 @@ import { PopupsModule } from '../../components/organisms';
 import { BASE_URL, DEADLINE, NODE_ADDRESS } from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
-import { initialPairsState, PairsReducer } from '../../reducers/PairsReducer';
+import { initialPairsState, PairsReducer, PairActions, PairData } from '../../reducers/PairsReducer';
 import { initialTokenState, TokenReducer, TokenActions, TokenAction } from '../../reducers/TokenReducers';
 
 import {
@@ -132,13 +132,13 @@ async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey)
     }
 }
 
-async function allowanceAgainstOwnerAndSpenderPaircontract(contractHash, activePublicKey) {
-    if (!contractHash || !activePublicKey) {
+async function allowanceAgainstOwnerAndSpenderPairContract(activePublicKey: string, pairId: string) {
+    if (!pairId || !activePublicKey) {
         return 0
     }
 
     try {
-        const res = await apiClient.getAllowanceAgainstOwnerAndSpenderPairContract(contractHash, CLPublicKey.fromHex(activePublicKey).toAccountHashStr())
+        const res = await apiClient.getAllowanceAgainstOwnerAndSpenderPairContract(CLPublicKey.fromHex(activePublicKey).toAccountHashStr(), `hash-${pairId}`)
         console.log(res)
         return res.allowance;            
     } catch(error) {
@@ -270,60 +270,66 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         wallet: Wallet,
         tokens: Record<string, Token>,
         tokenDispatch: React.Dispatch<TokenAction>,
-    ) {
-        console.log('tokenState', tokenState)
-        const ps = Object.keys(tokens).map((x) => {
-            const token = tokens[x]
-            
-            console.log('token', x, token)
-            if (tokens[x].contractHash) {
-                return Promise.all([
-                    apiClient.getAllowanceAgainstOwnerAndSpender(token.contractHash, wallet.accountHashString)
-                        .then((response) => {
-                            console.log('allowance', token, response.allowance)
-                            tokenDispatch({
-                                type: TokenActions.LOAD_ALLOWANCE,
-                                payload: { 
-                                    name: x, 
-                                    allowance: convertBigNumberToUIString(new BigNumber(response.allowance)) 
-                                },
+    ): Promise<void> {
+        if (!wallet.isConnected) {
+            return
+        }
+
+        try {
+            console.log('tokenState', tokenState)
+            const ps = Object.keys(tokens).map((x) => {
+                const token = tokens[x]
+                
+                console.log('token', x, token)
+                if (tokens[x].contractHash) {
+                    return Promise.all([
+                        apiClient.getAllowanceAgainstOwnerAndSpender(token.contractHash, wallet.accountHashString)
+                            .then((response) => {
+                                console.log('allowance', token, response.allowance)
+                                tokenDispatch({
+                                    type: TokenActions.LOAD_ALLOWANCE,
+                                    payload: { 
+                                        name: x, 
+                                        allowance: convertBigNumberToUIString(new BigNumber(response.allowance)) 
+                                    },
+                                })
+                            }),
+                        apiClient.getBalanceAgainstUser(wallet.publicKeyHex, token.contractHash)
+                            .then((response) => {
+                                console.log('balance', response.balance)
+                                tokenDispatch({
+                                    type: TokenActions.LOAD_BALANCE,
+                                    payload: { 
+                                        name: x, 
+                                        amount: convertBigNumberToUIString(new BigNumber(response.balance)) 
+                                    },
+                                })
                             })
-                        }),
-                    apiClient.getBalanceAgainstUser(wallet.publicKeyHex, token.contractHash)
-                        .then((response) => {
-                            console.log('balance', response.balance)
+                    ])
+                } else {
+                    return casperClient.getBalance(wallet)
+                        .then((balance) => {
+                            console.log('balance', convertBigNumberToUIString(balance))
                             tokenDispatch({
                                 type: TokenActions.LOAD_BALANCE,
                                 payload: { 
-                                    name: x, 
-                                    amount: convertBigNumberToUIString(new BigNumber(response.balance)) 
+                                    name: 'CSPR', 
+                                    amount: convertBigNumberToUIString(balance) 
                                 },
-                            })
+                            });
                         })
-                ]).catch((error) => {
-                    console.log(error);
-                    console.log(error.response);
-                })
-            } else {
-                return casperClient.getBalance(wallet)
-                    .then((balance) => {
-                        console.log('balance', convertBigNumberToUIString(balance))
-                        tokenDispatch({
-                            type: TokenActions.LOAD_BALANCE,
-                            payload: { 
-                                name: 'CSPR', 
-                                amount: convertBigNumberToUIString(balance) 
-                            },
-                        });
-                    })
-            }
-        })
-        
-        return await Promise.all(ps)
+                }
+            })
+            
+            await Promise.all(ps)
+        } catch (err) {
+            console.log(err);
+            console.log(err.response);
+        }
     }
 
     async function refresh(wallet: Wallet) {
-        await fillPairs(wallet.publicKeyHex)
+        await fillPairs(wallet)
         await updateBalances(
             wallet,
             tokens,
@@ -373,6 +379,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
     useEffect(() => {
         const fn = async () => {
+            loadPairs()
             const data = await apiClient.getTokenList()
             const tokens = tokensToObject(data.tokens)
             console.log('TOKENS', tokens)
@@ -464,46 +471,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         setGralData(data)
     }
 
-    const getPoolList = async () => {
-        const result = await axios.get(`${BASE_URL}/getpairlist`)
-
-        if (result.data.success) {
-
-            const pairList = result.data.pairList
-            const newList = pairList.map(d => {
-                const token0Decimals = tokenState.tokens[d.token0.symbol].decimals
-                const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
-                return {
-                    tokeIcon1: wethIcon,
-                    tokeIcon2: casprIcon,
-                    tokenName: d.token0.symbol + "-" + d.token1.symbol,
-                    tokenLiquidity: normalizeAmount(d.reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(d.reserve1, token1Decimals) * parseFloat(d.token1Price),
-                    volume7d: normalizeAmount(d.volumeUSD, 9).toFixed(2),
-                    fees24h: 0,
-                    oneYFees: 0,
-                    volume: normalizeAmount(d.volumeUSD, 9),
-                    reserve0: parseFloat(d.reserve0) > 0 ? normalizeAmount(d.reserve0, token0Decimals) : 0.00001,
-                    reserve1: parseFloat(d.reserve1) > 0 ? normalizeAmount(d.reserve1, token0Decimals) : 0.00001,
-                    totalSupply: parseFloat(d.totalSupply) > 0 ? normalizeAmount(d.totalSupply, token0Decimals) : 0.00001,
-                    token0Price: parseFloat(d.token0Price),
-                    token1Price: parseFloat(d.token1Price),
-                    pair: {
-                        token0: d.token0.symbol,
-                        token1: d.token1.symbol,
-                        token0Liquidity: 0,
-                        token1Liquidity: 0,
-                        totalLiquidityPool: 0,
-                        totalLiquidityUSD: 0,
-                        volumePercentage: 0,
-                        totalPool: 0
-                    }
-                }
-            })
-
-            return newList
-        }
-
-        return []
+    const getPoolList = (): PairData[] => {
+        return Object.entries(pairState).map(([k, v])=>{
+            return v
+        })
     }
 
     const getPoolDetailByUser = async (hash: string, wa: string | number | boolean | void = null) => {
@@ -610,17 +581,64 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         return row
     }
 
-    async function fillPairs(walletAddress: string) {
+    async function loadPairs(): Promise<void> {
+        const pairListResponse = await apiClient.getPairList()
+        pairListResponse.pairList.map((pl) => {
+            const token0Decimals = tokenState.tokens[pl.token0.symbol].decimals
+            const token1Decimals = tokenState.tokens[pl.token1.symbol].decimals
+            const reserve0 = convertBigNumberToUIString(new BigNumber(pl.reserve0), token0Decimals)
+            const reserve1 = convertBigNumberToUIString(new BigNumber(pl.reserve1), token1Decimals)
+
+            pairDispatch({ 
+                type: PairActions.LOAD_PAIR, 
+                payload: { 
+                    name: `${pl.token0.symbol}-${pl.token1.symbol}`,
+                    token0Symbol: pl.token0.symbol,
+                    token1Symbol: pl.token1.symbol,
+                    totalLiquidity: new BigNumber(reserve0).times(pl.token0Price).plus(new BigNumber(reserve1).times(pl.token1Price)).toString(),
+                    volume7d: new BigNumber(convertBigNumberToUIString(new BigNumber(pl.volumeUSD), 9)).toFixed(2),
+                    fees24h: '0',
+                    oneYFees: '0',
+                    volume: convertBigNumberToUIString(new BigNumber(pl.volumeUSD), 9),
+                    reserve0: reserve0,
+                    reserve1: reserve1,
+                    totalSupply: convertBigNumberToUIString(new BigNumber(pl.totalSupply)),
+                    token0Price: pl.token0Price,
+                    token1Price: pl.token1Price,
+                }
+            })
+                /*pair: {
+                    token0: d.token0.symbol,
+                    token1: d.token1.symbol,
+                    token0Liquidity: 0,
+                    token1Liquidity: 0,
+                    totalLiquidityPool: 0,
+                    totalLiquidityUSD: 0,
+                    volumePercentage: 0,
+                    totalPool: 0
+                }*/
+              
+        })
+    }
+
+    async function fillPairs(wallet: Wallet): Promise<void> {
+        console.log('isConnected', wallet.isConnected)
+        if (!wallet.isConnected) { 
+            return
+        }
+        
         try {
-            // const respuesta = await getPairAgainstUser(walletAddress)
-            // console.log("getPairAgainstUser", respuesta)
-            // const otraresp = await getPathReserves(respuesta)
-            // console.log("getPathReserves", otraresp)
+            await loadPairs()
+            const ps = [] 
             const pairList = Object.keys(pairState).map(x => pairState[x])
             for (const pair of pairList) {
-                const liquidity: any = await liquidityAgainstUserAndPair(walletAddress, pair.id)
-                pairDispatch({ type: "ADD_BALANCE_TO_PAIR", payload: { name: pair.name, balance: convertBigNumberToUIString(new BigNumber(liquidity)) } })
+                ps.push(liquidityAgainstUserAndPair(wallet.publicKeyHex, pair.id)
+                    .then((liquidity) => pairDispatch({ type: PairActions.ADD_BALANCE_TO_PAIR, payload: { name: pair.name, balance: convertBigNumberToUIString(new BigNumber(liquidity)) } })))
+                ps.push(allowanceAgainstOwnerAndSpenderPairContract(wallet.publicKeyHex, pair.id)
+                    .then((liquidity) => pairDispatch({ type: PairActions.ADD_ALLOWANCE_TO_PAIR, payload: { name: pair.name, allowance: convertBigNumberToUIString(new BigNumber(liquidity)) } })))
             }
+
+            await Promise.all(ps)
         } catch (error) {
             console.log("fillPairs", error.message)
         }
@@ -663,8 +681,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 DEADLINE,
                 convertUIStringToBigNumber(amountA),
                 convertUIStringToBigNumber(amountB),
-                tokenState.tokens[tokenState.firstTokenSelected].symbolPair,
-                tokenState.tokens[tokenState.secondTokenSelected].symbolPair,
+                tokenState.tokens[tokenState.firstTokenSelected],
+                tokenState.tokens[tokenState.secondTokenSelected],
                 slippage / 100,
                 mainPurse,
             );
@@ -808,8 +826,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    async function onAllowanceAgaintPair(pair) {
-        await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
+    async function onAllowanceAgaintPair(pairId: string) {
+        return await allowanceAgainstOwnerAndSpenderPairContract(walletAddress, pairId)
     }
 
     function getAccountHash(wa: string | number | boolean | void = null): string {

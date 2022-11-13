@@ -5,35 +5,28 @@ import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
-    ButtonConnection,
     CloseButtonAtom,
-    ConfirmSwapButton,
     ExchangeRateBox,
     HeaderModalAtom,
     NewSwapButton,
-    SearchInputAtom,
-    SearchSectionAtom,
-    SwapButton,
-    SwapContainer,
     SwapContainerAtom,
     SwapHeaderAtom,
-    SwapTokenBalance,
-    SwapTokenSelect
 } from '../../atoms'
 import FlechaIcon from '../../atoms/FlechaIcon/indext'
 import Graphics from '../../atoms/Graphics'
 import LoadersSwap from '../../atoms/LoadersSwap'
-import { SwapContainerStyled } from '../../atoms/SwapContainerAtom'
 import SwitchSwap from '../../atoms/SwitchSwap'
 import { SwapConfirmAtom, SwapDetail, SwapModal, SwapToken, SwapTokens } from '../../molecules'
 import FloatMenu from '../FloatMenu'
+import { 
+    convertAllFormatsToUIFixedString,
+    Token,
+} from '../../../commons'
 
 const SwapNewModule = () => {
-    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
-    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
     const [activeModalSwap, setActiveModalSwap] = React.useState(false)
-    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
-    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0)
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<number>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0.5)
     const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
     const [priceImpact, priceImpactSetter] = useState<any>(0)
@@ -41,8 +34,8 @@ const SwapNewModule = () => {
     const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
     const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
-    const [switchMovement, switchMovementSetter] = useState(false)
     const [lastChanged, setLastChanged] = useState('')
+
     const {
         onConnectWallet,
         configState,
@@ -55,14 +48,9 @@ const SwapNewModule = () => {
         secondTokenSelected,
         isConnected,
         onConfirmSwapConfig,
-        slippageToleranceSelected,
-        onCalculateReserves,
         getSwapDetails,
         getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
-        onDisconnectWallet,
-        ResetTokens,
-        onListenerFirstInput
     } = useContext(ConfigProviderContext)
     const {
         walletAddress
@@ -71,30 +59,20 @@ const SwapNewModule = () => {
     async function onConnect() {
         onConnectWallet()
     }
+
     function onSwitchTokensHandler() {
         onSwitchTokens()
         
         if(lastChanged == 'A') {
-            changeTokenB(amountSwapTokenA)
+            changeTokenB(amountSwapTokenA.toString())
             setLastChanged('B')
         } else if(lastChanged == 'B') {
-            changeTokenA(amountSwapTokenB)
+            changeTokenA(amountSwapTokenB.toString())
             setLastChanged('A')
         }
     }
 
-    async function onDisconnect() {
-        onDisconnectWallet()
-    }
-    const handleModalPrimary = () => {
-        setActiveModalPrimary(!activeModalPrimary)
-        ResetAll()
-    }
-    const handleModalSecondary = () => {
-        setActiveModalSecondary(!activeModalSecondary)
-        ResetAll()
-    }
-    function ResetAll() {
+    function resetAll() {
         amountSwapTokenASetter(0)
         amountSwapTokenBSetter(0)
     }
@@ -102,21 +80,14 @@ const SwapNewModule = () => {
     async function onConfirmSwap() {
         setActiveModalSwap(false);
         const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
-        amountSwapTokenASetter(0)
-        onConnectWallet()
+        resetAll()
     }
 
     async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
         const getSwapDetailP = getSwapDetails(tokenA, tokenB, value, token, slippSwapToken, feeToPay)
         const ps = [getSwapDetailP]
 
-        if (tokenA.contractHash) {
-            ps.push(getAllowanceAgainstOwnerAndSpender(tokenA.contractHash, walletAddress))
-        } else {
-            ps.push(Promise.resolve(0))
-        }
-
-        const [getSwapDetailResponse, getAllowanceAgainstOwnerAndSpenderResponse] = await Promise.all(ps)
+        const [getSwapDetailResponse] = await Promise.all(ps)
 
         const {
             tokensToTransfer,
@@ -131,7 +102,6 @@ const SwapNewModule = () => {
         exchangeRateBSetter(exchangeRateB)
 
         defaultPriceImpactLabelSetter(priceImpact > 1 ? 'Price Impact Warning' : 'Low Price Impact')
-        switchMovementSetter(value > 0)
         return tokensToTransfer
     }
 
@@ -154,10 +124,11 @@ const SwapNewModule = () => {
         amountSwapTokenASetter(filteredValue)
 
         const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
-        amountSwapTokenBSetter(minTokenToReceive)
+        amountSwapTokenBSetter(parseFloat(minTokenToReceive))
     }
 
-    async function changeTokenB(value: string) {let filteredValue = parseFloat(value)
+    async function changeTokenB(value: string) {
+        let filteredValue = parseFloat(value)
         if (isNaN(filteredValue)) {
             filteredValue = 0
         } else if (filteredValue < 0) {
@@ -169,11 +140,11 @@ const SwapNewModule = () => {
         amountSwapTokenBSetter(filteredValue)
 
         const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, secondTokenSelected)
-        amountSwapTokenASetter(minTokenToReceive)
+        amountSwapTokenASetter(parseFloat(minTokenToReceive))
     }
 
     const [searchModalA, searchModalASetter] = useState(false)
-    async function SelectAndCloseTokenA(token) {
+    async function selectAndCloseTokenA(token: Token): Promise<void> {
         onSelectFirstToken(token)
         searchModalASetter(false)
 
@@ -181,8 +152,9 @@ const SwapNewModule = () => {
         amountSwapTokenBSetter(minTokenToReceive)
 
     }
+
     const [searchModalB, searchModalBSetter] = useState(false)
-    async function SelectAndCloseTokenB(token) {
+    async function selectAndCloseTokenB(token: Token): Promise<void> {
         onSelectSecondToken(token)
         searchModalBSetter(false)
         const minTokenToReceive = await updateSwapDetail(firstTokenSelected, token, amountSwapTokenB, token)
@@ -195,37 +167,6 @@ const SwapNewModule = () => {
     function makeMax(amount, Setter) {
         Setter(amount)
     }
-
-    function returnFilter(tokens, firstTokenSelected) {
-        const tokenHead = Object.keys(tokens)
-        let tokenFiltered = {}
-        const filtered = tokenHead.reduce((acc, keya) => {
-            const filter = new RegExp(firstTokenSelected.symbol)
-            if (filter.test(keya)) { return }
-            tokenFiltered = {
-                ...acc,
-                [keya]: tokens[keya]
-            }
-            return tokenFiltered
-        }, {})
-        return tokenFiltered
-    }
-    function returnFilterB(tokens, firstTokenSelected) {
-        const tokenHead = Object.keys(tokens)
-        let tokenFiltered = {}
-        const filtered = tokenHead.reduce((acc, keya) => {
-            const filter = new RegExp(firstTokenSelected.symbol)
-            if (filter.test(keya)) { return }
-            tokenFiltered = {
-                ...acc,
-                [keya]: tokens[keya]
-            }
-            return tokenFiltered
-        }, {})
-        return filtered
-    }
-
-    console.log('firstTokenSelected', firstTokenSelected)
 
     const freeAllowance = new BigNumber(firstTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenA)).toNumber()
 
@@ -247,10 +188,9 @@ const SwapNewModule = () => {
                                 <ArrowContainerStyle>
                                     <FlechaIcon onClick={() => { searchModalASetter(true) }} />
                                     {searchModalA && <FloatMenu
-                                        lefilter={true}
-                                        lesymbol={secondTokenSelected.symbol}
+                                        excludedSymbols={[secondTokenSelected.symbol]}
                                         tokens={tokens}
-                                        selectToken={SelectAndCloseTokenA}
+                                        onSelectToken={selectAndCloseTokenA}
                                         onClick={() => { searchModalASetter(false) }}
                                     />}
                                 </ArrowContainerStyle>
@@ -259,7 +199,7 @@ const SwapNewModule = () => {
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
                         <NewTokenDetailActionsStyled>
-                            <NewBalanceSpace>Balance: {firstTokenSelected.amount || "--"}</NewBalanceSpace>
+                            <NewBalanceSpace>Balance: {firstTokenSelected.amount ? convertAllFormatsToUIFixedString(firstTokenSelected.amount) : '--'}</NewBalanceSpace>
                             <ActionContainerStyled>
                                 <ButtonHalfMaxContainer>
                                     <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, changeTokenA) }}>Half</ButtonHalfMax>
@@ -302,8 +242,8 @@ const SwapNewModule = () => {
                                 <ArrowContainerStyle>
                                     <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                                     {searchModalB && <FloatMenu
-                                        tokens={returnFilter(tokens, firstTokenSelected)}
-                                        selectToken={SelectAndCloseTokenB}
+                                        tokens={tokens}
+                                        onSelectToken={selectAndCloseTokenB}
                                         onClick={() => { searchModalBSetter(false) }}
                                     />}
                                 </ArrowContainerStyle>
@@ -312,7 +252,7 @@ const SwapNewModule = () => {
                     </TokenSelectStyled>
                     <TokenSelectionStyled>
                         <NewTokenDetailActionsStyled>
-                            <NewBalanceSpace>Balance: {secondTokenSelected.amount || "--"}</NewBalanceSpace>
+                            <NewBalanceSpace>Balance: {secondTokenSelected.amount ? convertAllFormatsToUIFixedString(secondTokenSelected.amount) : '--'}</NewBalanceSpace>
                             <ActionContainerStyled>
                                 <ButtonHalfMaxContainer>
                                     <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, changeTokenB) }}>Half</ButtonHalfMax>
@@ -347,13 +287,13 @@ const SwapNewModule = () => {
                 }
                 <ButtonSpaceStyled>
                     {
-                        !isConnected && <NewSwapButton style={{width: "391px", height: "57px"}} content="Connect to Wallet" handler={async () => { onConnect() }} />
+                        !isConnected && <NewSwapButton style={{height: "57px", width: "100%"}} content="Connect to Wallet" handler={async () => { onConnect() }} />
                     }
                     {
-                        !isApproved && isConnected && <NewSwapButton style={{width: "391px", height: "57px"}} content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowance, firstTokenSelected.contractHash) }} />
+                        !isApproved && isConnected && <NewSwapButton style={{height: "57px", width: "100%"}} content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowance, firstTokenSelected.contractHash) }} />
                     }
                     {
-                        isApproved && isConnected && <NewSwapButton style={{width: "391px", height: "57px"}} content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { await onConfirmSwap() }} />
+                        isApproved && isConnected && <NewSwapButton style={{height: "57px", width: "100%"}} content="Swap" disabled={amountSwapTokenA <= 0 || amountSwapTokenB <= 0} handler={async () => { await onConfirmSwap() }} />
                     }
                 </ButtonSpaceStyled>
                 {

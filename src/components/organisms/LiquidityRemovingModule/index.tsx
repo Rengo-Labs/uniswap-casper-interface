@@ -23,9 +23,21 @@ import {Button} from "../../atoms"
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
-import Decimal from 'decimal.js'
 
-export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, firstLiquidity, firstHash, secondSymbol, secondLiquidity, secondHash, liquidityId, liquidity, liquidityUSD, slippage = 0.003, children}: any) => {
+export const LiquidityRemovingModule = ({
+    isConnected, 
+    openedPopup, 
+    firstSymbol, 
+    firstLiquidity, 
+    firstHash, 
+    secondSymbol, 
+    secondLiquidity, 
+    secondHash, 
+    liquidityId, 
+    liquidity, 
+    liquidityUSD, 
+    children
+}: any) => {
 
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState("0")
@@ -33,17 +45,12 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
     const [allowanceLiq, setAllowanceLiq] = useState(0)
 
     const {
-        configState,
         onRemoveLiquidity,
         onIncreaseAllow,
-        getAllowanceAgainstOwnerAndSpender,
+        onAllowanceAgaintPair,
         getContractHashAgainstPackageHash,
         slippageToleranceSelected,
     } = useContext(ConfigProviderContext)
-
-    const {
-        walletAddress
-    } = configState
 
     const closeHandler = () => {
         setIsOpened(!isOpened)
@@ -63,7 +70,7 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
     }
 
     const removeLiquidity = async () => {
-        await getAllowanceAgainstOwnerAndSpender(contractHash, walletAddress)
+        await onAllowanceAgaintPair(liquidityId)
         await onRemoveLiquidity(value, 
             {
                 symbol: firstSymbol.replace('WCSPR', 'CSPR'),

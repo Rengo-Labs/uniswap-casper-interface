@@ -40,7 +40,6 @@ export type ConfigAction = {
   payload: ConfigState,
 }
 
-
 export function ConfigReducer(state: ConfigState, action: ConfigAction) {
   switch (action.type) {
     case ConfigActions.CONNECT_WALLET:

@@ -11,6 +11,7 @@ import {
   PathReservesResponse,
   LiquidityAgainstUserAndPairResponse,
   BalanceAgainstUserResponse,
+  PairListResponse,
 } from './types'
 
 import { ROUTER_PACKAGE_HASH } from '../../constant';
@@ -30,6 +31,17 @@ export class APIClient {
    */
   async getTokenList(): Promise<TokenList> {
     const response = await axios.get(`${this._baseURL}/tokensList`)
+
+    return response.data
+  }
+
+  /**
+   * Get the list of all tokens supported
+   * 
+   * @returns a list of tokens
+   */
+   async getPairList(): Promise<PairListResponse> {
+    const response = await axios.get(`${this._baseURL}/getpairlist`)
 
     return response.data
   }
@@ -107,16 +119,16 @@ export class APIClient {
   /**
    * Get the allowance for the router contract for a CEP-18 Pair allowed by a user
    * 
-   * @param contractHash CEP-18 pair contract hash
-   * @param ownerPublicKeyHex owner's account hash string  
+   * @param accountHashHex user account hash
+   * @param pairPackageHash pair package hash
    * 
    * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
    */
-   async getAllowanceAgainstOwnerAndSpenderPairContract(contractHash: string, ownerAccountHashString: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
-
+   async getAllowanceAgainstOwnerAndSpenderPairContract(accountHashHex: string, pairPackageHash: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
+    console.log('a', accountHashHex, 'p', pairPackageHash)
     const allowanceParam = {
-      contractHash: contractHash.slice(5),
-      owner: ownerAccountHashString.slice(13),
+      contractHash: pairPackageHash.slice(5),
+      owner: accountHashHex.slice(13),
       spender: ROUTER_PACKAGE_HASH,
     };
 
@@ -160,4 +172,6 @@ export class APIClient {
 
     return response.data
   }
+
+  
 }

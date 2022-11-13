@@ -32,7 +32,7 @@ export const calculateLiquidityDetails = async (
   apiClient: APIClient, 
   tokenA: Token, 
   tokenB: Token, 
-  inputValue: BigNumber.Value, 
+  inputValueRaw: BigNumber.Value, 
   token: Token, 
   slippage = 0.005, 
   fee = 0.003
@@ -44,7 +44,7 @@ export const calculateLiquidityDetails = async (
 
       const liquidityA = new BigNumber(data.reserve0)
       const liquidityB = new BigNumber(data.reserve1)
-      const inputValueClean = new BigNumber(inputValue).times(Math.pow(10,9))
+      const inputValue = new BigNumber(inputValueRaw).times(Math.pow(10,9))
       
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -57,7 +57,7 @@ export const calculateLiquidityDetails = async (
       console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
       return {
-          tokensToTransfer: inputValueClean.times(inputExchangeRate).div(Math.pow(10,9)).toNumber().toFixed(9),
+          tokensToTransfer: inputValue.times(inputExchangeRate).div(Math.pow(10,9)).toNumber().toFixed(9),
           exchangeRateA: exchangeRateA.toNumber(),
           exchangeRateB : exchangeRateB.toNumber()
       }
