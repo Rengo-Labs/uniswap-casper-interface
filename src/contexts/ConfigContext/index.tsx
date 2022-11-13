@@ -41,6 +41,7 @@ import {
     signAndDeployRemoveLiquidity,
 } from '../../commons/deploys'
 import { ConfigState } from '../../reducers/ConfigReducers';
+import { Row } from 'react-table';
 
 type MaybeWallet = Wallet | undefined
 
@@ -68,15 +69,14 @@ export interface ConfigContext {
     
     // To Delete
     poolColumns: any[],
-    poolList: any[],
     setPoolList: (poolList: any[]) => void,
     getPoolList: () => PairData[],
     loadPoolDetailByUser: (hash: string, poolList: any[], wa: string | number | boolean | void) => Promise<any[]>,
-    getTVLandVolume: () => void,
+    getTVLandVolume: () => Promise<void>,
     gralData: Record<string, string>,
     isStaked: boolean,
     setStaked: (v: boolean) => void,
-    filter: (onlyStaked: boolean, row: any) => any,
+    filter: (onlyStaked: boolean, row: Row<PairData>) => any,
     getContractHashAgainstPackageHash
 }
 
@@ -154,22 +154,18 @@ async function getLiquidityDetails(tokenA: Token, tokenB: Token, inputValue: Big
 async function allowanceAgainstOwnerAndSpenderPairContract(accountHashStr: string, pairId: string) {
     try {
         const res = await apiClient.getAllowanceAgainstOwnerAndSpenderPairContract(accountHashStr, `hash-${pairId}`)
-        console.log(res)
-        return res.allowance;            
-    } catch(error) {
-        console.log(error);
-        console.log(error.response);
+        return res.allowance
+    } catch(err) {
+        log.error(`allowanceAgainstOwnerAndSpenderPairContract error: ${err}`)
     }
 }
 
 async function liquidityAgainstUserAndPair(accountHashStr: string, pairId: string) {
     try {
         const res = await apiClient.getLiquidityAgainstUserAndPair(accountHashStr, `hash-${pairId}`)
-        console.log(res)
-        return res.liquidity;            
-    } catch(error) {
-        console.log(error);
-        console.log(error.response);
+        return res.liquidity           
+    } catch(err) {
+        log.error(`liquidityAgainstUserAndPair error: ${err}`)
     }
 }
 
@@ -327,8 +323,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             
             await Promise.all(ps)
         } catch (err) {
-            console.log(err);
-            console.log(err.response);
+            log.error(`updateBalances error: ${err}`)
         }
     }
 
@@ -362,8 +357,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
             toast.dismiss(toastLoading)
             toast.success("your wallet is mounted and ready to ride!")
-        } catch (e) {
-            console.log('error', e)
+        } catch (err) {
+            log.error(`onConnectWallet error: ${err}`)
             toast.dismiss(toastLoading)
             if (!ignoreError) {
                 toast.error("Ooops we have an error")
@@ -373,18 +368,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
     const {
         isConnected,
-        walletAddress,
         walletSelected,
-        languagesSelected,
-        visualModeSelected,
         slippageToleranceSelected,
-        gasPriceSelected,
-        mainPurse 
+        mainPurse ,
     } = state
 
     useEffect(() => {
         const fn = async () => {
-            loadPairs()
+            await loadPairs()
+            await getTVLandVolume()
             const data = await apiClient.getTokenList()
             const tokens = tokensToObject(data.tokens)
             console.log('TOKENS', tokens)
@@ -466,7 +458,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         ]
     }
 
-    const getTVLandVolume = () => {
+    const getTVLandVolume = async (): Promise<void> => {
 
         const data = {
             tvl: "192,168,000,000",
@@ -526,9 +518,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    const filter = (onlyStaked: boolean, row: any): any => {
+    const filter = (onlyStaked: boolean, row: Row<PairData>): any => {
         if (onlyStaked) {
-            return row.original.pair.totalPool > 0
+            return parseFloat(row.original.balance) > 0
         }
 
         return row
@@ -564,17 +556,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                         id: pl.id,
                     }
                 })
-                    /*pair: {
-                        token0: d.token0.symbol,
-                        token1: d.token1.symbol,
-                        token0Liquidity: 0,
-                        token1Liquidity: 0,
-                        totalLiquidityPool: 0,
-                        totalLiquidityUSD: 0,
-                        volumePercentage: 0,
-                        totalPool: 0
-                    }*/
-                
             })
         } catch (err) {
             log.error("loadPairs", err.message)
@@ -866,11 +847,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             slippageToleranceSelected,
             onIncreaseAllow,
             onAddLiquidity,
-            //fillPairs,
             pairState,
             onRemoveLiquidity,
             poolColumns,
-            poolList,
             setPoolList,
             getPoolList,
             loadPoolDetailByUser,
