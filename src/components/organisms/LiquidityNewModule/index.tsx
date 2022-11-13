@@ -2,12 +2,17 @@ import React, { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
+    ContainerLiquidityNew,
+    ContainerLiquidityNewModule,
+    ContainerLiquidityStatics,
     ExchangeRateBox,
-    NewSwapButton
+    FlechaIcon,
+    LoadersSwap,
+    NewSwapButton,
+    SwitchSwap
 } from '../../atoms'
-import FlechaIcon from '../../atoms/FlechaIcon/indext'
-import LoadersSwap from '../../atoms/LoadersSwap'
-import SwitchSwap from '../../atoms/SwitchSwap'
+
+
 import {LPDetail} from '../../molecules'
 import FloatMenu from '../FloatMenu'
 import {useSearchParams} from "react-router-dom";
@@ -40,12 +45,12 @@ import {
     SwapDetailsStyled,
     IconPlaceStyle,
     ButtonSpaceStyled,
+    ButtonHalfMax,
+    ButtonHalfMaxContainer,
 } from '../SwapNewModule'
 
+
 const LiquidityNewModule = () => {
-    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
-    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
-    const [activeModalSwap, setActiveModalSwap] = React.useState(false)
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0.5)
@@ -54,8 +59,10 @@ const LiquidityNewModule = () => {
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
     const [allowanceA, setAllowanceA] = useState(0)
     const [allowanceB, setAllowanceB] = useState(0)
+    const [searchModalA, searchModalASetter] = useState(false)
+    const [searchModalB, searchModalBSetter] = useState(false)
+
     const {
-        onConnectConfig,
         onAddLiquidity,
         configState,
         onSelectFirstToken,
@@ -65,17 +72,16 @@ const LiquidityNewModule = () => {
         firstTokenSelected,
         secondTokenSelected,
         isConnected,
-        onConfirmSwapConfig,
         slippageToleranceSelected,
         getLiquidityDetails,
         getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
-        onDisconnectWallet,
         ResetTokens,
         getAccountHash,
         getPoolDetailByUser,
         getPoolList
     } = useContext(ConfigProviderContext)
+
     const {
         walletAddress
     } = configState
@@ -139,31 +145,12 @@ const LiquidityNewModule = () => {
         }
     }
 
-    async function onConnect() {
-        onConnectConfig()
-    }
-    async function onDisconnect() {
-        onDisconnectWallet()
-    }
-    const handleModalPrimary = () => {
-        setActiveModalPrimary(!activeModalPrimary)
-        ResetAll()
-    }
-    const handleModalSecondary = () => {
-        setActiveModalSecondary(!activeModalSecondary)
-        ResetAll()
-    }
     function ResetAll() {
         amountSwapTokenASetter(0)
         amountSwapTokenBSetter(0)
         ResetTokens()
     }
-    async function onConfirmSwap() {
-        setActiveModalSwap(false)
-        const waiting = await onConfirmSwapConfig(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
-        amountSwapTokenASetter(0)
-        onConnectConfig()
-    }
+
     async function updateSwapDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
         const getLiquidityDetailP = getLiquidityDetails(
             tokenA, 
@@ -246,7 +233,7 @@ const LiquidityNewModule = () => {
         amountSwapTokenASetter(minTokenToReceive)
     }
 
-    const [searchModalA, searchModalASetter] = useState(false)
+    
     async function SelectAndCloseTokenA(token) {
         onSelectFirstToken(token)
         searchModalASetter(false)
@@ -255,7 +242,6 @@ const LiquidityNewModule = () => {
         amountSwapTokenBSetter(minTokenToReceive)
 
     }
-    const [searchModalB, searchModalBSetter] = useState(false)
     async function SelectAndCloseTokenB(token) {
         onSelectSecondToken(token)
         searchModalBSetter(false)
@@ -318,8 +304,8 @@ const LiquidityNewModule = () => {
     )
 
     return (
-        <Container>
-            <ContainerSwapActions>
+        <ContainerLiquidityNew>
+            <ContainerLiquidityNewModule>
                 <NewSwapContainer>
                     <TokenSelectStyled>
                         <NewTokenDetailSelectStyled>
@@ -437,10 +423,10 @@ const LiquidityNewModule = () => {
                     <NewSwapButton style={{height: "57px", width: "100%"}} disabled={enableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
                 </ButtonSpaceStyled>
 
-            </ContainerSwapActions>
+            </ContainerLiquidityNewModule>
             {
                 usersLP.length > 0 &&
-                <ContainerSwapStatics>
+                <ContainerLiquidityStatics>
                     {// Loop over the table rows
                         usersLP.map(row => {
                             const openPopup = isOpenedRemoving && row.token0 == firstTokenSelected.symbol && row.token1 == secondTokenSelected.symbol
@@ -480,78 +466,10 @@ const LiquidityNewModule = () => {
                             )
                         })
                     }
-                </ContainerSwapStatics>
+                </ContainerLiquidityStatics>
             }
-        </Container>
+        </ContainerLiquidityNew>
     )
 }
-
-const ButtonSpaceModalStyled = styled.div`
-    width: 100%;
-    display: flex;
-    gap:10px;
-    justify-content: center;
-`
-
-const CoinContainerStyled = styled.div`
-    box-sizing: border-box;
-    border:1px solid black;
-    border-radius: 10px;
-    padding:10px;
-    display: flex;
-    gap:10px;
-    align-items: center;
-`
-const ContainerSwapStatics = styled.section`
-    box-sizing: border-box;
-    justify-self: start;
-    padding:10px;
-    border:1px solid black;
-    border-radius: 10px;
-    display:flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: start;
-    gap:10px;
-`
-
-const Container = styled.main`
-    box-sizing: border-box;
-    height:100%;
-    width: 100%;
-    gap:10px;
-    padding:10px;
-    color:black;
-    display: grid;
-    grid-template-columns: repeat(2,auto);
-    align-items: start;
-`
-const ContainerSwapActions = styled.section`
-    justify-self: end;
-    padding: 20px 25px 10px 25px;
-    border:1px solid black;
-    border-radius: 10px;
-    display:grid;
-    gap:10px;
-    grid-template-rows: repeat(6,auto);
-`
-
-const ButtonHalfMaxContainer = styled.div`
-    border-left: 3px solid ${props => props.theme.NewPurpleColor};
-    padding-left:10px;
-    display: grid;
-    gap:10px;
-`
-
-const ButtonHalfMax = styled.div<any>`
-    background-color: ${props => props.theme.NewPurpleColor};
-    color: white;
-    padding:10px;
-    border-radius: 12px;
-    width: 21px;
-    height: 12px;
-    cursor: pointer;
-    font-size: 12px;
-`
 
 export default LiquidityNewModule
