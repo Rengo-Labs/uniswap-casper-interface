@@ -17,14 +17,14 @@ describe('Liquidity removing popup', () => {
                 <LiquidityRemovingModule isConnected={true}
                                          openedPopup={false}
                                          firstSymbol="WETH"
-                                         firstLiquidity={110}
+                                         firstLiquidity={'110'}
                                          firstHash="hash-token1"
                                          secondSymbol="WCSPR"
-                                         secondLiquidity={200}
+                                         secondLiquidity={'200'}
                                          secondHash="hash-token2"
                                          liquidityId="hash-pairId"
-                                         liquidity={10}
-                                         liquidityUSD={15}
+                                         liquidity={'10'}
+                                         liquidityUSD={'15'}
                 />
             </ConfigContextWithReducer>
         )

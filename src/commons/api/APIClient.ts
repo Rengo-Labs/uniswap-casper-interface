@@ -12,6 +12,7 @@ import {
   LiquidityAgainstUserAndPairResponse,
   BalanceAgainstUserResponse,
   PairListResponse,
+  PairAgainstUserResponse,
 } from './types'
 
 import { ROUTER_PACKAGE_HASH } from '../../constant';
@@ -98,16 +99,16 @@ export class APIClient {
   /**
    * Get the allowance for the router contract for a CEP-18 allowed by a user
    * 
+   * @param ownerAccountHashHex owner's account hash string  
    * @param contractHash CEP-18 contract hash
-   * @param ownerPublicKeyHex owner's account hash string  
    * 
    * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
    */
-   async getAllowanceAgainstOwnerAndSpender(contractHash: string, ownerAccountHashString: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
+  async getAllowanceAgainstOwnerAndSpender(ownerAccountHashHex: string, contractHash: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
 
     const allowanceParam = {
       contractHash: contractHash.slice(5),
-      owner: ownerAccountHashString.slice(13),
+      owner: ownerAccountHashHex.slice(13),
       spender: ROUTER_PACKAGE_HASH,
     };
 
@@ -124,7 +125,7 @@ export class APIClient {
    * 
    * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
    */
-   async getAllowanceAgainstOwnerAndSpenderPairContract(accountHashHex: string, pairPackageHash: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
+  async getAllowanceAgainstOwnerAndSpenderPairContract(accountHashHex: string, pairPackageHash: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
     console.log('a', accountHashHex, 'p', pairPackageHash)
     const allowanceParam = {
       contractHash: pairPackageHash.slice(5),
@@ -142,11 +143,12 @@ export class APIClient {
    * 
    * @param accountHashHex user account hash
    * @param pairPackageHash pair package hash
+   * 
    * @returns the liquidity for a pair contract
    */
   async getLiquidityAgainstUserAndPair(accountHashHex: string, pairPackageHash: string): Promise<LiquidityAgainstUserAndPairResponse>{
     const liquidityParam = {
-      to: Buffer.from(CLPublicKey.fromHex(accountHashHex).toAccountHash()).toString('hex'),
+      to: accountHashHex.slice(13),
       pairid: pairPackageHash.slice(5),
     };
 
@@ -162,9 +164,9 @@ export class APIClient {
    * @param contractHash pair package hash
    * @returns the balance for a contract
    */
-   async getBalanceAgainstUser(accountHashHex: string, contractHash: string): Promise<BalanceAgainstUserResponse>{
+  async getBalanceAgainstUser(accountHashHex: string, contractHash: string): Promise<BalanceAgainstUserResponse>{
     const balanceParam = {
-      user: Buffer.from(CLPublicKey.fromHex(accountHashHex).toAccountHash()).toString('hex'),
+      user: accountHashHex.slice(13),
       contractHash: contractHash.slice(5),
     };
 
@@ -173,5 +175,19 @@ export class APIClient {
     return response.data
   }
 
-  
+  /**
+   * Get the user's pair balances
+   * 
+   * @param accountHashHex user account hash
+   * @returns the pair balances for a user
+   */
+  async getPairAgainstUser(accountHashHex: string): Promise<PairAgainstUserResponse>{
+    const pairParam = {
+      user: accountHashHex.slice(13),
+    };
+
+    const response = await axios.post(`${this._baseURL}/getpairagainstuser`, pairParam)
+
+    return response.data
+  }
 }

@@ -117,6 +117,8 @@ export interface Pair {
   liquidityProviderCount: string,
   reserve0: string,
   reserve1: string,
+  totalReserve0: string,
+  totalReserve1: string,
   reserveETH: string,
   reserveUSD: string,
   token0: PairToken,
@@ -137,6 +139,26 @@ export interface Pair {
  */
 export interface PairListResponse {
   pairList: Pair[],
+  message: string,
+  success: boolean,
+}
+
+/**
+ * User Pairs
+ */
+export interface UserPair {
+  id: string,
+  pair: string,
+  reserve0: string,
+  reserve1: string,
+}
+
+/**
+ * Pair Against User response
+ */
+export interface PairAgainstUserResponse {
+  pairsdata: Pair[],
+  userpairs: UserPair[],
   message: string,
   success: boolean,
 }

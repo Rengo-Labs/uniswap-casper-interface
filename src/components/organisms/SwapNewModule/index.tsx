@@ -39,7 +39,6 @@ const SwapNewModule = () => {
     const {
         onConnectWallet,
         configState,
-        tokenState,
         onSelectFirstToken,
         onSelectSecondToken,
         onSwitchTokens,
@@ -49,12 +48,8 @@ const SwapNewModule = () => {
         isConnected,
         onConfirmSwapConfig,
         getSwapDetails,
-        getAllowanceAgainstOwnerAndSpender,
         onIncreaseAllow,
     } = useContext(ConfigProviderContext)
-    const {
-        walletAddress
-    } = configState
 
     async function onConnect() {
         onConnectWallet()
@@ -101,13 +96,13 @@ const SwapNewModule = () => {
         exchangeRateASetter(exchangeRateA)
         exchangeRateBSetter(exchangeRateB)
 
-        defaultPriceImpactLabelSetter(priceImpact > 1 ? 'Price Impact Warning' : 'Low Price Impact')
+        defaultPriceImpactLabelSetter(parseFloat(priceImpact) > 1 ? 'Price Impact Warning' : 'Low Price Impact')
         return tokensToTransfer
     }
 
     async function requestIncreaseAllowance(amount, contractHash) {
         console.log("requestIncreaseAllowance")
-        await onIncreaseAllow(amount, contractHash, amountSwapTokenA, firstTokenSelected.amount)
+        await onIncreaseAllow(amount, contractHash)
         await updateSwapDetail(firstTokenSelected, secondTokenSelected, amount, firstTokenSelected)
     }
 
@@ -149,7 +144,7 @@ const SwapNewModule = () => {
         searchModalASetter(false)
 
         const minTokenToReceive = await updateSwapDetail(token, secondTokenSelected, amountSwapTokenA, token)
-        amountSwapTokenBSetter(minTokenToReceive)
+        amountSwapTokenBSetter(parseFloat(minTokenToReceive))
 
     }
 
@@ -158,7 +153,7 @@ const SwapNewModule = () => {
         onSelectSecondToken(token)
         searchModalBSetter(false)
         const minTokenToReceive = await updateSwapDetail(firstTokenSelected, token, amountSwapTokenB, token)
-        amountSwapTokenASetter(minTokenToReceive)
+        amountSwapTokenASetter(parseFloat(minTokenToReceive))
     }
 
     function makeHalf(amount, Setter) {
@@ -242,6 +237,7 @@ const SwapNewModule = () => {
                                 <ArrowContainerStyle>
                                     <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                                     {searchModalB && <FloatMenu
+                                        excludedSymbols={[firstTokenSelected.symbol]}
                                         tokens={tokens}
                                         onSelectToken={selectAndCloseTokenB}
                                         onClick={() => { searchModalBSetter(false) }}

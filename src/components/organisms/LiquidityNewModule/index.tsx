@@ -26,10 +26,6 @@ import {
 } from '../../../commons'
 
 import {
-    PairData,
-} from '../../../reducers/PairsReducer'
-
-import {
     TokenSelectStyled,
     TokenSelectionStyled,
     NewTokenDetailSelectStyled,
@@ -60,7 +56,6 @@ const LiquidityNewModule = () => {
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
     const [lastChanged, setLastChanged] = useState('')
 
-    const [usersLP, setUsersLP] = useState([])
     const [userLiquidity, setUserLiquidity] = useState(0)
     const [isOpenedRemoving, setOpenedRemoving] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams()
@@ -70,7 +65,7 @@ const LiquidityNewModule = () => {
     const {
         onConnectWallet,
         onAddLiquidity,
-        configState,
+        pairState,
         onSelectFirstToken,
         onSelectSecondToken,
         onSwitchTokens,
@@ -81,13 +76,10 @@ const LiquidityNewModule = () => {
         slippageToleranceSelected,
         getLiquidityDetails,
         onIncreaseAllow,
-        getAccountHash,
-        getPoolDetailByUser,
         getPoolList
     } = useContext(ConfigProviderContext)
-    const {
-        walletAddress
-    } = configState
+
+    const userPairData = Object.entries(pairState).map(([k, v]) => v)
 
     useEffect( () => {
         const t0 = searchParams.get("token0")
@@ -102,15 +94,6 @@ const LiquidityNewModule = () => {
             searchParams.delete('remove')
             setSearchParams(searchParams)
         }
-
-        const result = async () => {
-            if (isConnected) {
-                const newList = await getPoolDetailByUser(getAccountHash())
-                setUsersLP(newList)
-            }
-        }
-        result().catch(() => console.log("Error"))
-
     }, [isConnected])
 
     useEffect(() => {
@@ -202,7 +185,7 @@ const LiquidityNewModule = () => {
 
     async function requestIncreaseAllowance(amount, contractHash) {
         console.log("requestIncreaseAllowance")
-        await onIncreaseAllow(amount, contractHash, amountSwapTokenA, firstTokenSelected.amount)
+        await onIncreaseAllow(amount, contractHash)
         await updateLiquidityDetail(firstTokenSelected, secondTokenSelected)
     }
 
@@ -428,39 +411,39 @@ const LiquidityNewModule = () => {
 
             </ContainerSwapActions>
             {
-                usersLP.length > 0 &&
+                isConnected && userPairData.length > 0 &&
                 <ContainerSwapStatics>
                     {// Loop over the table rows
-                        usersLP.map(row => {
-                            const openPopup = isOpenedRemoving && row.token0 == firstTokenSelected.symbol && row.token1 == secondTokenSelected.symbol
+                        userPairData.filter((v) => parseFloat(v.balance) > 0).map(row => {
+                            const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbol && row.token1Symbol == secondTokenSelected.symbol
 
                             console.log('ROW', row)
 
                             return (
                                 // Apply the row props
                                 <LiquidityItem
-                                    key={`${row.token0}-${row.token1}`}
+                                    key={`${row.token0Symbol}-${row.token1Symbol}`}
                                     fullExpanded={openPopup}
                                     firstIcon={casprIcon}
-                                    firstSymbol={row.token0}
-                                    firstLiquidity={row.token0Liquidity}
+                                    firstSymbol={row.token0Symbol}
+                                    firstLiquidity={row.reserve0}
                                     secondIcon={wethIcon}
-                                    secondSymbol={row.token1}
-                                    secondLiquidity={row.token1Liquidity}
-                                    liquidity={row.totalLiquidityPool}
-                                    perLiquidity={((row.totalPool / row.totalSupply)*100).toFixed(2)} >
+                                    secondSymbol={row.token1Symbol}
+                                    secondLiquidity={row.reserve1}
+                                    liquidity={row.balance}
+                                    perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)} >
 
                                     <LiquidityRemovingModule isConnected={true}
                                                              openedPopup={openPopup}
                                                              firstHash={row.contract0}
-                                                             firstSymbol={row.token0}
-                                                             firstLiquidity={row.token0Liquidity}
+                                                             firstSymbol={row.token0Symbol}
+                                                             firstLiquidity={row.reserve0}
                                                              secondHash={row.contract1}
-                                                             secondSymbol={row.token1}
-                                                             secondLiquidity={row.token1Liquidity}
-                                                             liquidityId={row.totalPoolId}
-                                                             liquidity={row.totalPool}
-                                                             liquidityUSD={row.totalPoolUSD}
+                                                             secondSymbol={row.token1Symbol}
+                                                             secondLiquidity={row.reserve1}
+                                                             liquidityId={row.id}
+                                                             liquidity={row.balance}
+                                                             liquidityUSD={row.liquidityUSD}
                                     >
                                         <CircleButton>
                                             <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>

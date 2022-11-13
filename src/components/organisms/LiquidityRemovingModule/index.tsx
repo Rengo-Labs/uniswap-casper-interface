@@ -24,6 +24,21 @@ import {Button} from "../../atoms"
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
 
+export interface LiquidityRemovingModuleProps {
+    isConnected: boolean,
+    openedPopup: boolean,
+    firstSymbol: string,
+    firstLiquidity: string,
+    firstHash: string,
+    secondSymbol: string,
+    secondLiquidity: string,
+    secondHash: string,
+    liquidityId: string,
+    liquidity: string,
+    liquidityUSD: string,
+    children?: React.ReactNode,
+}
+
 export const LiquidityRemovingModule = ({
     isConnected, 
     openedPopup, 
@@ -37,7 +52,7 @@ export const LiquidityRemovingModule = ({
     liquidity, 
     liquidityUSD, 
     children
-}: any) => {
+}: LiquidityRemovingModuleProps) => {
 
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState("0")
@@ -47,7 +62,6 @@ export const LiquidityRemovingModule = ({
     const {
         onRemoveLiquidity,
         onIncreaseAllow,
-        onAllowanceAgaintPair,
         getContractHashAgainstPackageHash,
         slippageToleranceSelected,
     } = useContext(ConfigProviderContext)
@@ -70,15 +84,14 @@ export const LiquidityRemovingModule = ({
     }
 
     const removeLiquidity = async () => {
-        await onAllowanceAgaintPair(liquidityId)
         await onRemoveLiquidity(value, 
             {
                 symbol: firstSymbol.replace('WCSPR', 'CSPR'),
                 packageHash: `hash-${firstHash}`,
-            }, {
+            } as any, {
                 symbol: secondSymbol.replace('WCSPR', 'CSPR'),
                 packageHash: `hash-${secondHash}`,
-            }, 
+            } as any, 
             firstLiquidity, 
             secondLiquidity, 
             slippageToleranceSelected,
@@ -87,12 +100,12 @@ export const LiquidityRemovingModule = ({
     }
 
     const setHalf = () => {
-        const halfValue = liquidity / 2
+        const halfValue = parseFloat(liquidity) / 2
         setValue((halfValue).toFixed(8))
     }
 
     const setMax = () => {
-        setValue((liquidity * 1).toString())
+        setValue((parseFloat(liquidity) * 1).toString())
     }
 
     const setInputValue = (e) => {
@@ -104,7 +117,7 @@ export const LiquidityRemovingModule = ({
     }
 
     const calculateUSD = (value) => {
-        return (calculateLPPercentage(value, liquidity) * liquidityUSD).toFixed(2)
+        return (calculateLPPercentage(value, liquidity) * parseFloat(liquidityUSD)).toFixed(2)
     }
 
     const freeAllowanceLiq = allowanceLiq / Math.pow(10, 9) - parseFloat(value)
