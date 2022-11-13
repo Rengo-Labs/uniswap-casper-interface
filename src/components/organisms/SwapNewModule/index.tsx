@@ -289,7 +289,7 @@ const SwapNewModule = () => {
                         !isApproved && isConnected && <NewSwapButton style={{height: "57px", width: "100%"}} content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowance, firstTokenSelected.contractHash) }} />
                     }
                     {
-                        isApproved && isConnected && <NewSwapButton style={{height: "57px", width: "100%"}} content="Swap" disabled={amountSwapTokenA <= 0 || amountSwapTokenB <= 0} handler={async () => { await onConfirmSwap() }} />
+                        isApproved && isConnected && <NewSwapButton style={{height: "57px", width: "100%"}} content="Swap" disabled={amountSwapTokenA <= 0 || amountSwapTokenB <= 0 || amountSwapTokenA > parseFloat(firstTokenSelected.amount)} handler={async () => { await onConfirmSwap() }} />
                     }
                 </ButtonSpaceStyled>
                 {

@@ -24,6 +24,7 @@ describe('Liquidity removing popup', () => {
                                          secondHash="hash-token2"
                                          liquidityId="hash-pairId"
                                          liquidity={'10'}
+                                         allowance={'10'}
                                          liquidityUSD={'15'}
                 />
             </ConfigContextWithReducer>

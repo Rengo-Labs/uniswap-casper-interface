@@ -35,6 +35,7 @@ export interface LiquidityRemovingModuleProps {
     secondHash: string,
     liquidityId: string,
     liquidity: string,
+    allowance: string,
     liquidityUSD: string,
     children?: React.ReactNode,
 }
@@ -49,7 +50,8 @@ export const LiquidityRemovingModule = ({
     secondLiquidity, 
     secondHash, 
     liquidityId, 
-    liquidity, 
+    liquidity,
+    allowance,
     liquidityUSD, 
     children
 }: LiquidityRemovingModuleProps) => {
@@ -57,7 +59,6 @@ export const LiquidityRemovingModule = ({
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState("0")
     const [contractHash, setContractHash] = useState("")
-    const [allowanceLiq, setAllowanceLiq] = useState(0)
 
     const {
         onRemoveLiquidity,
@@ -120,7 +121,7 @@ export const LiquidityRemovingModule = ({
         return (calculateLPPercentage(value, liquidity) * parseFloat(liquidityUSD)).toFixed(2)
     }
 
-    const freeAllowanceLiq = allowanceLiq / Math.pow(10, 9) - parseFloat(value)
+    const freeAllowanceLiq = parseFloat(allowance) - parseFloat(value)
 
     return (
         <>
@@ -129,42 +130,48 @@ export const LiquidityRemovingModule = ({
             }
             {
                 <OverlayPopup isOpened={isOpened}>
-                    <PopupContainer>
-                        <PopupTitle>Remove Liquidity</PopupTitle>
-                        <PopupClose onClick={closeHandler}>&times;</PopupClose>
-                        <PopupContent>
-                            <LPContainer>
-                                <LPDetail>
-                                    <LPTitleDetail>Pool</LPTitleDetail>
-                                    <LPLabelDetail>{firstSymbol}-{secondSymbol}</LPLabelDetail>
-                                </LPDetail>
-                                <ButtonHalfMaxContainer>
-                                    <ButtonHalfMax data-testid="liq_half" onClick={setHalf}>Half</ButtonHalfMax>
-                                    <ButtonHalfMax data-testid="liq_max" onClick={setMax}>Max</ButtonHalfMax>
-                                </ButtonHalfMaxContainer>
-                                <InputContainer>
-                                    <BalanceStyled>Balance: {liquidity}</BalanceStyled>
-                                    <InputAmountStyled>
-                                        <InputStyled data-testid="liq_input" value={value}
-                                                     onChange={setInputValue}
-                                                     placeholder={`0.00000000`} />
-                                    </InputAmountStyled>
-                                    <USDLabelStyled data-testid="liq_usd">$ {calculateUSD(value)}</USDLabelStyled>
-                                </InputContainer>
-                            </LPContainer>
-                            <RemoveButtonContainer>
-                                <Button data-testid="liq_enable" style={{width: "391px", height: "57px",fontSize: "16px"}}
-                                        enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
-                            </RemoveButtonContainer>
-                            <RemoveButtonContainer>
-                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px", marginTop: "10px"}}
-                                        enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
-                            </RemoveButtonContainer>
-                        </PopupContent>
-                        <PopupBottom>
-                            <Button style={{fontSize: "16px", backgroundColor: "transparent", width: "50%", height: "56px"}} handler={closeHandler} content="Cancel"/>
-                        </PopupBottom>
-                    </PopupContainer>
+                    <div>
+                        <PopupContainer>
+                            <PopupTitle>Remove Liquidity</PopupTitle>
+                            <PopupClose onClick={closeHandler}>&times;</PopupClose>
+                            <PopupContent>
+                                <LPContainer>
+                                    <LPDetail>
+                                        <LPTitleDetail>Pool</LPTitleDetail>
+                                        <LPLabelDetail>{firstSymbol}-{secondSymbol}</LPLabelDetail>
+                                    </LPDetail>
+                                    <ButtonHalfMaxContainer>
+                                        <ButtonHalfMax data-testid="liq_half" onClick={setHalf}>Half</ButtonHalfMax>
+                                        <ButtonHalfMax data-testid="liq_max" onClick={setMax}>Max</ButtonHalfMax>
+                                    </ButtonHalfMaxContainer>
+                                    <InputContainer>
+                                        <BalanceStyled>Balance: {liquidity}</BalanceStyled>
+                                        <InputAmountStyled>
+                                            <InputStyled data-testid="liq_input" value={value}
+                                                        onChange={setInputValue}
+                                                        placeholder={`0.00000000`} />
+                                        </InputAmountStyled>
+                                        <USDLabelStyled data-testid="liq_usd">$ {calculateUSD(value)}</USDLabelStyled>
+                                    </InputContainer>
+                                </LPContainer>
+                                    {
+                                        freeAllowanceLiq < 0 ?
+                                            <RemoveButtonContainer>
+                                                <Button data-testid="liq_enable" style={{width: "391px", height: "57px",fontSize: "16px"}}
+                                                        enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
+                                            </RemoveButtonContainer> 
+                                        :
+                                            <RemoveButtonContainer>
+                                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px", marginTop: "10px"}}
+                                                        enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
+                                            </RemoveButtonContainer>
+                                    }
+                            </PopupContent>
+                            <PopupBottom>
+                                <Button style={{fontSize: "16px", backgroundColor: "transparent", width: "50%", height: "56px"}} handler={closeHandler} content="Cancel"/>
+                            </PopupBottom>
+                        </PopupContainer>
+                    </div>
                 </OverlayPopup>
             }
         </>

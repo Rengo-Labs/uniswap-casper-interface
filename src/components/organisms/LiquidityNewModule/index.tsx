@@ -416,9 +416,6 @@ const LiquidityNewModule = () => {
                     {// Loop over the table rows
                         userPairData.filter((v) => parseFloat(v.balance) > 0).map(row => {
                             const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbol && row.token1Symbol == secondTokenSelected.symbol
-
-                            console.log('ROW', row)
-
                             return (
                                 // Apply the row props
                                 <LiquidityItem
@@ -443,6 +440,7 @@ const LiquidityNewModule = () => {
                                                              secondLiquidity={row.reserve1}
                                                              liquidityId={row.id}
                                                              liquidity={row.balance}
+                                                             allowance={row.allowance}
                                                              liquidityUSD={row.liquidityUSD}
                                     >
                                         <CircleButton>
