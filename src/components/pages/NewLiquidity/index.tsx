@@ -8,9 +8,7 @@ export const NewLiquidity = () => {
     return (
         <NewLayout>
             <LiquidityNewContainer>
-                <LiquidityModule>
                     <LiquidityNewModule />
-                </LiquidityModule>
             </LiquidityNewContainer>
         </NewLayout>
     )
