@@ -1,46 +1,16 @@
-import casprIcon from "../../assets/swapIcons/casprIcon.png";
-import wcasprIcon from "../../assets/swapIcons/wcasprIcon.png";
-import wiseIcon from "../../assets/swapIcons/wiseIcon.png";
-import wethIcon from "../../assets/swapIcons/wethIcon.svg";
+import csprIcon from "../../assets/swapIcons/casperIcon.png"
+import wcsprIcon from "../../assets/swapIcons/wrappedCasperIcon.png"
+import csxIcon from "../../assets/swapIcons/coinstoxIcon.png"
+import wethIcon from "../../assets/swapIcons/wethIcon.svg"
 
-interface FullnameInterface {
-  name: string;
-  acron: string;
-}
-export interface TokensInterface {
-  icon: string;
-  fullname: FullnameInterface;
-  amount: string;
-}
+import { Token } from '../../commons/api'
 
-export interface TokensListInterface {
-  name: string;
-  chainId: number;
-  symbol: string;
-  decimals: number;
-  contractHash: string;
-  packageHash: string;
-  logoURI: string;
-  amount: string;
+export interface TokenState {
+  tokens: Record<string, Token>,
+  firstTokenSelected: string,
+  secondTokenSelected: string,
 }
-
-export interface TokenSelected {
-  name: string,
-  chainId: number,
-  symbol: string,
-  symbolPair: string,
-  decimals: number,
-  contractHash: string,
-  packageHash: string,
-  logoURI: string,
-  amount: string,
-}
-export interface InitialStateTokenInterface {
-  tokens: any,
-  firstTokenSelected: TokenSelected,
-  secondTokenSelected: TokenSelected
-}
-export const initialStateToken: InitialStateTokenInterface = {
+export const initialTokenState: TokenState = {
   tokens: {
     CSPR: {
       name: "Casper",
@@ -50,8 +20,9 @@ export const initialStateToken: InitialStateTokenInterface = {
       decimals: 9,
       contractHash: "",
       packageHash: "",
-      logoURI: casprIcon,
-      amount: "0.0000",
+      logoURI: csprIcon,
+      amount: "",
+      allowance: "0.0000",
     },
     CSX: {
       name: "Coinstox",
@@ -63,7 +34,9 @@ export const initialStateToken: InitialStateTokenInterface = {
         "hash-5240db456a1a2cb63cabcdebb86a5177d0e9ceddab7a737b3bd90caeae33e80e",
       packageHash:
         "hash-bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
-      logoURI: "https://static.coincost.net/logo/cryptocurrency/coinstox.png",
+      logoURI: csxIcon,
+      amount: "",
+      allowance: "0.0000",
     },
     WETH: {
       name: "Wrapper Ether",
@@ -75,7 +48,9 @@ export const initialStateToken: InitialStateTokenInterface = {
         "hash-9aef66efbac45daf71f92f3446422a00fd3adaaf206a1c29d80f26bc513c105d",
       packageHash:
         "hash-03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
-      logoURI: "https://www.gemini.com/images/currencies/icons/default/eth.svg",
+      logoURI: wethIcon,
+      amount: "",
+      allowance: "0.0000",
     },
     WCSPR: {
       name: "Wrapper Casper",
@@ -87,112 +62,92 @@ export const initialStateToken: InitialStateTokenInterface = {
         "hash-238834bc76aed9e18ad0260e65d2ef751999c97c13da92dee83bd511e31e2d2d",
       packageHash:
         "hash-afcaa550ebb63266fb2752b58ecd7e8fcd78e0a75777ecd57045213a013d9813",
-      logoURI: "https://miro.medium.com/max/3150/2*_dAX3saw1HVtj15WEJClHA.png",
+      logoURI: wcsprIcon,
+      amount: "",
+      allowance: "0.0000",
     },
   },
-  firstTokenSelected: {
-    name: "Casper",
-    chainId: 1,
-    symbol: "CSPR",
-    symbolPair: "WCSPR",
-    decimals: 9,
-    contractHash: "",
-    packageHash: "",
-    logoURI: casprIcon,
-    amount: "0.0000",
-  },
-  secondTokenSelected: {
-    name: "Wrapper Ether",
-    chainId: 1,
-    symbol: "WETH",
-    symbolPair: "WETH",
-    decimals: 9,
-    contractHash:
-      "hash-9aef66efbac45daf71f92f3446422a00fd3adaaf206a1c29d80f26bc513c105d",
-    packageHash:
-      "hash-03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
-    logoURI: "https://www.gemini.com/images/currencies/icons/default/eth.svg",
-    amount: "0.0000",
-  },
+  firstTokenSelected: 'CSPR',
+  secondTokenSelected: 'WETH',
 };
 
-export enum tokenReducerEnum {
+export enum TokenActions {
   UPDATE_TOKENS = "UPDATE_TOKENS",
-  UPDATE_CASPER = "UPDATE_CASPER",
-  UPDATE_WCASPER = "UPDATE_WCASPER",
   SELECT_FIRST_TOKEN = "SELECT_FIRST_TOKEN",
   SELECT_SECOND_TOKEN = "SELECT_SECOND_TOKEN",
-  BALANCE_SECOND_TOKEN = "BALANCE_SECOND_TOKEN",
   LOAD_BALANCE = "LOAD_BALANCE",
-  LOAD_BALANCE_TOKEN = "LOAD_BALANCE_TOKEN",
+  LOAD_ALLOWANCE = "LOAD_ALLOWANCE",
   SWITCH_TOKENS = "SWITCH_TOKENS",
 }
 
-export function TokenReducer(state, action) {
+export type TokenAction = {
+  type: TokenActions.UPDATE_TOKENS,
+  payload: {
+    tokens: Record<string, Token>,
+  },
+} | { 
+  type: TokenActions.SELECT_FIRST_TOKEN,
+  payload: string,
+} | { 
+  type: TokenActions.SELECT_SECOND_TOKEN,
+  payload: string,
+} | { 
+  type: TokenActions.SELECT_SECOND_TOKEN,
+  payload: string,
+} | { 
+  type: TokenActions.LOAD_BALANCE,
+  payload: {
+    name: string,
+    amount: string,
+  },
+} | { 
+  type: TokenActions.LOAD_ALLOWANCE,
+  payload: {
+    name: string,
+    allowance: string,
+  },
+} | {
+  type: TokenActions.SWITCH_TOKENS,
+}
+
+export function TokenReducer(state: TokenState, action: TokenAction) {
   switch (action.type) {
-    case tokenReducerEnum.UPDATE_TOKENS:
+    case TokenActions.UPDATE_TOKENS:
       return {
         ...state,
         tokens: { ...state.tokens, ...action.payload.tokens },
       };
-    case tokenReducerEnum.SELECT_FIRST_TOKEN:
+    case TokenActions.SELECT_FIRST_TOKEN:
       return { ...state, firstTokenSelected: action.payload };
-    case tokenReducerEnum.UPDATE_CASPER:
-      return {
-        ...state,
-        tokens: {
-          ...state.tokens,
-          CSPR: {
-            ...state.tokens.CSPR,
-            amount: action.payload.amount,
-          },
-        },
-      };
-    case tokenReducerEnum.UPDATE_WCASPER:
-      return {
-        ...state,
-        tokens: {
-          ...state.tokens,
-          WCSPR: {
-            ...state.tokens.WCSPR,
-            amount: action.payload.amount,
-          },
-        },
-      };
-    case tokenReducerEnum.SELECT_SECOND_TOKEN:
+    case TokenActions.SELECT_SECOND_TOKEN:
       return { ...state, secondTokenSelected: action.payload };
-    case tokenReducerEnum.BALANCE_SECOND_TOKEN:
-      return {
-        ...state,
-        secondTokenSelected: {
-          ...state.secondTokenSelected,
-          amount: action.payload,
-        },
-      };
-    case tokenReducerEnum.LOAD_BALANCE:
-      return {
-        ...state,
-        firstTokenSelected: {
-          ...state.tokens[action.payload.name],
-          amount: action.payload.data,
-        },
-      };
-    case tokenReducerEnum.LOAD_BALANCE_TOKEN:
+    case TokenActions.LOAD_BALANCE:
       return {
         ...state,
         tokens: {
           ...state.tokens,
           [action.payload.name]: {
             ...state.tokens[action.payload.name],
-            amount: action.payload.data,
+            amount: action.payload.amount,
           },
         },
       };
-    case tokenReducerEnum.SWITCH_TOKENS:
+    case TokenActions.LOAD_ALLOWANCE:
       return {
         ...state,
-        firstTokenSelected: action.payload.secondTokenSelected,
-        secondTokenSelected: action.payload.firstTokenSelected,
+        tokens: {
+          ...state.tokens,
+          [action.payload.name]: {
+            ...state.tokens[action.payload.name],
+            allowance: action.payload.allowance,
+          },
+        },
+      };
+    case TokenActions.SWITCH_TOKENS:
+      return {
+        ...state,
+        firstTokenSelected: state.secondTokenSelected,
+        secondTokenSelected: state.firstTokenSelected,
       };
     default:
       return state;
