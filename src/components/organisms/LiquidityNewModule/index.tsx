@@ -44,7 +44,6 @@ import { BalanceInputItem2NSM } from '../../atoms/BalanceInputItem2NSM'
 import { ButtonSpaceNSM } from '../../atoms/ButtonSpaceNSM'
 import FloatMenu  from '../FloatMenu'
 
-
 const LiquidityNewModule = () => {
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
@@ -303,6 +302,8 @@ const LiquidityNewModule = () => {
         amountSwapTokenASetter(minTokenToReceive)
     }
 
+    console.log('FreeAllowance', freeAllowanceA, freeAllowanceB)
+
     return (
         <Container>
             <ContainerSwapActions>
@@ -319,7 +320,7 @@ const LiquidityNewModule = () => {
                                         lefilter={true}
                                         lesymbol={secondTokenSelected.symbol}
                                         tokens={tokens}
-                                        selectToken={SelectAndCloseTokenA}
+                                        onSelectToken={selectAndCloseTokenA}
                                         onClick={() => { searchModalASetter(false) }}
                                     />}
                                 </ArrowContainerNSM>
@@ -371,8 +372,9 @@ const LiquidityNewModule = () => {
                                 <ArrowContainerNSM>
                                     <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                                     {searchModalB && <FloatMenu
-                                        tokens={returnFilter(tokens, firstTokenSelected)}
-                                        selectToken={SelectAndCloseTokenB}
+                                        excludedSymbols={[firstTokenSelected.symbol]}
+                                        tokens={tokens}
+                                        onSelectToken={selectAndCloseTokenB}
                                         onClick={() => { searchModalBSetter(false) }}
                                     />}
                                 </ArrowContainerNSM>

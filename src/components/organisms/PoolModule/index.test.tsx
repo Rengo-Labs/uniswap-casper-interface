@@ -14,13 +14,13 @@ describe("Test for Pool Module", () => {
 
     test("Test 1 - toggle for checking active pools only", async () => {
         const headers = getColumns()
-        const poolList = await getPoolList()
+        const poolList = getPoolList()
 
         //we load PoolsContext and Router to use our context and useNavigate in PoolModule
         const poolModule = render(
             <ConfigContextWithReducer>
                 <Router>
-                    <PoolModule columns={headers} data={poolList}/>
+                    <PoolModule columns={headers} data={poolList as any}/>
                 </Router>
             </ConfigContextWithReducer>
         )

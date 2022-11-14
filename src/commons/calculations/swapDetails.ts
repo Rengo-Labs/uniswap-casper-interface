@@ -34,7 +34,7 @@ export const calculateSwapDetails = async (
     apiClient: APIClient, 
     tokenA: Token, 
     tokenB: Token, 
-    inputValue: BigNumber.Value, 
+    inputValueRaw: BigNumber.Value, 
     token: Token, 
     slippage = 0.005, 
     fee = 0.003
@@ -46,7 +46,8 @@ export const calculateSwapDetails = async (
 
       const liquidityA = new BigNumber(data.reserve0)
       const liquidityB = new BigNumber(data.reserve1)
-      const inputValueMinusFee = new BigNumber(inputValue).times(Math.pow(10,9)).times(1 - fee)
+      const inputValue = new BigNumber(inputValueRaw).times(10 ** 9)
+      const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
 
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -73,18 +74,29 @@ export const calculateSwapDetails = async (
       const tokensToTransfer = (outputLiquidity.minus(newLiquidityOutputPool))
       console.log("tokensToTransfer", tokensToTransfer)
 
-      const inputExchangeRate = tokensToTransfer.div(inputValue)
-      const outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
+      let inputExchangeRate = tokensToTransfer.div(inputValue)
+      let outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
 
+      // ignore the post-transfer rate
+      //if (inputExchangeRate.isNaN() || outputExchangeRate.isNaN()) {
+        inputExchangeRate = outputLiquidity.div(inputLiquidity)
+        outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
+      //}
+      
+      console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
+
+      
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
+
       console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
       const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
       console.log("priceImpact", priceImpact)
 
       return {
-          tokensToTransfer: tokensToTransfer.div(Math.pow(10,9)).toNumber().toFixed(9),
+          tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** 9).toNumber().toFixed(9),
+          //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
           priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
           exchangeRateA: exchangeRateA.toNumber(),
           exchangeRateB : exchangeRateB.toNumber()
