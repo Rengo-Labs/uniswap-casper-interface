@@ -6,23 +6,12 @@ import {
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
 
-import {
-    getDeploy,
-    makeDeploy,
-    putdeploySigner,
-    removeLiquidityArgs,
-    signdeploywithcaspersigner,
-    signDeployWithTorus,
-    updateBalances,
-} from '../../commons/swap';
-
 import { PopupsModule } from '../../components/organisms';
-import { BASE_URL, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH } from '../../constant';
+import { BASE_URL, DEADLINE, NODE_ADDRESS } from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
-import { initialPairsState, PairsReducer } from '../../reducers/PairsReducer';
-import { initialStateToken, TokenReducer, tokenReducerEnum } from '../../reducers/TokenReducers';
-import { entryPointEnum } from '../../types';
+import { initialPairsState, PairsReducer, PairActions, PairData, PairState } from '../../reducers/PairsReducer';
+import { initialTokenState, TokenReducer, TokenActions, TokenAction, TokenState } from '../../reducers/TokenReducers';
 
 import {
     APIClient,
@@ -42,6 +31,7 @@ import {
     calculateLiquidityDetails,
     
     log,
+    WalletName,
 } from '../../commons'
 
 import {
@@ -50,13 +40,47 @@ import {
     signAndDeployAddLiquidity,
     signAndDeployRemoveLiquidity,
 } from '../../commons/deploys'
-
-import wethIcon from "../../assets/swapIcons/wethIcon.svg";
-import casprIcon from "../../assets/swapIcons/casprIcon.png";
+import { ConfigState } from '../../reducers/ConfigReducers';
+import { Row } from 'react-table';
 
 type MaybeWallet = Wallet | undefined
 
-export const ConfigProviderContext = createContext<any>({})
+export interface ConfigContext {
+    getAccountHash: (wa: string | number | boolean | void) => string,
+    onConnectWallet: (ignoreError?: boolean) => Promise<void>,
+    onDisconnectWallet: () => Promise<void>,
+    configState: ConfigState,
+    tokenState: TokenState,
+    onSelectFirstToken: (token: string | Token) => void,
+    onSelectSecondToken: (token: string | Token) => void,
+    onSwitchTokens: () => void,
+    getSwapDetails: (tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage: number, fee: number) => Promise<SwapDetails>,
+    getLiquidityDetails: (tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage: number, fee: number) => Promise<LiquidityDetails>,
+    tokens: Record<string, Token>,
+    firstTokenSelected: Token,
+    secondTokenSelected: Token,
+    isConnected: boolean,
+    onConfirmSwapConfig: (amountA: number | string, amountB: number | string, slippage: number) => Promise<boolean>,
+    slippageToleranceSelected: number,
+    onIncreaseAllow: (amount: number | string, contractHash: string) => Promise<boolean>,
+    onAddLiquidity: (amountA: number | string, amountB: number | string, slippage: number) => Promise<boolean>,
+    pairState: PairState,
+    onRemoveLiquidity: (liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number) => Promise<boolean>
+    
+    // To Delete
+    poolColumns: any[],
+    setPoolList: (poolList: any[]) => void,
+    getPoolList: () => PairData[],
+    loadPoolDetailByUser: (hash: string, poolList: any[], wa: string | number | boolean | void) => Promise<any[]>,
+    getTVLandVolume: () => Promise<void>,
+    gralData: Record<string, string>,
+    isStaked: boolean,
+    setStaked: (v: boolean) => void,
+    filter: (onlyStaked: boolean, row: Row<PairData>) => any,
+    getContractHashAgainstPackageHash
+}
+
+export const ConfigProviderContext = createContext<ConfigContext>({} as any)
 
 export const casperClient = new CasperClient(Network.CASPER_TESTNET, NODE_ADDRESS)
 export const apiClient = new APIClient(BASE_URL)
@@ -72,7 +96,7 @@ export const convertNumber = (number: number) => {
  */
 export type StatusResponseType = {
     // network token balance of the account
-    balance: string,
+    balance: BigNumber,
     // uref of the main purse
     mainPurse: string,
 }
@@ -87,8 +111,7 @@ export async function getStatus(wallet: Wallet): Promise<StatusResponseType> {
     const balance = await casperClient.getBalance(wallet)
     const mainPurse = await casperClient.getMainPurse(wallet)
 
-    const csprBalance = convertBigNumberToUIString(balance)
-    return { balance: csprBalance, mainPurse };
+    return { balance, mainPurse };
 }
 
 /**
@@ -128,80 +151,29 @@ async function getLiquidityDetails(tokenA: Token, tokenB: Token, inputValue: Big
     return calculateLiquidityDetails(apiClient, tokenA, tokenB, inputValue, token, slippage, fee)
 }
 
-async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey) {
-    if (!contractHash || !activePublicKey) {
-        return 0
-    }
-
+async function allowanceAgainstOwnerAndSpenderPairContract(accountHashStr: string, pairId: string) {
     try {
-        const res = await apiClient.getAllowanceAgainstOwnerAndSpender(contractHash, CLPublicKey.fromHex(activePublicKey).toAccountHashStr())
-        console.log(res)
-        return res.allowance;            
-    } catch(error) {
-        console.log(error);
-        console.log(error.response);
+        const res = await apiClient.getAllowanceAgainstOwnerAndSpenderPairContract(accountHashStr, `hash-${pairId}`)
+        return res.allowance
+    } catch(err) {
+        log.error(`allowanceAgainstOwnerAndSpenderPairContract error: ${err}`)
     }
 }
 
-async function allowanceAgainstOwnerAndSpenderPaircontract(contractHash, activePublicKey) {
-    if (!contractHash || !activePublicKey) {
-        return 0
-    }
-
+async function liquidityAgainstUserAndPair(accountHashStr: string, pairId: string) {
     try {
-        const res = await apiClient.getAllowanceAgainstOwnerAndSpenderPairContract(contractHash, CLPublicKey.fromHex(activePublicKey).toAccountHashStr())
-        console.log(res)
-        return res.allowance;            
-    } catch(error) {
-        console.log(error);
-        console.log(error.response);
+        const res = await apiClient.getLiquidityAgainstUserAndPair(accountHashStr, `hash-${pairId}`)
+        return res.liquidity           
+    } catch(err) {
+        log.error(`liquidityAgainstUserAndPair error: ${err}`)
     }
-}
-
-async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, tokenBAmountPercent, runtimeArgs) {
-    const publicKey = CLPublicKey.fromHex(publicKeyHex);
-    const caller = ROUTER_CONTRACT_HASH;
-    const paymentAmount = 5_000_000_000;
-
-
-    const contractHashAsByteArray = Uint8Array.from(Buffer.from(caller, "hex"));
-    const entryPoint = entryPointEnum.Remove_liquidity_js_client
-
-    // Set contract installation deploy (unsigned).
-    return await makeDeploy(
-        publicKey,
-        contractHashAsByteArray,
-        entryPoint,
-        runtimeArgs,
-        paymentAmount
-    );
-}
-
-async function liquidityAgainstUserAndPair(activePublicKey, pairId) {
-    const param = {
-        to: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex"),
-        pairid: pairId
-    }
-    return await axios.post(`${BASE_URL}/liquidityagainstuserandpair`, param)
-}
-
-function ObjectToArray(object) {
-    const array = []
-    Object.keys(object).map(x => {
-        array.push(object[x])
-    })
-    return array
-}
-
-function PairsWithBalance(pairs) {
-    return ObjectToArray(pairs).filter(x => x.balance > 0)
 }
 
 export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) => {
     const [state, dispatch] = useReducer(ConfigReducer, initialConfigState)
-    const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialStateToken);
+    const [tokenState, tokenDispatch] = useReducer(TokenReducer, initialTokenState);
     const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
-    const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
+    const {tokens, firstTokenSelected, secondTokenSelected} = tokenState;
     const [progressModal, setProgressModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const columns = getColumns()
@@ -209,28 +181,50 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [poolList, setPoolList] = useState([])
     const [gralData, setGralData] = useState({})
     const [isStaked, setStaked] = useState(false)
-
-    const [wallet, setWallet] = useState<MaybeWallet>(undefined)
+    const [linkExplorer, setLinkExplorer] = useState("")
 
     let debounceConnect = false
 
-    async function connect() {
+    /**
+     * return value for connect()
+     */
+    type ConnectReturn = {
+        // wallet
+        wallet: Wallet,
+        // balance of wallet
+        balance: BigNumber,
+        // main purse of wallet's address
+        mainPurse: string,
+        // wallet accountHashString
+        walletAddress: string,
+    }
+
+    /**
+     * Connect to the currently selected wallet
+     * 
+     * @returns wallet, balance, mainPurse, and walletAddress
+     */
+    async function connect(): Promise<ConnectReturn> {
         if (debounceConnect) {
-            return []
+            return {
+                wallet: state.wallet,
+                mainPurse: state.mainPurse,
+                walletAddress: state.wallet.accountHashString,
+                balance: convertUIStringToBigNumber(tokenState.tokens.CSPR.amount),
+            }
         }
 
         debounceConnect = true
         let w: MaybeWallet
 
-        if (walletSelected === 'casper') {
+        if (walletSelected === WalletName.CASPER_SIGNER) {
             try {
-                if (wallet) {
-                    wallet.disconnect()
+                if (state.wallet) {
+                    state.wallet.disconnect()
                 }
 
                 w = new CasperSignerWallet()
                 await w.connect()
-                setWallet(w)
             } catch (e) {
                 debounceConnect = false
                 throw e
@@ -264,11 +258,87 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
         const { balance, mainPurse } = await getStatus(w)
         debounceConnect = false
-        return [balance, mainPurse, w.publicKeyHex]
+        return {
+            wallet: w,
+            balance, 
+            mainPurse, 
+            walletAddress: w.accountHashString,
+        }
     }
 
-    async function onConnectWallet(ignoreError = false) {
-        if (wallet?.isConnected) {
+    async function updateBalances(
+        wallet: Wallet,
+        tokens: Record<string, Token>,
+        tokenDispatch: React.Dispatch<TokenAction>,
+    ): Promise<void> {
+        if (!wallet.isConnected) {
+            return
+        }
+
+        try {
+            console.log('tokenState', tokenState)
+            const ps = Object.keys(tokens).map((x) => {
+                const token = tokens[x]
+                
+                console.log('token', x, token)
+                if (tokens[x].contractHash) {
+                    return Promise.all([
+                        apiClient.getAllowanceAgainstOwnerAndSpender(wallet.accountHashString, token.contractHash)
+                            .then((response) => {
+                                console.log('allowance', token, response.allowance)
+                                tokenDispatch({
+                                    type: TokenActions.LOAD_ALLOWANCE,
+                                    payload: { 
+                                        name: x, 
+                                        allowance: convertBigNumberToUIString(new BigNumber(response.allowance)) 
+                                    },
+                                })
+                            }),
+                        apiClient.getBalanceAgainstUser(wallet.accountHashString, token.contractHash)
+                            .then((response) => {
+                                console.log('balance', response.balance)
+                                tokenDispatch({
+                                    type: TokenActions.LOAD_BALANCE,
+                                    payload: { 
+                                        name: x, 
+                                        amount: convertBigNumberToUIString(new BigNumber(response.balance)) 
+                                    },
+                                })
+                            })
+                    ])
+                } else {
+                    return casperClient.getBalance(wallet)
+                        .then((balance) => {
+                            console.log('balance', convertBigNumberToUIString(balance))
+                            tokenDispatch({
+                                type: TokenActions.LOAD_BALANCE,
+                                payload: { 
+                                    name: 'CSPR', 
+                                    amount: convertBigNumberToUIString(balance) 
+                                },
+                            });
+                        })
+                }
+            })
+            
+            await Promise.all(ps)
+        } catch (err) {
+            log.error(`updateBalances error: ${err}`)
+        }
+    }
+
+    async function refresh(wallet: Wallet) {
+        await fillPairs(wallet)
+        await fillPairDetail(wallet)
+        await updateBalances(
+            wallet,
+            tokens,
+            tokenDispatch,
+        )
+    }
+
+    async function onConnectWallet(ignoreError = false): Promise<void> {
+        if (state.wallet?.isConnected) {
             return
         }
         
@@ -278,23 +348,17 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
         const toastLoading = toast.loading("Try to connect your wallet")
         try {
-            const [ csprBalance, mainPurse, walletAddress ] = await connect()
+            const ret = await connect()
 
-            dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse } })
-            dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { walletAddress } })
-            await fillPairs(walletAddress)
-            await updateBalances(walletAddress,
-                tokens,
-                tokenDispatch,
-                secondTokenSelected,
-                firstTokenSelected,
-                csprBalance
-            )
+            dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse: ret.mainPurse } })
+            dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { wallet: ret.wallet } })
+            
+            refresh(ret.wallet)
 
             toast.dismiss(toastLoading)
             toast.success("your wallet is mounted and ready to ride!")
-        } catch (e) {
-            console.log('error', e)
+        } catch (err) {
+            log.error(`onConnectWallet error: ${err}`)
             toast.dismiss(toastLoading)
             if (!ignoreError) {
                 toast.error("Ooops we have an error")
@@ -304,21 +368,19 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
     const {
         isConnected,
-        walletAddress,
         walletSelected,
-        languagesSelected,
-        visualModeSelected,
         slippageToleranceSelected,
-        gasPriceSelected,
-        mainPurse 
+        mainPurse ,
     } = state
 
     useEffect(() => {
         const fn = async () => {
+            await loadPairs()
+            await getTVLandVolume()
             const data = await apiClient.getTokenList()
             const tokens = tokensToObject(data.tokens)
             console.log('TOKENS', tokens)
-            dispatch({ type: "UPDATE_TOKENS", payload: { tokens } })
+            tokenDispatch({ type: TokenActions.UPDATE_TOKENS, payload: { tokens } as any })
         }
 
         fn().catch((e) => log.error(`UPDATE_TOKENS error": ${e}`))
@@ -396,7 +458,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         ]
     }
 
-    const getTVLandVolume = () => {
+    const getTVLandVolume = async (): Promise<void> => {
 
         const data = {
             tvl: "192,168,000,000",
@@ -406,83 +468,10 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         setGralData(data)
     }
 
-    const getPoolList = async () => {
-        const result = await axios.get(`${BASE_URL}/getpairlist`)
-
-        if (result.data.success) {
-
-            const pairList = result.data.pairList
-            const newList = pairList.map(d => {
-                const token0Decimals = initialStateToken.tokens[d.token0.symbol].decimals
-                const token1Decimals = initialStateToken.tokens[d.token1.symbol].decimals
-                return {
-                    tokeIcon1: wethIcon,
-                    tokeIcon2: casprIcon,
-                    tokenName: d.token0.symbol + "-" + d.token1.symbol,
-                    tokenLiquidity: normalizeAmount(d.reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(d.reserve1, token1Decimals) * parseFloat(d.token1Price),
-                    volume7d: normalizeAmount(d.volumeUSD, 9).toFixed(2),
-                    fees24h: 0,
-                    oneYFees: 0,
-                    volume: normalizeAmount(d.volumeUSD, 9),
-                    reserve0: parseFloat(d.reserve0) > 0 ? normalizeAmount(d.reserve0, token0Decimals) : 0.00001,
-                    reserve1: parseFloat(d.reserve1) > 0 ? normalizeAmount(d.reserve1, token0Decimals) : 0.00001,
-                    totalSupply: parseFloat(d.totalSupply) > 0 ? normalizeAmount(d.totalSupply, token0Decimals) : 0.00001,
-                    token0Price: parseFloat(d.token0Price),
-                    token1Price: parseFloat(d.token1Price),
-                    pair: {
-                        token0: d.token0.symbol,
-                        token1: d.token1.symbol,
-                        token0Liquidity: 0,
-                        token1Liquidity: 0,
-                        totalLiquidityPool: 0,
-                        totalLiquidityUSD: 0,
-                        volumePercentage: 0,
-                        totalPool: 0
-                    }
-                }
-            })
-
-            return newList
-        }
-
-        return []
-    }
-
-    const getPoolDetailByUser = async (hash: string, wa: string | number | boolean | void = null) => {
-
-        const result = await axios.post(`${BASE_URL}/getpairagainstuser`, {user: hash})
-
-        if (result.data.success) {
-            const pairList = result.data.pairsdata
-            const userPairs = result.data.userpairs
-
-            const list = await Promise.all(pairList.map(async d => {
-                const data = userPairs.filter(u => u.pair === d.id)
-                const token0Decimals = initialStateToken.tokens[d.token0.symbol].decimals
-                const token1Decimals = initialStateToken.tokens[d.token1.symbol].decimals
-
-                const totalLiquidity = await getLiquidityByUserAndPairDataId(getAccountHash(wa), d.id)
-
-                return {
-                    token0: d.token0.symbol,
-                    token1: d.token1.symbol,
-                    contract0: d.token0.id,
-                    contract1: d.token1.id,
-                    token0Liquidity: normalizeAmount(data[0].reserve0, token0Decimals),
-                    token1Liquidity: normalizeAmount(data[0].reserve1, token1Decimals),
-                    totalLiquidityPool: normalizeAmount(totalLiquidity, 9),
-                    totalLiquidityUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
-                    volume: normalizeAmount(d.volumeUSD, 9),
-                    totalPoolId: d.id,
-                    totalPool: normalizeAmount(totalLiquidity, token1Decimals),
-                    totalPoolUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
-                    totalSupply: normalizeAmount(d.totalSupply, token0Decimals),
-                }
-            }))
-
-            return list
-        }
-        return []
+    const getPoolList = (): PairData[] => {
+        return Object.entries(pairState).map(([k, v])=>{
+            return v
+        })
     }
 
     const getContractHashAgainstPackageHash = async (pairId) => {
@@ -495,23 +484,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    const getLiquidityByUserAndPairDataId = async (user, pairDataId) => {
-      try {
-          const liquidityResp = await axios.post(`${BASE_URL}/liquidityagainstuserandpair`, {pairid: pairDataId, to: user})
-
-          if (liquidityResp.data.success) {
-              return liquidityResp.data.liquidity
-          } else {
-              return "0"
-          }
-      } catch (e) {
-          console.error(`Error - it happened an error trying to get user pool liquidity`)
-          return "0"
-      }
-    }
-
     const loadPoolDetailByUser = async (hash, poolList, wa: string | number | boolean | void = null) => {
-        const list = await getPoolDetailByUser(hash, wa)
+        const list = await getPoolDetailByUser(hash)
 
         const newList = poolList.map(d => {
             const data = list.filter(f => d.pair.token0 === f.token0 && d.pair.token1 === f.token1 || d.pair.token1 === f.token0 && d.pair.token0 === f.token1)
@@ -544,61 +518,173 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    const filter = (onlyStaked, row) => {
+    const filter = (onlyStaked: boolean, row: Row<PairData>): any => {
         if (onlyStaked) {
-            return row.original.pair.totalPool > 0
+            return parseFloat(row.original.balance) > 0
         }
 
         return row
     }
 
-    async function fillPairs(walletAddress) {
+    async function loadPairs(): Promise<void> {
         try {
-            // const respuesta = await getPairAgainstUser(walletAddress)
-            // console.log("getPairAgainstUser", respuesta)
-            // const otraresp = await getPathReserves(respuesta)
-            // console.log("getPathReserves", otraresp)
-            const pairList = Object.keys(pairState).map(x => pairState[x])
-            for (const pair of pairList) {
-                const result: any = await liquidityAgainstUserAndPair(walletAddress, pair.id)
-                pairDispatch({ type: "ADD_BALANCE_TO_PAIR", payload: { pair: pair.name, balance: (result.data.liquidity / 10 ** 9).toString() } })
-            }
-        } catch (error) {
-            console.log("fillPairs", error.message)
+            const pairListResponse = await apiClient.getPairList()
+            pairListResponse.pairList.map((pl) => {
+                const token0Decimals = tokenState.tokens[pl.token0.symbol].decimals
+                const token1Decimals = tokenState.tokens[pl.token1.symbol].decimals
+                const reserve0 = convertBigNumberToUIString(new BigNumber(pl.reserve0), token0Decimals)
+                const reserve1 = convertBigNumberToUIString(new BigNumber(pl.reserve1), token1Decimals)
+
+                console.log('pl', pl)
+
+                pairDispatch({ 
+                    type: PairActions.LOAD_PAIR, 
+                    payload: { 
+                        name: `${pl.token0.symbol}-${pl.token1.symbol}`,
+                        token0Symbol: pl.token0.symbol,
+                        token1Symbol: pl.token1.symbol,
+                        totalLiquidityUSD: new BigNumber(reserve0).times(pl.token0Price).plus(new BigNumber(reserve1).times(pl.token1Price)).toString(),
+                        volume7d: new BigNumber(convertBigNumberToUIString(new BigNumber(pl.volumeUSD), 9)).toFixed(2),
+                        fees24h: '0',
+                        oneYFees: '0',
+                        volume: convertBigNumberToUIString(new BigNumber(pl.volumeUSD), 9),
+                        totalReserve0: reserve0,
+                        totalReserve1: reserve1,
+                        totalSupply: convertBigNumberToUIString(new BigNumber(pl.totalSupply)),
+                        token0Price: pl.token0Price,
+                        token1Price: pl.token1Price,
+                        contract0: pl.token0.id,
+                        contract1: pl.token1.id,
+                        id: pl.id,
+                    }
+                })
+            })
+        } catch (err) {
+            log.error("loadPairs", err.message)
         }
     }
 
-    function cleanPairs() {
-        return PairsWithBalance(pairState)
-    }
-    function onSelectFirstToken(token) {
-        tokenDispatch({ type: tokenReducerEnum.SELECT_FIRST_TOKEN, payload: token })
+    async function fillPairs(wallet: Wallet): Promise<void> {
+        console.log('isConnected', wallet.isConnected)
+        if (!wallet.isConnected) { 
+            return
+        }
+        
+        try {
+            await loadPairs()
+            const ps = [] 
+            const pairList = Object.keys(pairState).map(x => pairState[x])
+            for (const pair of pairList) {
+                ps.push(liquidityAgainstUserAndPair(wallet.accountHashString, pair.id)
+                    .then((liquidity) => pairDispatch({ type: PairActions.ADD_BALANCE_TO_PAIR, payload: { name: pair.name, balance: convertBigNumberToUIString(new BigNumber(liquidity)) } })))
+                ps.push(allowanceAgainstOwnerAndSpenderPairContract(wallet.accountHashString, pair.id)
+                    .then((allowance) => pairDispatch({ type: PairActions.ADD_ALLOWANCE_TO_PAIR, payload: { name: pair.name, allowance: convertBigNumberToUIString(new BigNumber(allowance)) } })))
+            }
+
+            await Promise.all(ps)
+        } catch (err) {
+            log.error("fillPairs", err.message)
+        }
     }
 
-    function onSelectSecondToken(token) {
-        tokenDispatch({ type: tokenReducerEnum.SELECT_SECOND_TOKEN, payload: token })
+    async function fillPairDetail(wallet: Wallet): Promise<void> {
+        try {
+            const result = await apiClient.getPairAgainstUser(wallet.accountHashString)
+            const pairList = result.pairsdata
+            const userPairs = result.userpairs
+
+            await Promise.all(pairList.map(async d => {
+                const data = userPairs.filter(u => u.pair === d.id)
+                console.log('d', data)
+                if (data[0]) {
+                    const token0Decimals = tokenState.tokens[d.token0.symbol].decimals
+                    const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
+
+                    pairDispatch({ type: PairActions.LOAD_USER_PAIR, payload: {
+                        name: `${d.token0.symbol}-${d.token1.symbol}`,
+                        reserve0: convertBigNumberToUIString(new BigNumber(data[0].reserve0), token0Decimals),
+                        reserve1: convertBigNumberToUIString(new BigNumber(data[0].reserve1), token1Decimals),
+                        liquidityUSD: new BigNumber(convertBigNumberToUIString(new BigNumber(data[0].reserve0).times(d.token0Price), token0Decimals))
+                            .plus(convertBigNumberToUIString(new BigNumber(data[0].reserve1).times(d.token1Price), token1Decimals)).toFixed(2),
+                    }})
+                }
+            }))
+        } catch (err) {
+            log.error("fillPairDetail", err.message)
+        }
     }
 
-    function onSwitchTokens() {
-        tokenDispatch({ type: tokenReducerEnum.SWITCH_TOKENS, payload: { secondTokenSelected, firstTokenSelected } })
+    const getPoolDetailByUser = async (hash: string) => {
+
+        const result = await apiClient.getPairAgainstUser(hash)
+
+        if (result.success) {
+            const pairList = result.pairsdata
+            const userPairs = result.userpairs
+
+            const list = await Promise.all(pairList.map(async d => {
+                const data = userPairs.filter(u => u.pair === d.id)
+                const token0Decimals = tokenState.tokens[d.token0.symbol].decimals
+                const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
+
+                const totalLiquidity = await liquidityAgainstUserAndPair(state.wallet.accountHashString, d.id)
+                console.log('u', d)
+
+                return {
+                    token0: d.token0.symbol,
+                    token1: d.token1.symbol,
+                    contract0: d.token0.id,
+                    contract1: d.token1.id,
+                    token0Liquidity: normalizeAmount(data[0].reserve0, token0Decimals),
+                    token1Liquidity: normalizeAmount(data[0].reserve1, token1Decimals),
+                    totalLiquidityPool: normalizeAmount(totalLiquidity, 9),
+                    totalLiquidityUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
+                    volume: normalizeAmount(d.volumeUSD, 9),
+                    totalPoolId: d.id,
+                    totalPool: normalizeAmount(totalLiquidity, token1Decimals),
+                    totalPoolUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
+                    totalSupply: normalizeAmount(d.totalSupply, token0Decimals),
+                }
+            }))
+
+            return list
+        }
+        return []
     }
 
-    const [linkExplorer, setLinkExplorer] = useState("")
-    const [deployExplorer, setDeployExplorer] = useState("")
+    function onSelectFirstToken(token: string | Token): void {
+        if (typeof token === 'string') {
+            tokenDispatch({ type: TokenActions.SELECT_FIRST_TOKEN, payload: token })
+        } else {
+            tokenDispatch({ type: TokenActions.SELECT_FIRST_TOKEN, payload: token.symbol })
+        }
+    }
 
-    async function onConfirmSwapConfig(amountA: number | string, amountB: number | string, slippage: number) {
+    function onSelectSecondToken(token: string | Token): void {
+        if (typeof token === 'string') {
+            tokenDispatch({ type: TokenActions.SELECT_SECOND_TOKEN, payload: token })
+        } else {
+            tokenDispatch({ type: TokenActions.SELECT_SECOND_TOKEN, payload: token.symbol })
+        }
+    }
+
+    function onSwitchTokens(): void {
+        tokenDispatch({ type: TokenActions.SWITCH_TOKENS })
+    }
+
+    async function onConfirmSwapConfig(amountA: number | string, amountB: number | string, slippage: number): Promise<boolean> {
         const loadingToast = toast.loading("Swapping.")
 
         try {
             const [deployHash, deployResult] = await signAndDeploySwap(
                 apiClient,
                 casperClient,
-                wallet,
+                state.wallet,
                 DEADLINE,
                 convertUIStringToBigNumber(amountA),
                 convertUIStringToBigNumber(amountB),
-                firstTokenSelected.symbolPair,
-                secondTokenSelected.symbolPair,
+                tokenState.tokens[tokenState.firstTokenSelected],
+                tokenState.tokens[tokenState.secondTokenSelected],
                 slippage / 100,
                 mainPurse,
             );
@@ -611,23 +697,25 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             setConfirmModal(true)
 
             toast.dismiss(loadingToast)
+            refresh(state.wallet)
             return true
         } catch (err) {
             setProgressModal(false)
             toast.dismiss(loadingToast)
             console.log("onConfirmSwapConfig")
             toast.error(`${err}`)
+            refresh(state.wallet)
             return false
         }
     }
 
-    async function onIncreaseAllow(amount: number | string, contractHash) {
+    async function onIncreaseAllow(amount: number | string, contractHash: string): Promise<boolean> {
         const loadingToast = toast.loading("Increasing allowance.")
 
         try {
             const [deployHash, deployResult] = await signAndDeployAllowance(
                 casperClient,
-                wallet,
+                state.wallet,
                 contractHash,
                 convertUIStringToBigNumber(amount),
             )
@@ -641,29 +729,30 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
             toast.dismiss(loadingToast)
             toast.success("Success.")
+            refresh(state.wallet)
             return true
         } catch (err) {
             setProgressModal(false)
             toast.dismiss(loadingToast)
             console.log("onIncreaseAllow")
             toast.error(`${err}`)
+            refresh(state.wallet)
             return false
         }
     }
     
-
-    async function onAddLiquidity(amountA: number | string, amountB: number | string, slippage: number) {
+    async function onAddLiquidity(amountA: number | string, amountB: number | string, slippage: number): Promise<boolean> {
         const loadingToast = toast.loading("Adding liquidity.")
         try {
             const [deployHash, deployResult] = await signAndDeployAddLiquidity(
                 apiClient,
                 casperClient,
-                wallet,
+                state.wallet,
                 DEADLINE,
                 convertUIStringToBigNumber(amountA),
                 convertUIStringToBigNumber(amountB),
-                firstTokenSelected,
-                secondTokenSelected,
+                tokenState.tokens[tokenState.firstTokenSelected],
+                tokenState.tokens[tokenState.secondTokenSelected],
                 slippage / 100,
                 mainPurse,
             )
@@ -671,29 +760,32 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             setProgressModal(true)
             setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
 
-            const result = await getDeploy(deployHash);
+            const result = await casperClient.waitForDeployExecution(deployHash)
             setProgressModal(false)
             setConfirmModal(true)
 
             toast.dismiss(loadingToast)
             toast.success("Success.")
+            refresh(state.wallet)
             return true
         } catch (err) {
             setProgressModal(false)
             toast.dismiss(loadingToast)
             console.log("onAddLiquidity")
             toast.error(`${err}`)
+            refresh(state.wallet)
             return false
         }
     }  
 
-    async function onRemoveLiquidity(liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number) {
+    async function onRemoveLiquidity(liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number): Promise<boolean> {
         const loadingToast = toast.loading("Removing liquidity.")
+        console.log('zzz', tokenA, tokenB, amountA, amountB)
         try {
             const [deployHash, deployResult] = await signAndDeployRemoveLiquidity(
                 apiClient,
                 casperClient,
-                wallet,
+                state.wallet,
                 DEADLINE,
                 convertUIStringToBigNumber(liquidity),
                 convertUIStringToBigNumber(amountA),
@@ -706,28 +798,30 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             setProgressModal(true)
             setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
 
-            const result = await getDeploy(deployHash)
+            const result = await casperClient.waitForDeployExecution(deployHash)
             setProgressModal(false)
             setConfirmModal(true)
 
             toast.dismiss(loadingToast)
             toast.success("Success.")
+            refresh(state.wallet)
             return true
         } catch (err) {
             setProgressModal(false)
             toast.dismiss(loadingToast)
             console.log("onRemoveLiquidity")
             toast.error(`${err}`)
+            refresh(state.wallet)
             return false
         }
     }
 
-    async function onDisconnectWallet() {
+    async function onDisconnectWallet(): Promise<void> {
         try {
-            if (wallet) {
-                wallet.disconnect()
+            if (state.wallet) {
+                state.wallet.disconnect()
                 
-                dispatch({ type: ConfigActions.DISCONNECT_WALLET })
+                dispatch({ type: ConfigActions.DISCONNECT_WALLET, payload: {} }),
 
                 toast.success("Your wallet is disconnected")
             }
@@ -736,20 +830,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    function onChangeWallet() {
-        if (walletSelected === "casper") {
-            dispatch({ type: ConfigActions.SELECT_WALLET, payload: { walletSelected: 'torus' } })
-        } else {
-            dispatch({ type: ConfigActions.SELECT_WALLET, payload: { walletSelected: 'casper' } })
-        }
-    }
-
-    async function onAllowanceAgaintPair(pair) {
-        await allowanceAgainstOwnerAndSpenderPaircontract(pair, walletAddress)
-    }
-
     function getAccountHash(wa: string | number | boolean | void = null): string {
-        return Buffer.from(CLPublicKey.fromHex(wa as any ?? wallet.publicKeyHex).toAccountHash()).toString("hex")
+        return Buffer.from(CLPublicKey.fromHex(wa as any ?? state.wallet.publicKeyHex).toAccountHash()).toString("hex")
     }
 
     return (
@@ -757,31 +839,24 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             getAccountHash,
             onConnectWallet,
             onDisconnectWallet,
-            onChangeWallet,
             configState: state,
             tokenState,
-            tokenDispatch,
             onSelectFirstToken,
             onSelectSecondToken,
             onSwitchTokens,
             getSwapDetails,
             getLiquidityDetails,
-            getAllowanceAgainstOwnerAndSpender,
             tokens,
-            firstTokenSelected,
-            secondTokenSelected,
+            firstTokenSelected: tokenState.tokens[tokenState.firstTokenSelected],
+            secondTokenSelected: tokenState.tokens[tokenState.secondTokenSelected],
             isConnected,
             onConfirmSwapConfig,
             slippageToleranceSelected,
             onIncreaseAllow,
-            onAllowanceAgaintPair,
             onAddLiquidity,
-            fillPairs,
             pairState,
-            cleanPairs,
             onRemoveLiquidity,
             poolColumns,
-            poolList,
             setPoolList,
             getPoolList,
             loadPoolDetailByUser,
@@ -790,7 +865,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             isStaked,
             setStaked,
             filter,
-            getPoolDetailByUser,
             getContractHashAgainstPackageHash
         }}>
             {children}

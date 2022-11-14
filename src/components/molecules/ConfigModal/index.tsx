@@ -26,7 +26,7 @@ import Torus from "@toruslabs/casper-embed";
 
 import styled from "styled-components";
 import { CHAINS, SUPPORTED_NETWORKS } from '../../../constant';
-import { WalletController } from '../../../commons';
+import { WalletController, WalletName } from '../../../commons';
 import { ActiveWallet } from '../../../commons/controller';
 import { ConfigProviderContext } from '../../../contexts/ConfigContext';
 
@@ -51,7 +51,7 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
 
     const [openModal, openModalSet] = useAtom(setConfig)
     const { swapState, swapDispatch } = useContext(SwapProviderContext)
-    const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
+    const { onConnectWallet, onDisconnectWallet, configState, pairState } = useContext(ConfigProviderContext)
     const {
         isConnected,
         walletAddress,
@@ -66,11 +66,11 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
     const [activeWallet, activeWalletSetter] = useState(walletSelector.activeWallet)
 
     function switchWallet() {
-        onChangeWallet()
+        //onChangeWallet()
     }
 
     async function onConnect() {
-        onConnectConfig()
+        onConnectWallet()
     }
     async function onDisconnect() {
         onDisconnectWallet()
@@ -95,11 +95,11 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                     <ConfigModalBody>
                         <h1>Settings</h1>
                         <PillowDiv>
-                            <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === ActiveWallet.CASPER ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
+                            <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === WalletName.CASPER_SIGNER ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
                                 <WalletSelectionImageStyled src={casperWallet} alt="" />
                                 <h2>Signer Wallet</h2>
                             </WalletSelectionDiv>
-                            <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === ActiveWallet.TORUS ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
+                            <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === WalletName.TORUS ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
                                 <WalletSelectionImageStyled src={torusWallet} alt="" />
                                 <h2>Torus Wallet</h2>
                             </WalletSelectionDiv>
