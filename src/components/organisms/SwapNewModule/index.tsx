@@ -250,7 +250,7 @@ const SwapNewModule = () => {
                     <TokenSelectNSM>
                         <NewTokenDetailSelectNSM>
                             <NewTokenDetailItems1NSM>From</NewTokenDetailItems1NSM>
-                            <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} />
+                            <NewTokenDetailItems2NSM src={firstTokenSelected} />
                             <NewTokenDetailItems3NSM>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
                             <NewTokenDetailItems4NSM>
                                 <ArrowContainerNSM>
