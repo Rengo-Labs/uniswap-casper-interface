@@ -10,9 +10,13 @@ import {
 
 
 import {FlechaIcon} from '../../atoms/FlechaIcon'
+
 import {LoadersSwap} from '../../atoms/LoadersSwap'
+
 import {SwitchSwap} from '../../atoms/SwitchSwap'
+
 import {LPDetail} from '../../molecules'
+
 import {useSearchParams} from "react-router-dom";
 import {LiquidityRemovingModule} from "../LiquidityRemovingModule";
 import {LiquidityItem} from "../../molecules/LiquidityItem";
