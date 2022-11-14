@@ -3,6 +3,8 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
     ButtonConnection,
+    ButtonHalfMax,
+    ButtonHalfMaxContainer,
     CloseButtonAtom,
     ConfirmSwapButton,
     ExchangeRateBox,
@@ -21,9 +23,29 @@ import {
     SwapTokenSelect,
     SwitchSwap
 } from '../../atoms'
+import { ActionContainerNSM } from '../../atoms/ActionContainerNSM'
+import { ArrowContainerNSM } from '../../atoms/ArrowContainerNSM'
 import { BalanceInputContainerNSM } from '../../atoms/BalanceInputContainerNSM'
+import { BalanceInputItem1NSM } from '../../atoms/BalanceInputItem1NSM'
+import { BalanceInputItem2NSM } from '../../atoms/BalanceInputItem2NSM'
 import { BalanceInputNSM } from '../../atoms/BalanceInputNSM'
+import { ButtonSpaceNSM } from '../../atoms/ButtonSpaceNSM'
+import { CoinContainerNSM } from '../../atoms/CoinContainerNSM'
+import { ContainerNSM } from '../../atoms/ContainerNSM'
+import { ContainerSwapActions } from '../../atoms/ContainerSwapActions'
+import { ContainerSwapStaticsNSM } from '../../atoms/ContainerSwapStaticsNSM'
+import { IconPlaceNSM } from '../../atoms/IconPlaceNSM'
+import { NewBalanceSpaceNSM } from '../../atoms/NewBalanceSpaceNSM'
+import { NewSwapContainerNSM } from '../../atoms/NewSwapContainerNSM'
+import { NewTokenDetailActionsNSM } from '../../atoms/NewTokenDetailActionsNSM'
+import { NewTokenDetailItems1NSM } from '../../atoms/NewTokenDetailItems1NSM'
+import { NewTokenDetailItems2NSM } from '../../atoms/NewTokenDetailItems2NSM'
+import { NewTokenDetailItems3NSM } from '../../atoms/NewTokenDetailItems3NSM'
+import { NewTokenDetailItems4NSM } from '../../atoms/NewTokenDetailItems4NSM'
+import { NewTokenDetailSelectNSM } from '../../atoms/NewTokenDetailSelectNSM'
 import { SwapDetailsNSM } from '../../atoms/SwapDetailsNSM'
+import { TokenSelectionNSM } from '../../atoms/TokenSelectionNSM'
+import { TokenSelectNSM } from '../../atoms/TokenSelectNSM'
 import { SwapConfirmAtom, SwapDetail, SwapModal} from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
@@ -222,16 +244,16 @@ const SwapNewModule = () => {
     )
 
     return (
-        <Container>
+        <ContainerNSM>
             <ContainerSwapActions>
-                <NewSwapContainer>
-                    <TokenSelectStyled>
-                        <NewTokenDetailSelectStyled>
-                            <NewTokenDetailItems1Styled>From</NewTokenDetailItems1Styled>
-                            <NewTokenDetailItems2Styled src={firstTokenSelected.logoURI} width="50" height="50" />
-                            <NewTokenDetailItems3Styled>{firstTokenSelected.symbol}</NewTokenDetailItems3Styled>
-                            <NewTokenDetailItems4Styled>
-                                <ArrowContainerStyle>
+                <NewSwapContainerNSM>
+                    <TokenSelectNSM>
+                        <NewTokenDetailSelectNSM>
+                            <NewTokenDetailItems1NSM>From</NewTokenDetailItems1NSM>
+                            <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} />
+                            <NewTokenDetailItems3NSM>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
+                            <NewTokenDetailItems4NSM>
+                                <ArrowContainerNSM>
                                     <FlechaIcon onClick={() => { searchModalASetter(true) }} />
                                     {searchModalA && <FloatMenu
                                         lefilter={true}
@@ -240,34 +262,34 @@ const SwapNewModule = () => {
                                         selectToken={SelectAndCloseTokenA}
                                         onClick={() => { searchModalASetter(false) }}
                                     />}
-                                </ArrowContainerStyle>
-                            </NewTokenDetailItems4Styled>
-                        </NewTokenDetailSelectStyled>
-                    </TokenSelectStyled>
-                    <TokenSelectionStyled>
-                        <NewTokenDetailActionsStyled>
-                            <NewBalanceSpace>Balance: {firstTokenSelected.amount || "--"}</NewBalanceSpace>
-                            <ActionContainerStyled>
+                                </ArrowContainerNSM>
+                            </NewTokenDetailItems4NSM>
+                        </NewTokenDetailSelectNSM>
+                    </TokenSelectNSM>
+                    <TokenSelectionNSM>
+                        <NewTokenDetailActionsNSM>
+                            <NewBalanceSpaceNSM>Balance: {firstTokenSelected.amount || "--"}</NewBalanceSpaceNSM>
+                            <ActionContainerNSM>
                                 <ButtonHalfMaxContainer>
                                     <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
                                     <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
                                 </ButtonHalfMaxContainer>
                                 <BalanceInputContainerNSM>
-                                    <BalanceInputItem1Styled>
+                                    <BalanceInputItem1NSM>
                                         <BalanceInputNSM
                                             min={0}
                                             onChange={(e) => { changeTokenA(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenA} />
-                                    </BalanceInputItem1Styled>
-                                    <BalanceInputItem2Styled>
+                                    </BalanceInputItem1NSM>
+                                    <BalanceInputItem2NSM>
                                         <p>$34.75</p>
-                                    </BalanceInputItem2Styled>
+                                    </BalanceInputItem2NSM>
                                 </BalanceInputContainerNSM>
-                            </ActionContainerStyled>
-                        </NewTokenDetailActionsStyled>
-                    </TokenSelectionStyled>
-                </NewSwapContainer>
-                <IconPlaceStyle>
+                            </ActionContainerNSM>
+                        </NewTokenDetailActionsNSM>
+                    </TokenSelectionNSM>
+                </NewSwapContainerNSM>
+                <IconPlaceNSM>
                     <SwitchSwap onClick={() => { onSwitchTokens(); ResetAll() }} />
                     <SwapDetailsNSM>
                         <ExchangeRateBox
@@ -278,48 +300,48 @@ const SwapNewModule = () => {
                         />
                     </SwapDetailsNSM>
                     <LoadersSwap />
-                </IconPlaceStyle>
-                <NewSwapContainer>
-                    <TokenSelectStyled>
-                        <NewTokenDetailSelectStyled>
-                            <NewTokenDetailItems1Styled>To</NewTokenDetailItems1Styled>
-                            <NewTokenDetailItems2Styled src={secondTokenSelected.logoURI} width="50" height="50" />
-                            <NewTokenDetailItems3Styled>{secondTokenSelected.symbol}</NewTokenDetailItems3Styled>
-                            <NewTokenDetailItems4Styled>
-                                <ArrowContainerStyle>
+                </IconPlaceNSM>
+                <NewSwapContainerNSM>
+                    <TokenSelectNSM>
+                        <NewTokenDetailSelectNSM>
+                            <NewTokenDetailItems1NSM>To</NewTokenDetailItems1NSM>
+                            <NewTokenDetailItems2NSM src={secondTokenSelected} />
+                            <NewTokenDetailItems3NSM>{secondTokenSelected.symbol}</NewTokenDetailItems3NSM>
+                            <NewTokenDetailItems4NSM>
+                                <ArrowContainerNSM>
                                     <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                                     {searchModalB && <FloatMenu
                                         tokens={returnFilter(tokens, firstTokenSelected)}
                                         selectToken={SelectAndCloseTokenB}
                                         onClick={() => { searchModalBSetter(false) }}
                                     />}
-                                </ArrowContainerStyle>
-                            </NewTokenDetailItems4Styled>
-                        </NewTokenDetailSelectStyled>
-                    </TokenSelectStyled>
-                    <TokenSelectionStyled>
-                        <NewTokenDetailActionsStyled>
-                            <NewBalanceSpace>Balance: {secondTokenSelected.amount || "--"}</NewBalanceSpace>
-                            <ActionContainerStyled>
+                                </ArrowContainerNSM>
+                            </NewTokenDetailItems4NSM>
+                        </NewTokenDetailSelectNSM>
+                    </TokenSelectNSM>
+                    <TokenSelectionNSM>
+                        <NewTokenDetailActionsNSM>
+                            <NewBalanceSpaceNSM>Balance: {secondTokenSelected.amount || "--"}</NewBalanceSpaceNSM>
+                            <ActionContainerNSM>
                                 <ButtonHalfMaxContainer>
                                     <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
                                     <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
                                 </ButtonHalfMaxContainer>
                                 <BalanceInputContainerNSM>
-                                    <BalanceInputItem1Styled>
+                                    <BalanceInputItem1NSM>
                                         <BalanceInputNSM
                                             min={0}
                                             onChange={(e) => { changeTokenB(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenB} />
-                                    </BalanceInputItem1Styled>
-                                    <BalanceInputItem2Styled>
+                                    </BalanceInputItem1NSM>
+                                    <BalanceInputItem2NSM>
                                         <p>$34.75</p>
-                                    </BalanceInputItem2Styled>
+                                    </BalanceInputItem2NSM>
                                 </BalanceInputContainerNSM>
-                            </ActionContainerStyled>
-                        </NewTokenDetailActionsStyled>
-                    </TokenSelectionStyled>
-                </NewSwapContainer>
+                            </ActionContainerNSM>
+                        </NewTokenDetailActionsNSM>
+                    </TokenSelectionNSM>
+                </NewSwapContainerNSM>
                 {
                     amountSwapTokenB > 0 &&
                     <SwapDetail
@@ -332,7 +354,7 @@ const SwapNewModule = () => {
                         fullExpanded={false}
                     />
                 }
-                <ButtonSpaceStyled>
+                <ButtonSpaceNSM>
                     {
                         !isConnected && <NewSwapButton style={{width: "391px", height: "57px"}} content="Connect to Wallet" handler={async () => { onConnect() }} />
                     }
@@ -342,7 +364,7 @@ const SwapNewModule = () => {
                     {
                         isApproved && isConnected && <NewSwapButton style={{width: "391px", height: "57px"}} content="Swap" disabled={amountSwapTokenB <= 0} handler={async () => { await onConfirmSwap() }} />
                     }
-                </ButtonSpaceStyled>
+                </ButtonSpaceNSM>
                 {
                     activeModalSwap &&
                     <SwapModal >
@@ -373,8 +395,8 @@ const SwapNewModule = () => {
                 }
 
             </ContainerSwapActions>
-            <ContainerSwapStatics>
-                <CoinContainerStyled>
+            <ContainerSwapStaticsNSM>
+                <CoinContainerNSM>
                     <img src={firstTokenSelected.logoURI} width="50" height="50" />
                     <div>{firstTokenSelected.symbol}</div>
                     <div>|</div>
@@ -389,8 +411,8 @@ const SwapNewModule = () => {
                     <div>
                         <Graphics />
                     </div>
-                </CoinContainerStyled>
-                <CoinContainerStyled>
+                </CoinContainerNSM>
+                <CoinContainerNSM>
                     <img src={secondTokenSelected.logoURI} width="50" height="50" />
                     <div>{secondTokenSelected.symbol}</div>
                     <div>|</div>
@@ -405,173 +427,10 @@ const SwapNewModule = () => {
                     <div>
                         <Graphics />
                     </div>
-                </CoinContainerStyled>
-            </ContainerSwapStatics>
-        </Container>
+                </CoinContainerNSM>
+            </ContainerSwapStaticsNSM>
+        </ContainerNSM>
     )
 }
-
-
-
-
-export const BalanceInputItem1Styled = styled.div`
-    align-self: center;
-    color:${props => props.theme.NewPurpleColor};
-    font-size: 3em;
-`
-export const BalanceInputItem2Styled = styled.div`
-align-self: center;
-`
-
-export const ArrowContainerStyle = styled.div`
-    padding-top:10px;
-    align-self: start;
-`
-export const ActionContainerStyled = styled.div`
-    display: flex;
-`
-
-export const ButtonHalfMaxContainer = styled.div`
-    border-left: 3px solid ${props => props.theme.NewPurpleColor};
-    padding-left:10px;
-    display: grid;
-    gap:10px;
-`
-
-export const ButtonHalfMax = styled.div<any>`
-    background-color: ${props => props.theme.NewPurpleColor};
-    color: white;
-    padding:10px;
-    border-radius: 12px;
-    width: 21px;
-    height: 12px;
-    cursor: pointer;
-    font-size: 12px;
-`
-
-export const IconPlaceStyle = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`
-export const ButtonSpaceStyled = styled.div`
-    justify-self: center;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 10px;
-`
-export const TokenSelectStyled = styled.div`
-    display: flex;
-    justify-content: space-between;
-`
-export const TokenSelectionStyled = styled.div`
-    display: flex;
-    align-items: center;
-    gap:10px;
-`
-
-const CoinContainerStyled = styled.div`
-    width: 27rem;
-    height: 3.5rem;
-    background-color: white;
-    box-sizing: border-box;
-    border:1px solid black;
-    border-radius: 20px;
-    padding:10px;
-    display: flex;
-    gap:10px;
-    align-items: center;
-`
-const ContainerSwapStatics = styled.section`
-    justify-self: start;
-    box-sizing: border-box;
-    width: 29rem;
-    height: 10rem;
-    padding:2rem;
-    border:1px solid black;
-    border-radius: 20px;
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap:10px;
-    z-index: 2;
-`
-export const NewTokenDetailSelectStyled = styled.section`
-    display: grid;
-    grid-template-columns: auto auto;
-    grid-template-rows: auto auto auto;
-`
-export const NewTokenDetailItems1Styled = styled.section`
-    grid-column: 1/2;
-    grid-row: 1/2;
-    justify-self: center;
-`
-export const NewTokenDetailItems2Styled = styled.img`
-    grid-column: 1/2;
-    grid-row: 2/3;
-    align-self: center;
-`
-export const NewTokenDetailItems3Styled = styled.section`
-    grid-column: 1/2;
-    grid-row: 3/4;
-    justify-self: center;
-`
-export const NewTokenDetailItems4Styled = styled.section`
-    grid-column: 2/3;
-    grid-row: 2/3;
-    justify-self: center;
-`
-
-export const NewTokenDetailActionsStyled = styled.section`
-    width: 100%;
-    display: grid;
-    grid-template-rows: auto 1fr;
-`
-export const NewBalanceSpace = styled.section`
-    justify-self:end;
-`
-
-export const NewSwapContainer = styled.section`
-    background-color:white;
-    box-sizing: border-box; 
-    justify-self: center;
-    height: 8rem;
-    padding: 1rem;
-    border:1px solid black;
-    border-radius: 20px;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 10px;
-`
-
-const Container = styled.main`
-    box-sizing: border-box;
-    justify-self:center;
-    box-sizing: border-box;
-    width: 100%;
-    gap:10px;
-    color:black;
-    display: grid;
-    grid-template-columns: auto auto;
-    padding: 10px;
-`
-const ContainerSwapActions = styled.section`
-    justify-self: end;
-    box-sizing: border-box;
-    width: 462px;
-    border:1px solid black;
-    border-radius: 20px;
-    display:grid;
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    gap:10px;
-    padding: 20px 25px;
-    z-index: 3;
-`
 
 export default SwapNewModule
