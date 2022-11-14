@@ -5,7 +5,7 @@ import { ContainerSwapModuleNew, ContainerCenter, HeaderSwapNewModule, IconConta
 
 
 
-const FloatMenu = ({ tokens, selectToken, onClick, lefilter = false, lesymbol = "" }) => {
+const FloatMenuFloatMenu = ({ tokens, selectToken, onClick, lefilter = false, lesymbol = "" }) => {
     let leTokens = Object.keys(tokens)
     if (lefilter) {
         const filter = new RegExp(lesymbol)
