@@ -15,14 +15,11 @@ import FloatMenu from '../FloatMenu'
 import {useSearchParams} from "react-router-dom";
 import {LiquidityRemovingModule} from "../LiquidityRemovingModule";
 import {LiquidityItem} from "../../molecules/LiquidityItem";
-import wethIcon from "../../../assets/swapIcons/wethIcon.svg";
-import casprIcon from "../../../assets/swapIcons/casperIcon.png";
 import {TbTrash} from "react-icons/tb";
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {CircleButton} from "../../molecules/POCTBody/styles";
 import { 
     convertAllFormatsToUIFixedString,
-    Token,
 } from '../../../commons'
 
 import {
@@ -73,6 +70,7 @@ const LiquidityNewModule = () => {
         firstTokenSelected,
         secondTokenSelected,
         isConnected,
+        
         slippageToleranceSelected,
         getLiquidityDetails,
         onIncreaseAllow,
@@ -254,13 +252,9 @@ const LiquidityNewModule = () => {
             return true
         }
         if (parseFloat(amount0) <= 0 || parseFloat(amount0) > parseFloat(firstTokenSelected.amount.toString())) {
-            
-        console.log('amount0 amount1', amount0, amount1)
             return true
         }
-        if (parseFloat(amount1) <= 0 || parseFloat(amount1) > parseFloat(secondTokenSelected.amount.toString())) {
-            
-        console.log('zzamount0 amount1', parseFloat(amount1) <= 0, parseFloat(amount1) >= parseFloat(secondTokenSelected.amount.toString()))
+        if (parseFloat(amount1) <= 0 || parseFloat(amount1) > parseFloat(secondTokenSelected.amount.toString())) {            
             return true
         }
     }
@@ -421,10 +415,10 @@ const LiquidityNewModule = () => {
                                 <LiquidityItem
                                     key={`${row.token0Symbol}-${row.token1Symbol}`}
                                     fullExpanded={openPopup}
-                                    firstIcon={casprIcon}
+                                    firstIcon={row.token0Icon}
                                     firstSymbol={row.token0Symbol}
                                     firstLiquidity={row.reserve0}
-                                    secondIcon={wethIcon}
+                                    secondIcon={row.token1Icon}
                                     secondSymbol={row.token1Symbol}
                                     secondLiquidity={row.reserve1}
                                     liquidity={row.balance}

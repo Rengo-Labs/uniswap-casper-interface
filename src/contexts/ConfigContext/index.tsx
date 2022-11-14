@@ -535,6 +535,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 const reserve0 = convertBigNumberToUIString(new BigNumber(pl.reserve0), token0Decimals)
                 const reserve1 = convertBigNumberToUIString(new BigNumber(pl.reserve1), token1Decimals)
 
+                console.log('pl', pl)
+
                 pairDispatch({ 
                     type: PairActions.LOAD_PAIR, 
                     payload: { 
@@ -576,7 +578,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 ps.push(liquidityAgainstUserAndPair(wallet.accountHashString, pair.id)
                     .then((liquidity) => pairDispatch({ type: PairActions.ADD_BALANCE_TO_PAIR, payload: { name: pair.name, balance: convertBigNumberToUIString(new BigNumber(liquidity)) } })))
                 ps.push(allowanceAgainstOwnerAndSpenderPairContract(wallet.accountHashString, pair.id)
-                    .then((liquidity) => pairDispatch({ type: PairActions.ADD_ALLOWANCE_TO_PAIR, payload: { name: pair.name, allowance: convertBigNumberToUIString(new BigNumber(liquidity)) } })))
+                    .then((allowance) => pairDispatch({ type: PairActions.ADD_ALLOWANCE_TO_PAIR, payload: { name: pair.name, allowance: convertBigNumberToUIString(new BigNumber(allowance)) } })))
             }
 
             await Promise.all(ps)
@@ -593,6 +595,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
             await Promise.all(pairList.map(async d => {
                 const data = userPairs.filter(u => u.pair === d.id)
+                console.log('d', data)
                 if (data[0]) {
                     const token0Decimals = tokenState.tokens[d.token0.symbol].decimals
                     const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
@@ -625,6 +628,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
 
                 const totalLiquidity = await liquidityAgainstUserAndPair(state.wallet.accountHashString, d.id)
+                console.log('u', d)
 
                 return {
                     token0: d.token0.symbol,
@@ -776,6 +780,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
     async function onRemoveLiquidity(liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number): Promise<boolean> {
         const loadingToast = toast.loading("Removing liquidity.")
+        console.log('zzz', tokenA, tokenB, amountA, amountB)
         try {
             const [deployHash, deployResult] = await signAndDeployRemoveLiquidity(
                 apiClient,
@@ -799,12 +804,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
             toast.dismiss(loadingToast)
             toast.success("Success.")
+            refresh(state.wallet)
             return true
         } catch (err) {
             setProgressModal(false)
             toast.dismiss(loadingToast)
             console.log("onRemoveLiquidity")
             toast.error(`${err}`)
+            refresh(state.wallet)
             return false
         }
     }

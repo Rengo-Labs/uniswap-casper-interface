@@ -44,7 +44,7 @@ export const CollapsingRow = ({
     }
 
     const goTo = (path, optional='') => {
-        navigate({pathname: path, search: `token0=${row.original.token0Symbol}&token1=${row.original.token1Symbol}${optional}`})
+        navigate({pathname: path, search: `token0=${row.original.token0Symbol.replace('WCSPR', 'CSPR')}&token1=${row.original.token1Symbol.replace('WCSPR', 'CSPR')}${optional}`})
     }
 
     return (

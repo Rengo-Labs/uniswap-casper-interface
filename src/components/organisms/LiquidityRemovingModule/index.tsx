@@ -85,6 +85,8 @@ export const LiquidityRemovingModule = ({
     }
 
     const removeLiquidity = async () => {
+        console.log('zz', firstHash, secondHash, firstLiquidity, secondLiquidity)
+
         await onRemoveLiquidity(value, 
             {
                 symbol: firstSymbol.replace('WCSPR', 'CSPR'),
