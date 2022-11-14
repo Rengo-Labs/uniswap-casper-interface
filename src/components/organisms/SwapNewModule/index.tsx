@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
-import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
     ButtonConnection,
@@ -22,6 +21,9 @@ import {
     SwapTokenSelect,
     SwitchSwap
 } from '../../atoms'
+import { BalanceInputContainerNSM } from '../../atoms/BalanceInputContainerNSM'
+import { BalanceInputNSM } from '../../atoms/BalanceInputNSM'
+import { SwapDetailsNSM } from '../../atoms/SwapDetailsNSM'
 import { SwapConfirmAtom, SwapDetail, SwapModal} from '../../molecules'
 import FloatMenu from '../FloatMenu'
 
@@ -250,9 +252,9 @@ const SwapNewModule = () => {
                                     <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
                                     <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
                                 </ButtonHalfMaxContainer>
-                                <BalanceInputContainerStyled>
+                                <BalanceInputContainerNSM>
                                     <BalanceInputItem1Styled>
-                                        <BalanceInput
+                                        <BalanceInputNSM
                                             min={0}
                                             onChange={(e) => { changeTokenA(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenA} />
@@ -260,21 +262,21 @@ const SwapNewModule = () => {
                                     <BalanceInputItem2Styled>
                                         <p>$34.75</p>
                                     </BalanceInputItem2Styled>
-                                </BalanceInputContainerStyled>
+                                </BalanceInputContainerNSM>
                             </ActionContainerStyled>
                         </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
                 </NewSwapContainer>
                 <IconPlaceStyle>
                     <SwitchSwap onClick={() => { onSwitchTokens(); ResetAll() }} />
-                    <SwapDetailsStyled>
+                    <SwapDetailsNSM>
                         <ExchangeRateBox
                             tokenASymbol={firstTokenSelected.symbol}
                             tokenBSymbol={secondTokenSelected.symbol}
                             exchangeRateA={exchangeRateA}
                             exchangeRateB={exchangeRateB}
                         />
-                    </SwapDetailsStyled>
+                    </SwapDetailsNSM>
                     <LoadersSwap />
                 </IconPlaceStyle>
                 <NewSwapContainer>
@@ -303,9 +305,9 @@ const SwapNewModule = () => {
                                     <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, amountSwapTokenASetter) }}>Half</ButtonHalfMax>
                                     <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, amountSwapTokenASetter) }}>Max</ButtonHalfMax>
                                 </ButtonHalfMaxContainer>
-                                <BalanceInputContainerStyled>
+                                <BalanceInputContainerNSM>
                                     <BalanceInputItem1Styled>
-                                        <BalanceInput
+                                        <BalanceInputNSM
                                             min={0}
                                             onChange={(e) => { changeTokenB(e.target.value) }}
                                             type="number" name="" id="" value={amountSwapTokenB} />
@@ -313,7 +315,7 @@ const SwapNewModule = () => {
                                     <BalanceInputItem2Styled>
                                         <p>$34.75</p>
                                     </BalanceInputItem2Styled>
-                                </BalanceInputContainerStyled>
+                                </BalanceInputContainerNSM>
                             </ActionContainerStyled>
                         </NewTokenDetailActionsStyled>
                     </TokenSelectionStyled>
@@ -408,29 +410,10 @@ const SwapNewModule = () => {
         </Container>
     )
 }
-export const SwapDetailsStyled = styled.div`
-    font-size:16px;
-    color: ${props => props.theme.NewPurpleColor};
-`
 
-export const BalanceInput = styled.input`
-    all: unset;
-    width: 100%;
-    height: 100%;
-    text-align: right;
-    font-size: 22px;
-    &:active{
-        border: none;
-    }
-`
 
-export const BalanceInputContainerStyled = styled.div`
-    width: 100%;
-    display: grid;
-    grid-template-rows: auto auto;
-    justify-items: end;
-    gap:10px;
-`
+
+
 export const BalanceInputItem1Styled = styled.div`
     align-self: center;
     color:${props => props.theme.NewPurpleColor};

@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import FarmIcon from '../../../assets/newIcons/farmIconCyan.svg'
 
 export const CollapsingRow = styled.div`
     display: flex;

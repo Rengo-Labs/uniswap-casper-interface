@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
     ContainerLiquidityNew,
