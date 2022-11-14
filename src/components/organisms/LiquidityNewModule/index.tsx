@@ -10,6 +10,7 @@ import {
 import {FlechaIcon} from '../../atoms/FlechaIcon'
 import {LoadersSwap} from '../../atoms/LoadersSwap'
 import {SwitchSwap} from '../../atoms/SwitchSwap'
+
 import {LPDetail} from '../../molecules'
 import {useSearchParams} from "react-router-dom";
 import {LiquidityRemovingModule} from "../LiquidityRemovingModule";
@@ -38,7 +39,6 @@ import { BalanceInputItem2NSM } from '../../atoms/BalanceInputItem2NSM'
 import { ButtonSpaceNSM } from '../../atoms/ButtonSpaceNSM'
 import FloatMenu  from '../FloatMenu'
 
-
 const LiquidityNewModule = () => {
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
@@ -65,6 +65,7 @@ const LiquidityNewModule = () => {
 
     const {
         onConnect,
+
         onConnectWallet,
         onAddLiquidity,
         pairState,
@@ -86,6 +87,7 @@ const LiquidityNewModule = () => {
     const {
         walletAddress
     } = configState
+
 
     const userPairData = Object.entries(pairState).map(([k, v]) => v)
 
@@ -115,6 +117,7 @@ const LiquidityNewModule = () => {
             setLastChanged('A')
         }
     }
+
 
     function resetAll() {
         amountSwapTokenASetter(0)
@@ -297,6 +300,7 @@ const LiquidityNewModule = () => {
         amountSwapTokenASetter(minTokenToReceive)
     }
 
+
     return (
         <Container>
             <ContainerSwapActions>
@@ -312,8 +316,9 @@ const LiquidityNewModule = () => {
                                     {searchModalA && <FloatMenu
                                         lefilter={true}
                                         lesymbol={secondTokenSelected.symbol}
+
                                         tokens={tokens}
-                                        selectToken={SelectAndCloseTokenA}
+                                        onSelectToken={selectAndCloseTokenA}
                                         onClick={() => { searchModalASetter(false) }}
                                     />}
                                 </ArrowContainerNSM>
@@ -324,6 +329,7 @@ const LiquidityNewModule = () => {
                         <NewTokenDetailActionsNSM>
                         <NewBalanceSpaceNSM>Balance: {'--'}</NewBalanceSpaceNSM>
                             <ActionContainerNSM>
+
                                 <ButtonHalfMaxContainer>
                                     <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, changeTokenA) }}>Half</ButtonHalfMax>
                                     <ButtonHalfMax onClick={() => { makeMax(firstTokenSelected.amount, changeTokenA) }}>Max</ButtonHalfMax>
@@ -346,6 +352,7 @@ const LiquidityNewModule = () => {
                 <IconPlaceNSM>
                     <SwitchSwap onClick={onSwitchTokensHandler} />
                     <SwapDetailsNSM>
+
                         <ExchangeRateBox
                             tokenASymbol={firstTokenSelected.symbol}
                             tokenBSymbol={secondTokenSelected.symbol}
@@ -365,8 +372,9 @@ const LiquidityNewModule = () => {
                                 <ArrowContainerNSM>
                                     <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                                     {searchModalB && <FloatMenu
-                                        tokens={returnFilter(tokens, firstTokenSelected)}
-                                        selectToken={SelectAndCloseTokenB}
+                                        excludedSymbols={[firstTokenSelected.symbol]}
+                                        tokens={tokens}
+                                        onSelectToken={selectAndCloseTokenB}
                                         onClick={() => { searchModalBSetter(false) }}
                                     />}
                                 </ArrowContainerNSM>
@@ -377,6 +385,7 @@ const LiquidityNewModule = () => {
                         <NewTokenDetailActionsNSM>
                         <NewBalanceSpaceNSM>Balance: {'--'}</NewBalanceSpaceNSM>
                             <ActionContainerNSM>
+
                                 <ButtonHalfMaxContainer>
                                     <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, changeTokenB) }}>Half</ButtonHalfMax>
                                     <ButtonHalfMax onClick={() => { makeMax(secondTokenSelected.amount, changeTokenB) }}>Max</ButtonHalfMax>
@@ -396,6 +405,7 @@ const LiquidityNewModule = () => {
                         </NewTokenDetailActionsNSM>
                     </TokenSelectionNSM>
                 </NewSwapContainerNSM>
+
                 {
                     amountSwapTokenA > 0 &&
                     <LPDetail
@@ -416,6 +426,7 @@ const LiquidityNewModule = () => {
                         <NewSwapButton style={{height: "57px", width: "100%"}} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
                     }
                     {
+
                         !isApprovedB && isConnected &&
                         <NewSwapButton style={{height: "57px", width: "100%"}} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
                     }
@@ -425,12 +436,14 @@ const LiquidityNewModule = () => {
                     }
                 </ButtonSpaceNSM>
 
+
             </ContainerSwapActions>
             {
                 isConnected && userPairData.length > 0 &&
                 <ContainerSwapStatics>
                     {// Loop over the table rows
                         userPairData.filter((v:any) => parseFloat(v.balance) > 0).map((row:any) => {
+
                             const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbol && row.token1Symbol == secondTokenSelected.symbol
                             return (
                                 // Apply the row props

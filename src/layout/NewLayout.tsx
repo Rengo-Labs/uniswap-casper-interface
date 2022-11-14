@@ -240,7 +240,7 @@ const NewLayout = ({ children, title = "" }) => {
     const navigate = useNavigate()
     const [collapse, setCollapse] = useState(true)
 
-    const { onConnectWallet, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
+    const { onConnectWallet, onDisconnectWallet, configState, pairState } = useContext(ConfigProviderContext)
 
     const {
         isConnected,

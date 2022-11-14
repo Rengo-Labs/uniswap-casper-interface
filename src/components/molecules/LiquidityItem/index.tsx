@@ -35,8 +35,8 @@ export const LiquidityItem = ({firstIcon, firstSymbol, firstLiquidity, secondIco
     }
 
     const selectLiquidity = () => {
-        onSelectFirstToken(tokens[firstSymbol])
-        onSelectSecondToken(tokens[secondSymbol])
+        onSelectFirstToken(tokens[firstSymbol.replace('WCSPR', 'CSPR')])
+        onSelectSecondToken(tokens[secondSymbol.replace('WCSPR', 'CSPR')])
     }
 
     const goTo = (path) => {

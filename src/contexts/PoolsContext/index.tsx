@@ -1,5 +1,5 @@
 import React, {createContext, ReactNode, useReducer, useState} from 'react'
-import casprIcon from '../../assets/swapIcons/casprIcon.png'
+import casprIcon from '../../assets/swapIcons/casperIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 import {initialConfigState} from "../../reducers";
 
