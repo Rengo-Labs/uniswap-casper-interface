@@ -1,11 +1,12 @@
 import React from 'react'
+import styled from 'styled-components'
 
 import { AiOutlineSearch, AiFillCloseCircle } from "react-icons/ai";
 import { ContainerSwapModuleNew, ContainerCenter, HeaderSwapNewModule, IconContainer, Underline, SearchAndFavorites, SearchInput, SearchIcon, PopularContainer, FavoritesTokens, LeToken, LeTokenImage, LeTokenTitle, TokenListContainer, Spacer, SpacerWithToken, TokenShort, SelectTokenImage, FooterSwapModuleNew, Search } from '../../atoms';
 
 
 
-const FloatMenuFloatMenu = ({ tokens, selectToken, onClick, lefilter = false, lesymbol = "" }) => {
+const FloatMenu = ({ tokens, selectToken, onClick, lefilter = false, lesymbol = "" }) => {
     let leTokens = Object.keys(tokens)
     if (lefilter) {
         const filter = new RegExp(lesymbol)
