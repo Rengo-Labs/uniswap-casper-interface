@@ -7,6 +7,8 @@ import {
     ExchangeRateBox,
     NewSwapButton
 } from '../../atoms'
+
+
 import {FlechaIcon} from '../../atoms/FlechaIcon'
 import {LoadersSwap} from '../../atoms/LoadersSwap'
 import {SwitchSwap} from '../../atoms/SwitchSwap'
@@ -473,22 +475,6 @@ const LiquidityNewModule = () => {
     )
 }
 
-const ButtonSpaceModalStyled = styled.div`
-    width: 100%;
-    display: flex;
-    gap:10px;
-    justify-content: center;
-`
-
-const CoinContainerStyled = styled.div`
-    box-sizing: border-box;
-    border:1px solid black;
-    border-radius: 10px;
-    padding:10px;
-    display: flex;
-    gap:10px;
-    align-items: center;
-`
 const ContainerSwapStatics = styled.section`
     box-sizing: border-box;
     justify-self: start;
