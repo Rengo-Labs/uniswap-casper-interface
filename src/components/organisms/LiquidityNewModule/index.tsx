@@ -296,6 +296,8 @@ const LiquidityNewModule = () => {
         freeAllowanceB >= 0
     )
 
+    const userPairDataNonZero = userPairData.filter(v => parseFloat(v.balance) > 0)
+
     return (
         <ContainerLiquidityNSM>
             <ContainerSwapActionsNSM>
@@ -423,10 +425,10 @@ const LiquidityNewModule = () => {
 
             </ContainerSwapActionsNSM>
             {
-                isConnected && userPairData.length > 0 &&
+                isConnected && userPairDataNonZero.length > 0 &&
                 <ContainerLiquidityPoolList>
                     {// Loop over the table rows
-                        userPairData.filter(v => parseFloat(v.balance) > 0).map(row => {
+                        userPairDataNonZero.map(row => {
                             const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbolPair && row.token1Symbol == secondTokenSelected.symbolPair
 
                             console.log('r', row)
