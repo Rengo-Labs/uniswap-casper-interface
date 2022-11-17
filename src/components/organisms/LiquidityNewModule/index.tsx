@@ -49,9 +49,7 @@ import {ContainerLiquidityPoolList} from "../../atoms/ContainerLiquidityPoolList
 
 const LiquidityNewModule = () => {
     const {
-        loadPoolDetailByUser,
-        getPoolDetailByUser,
-        getAccountHash,
+        pairState,
         onConnectWallet,
         onAddLiquidity,
         onSelectFirstToken,
@@ -67,6 +65,8 @@ const LiquidityNewModule = () => {
         getPoolList
     } = useContext(ConfigProviderContext)
 
+    const userPairData = Object.entries(pairState).map(([k, v]) => v)
+
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(slippageToleranceSelected)
@@ -74,8 +74,6 @@ const LiquidityNewModule = () => {
     const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
 
-    const [usersLP, setUsersLP] = useState([])
-    const [pools, setPools] = useState([])
     const [totalLiquidity, setTotalLiquidity] = useState("0")
     const [isOpenedRemoving, setOpenedRemoving] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams()
@@ -99,23 +97,14 @@ const LiquidityNewModule = () => {
             searchParams.delete('remove')
             setSearchParams(searchParams)
         }
-
-        const result = async () => {
-            await loadUserLP()
-        }
-        result().catch(() => console.log("Error"))
-
-        calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
     }, [isConnected])
 
-    const loadUserLP = async () => {
-        const list = await getPoolList()
-        setPools(list)
-        if (isConnected) {
-            const newList = await loadPoolDetailByUser(getAccountHash(), list)
-            setPools(newList)
-        }
-    }
+    useEffect(() => {
+        const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
+
+        setTotalLiquidity(totalLP)
+        calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
+    })
 
     const calculateUSDValues = (amountA, amountB) => {
         const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
@@ -223,7 +212,6 @@ const LiquidityNewModule = () => {
         const minTokenToReceive = await updateLiquidityDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
 
         amountSwapTokenBSetter(minTokenToReceive)
-        calculateUSDValues(value, minTokenToReceive)
     }
 
     async function changeTokenB(value) {
@@ -238,7 +226,6 @@ const LiquidityNewModule = () => {
         const minTokenToReceive = await updateLiquidityDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
 
         amountSwapTokenASetter(minTokenToReceive)
-        calculateUSDValues(minTokenToReceive, value)
     }
 
     const [searchModalA, searchModalASetter] = useState(false)
@@ -280,14 +267,7 @@ const LiquidityNewModule = () => {
     async function onLiquidity() {
 
         await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
-        await loadUserLP()
         resetAll()
-        //onConnectConfig()
-    }
-
-    const onRemoveLiquidity = async () => {
-        console.log("Recargando loadUser LP")
-        await loadUserLP()
     }
 
     const disableButton = (amount0, amount1) => {
@@ -443,13 +423,13 @@ const LiquidityNewModule = () => {
 
             </ContainerSwapActionsNSM>
             {
-                isConnected && pools.length > 0 &&
+                isConnected && userPairData.length > 0 &&
                 <ContainerLiquidityPoolList>
                     {// Loop over the table rows
-                        pools.filter(v => v.totalPool > 0).map(row => {
+                        userPairData.filter(v => parseFloat(v.balance) > 0).map(row => {
                             const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbolPair && row.token1Symbol == secondTokenSelected.symbolPair
 
-                            console.log(row)
+                            console.log('r', row)
                             return (
                                 // Apply the row props
                                 <LiquidityItem
@@ -457,26 +437,25 @@ const LiquidityNewModule = () => {
                                     fullExpanded={openPopup}
                                     firstIcon={row.token0Icon}
                                     firstSymbol={row.token0Symbol}
-                                    firstLiquidity={row.token0Liquidity}
+                                    firstLiquidity={row.reserve0}
                                     secondIcon={row.token1Icon}
                                     secondSymbol={row.token1Symbol}
-                                    secondLiquidity={row.token1Liquidity}
-                                    liquidity={row.totalPool}
-                                    perLiquidity={new BigNumber(row.totalPool).div(row.totalSupply).times(100).toFixed(2)} >
+                                    secondLiquidity={row.reserve1}
+                                    liquidity={row.balance}
+                                    perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)} >
 
                                     <LiquidityRemovingModule isConnected={true}
                                                              openedPopup={openPopup}
                                                              firstHash={row.contract0}
                                                              firstSymbol={row.token0Symbol}
-                                                             firstLiquidity={row.token0Liquidity}
+                                                             firstLiquidity={row.reserve0}
                                                              secondHash={row.contract1}
                                                              secondSymbol={row.token1Symbol}
-                                                             secondLiquidity={row.token1Liquidity}
-                                                             liquidityId={row.totalPoolId}
-                                                             liquidity={row.totalPool}
-                                                             liquidityUSD={row.totalPoolUSD}
+                                                             secondLiquidity={row.reserve1}
+                                                             liquidityId={row.id}
+                                                             liquidity={row.balance}
+                                                             liquidityUSD={row.liquidityUSD}
                                                              allowance={row.allowance}
-                                                             onRemove={onRemoveLiquidity}
                                     >
                                         <CircleButton>
                                             <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>

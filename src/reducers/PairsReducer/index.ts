@@ -30,11 +30,6 @@ export type PairData = {
   totalLiquidityUSD?: string,
   contract0?: string,
   contract1?: string,
-  token1?: string,
-  token1Liquidity?: string,
-  totalPoolId?: any,
-  totalPool?: any,
-  totalPoolUSD?: any,
 }
 
 export type PairState = Record<string, PairData>
@@ -53,7 +48,6 @@ export const initialPairsState: PairState = {
     token1Icon: csxIcon,
     token0Symbol: 'WETH',
     token1Symbol: 'CSX',
-    totalPool: 0
   },
   "WCSPR-CSX": {
     name: "WCSPR-CSX",
@@ -68,7 +62,6 @@ export const initialPairsState: PairState = {
     token1Icon: csxIcon,
     token0Symbol: 'WCSPR',
     token1Symbol: 'CSX',
-    totalPool: 0
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
@@ -83,7 +76,6 @@ export const initialPairsState: PairState = {
     token1Icon: wethIcon,
     token0Symbol: 'WETH',
     token1Symbol: 'WCSPR',
-    totalPool: 0
   },
 }
 

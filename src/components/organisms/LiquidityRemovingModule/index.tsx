@@ -38,7 +38,6 @@ export interface LiquidityRemovingModuleProps {
     allowance: string,
     liquidityUSD: string,
     children?: React.ReactNode,
-    onRemove?: any
 }
 
 export const LiquidityRemovingModule = ({
@@ -55,7 +54,6 @@ export const LiquidityRemovingModule = ({
     allowance,
     liquidityUSD, 
     children,
-    onRemove
 }: LiquidityRemovingModuleProps) => {
 
     const [isOpened, setIsOpened] = useState(openedPopup)
@@ -102,7 +100,6 @@ export const LiquidityRemovingModule = ({
             slippageToleranceSelected,
         )
         closeHandler()
-        onRemove()
     }
 
     const setHalf = () => {
