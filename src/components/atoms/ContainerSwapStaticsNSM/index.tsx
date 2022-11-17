@@ -13,7 +13,7 @@ const ContainerSwapStatics = styled.section`
     justify-content: center;
     align-items: center;
     gap:10px;
-    z-index: 2;
+    z-index: 1;
 `
 export const ContainerSwapStaticsNSM = ({children}) => {
   return (
