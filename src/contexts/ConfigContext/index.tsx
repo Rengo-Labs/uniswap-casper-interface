@@ -542,7 +542,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     const loadPoolDetailByUser = async (hash, poolList, wa: string | number | boolean | void = null) => {
-        const list = await getPoolDetailByUser("account-hash-0ac4d8a6025fd36908bb05d2bbd52c4e287d5f891c8fa07e18819be6ab4b62d9")
+        const list = await getPoolDetailByUser(hash)
 
         const newList = poolList.map(d => {
             const data = list.filter(f => d.token0Symbol === f.token0Symbol && d.token1Symbol === f.token1Symbol || d.token1 === f.token0Symbol && d.token0Symbol === f.token1Symbol)
@@ -646,7 +646,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
     async function fillPairDetail(wallet: Wallet): Promise<void> {
         try {
-            const result = await apiClient.getPairAgainstUser("account-hash-0ac4d8a6025fd36908bb05d2bbd52c4e287d5f891c8fa07e18819be6ab4b62d9")
+            const result = await apiClient.getPairAgainstUser(wallet.accountHashString)
             const pairList = result.pairsdata
             const userPairs = result.userpairs
 
@@ -921,8 +921,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     function getAccountHash(wa: string | number | boolean | void = null): string {
-        //return Buffer.from(CLPublicKey.fromHex(wa as any ?? state.wallet.publicKeyHex).toAccountHash()).toString("hex")
-        return "account-hash-0ac4d8a6025fd36908bb05d2bbd52c4e287d5f891c8fa07e18819be6ab4b62d9"
+        return Buffer.from(CLPublicKey.fromHex(wa as any ?? state.wallet.publicKeyHex).toAccountHash()).toString("hex")
     }
 
     return (
