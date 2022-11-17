@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js'
 
 import React, { useContext, useEffect, useState } from 'react'
-import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
     ActionContainerNSM,
@@ -14,7 +13,6 @@ import {
     ButtonHalfMaxContainer,
     ButtonSpaceNSM,
     ContainerSwapActionsNSM,
-    ContainerSwapStaticsNSM,
     ExchangeRateBox,
     IconPlaceNSM,
     NewBalanceSpaceNSM,
@@ -41,8 +39,6 @@ import {LiquidityItem} from "../../molecules/LiquidityItem";
 import {TbTrash} from "react-icons/tb";
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {CircleButton} from "../../molecules/POCTBody/styles";
-import Decimal from 'decimal.js'
-import { v4 as uuidv4 } from 'uuid'
 
 import { 
     convertAllFormatsToUIFixedString,
@@ -57,7 +53,6 @@ const LiquidityNewModule = () => {
         getAccountHash,
         onConnectWallet,
         onAddLiquidity,
-        pairState,
         onSelectFirstToken,
         onSelectSecondToken,
         onSwitchTokens,
@@ -65,43 +60,30 @@ const LiquidityNewModule = () => {
         firstTokenSelected,
         secondTokenSelected,
         isConnected,
-        configState,
         slippageToleranceSelected,
         getLiquidityDetails,
         onIncreaseAllow,
         getPoolList
     } = useContext(ConfigProviderContext)
 
-    const {
-        walletAddress
-    } = configState
-    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
-    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
-    const [activeModalSwap, setActiveModalSwap] = React.useState(false)
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
     const [slippSwapToken, slippSwapTokenSetter] = useState<any>(slippageToleranceSelected)
     const [feeToPay, feeToPaySetter] = useState<any>(0.03)
     const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
     const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
-    const [allowanceA, setAllowanceA] = useState(0)
-    const [allowanceB, setAllowanceB] = useState(0)
 
     const [usersLP, setUsersLP] = useState([])
     const [pools, setPools] = useState([])
-    const [userLiquidity, setUserLiquidity] = useState(0)
+    const [totalLiquidity, setTotalLiquidity] = useState("0")
     const [isOpenedRemoving, setOpenedRemoving] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams()
-    const [valueUSD, setValueUSD] = useState("0")
     const [currentFReserve, setFirstReserve] = useState(0)
     const [currentSReserve, setSecondReserve] = useState(0)
 
     const [lastChanged, setLastChanged] = useState('')
     const [valueAUSD, setValueAUSD] = useState("0")
     const [valueBUSD, setValueBUSD] = useState("0")
-
-
-    const userPairData = Object.entries(pairState).map(([k, v]) => v)
 
     useEffect( () => {
         const t0 = searchParams.get("token0")
@@ -112,6 +94,7 @@ const LiquidityNewModule = () => {
         }
         const isOpened = searchParams.get("remove")
         if (isOpened) {
+            console.log("Remover", isOpened)
             setOpenedRemoving(true)
             searchParams.delete('remove')
             setSearchParams(searchParams)
@@ -121,25 +104,25 @@ const LiquidityNewModule = () => {
             await loadUserLP()
         }
         result().catch(() => console.log("Error"))
+
+        calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
     }, [isConnected])
-/*
-    useEffect(() => {
-        const userLP = calculateUserLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountSwapTokenA, amountSwapTokenB)
 
-        setUserLiquidity(userLP)
-        const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountSwapTokenA, amountSwapTokenB)
-
-        setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA)
-        setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB)
-    }, [amountSwapTokenA, amountSwapTokenB])
-*/
     const loadUserLP = async () => {
         const list = await getPoolList()
+        console.log("lista", list)
         setPools(list)
         if (isConnected) {
             const newList = await getPoolDetailByUser(getAccountHash())
             setUsersLP(newList)
         }
+    }
+
+    const calculateUSDValues = (amountA, amountB) => {
+        const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
+
+        setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA)
+        setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB)
     }
 
     async function onConnect() {
@@ -148,7 +131,7 @@ const LiquidityNewModule = () => {
 
     function onSwitchTokensHandler() {
         onSwitchTokens()
-        
+
         if(lastChanged == 'A') {
             changeTokenB(amountSwapTokenA)
             setLastChanged('B')
@@ -158,7 +141,7 @@ const LiquidityNewModule = () => {
         }
     }
 
-    const calculateUserLP = (token0, token1, amount0, amount1) => {
+    const calculateTotalLP = (token0, token1) => {
         const filter = getPoolList().filter(r => r.token0Symbol === token0 && r.token1Symbol === token1)
         if (filter.length > 0) {
             const userLP = new BigNumber(filter[0].totalSupply).toNumber().toFixed(9)
@@ -241,6 +224,7 @@ const LiquidityNewModule = () => {
         const minTokenToReceive = await updateLiquidityDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
 
         amountSwapTokenBSetter(minTokenToReceive)
+        calculateUSDValues(value, minTokenToReceive)
     }
 
     async function changeTokenB(value) {
@@ -255,6 +239,7 @@ const LiquidityNewModule = () => {
         const minTokenToReceive = await updateLiquidityDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
 
         amountSwapTokenASetter(minTokenToReceive)
+        calculateUSDValues(minTokenToReceive, value)
     }
 
     const [searchModalA, searchModalASetter] = useState(false)
@@ -268,6 +253,8 @@ const LiquidityNewModule = () => {
         const minTokenToReceive = await updateLiquidityDetail(token, secondTokenSelected, amountSwapTokenA, token)
         amountSwapTokenBSetter(minTokenToReceive)
 
+        const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
+        setTotalLiquidity(totalLP)
     }
     const [searchModalB, searchModalBSetter] = useState(false)
     async function selectAndCloseTokenB(token) {
@@ -279,6 +266,9 @@ const LiquidityNewModule = () => {
 
         const minTokenToReceive = await updateLiquidityDetail(firstTokenSelected, token, amountSwapTokenB, token)
         amountSwapTokenASetter(minTokenToReceive)
+
+        const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
+        setTotalLiquidity(totalLP)
     }
 
     function makeHalf(amount, Setter) {
@@ -295,13 +285,6 @@ const LiquidityNewModule = () => {
         resetAll()
         //onConnectConfig()
     }
-/*
-    async function onChangeValueToken(value) {
-        amountSwapTokenASetter(value)
-        const { secondTokenReturn, minAmountReturn } = await onCalculateReserves(value)
-        amountSwapTokenBSetter(secondTokenReturn)
-        slippSwapTokenSetter(minAmountReturn)
-    }*/
 
     const onRemoveLiquidity = async () => {
         console.log("Recargando loadUser LP")
@@ -440,7 +423,7 @@ const LiquidityNewModule = () => {
                         firstSymbolToken={firstTokenSelected.symbol}
                         secondSymbolToken={secondTokenSelected.symbol}
                         secondTokenAmount={amountSwapTokenB}
-                        liquidity={userLiquidity}
+                        liquidity={totalLiquidity}
                         firstReserve={currentFReserve}
                         secondReserve={currentSReserve}
                         slippage={slippSwapToken}
@@ -464,9 +447,8 @@ const LiquidityNewModule = () => {
                 isConnected && usersLP.length > 0 &&
                 <ContainerLiquidityPoolList>
                     {// Loop over the table rows
-                        usersLP.filter((v) => parseFloat(v.balance) > 0).map(row => {
-                            const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbol && row.token1Symbol == secondTokenSelected.symbol
-                            console.log(row)
+                        usersLP.map(row => {
+                            const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbolPair && row.token1Symbol == secondTokenSelected.symbolPair
                             return (
                                 // Apply the row props
                                 <LiquidityItem
@@ -474,20 +456,20 @@ const LiquidityNewModule = () => {
                                     fullExpanded={openPopup}
                                     firstIcon={row.token0Icon}
                                     firstSymbol={row.token0Symbol}
-                                    firstLiquidity={row.reserve0}
+                                    firstLiquidity={row.token0Liquidity}
                                     secondIcon={row.token1Icon}
                                     secondSymbol={row.token1Symbol}
-                                    secondLiquidity={row.reserve1}
-                                    liquidity={row.balance}
-                                    perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)} >
+                                    secondLiquidity={row.token1Liquidity}
+                                    liquidity={row.totalPool}
+                                    perLiquidity={new BigNumber(row.totalPool).div(row.totalSupply).times(100).toFixed(2)} >
 
                                     <LiquidityRemovingModule isConnected={true}
                                                              openedPopup={openPopup}
                                                              firstHash={row.contract0}
                                                              firstSymbol={row.token0Symbol}
-                                                             firstLiquidity={row.reserve0}
+                                                             firstLiquidity={row.token0Liquidity}
                                                              secondHash={row.contract1}
-                                                             secondSymbol={row.token1}
+                                                             secondSymbol={row.token1Symbol}
                                                              secondLiquidity={row.token1Liquidity}
                                                              liquidityId={row.totalPoolId}
                                                              liquidity={row.totalPool}

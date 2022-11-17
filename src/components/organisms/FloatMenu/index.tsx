@@ -89,23 +89,13 @@ const FloatMenu = ({
                     </SearchStyle>
                     <PopularContainer>
                         <div style={{fontSize: "16px"}}>Popular Tokens</div>
-                        <FavoritesTokensStyles>
-                            {filteredTokens.map((t) => {
-                                return (
-                                    <LeToken key={t.symbol} onClick={() => { onSelectToken(t) }}>
-                                        <LeTokenImage src={t.logoURI} alt="" />
-                                        <LeTokenTitle>{t.symbol}</LeTokenTitle>
-                                    </LeToken>
-                                )
-                            })}
-                        </FavoritesTokensStyles>
                     </PopularContainer>
                     <FavoritesTokensStyles>
-                        {filteredTokens.map((x) => {
+                        {filteredTokens.map((t) => {
                             return (
-                                <LeToken key={x.name} onClick={() => { onSelectToken(x) }}>
-                                    <LeTokenImage src={x.logoURI} alt="" />
-                                    <LeTokenTitle>{x.symbol}</LeTokenTitle>
+                                <LeToken key={t.symbol} onClick={() => { onSelectToken(t) }}>
+                                    <LeTokenImage src={t.logoURI} alt="" />
+                                    <LeTokenTitle>{t.symbol}</LeTokenTitle>
                                 </LeToken>
                             )
                         })}
@@ -283,6 +273,7 @@ const SelectTokenImage = styled.img`
     height: 35px;
 `
 const FooterStyled = styled.div`
+    align-self: center;
     justify-self: center;
     display: flex;
     align-items: center;

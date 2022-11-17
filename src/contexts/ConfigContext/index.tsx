@@ -9,10 +9,6 @@ import React, { createContext, ReactNode, useCallback, useEffect, useReducer, us
 import toast from 'react-hot-toast';
 
 import { PopupsModule } from '../../components/organisms';
-import {
-    liquidityRuntimeForCSPR,
-    liquidityRuntimeForERC20
-} from '../../components/pages/Liquidity/study';
 import {BASE_URL, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH} from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
@@ -170,116 +166,6 @@ async function allowanceAgainstOwnerAndSpenderPairContract(accountHashStr: strin
     }
 }
 
-
-
-async function getAllowanceAgainstOwnerAndSpender(contractHash, activePublicKey) {
-    if (!contractHash || !activePublicKey) {
-        return 0
-    }
-
-    const allowanceParam = {
-        contractHash: contractHash.slice(5),
-        owner: CLPublicKey.fromHex(activePublicKey)
-            .toAccountHashStr()
-            .slice(13),
-        spender: ROUTER_PACKAGE_HASH,
-    };
-    try {
-        const res = await axios.post(`${BASE_URL}/allowanceagainstownerandspender`, allowanceParam)
-        console.log(res.data)
-        return res.data.allowance;            
-    } catch(error) {
-        console.log(error);
-        console.log(error.response);
-    }
-}
-
-async function allowanceAgainstOwnerAndSpenderPaircontract(pair, activePublicKey) {
-    const allowanceParam = {
-        contractHash: pair,
-        owner: CLPublicKey.fromHex(activePublicKey)
-            .toAccountHashStr()
-            .slice(13),
-        spender: ROUTER_PACKAGE_HASH,
-    };
-    axios
-        .post(`${BASE_URL}/allowanceagainstownerandspenderpaircontract`, allowanceParam)
-        .then((res) => {
-            console.log("allowanceagainstownerandspenderpaircontract", res);
-            console.log(res.data);
-        })
-        .catch((error) => {
-            console.log(error);
-            console.log(error.response);
-        });
-}
-
-async function RemoveLiquidityMakeDeploy(publicKeyHex, tokenAAmountPercent, tokenBAmountPercent, runtimeArgs) {
-    const publicKey = CLPublicKey.fromHex(publicKeyHex);
-    const caller = ROUTER_CONTRACT_HASH;
-    const paymentAmount = 5_000_000_000;
-
-
-    const contractHashAsByteArray = Uint8Array.from(Buffer.from(caller, "hex"));
-    const entryPoint = entryPointEnum.Remove_liquidity_js_client
-
-    // Set contract installation deploy (unsigned).
-    return await makeDeploy(
-        publicKey,
-        contractHashAsByteArray,
-        entryPoint,
-        runtimeArgs,
-        paymentAmount
-    );
-}
-async function RemoveLiquidityCSPRMakeDeploy(publicKeyHex, tokenA, tokenB, tokenAAmountPercent, tokenBAmountPercent, liquidity, slippage, value) {
-    const publicKey = CLPublicKey.fromHex(publicKeyHex);
-    let token;
-    let cspr_Amount;
-    let token_Amount;
-    if (tokenA.symbol === "WCSPR") {
-        token = tokenB.packageHash;
-        cspr_Amount = tokenAAmountPercent.toFixed(9);
-        token_Amount = tokenBAmountPercent.toFixed(9);
-    } else {
-        token = tokenA.packageHash;
-        cspr_Amount = tokenBAmountPercent.toFixed(9);
-        token_Amount = tokenAAmountPercent.toFixed(9);
-    }
-    const deadline = 1739598100811;
-    const paymentAmount = 8000000000;
-
-    const _token = new CLByteArray(
-        Uint8Array.from(Buffer.from(token.slice(5), "hex"))
-    );
-
-    const runtimeArgs = RuntimeArgs.fromMap({
-        amount: CLValueBuilder.u512(convertToString(Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9))),
-        destination_entrypoint: CLValueBuilder.string("remove_liquidity_cspr"),
-        router_hash: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))),
-        token: new CLKey(_token),
-        liquidity: CLValueBuilder.u256(convertToString((liquidity * value) / 100)),
-        amount_cspr_min: CLValueBuilder.u256(
-            convertToString(
-                Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9)
-            )
-        ),
-        amount_token_min: CLValueBuilder.u256(
-            convertToString(
-                Number(token_Amount - (token_Amount * slippage) / 100).toFixed(9)
-            )
-        ),
-        to: createRecipientAddress(publicKey),
-        deadline: CLValueBuilder.u256(deadline),
-    });
-
-    return await makeDeployWasm(
-        publicKey,
-        runtimeArgs,
-        paymentAmount
-    );
-}
-
 const normilizeAmountToString = (amount) => {
     const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
     const amountArr = strAmount.split('.')
@@ -331,140 +217,12 @@ async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractH
     }
 }
 
-async function addLiquidityMakeDeploy(
-    activePublicKey,
-    tokenA,
-    tokenB,
-    tokenAAmount,
-    tokenBAmount,
-    slippage,
-    mainPurse,
-) {
-    const publicKeyHex = activePublicKey;
-    const publicKey = CLPublicKey.fromHex(publicKeyHex);
-    const tokenBAddress = tokenB?.packageHash;
-    const token_AAmount = tokenAAmount;
-    const token_BAmount = tokenBAmount;
-    const deadline = 1739598100811;
-    const paymentAmount = 10000000000;
-
-    console.log("tokenA", tokenA?.symbol, tokenA?.packageHash, "tokenB", tokenB?.symbol, tokenB?.packageHash)
-
-    const _token_b = new CLByteArray(
-        Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
-    );
-    const pair = new CLByteArray(
-        Uint8Array.from(Buffer.from(tokenBAddress.slice(5), "hex"))
-    );
-
-    if (tokenA?.symbol === 'CSPR' || tokenA?.symbol === 'WCSPR') {
-        return liquidityRuntimeForCSPR(
-            token_AAmount,
-            _token_b,
-            token_BAmount,
-            slippage,
-            publicKey,
-            mainPurse,
-            deadline,
-            pair,
-            paymentAmount,
-            ROUTER_PACKAGE_HASH
-        )
-    } else if (tokenB?.symbol === 'CSPR' || tokenB?.symbol === 'WCSPR') {
-        const _token_a = new CLByteArray(
-            Uint8Array.from(Buffer.from(tokenA?.packageHash.slice(5), "hex"))
-        );
-
-        return liquidityRuntimeForCSPR(
-            token_BAmount,
-            _token_a,
-            token_AAmount,
-            slippage,
-            publicKey,
-            mainPurse,
-            deadline,
-            pair,
-            paymentAmount,
-            ROUTER_PACKAGE_HASH
-        )
-    } else {
-        const _token_a = new CLByteArray(
-            Uint8Array.from(Buffer.from(tokenA?.packageHash.slice(5), "hex"))
-        );
-        return liquidityRuntimeForERC20(
-            _token_a,
-            _token_b,
-            token_AAmount,
-            token_BAmount,
-            slippage,
-            publicKey,
-            deadline,
-            pair,
-            paymentAmount
-        )
-    }
-}
-
 async function liquidityAgainstUserAndPair(accountHashStr: string, pairId: string) {
     try {
         const res = await apiClient.getLiquidityAgainstUserAndPair(accountHashStr, `hash-${pairId}`)
         return res.liquidity
     } catch(err) {
         log.error(`liquidityAgainstUserAndPair error: ${err}`)
-    }
-}
-
-async function getPairAgainstUser(activePublicKey) {
-    const param = {
-        user: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")
-    }
-    console.log(JSON.stringify(param))
-    const resp = await axios.post(`${BASE_URL}/getpairagainstuser`, param)
-    return resp
-}
-
-async function getPathReserves(resp) {
-    for (let i = 0; i < resp.data.userpairs.length; i++) {
-        const pathParamsArr = [
-            resp.data.pairsdata[i].token0.symbol,
-            resp.data.pairsdata[i].token1.symbol,
-        ]
-        const pathResParam = {
-            path: pathParamsArr
-        }
-        return await axios.post(`${BASE_URL}/getpathreserves`, pathResParam)
-    }
-}
-
-function ObjectToArray(object) {
-    const array = []
-    Object.keys(object).map(x => {
-        array.push(object[x])
-    })
-    return array
-}
-
-function PairsWithBalance(pairs) {
-    return ObjectToArray(pairs).filter(x => x.balance > 0)
-}
-
-const normalizeAmount = (amount, decimalQuantity) => {
-    const strAmount = parseFloat(amount).toFixed(0).toString();
-
-    if (strAmount.length > decimalQuantity) {
-        const newReserve = strAmount.slice(0, strAmount.length - decimalQuantity) + '.' + strAmount.slice(strAmount.length - decimalQuantity, strAmount.length)
-        return parseFloat(newReserve)
-    } else {
-        let newReserve = strAmount
-
-        for (let i = 0; i < decimalQuantity; i++) {
-            if (newReserve.length < decimalQuantity) {
-                newReserve = '0' + newReserve
-            } else {
-                break
-            }
-        }
-        return parseFloat(`0.${newReserve}`)
     }
 }
 
@@ -787,7 +545,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         const list = await getPoolDetailByUser(hash)
 
         const newList = poolList.map(d => {
-            const data = list.filter(f => d.pair.token0 === f.token0 && d.pair.token1 === f.token1 || d.pair.token1 === f.token0 && d.pair.token0 === f.token1)
+            const data = list.filter(f => d.pair.token0Symbol === f.token0Symbol && d.pair.token1Symbol === f.token1Symbol || d.pair.token1 === f.token0Symbol && d.pair.token0Symbol === f.token1Symbol)
             if (data.length > 0) {
                 return {...d, pair: data[0]}
             }
@@ -930,8 +688,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
                 console.log('u', d)
 
                 return {
-                    token0: d.token0.symbol,
-                    token1: d.token1.symbol,
+                    token0Symbol: d.token0.symbol,
+                    token1Symbol: d.token1.symbol,
                     contract0: d.token0.id,
                     contract1: d.token1.id,
                     token0Liquidity: normalizeAmount(data[0].reserve0, token0Decimals),
