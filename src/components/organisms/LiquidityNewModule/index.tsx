@@ -49,6 +49,7 @@ import {ContainerLiquidityPoolList} from "../../atoms/ContainerLiquidityPoolList
 
 const LiquidityNewModule = () => {
     const {
+        loadPoolDetailByUser,
         getPoolDetailByUser,
         getAccountHash,
         onConnectWallet,
@@ -94,7 +95,6 @@ const LiquidityNewModule = () => {
         }
         const isOpened = searchParams.get("remove")
         if (isOpened) {
-            console.log("Remover", isOpened)
             setOpenedRemoving(true)
             searchParams.delete('remove')
             setSearchParams(searchParams)
@@ -110,11 +110,10 @@ const LiquidityNewModule = () => {
 
     const loadUserLP = async () => {
         const list = await getPoolList()
-        console.log("lista", list)
         setPools(list)
         if (isConnected) {
-            const newList = await getPoolDetailByUser(getAccountHash())
-            setUsersLP(newList)
+            const newList = await loadPoolDetailByUser(getAccountHash(), list)
+            setPools(newList)
         }
     }
 
@@ -444,11 +443,13 @@ const LiquidityNewModule = () => {
 
             </ContainerSwapActionsNSM>
             {
-                isConnected && usersLP.length > 0 &&
+                isConnected && pools.length > 0 &&
                 <ContainerLiquidityPoolList>
                     {// Loop over the table rows
-                        usersLP.map(row => {
+                        pools.filter(v => v.totalPool > 0).map(row => {
                             const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbolPair && row.token1Symbol == secondTokenSelected.symbolPair
+
+                            console.log(row)
                             return (
                                 // Apply the row props
                                 <LiquidityItem
