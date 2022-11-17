@@ -78,10 +78,10 @@ export const calculateSwapDetails = async (
       let outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
 
       // ignore the post-transfer rate
-      //if (inputExchangeRate.isNaN() || outputExchangeRate.isNaN()) {
+      if (inputExchangeRate.isNaN() || outputExchangeRate.isNaN()) {
         inputExchangeRate = outputLiquidity.div(inputLiquidity)
         outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
-      //}
+      }
       
       console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
 
