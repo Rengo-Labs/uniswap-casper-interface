@@ -443,7 +443,7 @@ const LiquidityNewModule = () => {
 
             </ContainerSwapActionsNSM>
             {
-                isConnected && pools.length > 0 &&
+                isConnected && pools.filter(v => v.totalPool > 0).length > 0 &&
                 <ContainerLiquidityPoolList>
                     {// Loop over the table rows
                         pools.filter(v => v.totalPool > 0).map(row => {
