@@ -23,26 +23,51 @@ import {Button} from "../../atoms"
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
-import Decimal from 'decimal.js'
 
-export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, firstLiquidity, firstHash, secondSymbol, secondLiquidity, secondHash, liquidityId, liquidity, liquidityUSD, onRemove= () => {}, slippage = 0.003, children}: any) => {
+export interface LiquidityRemovingModuleProps {
+    isConnected: boolean,
+    openedPopup: boolean,
+    firstSymbol: string,
+    firstLiquidity: string,
+    firstHash: string,
+    secondSymbol: string,
+    secondLiquidity: string,
+    secondHash: string,
+    liquidityId: string,
+    liquidity: string,
+    allowance: string,
+    liquidityUSD: string,
+    children?: React.ReactNode,
+    onRemove?: any
+}
+
+export const LiquidityRemovingModule = ({
+    isConnected, 
+    openedPopup, 
+    firstSymbol, 
+    firstLiquidity, 
+    firstHash, 
+    secondSymbol, 
+    secondLiquidity, 
+    secondHash, 
+    liquidityId, 
+    liquidity,
+    allowance,
+    liquidityUSD, 
+    children,
+    onRemove
+}: LiquidityRemovingModuleProps) => {
 
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState("0")
     const [contractHash, setContractHash] = useState("")
-    const [allowanceLiq, setAllowanceLiq] = useState(0)
-
+    console.log(liquidityId)
     const {
-        configState,
         onRemoveLiquidity,
         onIncreaseAllow,
-        getAllowanceAgainstOwnerAndSpender,
-        getContractHashAgainstPackageHash
+        getContractHashAgainstPackageHash,
+        slippageToleranceSelected,
     } = useContext(ConfigProviderContext)
-
-    const {
-        walletAddress
-    } = configState
 
     const closeHandler = () => {
         setIsOpened(!isOpened)
@@ -57,30 +82,36 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
         promise().catch(e => console.log("Error retrieving contract hash"))
     }, [])
 
-
-
     async function onEnable() {
         await onIncreaseAllow(value, "hash-" + contractHash)
     }
 
     const removeLiquidity = async () => {
-        const per = new Decimal(value).div(liquidity)
-        const t0 = per.mul(firstLiquidity).mul(1 - slippage)
-        const t1 = per.mul(secondLiquidity).mul(1 - slippage)
+        console.log('zz', firstHash, secondHash, firstLiquidity, secondLiquidity)
 
-        await getAllowanceAgainstOwnerAndSpender(contractHash, walletAddress)
-        await onRemoveLiquidity(firstHash, secondHash, value, value, t0, t1)
+        await onRemoveLiquidity(value, 
+            {
+                symbol: firstSymbol.replace('WCSPR', 'CSPR'),
+                packageHash: `hash-${firstHash}`,
+            } as any, {
+                symbol: secondSymbol.replace('WCSPR', 'CSPR'),
+                packageHash: `hash-${secondHash}`,
+            } as any, 
+            firstLiquidity, 
+            secondLiquidity, 
+            slippageToleranceSelected,
+        )
         closeHandler()
         onRemove()
     }
 
     const setHalf = () => {
-        const halfValue = liquidity / 2
+        const halfValue = parseFloat(liquidity) / 2
         setValue((halfValue).toFixed(8))
     }
 
     const setMax = () => {
-        setValue((liquidity * 1).toString())
+        setValue((parseFloat(liquidity) * 1).toString())
     }
 
     const setInputValue = (e) => {
@@ -92,10 +123,10 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
     }
 
     const calculateUSD = (value) => {
-        return (calculateLPPercentage(value, liquidity) * liquidityUSD).toFixed(2)
+        return (calculateLPPercentage(value, liquidity) * parseFloat(liquidityUSD)).toFixed(2)
     }
 
-    const freeAllowanceLiq = allowanceLiq / Math.pow(10, 9) - parseFloat(value)
+    const freeAllowanceLiq = parseFloat(allowance) - parseFloat(value)
 
     return (
         <>
@@ -104,42 +135,48 @@ export const LiquidityRemovingModule = ({isConnected, openedPopup, firstSymbol, 
             }
             {
                 <OverlayPopup isOpened={isOpened}>
-                    <PopupContainer>
-                        <PopupTitle>Remove Liquidity</PopupTitle>
-                        <PopupClose onClick={closeHandler}>&times;</PopupClose>
-                        <PopupContent>
-                            <LPContainer>
-                                <LPDetail>
-                                    <LPTitleDetail>Pool</LPTitleDetail>
-                                    <LPLabelDetail>{firstSymbol}-{secondSymbol}</LPLabelDetail>
-                                </LPDetail>
-                                <ButtonHalfMaxContainer>
-                                    <ButtonHalfMax data-testid="liq_half" onClick={setHalf}>Half</ButtonHalfMax>
-                                    <ButtonHalfMax data-testid="liq_max" onClick={setMax}>Max</ButtonHalfMax>
-                                </ButtonHalfMaxContainer>
-                                <InputContainer>
-                                    <BalanceStyled>Balance: {liquidity}</BalanceStyled>
-                                    <InputAmountStyled>
-                                        <InputStyled data-testid="liq_input" value={value}
-                                                     onChange={setInputValue}
-                                                     placeholder={`0.00000000`} />
-                                    </InputAmountStyled>
-                                    <USDLabelStyled data-testid="liq_usd">$ {calculateUSD(value)}</USDLabelStyled>
-                                </InputContainer>
-                            </LPContainer>
-                            <RemoveButtonContainer>
-                                <Button data-testid="liq_enable" style={{width: "391px", height: "57px",fontSize: "16px"}}
-                                        enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
-                            </RemoveButtonContainer>
-                            <RemoveButtonContainer>
-                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px", marginTop: "10px"}}
-                                        enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
-                            </RemoveButtonContainer>
-                        </PopupContent>
-                        <PopupBottom>
-                            <Button style={{fontSize: "16px", backgroundColor: "transparent", width: "50%", height: "56px"}} handler={closeHandler} content="Cancel"/>
-                        </PopupBottom>
-                    </PopupContainer>
+                    <div>
+                        <PopupContainer>
+                            <PopupTitle>Remove Liquidity</PopupTitle>
+                            <PopupClose onClick={closeHandler}>&times;</PopupClose>
+                            <PopupContent>
+                                <LPContainer>
+                                    <LPDetail>
+                                        <LPTitleDetail>Pool</LPTitleDetail>
+                                        <LPLabelDetail>{firstSymbol}-{secondSymbol}</LPLabelDetail>
+                                    </LPDetail>
+                                    <ButtonHalfMaxContainer>
+                                        <ButtonHalfMax data-testid="liq_half" onClick={setHalf}>Half</ButtonHalfMax>
+                                        <ButtonHalfMax data-testid="liq_max" onClick={setMax}>Max</ButtonHalfMax>
+                                    </ButtonHalfMaxContainer>
+                                    <InputContainer>
+                                        <BalanceStyled>Balance: {liquidity}</BalanceStyled>
+                                        <InputAmountStyled>
+                                            <InputStyled data-testid="liq_input" value={value}
+                                                        onChange={setInputValue}
+                                                        placeholder={`0.00000000`} />
+                                        </InputAmountStyled>
+                                        <USDLabelStyled data-testid="liq_usd">$ {calculateUSD(value)}</USDLabelStyled>
+                                    </InputContainer>
+                                </LPContainer>
+                                    {
+                                        freeAllowanceLiq < 0 ?
+                                            <RemoveButtonContainer>
+                                                <Button data-testid="liq_enable" style={{width: "391px", height: "57px",fontSize: "16px"}}
+                                                        enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
+                                            </RemoveButtonContainer> 
+                                        :
+                                            <RemoveButtonContainer>
+                                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px", marginTop: "10px"}}
+                                                        enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
+                                            </RemoveButtonContainer>
+                                    }
+                            </PopupContent>
+                            <PopupBottom>
+                                <Button style={{fontSize: "16px", backgroundColor: "transparent", width: "50%", height: "56px"}} handler={closeHandler} content="Cancel"/>
+                            </PopupBottom>
+                        </PopupContainer>
+                    </div>
                 </OverlayPopup>
             }
         </>

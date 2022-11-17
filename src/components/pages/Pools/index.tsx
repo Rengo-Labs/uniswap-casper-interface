@@ -16,23 +16,11 @@ const TitleBox = ({label, content}) => {
 
 export const Pools = () => {
     const navigate = useNavigate()
-    const { poolColumns, gralData, poolList, setPoolList, getPoolList, getTVLandVolume, loadPoolDetailByUser, isConnected, getAccountHash } = React.useContext(ConfigProviderContext)
-
-    useEffect(() => {
-        const result = async () => {
-            await getTVLandVolume()
-            
-            const result = await getPoolList()
-            if (isConnected) {
-                const newList = await loadPoolDetailByUser(getAccountHash(), result)
-                setPoolList(newList)
-            } else {
-                setPoolList(result)
-            }
-        }
-
-        result().catch(console.error)
-    }, [isConnected])
+    const { 
+        poolColumns, 
+        gralData, 
+        getPoolList, 
+    } = React.useContext(ConfigProviderContext)
 
     return (
         <NewLayout title="CASPERSWAP">
@@ -41,11 +29,11 @@ export const Pools = () => {
                     <div style={{flex: "1.2"}} />
                     <TitleBox label="TVL: $" content={gralData.tvl} />
                     <TitleBox label="VOLUME: $" content={gralData.totalVolume} />
-                    <Button style={{flex: "1"}} content="Create pool" handler={() => {navigate("/liquidity")}} />
+                    {/*<Button style={{flex: "1"}} content="Create pool" handler={() => {navigate("/liquidity")}} />*/}
                     <div style={{flex: "6"}} />
                 </WrappedPoolTitle>
                 <CardContainer gridRow="3" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
-                    <PoolModule columns={poolColumns} data={poolList} />
+                    <PoolModule columns={poolColumns} data={getPoolList()} />
                 </CardContainer >
             </WrappedPool>
         </NewLayout>

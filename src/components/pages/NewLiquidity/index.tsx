@@ -1,19 +1,21 @@
 import React from 'react'
 import NewLayout from '../../../layout/NewLayout'
 import styled from 'styled-components'
-import {LiquidityNewModule} from '../../organisms/LiquidityNewModule'
+import LiquidityNewModule from '../../organisms/LiquidityNewModule'
+
 export const NewLiquidity = () => {
     return (
         <NewLayout>
-            <Container>
-                <ModuleSwapStyled>
+            <LiquidityNewContainer>
                     <LiquidityNewModule />
-                </ModuleSwapStyled>
-            </Container>
+            </LiquidityNewContainer>
         </NewLayout>
     )
 }
 const ModuleSwapStyled = styled.div`
+  display: flex;
+`
+const LiquidityNewContainer = styled.div`
   display: flex;
 `
 

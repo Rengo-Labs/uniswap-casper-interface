@@ -240,7 +240,7 @@ const NewLayout = ({ children, title = "" }) => {
     const navigate = useNavigate()
     const [collapse, setCollapse] = useState(true)
 
-    const { onConnectConfig, onDisconnectWallet, onChangeWallet, configState, pairState } = useContext(ConfigProviderContext)
+    const { onConnectWallet, onDisconnectWallet, configState, pairState } = useContext(ConfigProviderContext)
 
     const {
         isConnected,
@@ -252,7 +252,7 @@ const NewLayout = ({ children, title = "" }) => {
         gasPriceSelected } = configState
 
     async function onConnect() {
-        onConnectConfig(true)
+        onConnectWallet(true)
     }
     async function onDisconnect() {
         onDisconnectWallet()

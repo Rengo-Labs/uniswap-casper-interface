@@ -9,10 +9,9 @@ const FlechaStyled = styled.img`
         background-color: rgba(150, 150, 150, .5)
     }
 `
-const FlechaIcon = ({onClick}) => {
+
+export const FlechaIcon = ({onClick}) => {
     return (
         <FlechaStyled onClick={onClick}src={flechaIcon} width="25" height="25" />
     )
 }
-
-export default FlechaIcon

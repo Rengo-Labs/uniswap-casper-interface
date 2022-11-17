@@ -1,20 +1,73 @@
+import { Token } from '../../../commons/api'
+
 import React from 'react'
+
 import { AiOutlineSearch, AiFillCloseCircle } from "react-icons/ai";
 
-const FloatMenu = ({ tokens, selectToken, onClick }) => {
-    const leTokens = Object.keys(tokens)
-    const [filteredTokens, setFilteredTokens] = React.useState(leTokens)
+export interface FloatMenuProps{
+    tokens: Record<string, Token>,
+    onSelectToken: (x: Token) => void,
+    onClick: () => void,
+    excludedSymbols?: string[],
+}
+
+const FloatMenu = ({ 
+    tokens, 
+    onSelectToken, 
+    onClick, 
+    excludedSymbols = [] 
+} : FloatMenuProps ) => {
+    console.log('excluded symbols', excludedSymbols)
+    let _filteredTokens = Object.entries(tokens).map((v, k) => v[1])
+    if (excludedSymbols.length > 0) {
+        excludedSymbols.map((symbol) => {
+            _filteredTokens = _filteredTokens.filter((token) => {
+                // CSPR <=> WCSPR cases
+                if (symbol === 'CSPR' && token.symbol == 'WCSPR') {
+                    return
+                } 
+
+                if (symbol === 'WCSPR' && token.symbol == 'CSPR') {
+                    return
+                }
+
+                // main case
+                if (symbol !== token.symbol) {
+                    return token
+                }
+            })
+
+        })
+    }
+
+    const [filteredTokens, setFilteredTokens] = React.useState(_filteredTokens)
     const [filter, setFilter] = React.useState('')
 
     function useFilter(e) {
         const inputUser = e.target.value.toUpperCase().trim()
-        if (inputUser.length === 0) { return setFilteredTokens(leTokens) }
+
+        if (inputUser.length === 0) { 
+            return setFilteredTokens(_filteredTokens) 
+        }
+
         const filter = new RegExp(inputUser)
-        const filtered = leTokens.filter((value) => {
-            if (filter.test(value)) {
-                return inputUser
+        const filtered = filteredTokens.filter((token) => {
+            // symbol
+            if (filter.test(token.symbol)) {
+                return token
+            }
+
+            // contract hash
+            if (filter.test(token.contractHash)) {
+                return token
+            }
+
+            // package hash
+            if (filter.test(token.packageHash)) {
+                return token
             }
         })
+        //filter added
         console.log("filtered", filtered)
         setFilteredTokens(filtered)
     }
@@ -36,13 +89,23 @@ const FloatMenu = ({ tokens, selectToken, onClick }) => {
                     </SearchStyle>
                     <PopularContainer>
                         <div style={{fontSize: "16px"}}>Popular Tokens</div>
+                        <FavoritesTokensStyles>
+                            {filteredTokens.map((t) => {
+                                return (
+                                    <LeToken key={t.symbol} onClick={() => { onSelectToken(t) }}>
+                                        <LeTokenImage src={t.logoURI} alt="" />
+                                        <LeTokenTitle>{t.symbol}</LeTokenTitle>
+                                    </LeToken>
+                                )
+                            })}
+                        </FavoritesTokensStyles>
                     </PopularContainer>
                     <FavoritesTokensStyles>
                         {filteredTokens.map((x) => {
                             return (
-                                <LeToken key={tokens[x].name} onClick={() => { selectToken(tokens[x]) }}>
-                                    <LeTokenImage src={tokens[x].logoURI} alt="" />
-                                    <LeTokenTitle>{tokens[x].symbol}</LeTokenTitle>
+                                <LeToken key={x.name} onClick={() => { onSelectToken(x) }}>
+                                    <LeTokenImage src={x.logoURI} alt="" />
+                                    <LeTokenTitle>{x.symbol}</LeTokenTitle>
                                 </LeToken>
                             )
                         })}
@@ -57,17 +120,17 @@ const FloatMenu = ({ tokens, selectToken, onClick }) => {
                             <div></div>
                             <div>Balance</div>
                         </SpacerStyled>
-                        {filteredTokens.map((x) => {
+                        {filteredTokens.map((t) => {
                             return (
-                                <SpacerWithTokenStyled key={tokens[x].name} onClick={() => { selectToken(tokens[x]) }}>
+                                <SpacerWithTokenStyled key={t.name} onClick={() => { onSelectToken(t) }}>
                                     <TokenShortStyle >
-                                        <SelectTokenImage src={tokens[x].logoURI} alt="" />
+                                        <SelectTokenImage src={t.logoURI} alt="" />
                                         <div>
-                                            <div style={{fontSize: "16px", paddingLeft: "5px"}}>{tokens[x].symbol}</div>
-                                            <div style={{fontSize: "13px", paddingLeft: "5px"}}>{tokens[x].name}</div>
+                                            <div style={{fontSize: "16px", paddingLeft: "5px"}}>{t.symbol}</div>
+                                            <div style={{fontSize: "13px", paddingLeft: "5px"}}>{t.name}</div>
                                         </div>
                                     </TokenShortStyle>
-                                    <div>{tokens[x].amount}</div>
+                                    <div>{t.amount}</div>
                                 </SpacerWithTokenStyled>
                             )
                         })}
