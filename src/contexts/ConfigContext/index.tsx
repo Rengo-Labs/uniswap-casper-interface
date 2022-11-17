@@ -921,7 +921,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     function getAccountHash(wa: string | number | boolean | void = null): string {
-        return Buffer.from(CLPublicKey.fromHex(wa as any ?? state.wallet.publicKeyHex).toAccountHash()).toString("hex")
+        return `account-hash-${Buffer.from(CLPublicKey.fromHex(wa as any ?? state.wallet.publicKeyHex).toAccountHash()).toString("hex")}`
     }
 
     return (
