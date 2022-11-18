@@ -300,7 +300,7 @@ export const getPoolDetailByUser = async (hash) => {
 
 export const loadPoolDetailByUser = async (hash, poolList) => {
   const list = await getPoolDetailByUser(hash)
-
+  console.log("a cargar", list)
   const newList = poolList.map(d => {
     const data = list.filter(f => d.pair.token0 === f.token0 && d.pair.token1 === f.token1 || d.pair.token1 === f.token0 && d.pair.token0 === f.token1)
     if (data.length > 0) {

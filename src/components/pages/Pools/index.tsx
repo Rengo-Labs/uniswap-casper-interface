@@ -26,7 +26,7 @@ export const Pools = () => {
         <NewLayout title="CASPERSWAP">
             <WrappedPool>
                 <WrappedPoolTitle>
-                    <div style={{flex: "1"}} />
+                    <div style={{flex: "1.2"}} />
                     <TitleBox label="TVL: $" content={gralData.tvl} />
                     <TitleBox label="VOLUME: $" content={gralData.totalVolume} />
                     {/*<Button style={{flex: "1"}} content="Create pool" handler={() => {navigate("/liquidity")}} />*/}

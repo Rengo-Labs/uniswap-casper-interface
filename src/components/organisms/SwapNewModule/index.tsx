@@ -1,10 +1,11 @@
 import BigNumber from 'bignumber.js'
 
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styled from 'styled-components'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import {
+    CloseButtonAtom,
     ActionContainerNSM,
     ArrowContainerNSM,
     BalanceInputContainerNSM,
@@ -14,7 +15,6 @@ import {
     ButtonHalfMax,
     ButtonHalfMaxContainer,
     ButtonSpaceNSM,
-    CloseButtonAtom,
     CoinContainerNSM,
     ContainerInnerNSM,
     ContainerSwapActionsNSM,
@@ -25,6 +25,8 @@ import {
     IconPlaceNSM,
     NewBalanceSpaceNSM,
     NewSwapButton,
+    SwapContainerAtom,
+    SwapHeaderAtom,
     NewSwapContainerNSM,
     NewTokenDetailActionsNSM,
     NewTokenDetailItems1NSM,
@@ -32,17 +34,17 @@ import {
     NewTokenDetailItems3NSM,
     NewTokenDetailItems4NSM,
     NewTokenDetailSelectNSM,
-    SwapContainerAtom,
     SwapDetailsNSM,
-    SwapHeaderAtom,
     TokenSelectionNSM,
-    TokenSelectNSM,
+    TokenSelectNSM
 } from '../../atoms'
 import Graphics from '../../atoms/Graphics'
 import LoadersSwap from '../../atoms/LoadersSwap'
 import SwitchSwap from '../../atoms/SwitchSwap'
-import { SwapConfirmAtom, SwapDetail, SwapModal, SwapToken, SwapTokens } from '../../molecules'
+import { SwapConfirmAtom, SwapDetail, SwapModal } from '../../molecules'
 import FloatMenu from '../FloatMenu'
+import {useSearchParams} from "react-router-dom";
+
 import { 
     convertAllFormatsToUIFixedString,
     Token,
@@ -50,17 +52,6 @@ import {
 
 
 const SwapNewModule = () => {
-    const [activeModalSwap, setActiveModalSwap] = React.useState(false)
-    const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0)
-    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<number>(0)
-    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(0.5)
-    const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
-    const [priceImpact, priceImpactSetter] = useState<any>(0)
-    const [feeToPay, feeToPaySetter] = useState<any>(0.03)
-    const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
-    const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
-    const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
-    const [lastChanged, setLastChanged] = useState('')
 
     const {
         onConnectWallet,
@@ -75,7 +66,36 @@ const SwapNewModule = () => {
         onConfirmSwapConfig,
         getSwapDetails,
         onIncreaseAllow,
+        slippageToleranceSelected
     } = useContext(ConfigProviderContext)
+
+    const [activeModalPrimary, setActiveModalPrimary] = React.useState(false)
+    const [activeModalSecondary, setActiveModalSecondary] = React.useState(false)
+    const [activeModalSwap, setActiveModalSwap] = React.useState(false)
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
+    const [slippSwapToken, slippSwapTokenSetter] = useState<any>(slippageToleranceSelected)
+    const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0)
+    const [priceImpact, priceImpactSetter] = useState<any>(0)
+    const [feeToPay, feeToPaySetter] = useState<any>(0.03)
+    const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
+    const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
+    const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
+    const [switchMovement, switchMovementSetter] = useState(false)
+    const [allowanceA, setAllowanceA] = useState(0)
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    const [lastChanged, setLastChanged] = useState('')
+
+    useEffect( () => {
+        const t0 = searchParams.get("token0")
+        const t1 = searchParams.get("token1")
+        if (t0) {
+            onSelectFirstToken(tokens[t0])
+            onSelectSecondToken(tokens[t1])
+        }
+
+    }, [])
 
     async function onConnect() {
         onConnectWallet()
@@ -166,6 +186,9 @@ const SwapNewModule = () => {
 
     const [searchModalA, searchModalASetter] = useState(false)
     async function selectAndCloseTokenA(token: Token): Promise<void> {
+        if (token.symbol === secondTokenSelected.symbol) {
+            return;
+        }
         onSelectFirstToken(token)
         searchModalASetter(false)
 
@@ -175,7 +198,10 @@ const SwapNewModule = () => {
     }
 
     const [searchModalB, searchModalBSetter] = useState(false)
-    async function selectAndCloseTokenB(token: Token): Promise<void> {
+    async function selectAndCloseTokenB(token): Promise<void> {
+        if (token.symbol === firstTokenSelected.symbol) {
+            return;
+        }
         onSelectSecondToken(token)
         searchModalBSetter(false)
         const minTokenToReceive = await updateSwapDetail(firstTokenSelected, token, amountSwapTokenB, token)
@@ -304,6 +330,9 @@ const SwapNewModule = () => {
                         secondTokenAmount={amountSwapTokenB}
                         priceImpactMessage={defaultPriceImpactLabel}
                         priceImpact={priceImpact}
+                        slippage={slippSwapToken}
+                        slippageEnabled={true}
+                        slippageSetter={slippSwapTokenSetter}
                         fullExpanded={false}
                     />
                 }
@@ -386,5 +415,154 @@ const SwapNewModule = () => {
     )
 }
 
+export const BalanceInput = styled.input`
+    all: unset;
+    width: 100%;
+    height: 100%;
+    text-align: right;
+    font-size: 22px;
+    &:active{
+        border: none;
+    }
+`
+
+export const BalanceInputContainerStyled = styled.div`
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto auto;
+    justify-items: end;
+    gap:10px;
+`
+export const BalanceInputItem1Styled = styled.div`
+    align-self: center;
+    color:${props => props.theme.NewPurpleColor};
+    font-size: 3em;
+`
+export const BalanceInputItem2Styled = styled.div`
+align-self: center;
+`
+
+export const ArrowContainerStyle = styled.div`
+    padding-top:10px;
+    align-self: start;
+`
+export const ActionContainerStyled = styled.div`
+    display: flex;
+`
+
+
+
+
+
+export const IconPlaceStyle = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`
+export const ButtonSpaceStyled = styled.div`
+    justify-self: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+`
+export const TokenSelectStyled = styled.div`
+    display: flex;
+    justify-content: space-between;
+`
+export const TokenSelectionStyled = styled.div`
+    display: flex;
+    align-items: center;
+    gap:10px;
+`
+
+const CoinContainerStyled = styled.div`
+    width: 27rem;
+    height: 3.5rem;
+    background-color: white;
+    box-sizing: border-box;
+    border:1px solid black;
+    border-radius: 20px;
+    padding:10px;
+    display: flex;
+    gap:10px;
+    align-items: center;
+`
+const ContainerSwapStatics = styled.section`
+    justify-self: start;
+    box-sizing: border-box;
+    width: 28.2rem;
+    height: 10rem;
+    padding:2rem;
+    border:1px solid black;
+    border-radius: 20px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    z-index: 2;
+`
+export const NewTokenDetailSelectStyled = styled.section`
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto;
+`
+export const NewTokenDetailItems1Styled = styled.section`
+    grid-column: 1/2;
+    grid-row: 1/2;
+    justify-self: center;
+`
+export const NewTokenDetailItems2Styled = styled.img`
+    grid-column: 1/2;
+    grid-row: 2/3;
+    align-self: center;
+`
+export const NewTokenDetailItems3Styled = styled.section`
+    grid-column: 1/2;
+    grid-row: 3/4;
+    justify-self: center;
+`
+export const NewTokenDetailItems4Styled = styled.section`
+    grid-column: 2/3;
+    grid-row: 2/3;
+    justify-self: center;
+`
+
+export const NewTokenDetailActionsStyled = styled.section`
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+`
+export const NewBalanceSpace = styled.section`
+    justify-self:end;
+`
+
+export const NewSwapContainer = styled.section`
+    background-color:white;
+    box-sizing: border-box; 
+    justify-self: center;
+    height: 8rem;
+    padding: 1rem;
+    border:1px solid black;
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+`
+
+const Container = styled.main`
+    box-sizing: border-box;
+    justify-self:center;
+    box-sizing: border-box;
+    width: 100%;
+    gap:10px;
+    color:black;
+    display: grid;
+    grid-template-columns: auto auto;
+    padding: 10px;
+`
 
 export default SwapNewModule

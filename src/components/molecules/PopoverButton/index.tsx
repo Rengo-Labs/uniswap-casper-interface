@@ -40,7 +40,7 @@ export const PopoverButton = ({ isConnected, isOpened, toggling, onDisconnect, a
                 <PopoverContainer>
                     <ContainerList>
                         <WalletItemList>CONNECT WALLET</WalletItemList>
-                        <ItemMenu style={{justifyContent: "center"}} onClick={copyAccount}>
+                        <ItemMenu style={{justifyContent: "center", borderTop: "1px solid black"}} onClick={copyAccount}>
                             <ItemColumn position="center" flex=".75"/>
                             <div style={{flex: "3"}}>{walletLabel}</div>
                             <ItemColumn position="center" flex="1"><NewIcons Icon={copyIcon} style={{alignSelf: "center", display: "flex"}} size="40px" /></ItemColumn>

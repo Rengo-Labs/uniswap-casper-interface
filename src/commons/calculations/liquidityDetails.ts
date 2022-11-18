@@ -13,6 +13,8 @@ export interface LiquidityDetails {
   exchangeRateA: number,
   // effective exchange rate from B to A
   exchangeRateB: number,
+  firstReserve: any,
+  secondReserve: any
 }
 
 /**
@@ -59,10 +61,32 @@ export const calculateLiquidityDetails = async (
       return {
           tokensToTransfer: inputValue.times(inputExchangeRate).div(Math.pow(10,9)).toNumber().toFixed(9),
           exchangeRateA: exchangeRateA.toNumber(),
-          exchangeRateB : exchangeRateB.toNumber()
+          exchangeRateB : exchangeRateB.toNumber(),
+          firstReserve: normalizeAmount(inputLiquidity.toString(), 9),
+          secondReserve: normalizeAmount(outputLiquidity.toString(), 9)
       }
   } catch (err) {
       log.error(`getSwapDetail error: ${err}`)
       throw err
   }
+}
+
+const normalizeAmount = (amount, decimalQuantity) => {
+    const strAmount = parseFloat(amount).toFixed(0).toString();
+
+    if (strAmount.length > decimalQuantity) {
+        const newReserve = strAmount.slice(0, strAmount.length - decimalQuantity) + '.' + strAmount.slice(strAmount.length - decimalQuantity, strAmount.length)
+        return parseFloat(newReserve)
+    } else {
+        let newReserve = strAmount
+
+        for (let i = 0; i < decimalQuantity; i++) {
+            if (newReserve.length < decimalQuantity) {
+                newReserve = '0' + newReserve
+            } else {
+                break
+            }
+        }
+        return parseFloat(`0.${newReserve}`)
+    }
 }

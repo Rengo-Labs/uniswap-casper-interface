@@ -53,13 +53,13 @@ export const LiquidityRemovingModule = ({
     liquidity,
     allowance,
     liquidityUSD, 
-    children
+    children,
 }: LiquidityRemovingModuleProps) => {
 
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState("0")
     const [contractHash, setContractHash] = useState("")
-
+    console.log(liquidityId)
     const {
         onRemoveLiquidity,
         onIncreaseAllow,

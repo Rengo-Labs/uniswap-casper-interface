@@ -7,6 +7,7 @@ const ButtonHalfMaxContainerStyles = styled.div`
     display: grid;
     gap:10px;
 `
+
 export const ButtonHalfMaxContainer = ({children}) => {
   return (
     <ButtonHalfMaxContainerStyles>{children}</ButtonHalfMaxContainerStyles>

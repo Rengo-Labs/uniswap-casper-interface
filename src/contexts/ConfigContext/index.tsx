@@ -1,13 +1,15 @@
 import axios from 'axios';
 import BigNumber from 'bignumber.js'
 import {
-    CLPublicKey,
+    CLByteArray,
+    CLKey,
+    CLPublicKey, CLValueBuilder, RuntimeArgs,
 } from 'casper-js-sdk';
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
 
 import { PopupsModule } from '../../components/organisms';
-import { BASE_URL, DEADLINE, NODE_ADDRESS } from '../../constant';
+import {BASE_URL, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH} from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
 import { initialPairsState, PairsReducer, PairActions, PairData, PairState } from '../../reducers/PairsReducer';
@@ -29,9 +31,9 @@ import {
 
     LiquidityDetails,
     calculateLiquidityDetails,
-    
+
     log,
-    WalletName,
+    WalletName, createRecipientAddress,
 } from '../../commons'
 
 import {
@@ -42,11 +44,12 @@ import {
 } from '../../commons/deploys'
 import { ConfigState } from '../../reducers/ConfigReducers';
 import { Row } from 'react-table';
+import {convertToString, makeDeploy, makeDeployLiquidity, makeDeployWasm} from "../../commons/swap";
+import {entryPointEnum} from "../../types";
 
 type MaybeWallet = Wallet | undefined
 
 export interface ConfigContext {
-    getAccountHash: (wa: string | number | boolean | void) => string,
     onConnectWallet: (ignoreError?: boolean) => Promise<void>,
     onDisconnectWallet: () => Promise<void>,
     configState: ConfigState,
@@ -71,13 +74,13 @@ export interface ConfigContext {
     poolColumns: any[],
     setPoolList: (poolList: any[]) => void,
     getPoolList: () => PairData[],
-    loadPoolDetailByUser: (hash: string, poolList: any[], wa: string | number | boolean | void) => Promise<any[]>,
     getTVLandVolume: () => Promise<void>,
     gralData: Record<string, string>,
     isStaked: boolean,
     setStaked: (v: boolean) => void,
     filter: (onlyStaked: boolean, row: Row<PairData>) => any,
-    getContractHashAgainstPackageHash
+    getContractHashAgainstPackageHash,
+    onCalculateReserves: (v: any, reverse: boolean) => Promise<any>
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any)
@@ -160,10 +163,61 @@ async function allowanceAgainstOwnerAndSpenderPairContract(accountHashStr: strin
     }
 }
 
+const normilizeAmountToString = (amount) => {
+    const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
+    const amountArr = strAmount.split('.')
+    if (amountArr[1] === undefined) {
+        const concatedAmount = amountArr[0].concat('000000000')
+        return concatedAmount
+    } else {
+        let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
+        for (let i = 0; i < 9 - amountArr[1].length; i++) {
+            concatedAmount = concatedAmount.concat('0')
+        }
+        return concatedAmount
+    }
+}
+
+async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
+    try {
+        const publicKey = CLPublicKey.fromHex(activePublicKey);
+        const spender = ROUTER_PACKAGE_HASH;
+        const spenderByteArray = new CLByteArray(
+            Uint8Array.from(Buffer.from(spender, "hex"))
+        );
+        const paymentAmount = 5_000_000_000;
+
+        console.log('amount', spender, amount)
+
+        const runtimeArgs = RuntimeArgs.fromMap({
+            spender: createRecipientAddress(spenderByteArray),
+            amount: CLValueBuilder.u256(normilizeAmountToString(amount)),
+        });
+        const contractHashAsByteArray = Uint8Array.from(
+            Buffer.from(contractHash.slice(5), "hex")
+        );
+        const entryPoint = increase ? entryPointEnum.Increase_allowance : entryPointEnum.Decrease_allowance;
+        // Set contract installation deploy (unsigned).
+        const deploy = await makeDeployLiquidity(
+            publicKey,
+            contractHashAsByteArray,
+            entryPoint,
+            runtimeArgs,
+            paymentAmount
+        );
+
+        //const deploy = await makeDeployLiquidityWasm(publicKey, runtimeArgs, paymentAmount)
+        return deploy
+    } catch (error) {
+        console.log(__filename, "increaseAndDecreaseAllowanceMakeDeploy", error);
+        throw Error()
+    }
+}
+
 async function liquidityAgainstUserAndPair(accountHashStr: string, pairId: string) {
     try {
         const res = await apiClient.getLiquidityAgainstUserAndPair(accountHashStr, `hash-${pairId}`)
-        return res.liquidity           
+        return res.liquidity
     } catch(err) {
         log.error(`liquidityAgainstUserAndPair error: ${err}`)
     }
@@ -484,40 +538,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    const loadPoolDetailByUser = async (hash, poolList, wa: string | number | boolean | void = null) => {
-        const list = await getPoolDetailByUser(hash)
-
-        const newList = poolList.map(d => {
-            const data = list.filter(f => d.pair.token0 === f.token0 && d.pair.token1 === f.token1 || d.pair.token1 === f.token0 && d.pair.token0 === f.token1)
-            if (data.length > 0) {
-                return {...d, pair: data[0]}
-            }
-            return d
-        })
-
-        return newList
-    }
-
-    const normalizeAmount = (amount, decimalQuantity) => {
-        const strAmount = parseFloat(amount).toFixed(0).toString();
-
-        if (strAmount.length > decimalQuantity) {
-            const newReserve = strAmount.slice(0, strAmount.length - decimalQuantity) + '.' + strAmount.slice(strAmount.length - decimalQuantity, strAmount.length)
-            return parseFloat(newReserve)
-        } else {
-            let newReserve = strAmount
-
-            for (let i = 0; i < decimalQuantity; i++) {
-                if (newReserve.length < decimalQuantity) {
-                    newReserve = '0' + newReserve
-                } else {
-                    break
-                }
-            }
-            return parseFloat(`0.${newReserve}`)
-        }
-    }
-
     const filter = (onlyStaked: boolean, row: Row<PairData>): any => {
         if (onlyStaked) {
             return parseFloat(row.original.balance) > 0
@@ -614,42 +634,37 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    const getPoolDetailByUser = async (hash: string) => {
-
-        const result = await apiClient.getPairAgainstUser(hash)
-
-        if (result.success) {
-            const pairList = result.pairsdata
-            const userPairs = result.userpairs
-
-            const list = await Promise.all(pairList.map(async d => {
-                const data = userPairs.filter(u => u.pair === d.id)
-                const token0Decimals = tokenState.tokens[d.token0.symbol].decimals
-                const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
-
-                const totalLiquidity = await liquidityAgainstUserAndPair(state.wallet.accountHashString, d.id)
-                console.log('u', d)
-
-                return {
-                    token0: d.token0.symbol,
-                    token1: d.token1.symbol,
-                    contract0: d.token0.id,
-                    contract1: d.token1.id,
-                    token0Liquidity: normalizeAmount(data[0].reserve0, token0Decimals),
-                    token1Liquidity: normalizeAmount(data[0].reserve1, token1Decimals),
-                    totalLiquidityPool: normalizeAmount(totalLiquidity, 9),
-                    totalLiquidityUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
-                    volume: normalizeAmount(d.volumeUSD, 9),
-                    totalPoolId: d.id,
-                    totalPool: normalizeAmount(totalLiquidity, token1Decimals),
-                    totalPoolUSD: normalizeAmount(data[0].reserve0, token0Decimals) * parseFloat(d.token0Price) + normalizeAmount(data[0].reserve1, token1Decimals) * parseFloat(d.token1Price),
-                    totalSupply: normalizeAmount(d.totalSupply, token0Decimals),
-                }
-            }))
-
-            return list
+    async function onCalculateReserves(value, reverse) {
+        try {
+            if (!reverse) {
+                return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
+            } else {
+                return await calculateReserves(secondTokenSelected, firstTokenSelected, value)
+            }
+        } catch (error) {
+            console.log(__filename, "onCalculateReserves", error)
+            return { secondTokenReturn: 0, minAmountReturn: 0 }
         }
-        return []
+    }
+
+    async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
+        try {
+            const response = await axios.post(`${BASE_URL}/getpathreserves`, {
+                path: [
+                    firstTokenSelected.symbolPair,
+                    secondTokenSelected.symbolPair,
+                ]
+            })
+            if (response.data.success) {
+                const secondTokenReturn = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 10))
+                const minAmountReturn = (secondTokenReturn - (secondTokenReturn * 0.5) / 100).toString().slice(0, 5)
+                return { secondTokenReturn, minAmountReturn }
+            }
+            throw Error()
+        } catch (error) {
+            console.log(__filename, "onCalculateReserves", error)
+            return { secondTokenReturn: 0, minAmountReturn: 0 }
+        }
     }
 
     function onSelectFirstToken(token: string | Token): void {
@@ -830,13 +845,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
     }
 
-    function getAccountHash(wa: string | number | boolean | void = null): string {
-        return Buffer.from(CLPublicKey.fromHex(wa as any ?? state.wallet.publicKeyHex).toAccountHash()).toString("hex")
-    }
-
     return (
         <ConfigProviderContext.Provider value={{
-            getAccountHash,
             onConnectWallet,
             onDisconnectWallet,
             configState: state,
@@ -859,13 +869,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             poolColumns,
             setPoolList,
             getPoolList,
-            loadPoolDetailByUser,
             getTVLandVolume,
             gralData,
             isStaked,
             setStaked,
             filter,
-            getContractHashAgainstPackageHash
+            getContractHashAgainstPackageHash,
+            onCalculateReserves
         }}>
             {children}
             <PopupsModule isOpen={progressModal} handleOpen={setProgressModal} progress>

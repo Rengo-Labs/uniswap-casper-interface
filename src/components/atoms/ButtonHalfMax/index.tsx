@@ -10,6 +10,7 @@ const ButtonHalfMaxStyle = styled.div<any>`
     cursor: pointer;
     font-size: 12px;
 `
+
 export const ButtonHalfMax = ({children,onClick}) => {
   return (
     <ButtonHalfMaxStyle onClick={onClick}>{children}</ButtonHalfMaxStyle>

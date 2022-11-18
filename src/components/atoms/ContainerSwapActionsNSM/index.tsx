@@ -12,7 +12,7 @@ const ContainerSwapActions = styled.section`
     align-items: center;
     gap:10px;
     padding: 20px 25px;
-    z-index: 3;
+    z-index: 2;
 `
 export const ContainerSwapActionsNSM = ({children}) => {
   return (

@@ -28,7 +28,7 @@ import Torus from "@toruslabs/casper-embed";
 import { Some } from "ts-results";
 import { entryPointEnum } from "../../types";
 
-const normilizeAmountToString = (amount) => {
+export const normilizeAmountToString = (amount) => {
   const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
   const amountArr = strAmount.split('.')
   if (amountArr[1] === undefined) {
