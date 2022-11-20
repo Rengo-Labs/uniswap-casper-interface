@@ -15,6 +15,8 @@ import { WalletName, Network } from './types'
 export interface Wallet {
   // is the wallet connected?
   isConnected: boolean
+  // (getter) what network is the wallet connected to?
+  network: Network
   // (getter) name for identifying the wallet
   name: WalletName
   // (getter) public key for connected wallet

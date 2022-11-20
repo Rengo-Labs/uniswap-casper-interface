@@ -10,7 +10,7 @@ import {
   Wallet, 
 } from './Wallet'
 
-import { WalletName } from './types'
+import { Network, WalletName } from './types'
 
 export const CASPERSIGNER_PUBKEY_KEY = 'cs-pubk'
 
@@ -30,7 +30,9 @@ export class CasperSignerWallet implements Wallet{
   private _publicKey?: CLPublicKey
   private _isConnected = false
 
-  constructor(){
+  constructor(
+    private _network: Network,
+  ){
     const pubKeyHex = store.get(CASPERSIGNER_PUBKEY_KEY)
 
     if (pubKeyHex) {
@@ -45,6 +47,11 @@ export class CasperSignerWallet implements Wallet{
   // is the wallet connected?
   get isConnected(): boolean {
     return this._isConnected
+  }
+
+  // what network is the wallet connected to?
+  get network(): Network {
+    return this._network
   }
 
   // (getter) name for identifying the wallet

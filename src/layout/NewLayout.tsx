@@ -14,6 +14,7 @@ import { /*ButtonConnection,*/ NewIcons } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import { ButtonConnectionOver } from "../components/organisms/ButtonConnectionOver";
+import { WalletName } from '../commons'
 
 const CLOSED_WIDTH = '108px'
 const OPEN_WIDTH = '280px'
@@ -27,7 +28,7 @@ const ExpansionAreaStyled = styled.div<any>`
 `
 
 const ExpansionArea = ({ children, collapse, onMouseEnter }) => (
-    <ExpansionAreaStyled collapse={collapse} onMouseEnter={onMouseEnter}>{children}</ExpansionAreaStyled>
+  <ExpansionAreaStyled collapse={collapse} onMouseEnter={onMouseEnter}>{children}</ExpansionAreaStyled>
 )
 
 const LayoutStyled = styled.div<any>`
@@ -49,7 +50,7 @@ const NewNavigationStyled = styled.nav`
 `
 
 const NewNavigation = ({ children, onMouseLeave }) => (
-    <NewNavigationStyled onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>
+  <NewNavigationStyled onMouseLeave={onMouseLeave}>{children}</NewNavigationStyled>
 )
 
 const MenuCenterStyled = styled.main`
@@ -57,7 +58,7 @@ const MenuCenterStyled = styled.main`
     align-self: center;
 `
 function MenuCenter({ children }) {
-    return (<MenuCenterStyled>{children}</MenuCenterStyled>)
+  return (<MenuCenterStyled>{children}</MenuCenterStyled>)
 }
 
 const NavItemStyled = styled.nav<any>`
@@ -88,19 +89,19 @@ const NavItemStyled = styled.nav<any>`
     }
 `
 const NavItem = ({ children, redirect, collapse }: any) => (
-    <NavItemStyled
-        onClick={redirect}
-        collapse={collapse}
-    >
-        {children}
-    </NavItemStyled>
+  <NavItemStyled
+    onClick={redirect}
+    collapse={collapse}
+  >
+    {children}
+  </NavItemStyled>
 )
 
 const CollapseButtonStyled = styled.button`
     all:unset;
 `
 const CollapseButton = ({ children }) => {
-    return (<CollapseButtonStyled>{children}</CollapseButtonStyled>)
+  return (<CollapseButtonStyled>{children}</CollapseButtonStyled>)
 }
 
 const IconTextStyled = styled.nav<any>`
@@ -112,26 +113,26 @@ const IconTextStyled = styled.nav<any>`
 `
 
 const IconText = ({ collapse, iconSet, text }) => {
-    return (
-        <>
-            {iconSet}
-            <IconTextStyled collapse={collapse}>{text}</IconTextStyled>
-        </>)
+  return (
+    <>
+      {iconSet}
+      <IconTextStyled collapse={collapse}>{text}</IconTextStyled>
+    </>)
 }
 const size = 20
 const IconTexts = [
-    { icon: SwapIcon, text: "Swap", path: "/swap" },
-    { icon: LiquidityIcon, text: "Liquidity", path: "/liquidity" },
-    { icon: PoolIcon, text: "Pools", path: "/pools" },
-    /*{ icon: FarmIcon, text: "Farms", path: "/farms" },
-    { icon: StakingIcon, text: "Staking", path: "/staking" },
-    { icon: NftIcon, text: "NFT", path: "/nft" },*/
+  { icon: SwapIcon, text: "Swap", path: "/swap" },
+  { icon: LiquidityIcon, text: "Liquidity", path: "/liquidity" },
+  { icon: PoolIcon, text: "Pools", path: "/pools" },
+  /*{ icon: FarmIcon, text: "Farms", path: "/farms" },
+  { icon: StakingIcon, text: "Staking", path: "/staking" },
+  { icon: NftIcon, text: "NFT", path: "/nft" },*/
 ]
 
 const IconTextsTwo = [
-    { icon: ConfigIcon, text: "Settings" },
-    { icon: CommunityIcon, text: "Community" },
-    { icon: CasperIcon, text: "CasperSwap" },
+  { icon: ConfigIcon, text: "Settings" },
+  { icon: CommunityIcon, text: "Community" },
+  { icon: CasperIcon, text: "CasperSwap" },
 ]
 
 //TODO container background
@@ -144,7 +145,7 @@ const MainSpaceStyled = styled.main`
     grid-template-columns: 1fr;
 `
 const MainSpace = ({ children }) => {
-    return (<MainSpaceStyled>{children}</MainSpaceStyled>)
+  return (<MainSpaceStyled>{children}</MainSpaceStyled>)
 }
 
 const WordMarkContainerStyled = styled.nav`
@@ -176,52 +177,34 @@ const NavBarStyled = styled.nav`
     height: 20px;
 `
 
-const NavBar = ({
-    isConnected,
-    onConnect,
-    onDisconnect,
-    walletAddress,
-}) => (
-    <NavBarStyled>
-        <WordMarkContainerStyled>
-            <a href='/'>
-                <WordMarkIcon />
-            </a>
-        </WordMarkContainerStyled>
-        <ConnectButtonContainerStyled>
-            <ButtonConnectionOver 
-                isConnected={isConnected} 
-                onConnect={onConnect} 
-                onDisconnect={onDisconnect} 
-                Account={walletAddress} 
-            />
-        </ConnectButtonContainerStyled>
-    </NavBarStyled>
-)
-
-const IconContainerStyled = styled.nav`
-    grid-column: 4/5;
-`
-const IconContainer = ({ children }) => {
-    return (<IconContainerStyled>{children}</IconContainerStyled>)
+export interface NavBarProps {
+  isConnected: boolean,
+  onConnect: (name: WalletName) => void,
+  onDisconnect: () => void,
+  accountHashString: string,
 }
 
-const TitleCellContainerStyled = styled.nav`
-    /*grid-column: 3;*/
-    /*grid-row: 1;*/
-    color: ${props => props.theme.secondBackgroundColor};
-    text-align: center;
-    font-size: 1.5em;
-    width: 100%;
-    align-self: center;
-`
-
-const CallContainerStyled = styled.nav`
-    grid-column: 6/7;
-`
-
-const CallContainer = ({ children }) => (
-    <CallContainerStyled>{children}</CallContainerStyled>
+const NavBar = ({
+  isConnected,
+  onConnect,
+  onDisconnect,
+  accountHashString,
+}: NavBarProps) => (
+  <NavBarStyled>
+    <WordMarkContainerStyled>
+      <a href='/'>
+        <WordMarkIcon />
+      </a>
+    </WordMarkContainerStyled>
+    <ConnectButtonContainerStyled>
+      <ButtonConnectionOver
+        isConnected={isConnected}
+        onConnect={onConnect}
+        onDisconnect={onDisconnect}
+        accountHashString={accountHashString}
+      />
+    </ConnectButtonContainerStyled>
+  </NavBarStyled>
 )
 
 const LogoIconStyled = styled.nav`
@@ -231,94 +214,103 @@ const LogoIconStyled = styled.nav`
 `
 
 const LogoIcon = ({ collapse, children }) => (
-    <LogoIconStyled>
-        {!collapse ? <NewIcons Icon={CasperIcon} size={64} /> : <div style={{ height: 64 }}>{children}</div>}
-    </LogoIconStyled>
+  <LogoIconStyled>
+    {!collapse ? <NewIcons Icon={CasperIcon} size={64} /> : <div style={{ height: 64 }}>{children}</div>}
+  </LogoIconStyled>
 )
 
-const NewLayout = ({ children, title = "" }) => {
-    const navigate = useNavigate()
-    const [collapse, setCollapse] = useState(true)
+export interface NewLayoutProps {
+  children?: React.ReactElement
+  title?: string,
+}
 
-    const { onConnectWallet, onDisconnectWallet, configState, pairState } = useContext(ConfigProviderContext)
+const NewLayout = ({ 
+  children, 
+  title = "" 
+}: NewLayoutProps) => {
+  const navigate = useNavigate()
+  const [collapse, setCollapse] = useState(true)
 
-    const {
-        isConnected,
-        walletAddress,
-        walletSelected,
-        languagesSelected,
-        visualModeSelected,
-        slippageToleranceSelected,
-        gasPriceSelected } = configState
+  const { 
+    onConnectWallet, 
+    onDisconnectWallet, 
+    configState, 
+  } = useContext(ConfigProviderContext)
 
-    async function onConnect() {
-        onConnectWallet(true)
-    }
-    async function onDisconnect() {
-        onDisconnectWallet()
-    }
+  const {
+    isConnected,
+    walletAddress
+  } = configState
 
-    return (
-        <>
-            <ExpansionArea
-                collapse={collapse}
-                onMouseEnter={() => setCollapse(false)}
-            >
-            </ExpansionArea>
-            <LayoutStyled collapse={collapse}>
-                <NewNavigation
-                    onMouseLeave={() => setCollapse(true)}
+  function onConnect(name: WalletName) {
+    onConnectWallet(name)
+  }
+  
+  function onDisconnect() {
+    onDisconnectWallet()
+  }
+
+  return (
+    <>
+      <ExpansionArea
+        collapse={collapse}
+        onMouseEnter={() => setCollapse(false)}
+      >
+      </ExpansionArea>
+      <LayoutStyled collapse={collapse}>
+        <NewNavigation
+          onMouseLeave={() => setCollapse(true)}
+        >
+          <CollapseButton>
+            <a href='/'>
+              <LogoIcon collapse={false}>
+                casperswap
+              </LogoIcon>
+            </a>
+          </CollapseButton>
+          <MenuCenter>
+            {IconTexts.map(x => {
+              return (
+                <NavItem key={x.text}
+                  redirect={() => { navigate(x.path) }}
+                  collapse={collapse}
                 >
-                    <CollapseButton>
-                        <a href='/'>
-                            <LogoIcon collapse={false}>
-                                casperswap
-                            </LogoIcon>
-                        </a>
-                    </CollapseButton>
-                    <MenuCenter>
-                        {IconTexts.map(x => {
-                            return (
-                                <NavItem key={x.text}
-                                    redirect={() => { navigate(x.path) }}
-                                    collapse={collapse}
-                                >
-                                    <IconText collapse={collapse}
-                                        iconSet={<NewIcons Icon={x.icon} size={size} />}
-                                        text={x.text}
-                                    />
-                                </NavItem>
-                            )
-                        })}
-                    </MenuCenter>
-                    <MenuCenter>
-                        {IconTextsTwo.map(x => {
-                            return (
-                                <NavItem key={x.text}
-                                    redirect={() => { }}
-                                    collapse={collapse}
-                                >
-                                    <IconText collapse={collapse}
-                                        iconSet={<NewIcons Icon={x.icon} size={size} />}
-                                        text={x.text}
-                                    />
-                                </NavItem>
-                            )
-                        })}
-                    </MenuCenter>
-                </NewNavigation>
-                <MainSpace>
-                    <NavBar
-                        isConnected={isConnected}
-                        onConnect={onConnect}
-                        onDisconnect={onDisconnect}
-                        walletAddress={walletAddress}
-                    />
-                    {children}
-                </MainSpace>
-            </LayoutStyled>
-        </>
-    )
+                  <IconText collapse={collapse}
+                    iconSet={<NewIcons Icon={x.icon} size={size} />}
+                    text={x.text}
+                  />
+                </NavItem>
+              )
+            })}
+          </MenuCenter>
+          <MenuCenter>
+            {IconTextsTwo.map(x => {
+              return (
+                <NavItem key={x.text}
+                  redirect={() => { }}
+                  collapse={collapse}
+                >
+                  <IconText collapse={collapse}
+                    iconSet={<NewIcons Icon={x.icon} size={size} />}
+                    text={x.text}
+                  />
+                </NavItem>
+              )
+            })}
+          </MenuCenter>
+        </NewNavigation>
+        <MainSpace>
+          <NavBar
+            isConnected={isConnected}
+            onConnect={onConnect}
+            onDisconnect={onDisconnect}
+            accountHashString={walletAddress}
+          />
+          {children}
+        </MainSpace>
+      </LayoutStyled>
+    </>
+  )
 }
 
 export default NewLayout

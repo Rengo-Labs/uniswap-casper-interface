@@ -9,7 +9,7 @@ import {
   Wallet, 
 } from './Wallet'
 
-import { WalletName } from './types'
+import { Network, WalletName } from './types'
 
 /**
  * Mock Wallet
@@ -18,9 +18,20 @@ export class MockWallet implements Wallet{
   private _publicKey?: CLPublicKey
   private _isConnected = false
 
+  constructor(
+    private _network: Network,
+  ) {
+    
+  }
+
   // is the wallet connected?
   get isConnected(): boolean {
     return this._isConnected
+  }
+  
+  // what network is the wallet connected to?
+  get network(): Network {
+    return this._network
   }
 
   // (getter) name for identifying the wallet

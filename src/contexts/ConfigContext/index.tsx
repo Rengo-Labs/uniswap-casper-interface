@@ -2,18 +2,19 @@ import axios from 'axios';
 import BigNumber from 'bignumber.js'
 import {
     CLByteArray,
-    CLKey,
     CLPublicKey, CLValueBuilder, RuntimeArgs,
 } from 'casper-js-sdk';
-import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
+import React, { createContext, ReactNode, useEffect, useReducer, useState } from 'react'
 import toast from 'react-hot-toast';
 
 import { PopupsModule } from '../../components/organisms';
-import {BASE_URL, DEADLINE, NODE_ADDRESS, ROUTER_CONTRACT_HASH, ROUTER_PACKAGE_HASH} from '../../constant';
+import {BASE_URL, DEADLINE, NODE_ADDRESS, ROUTER_PACKAGE_HASH} from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
 import { initialPairsState, PairsReducer, PairActions, PairData, PairState } from '../../reducers/PairsReducer';
 import { initialTokenState, TokenReducer, TokenActions, TokenAction, TokenState } from '../../reducers/TokenReducers';
+
+const NETWORK_NAME = Network.CASPER_TESTNET
 
 import {
     APIClient,
@@ -50,7 +51,7 @@ import {entryPointEnum} from "../../types";
 type MaybeWallet = Wallet | undefined
 
 export interface ConfigContext {
-    onConnectWallet: (ignoreError?: boolean) => Promise<void>,
+    onConnectWallet: (name?: WalletName, ignoreError?: boolean) => Promise<void>,
     onDisconnectWallet: () => Promise<void>,
     configState: ConfigState,
     tokenState: TokenState,
@@ -72,7 +73,6 @@ export interface ConfigContext {
     
     // To Delete
     poolColumns: any[],
-    setPoolList: (poolList: any[]) => void,
     getPoolList: () => PairData[],
     getTVLandVolume: () => Promise<void>,
     gralData: Record<string, string>,
@@ -85,7 +85,7 @@ export interface ConfigContext {
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any)
 
-export const casperClient = new CasperClient(Network.CASPER_TESTNET, NODE_ADDRESS)
+export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS)
 export const apiClient = new APIClient(BASE_URL)
 
 const formatter = Intl.NumberFormat('en', {notation: 'compact'})
@@ -163,57 +163,6 @@ async function allowanceAgainstOwnerAndSpenderPairContract(accountHashStr: strin
     }
 }
 
-const normilizeAmountToString = (amount) => {
-    const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
-    const amountArr = strAmount.split('.')
-    if (amountArr[1] === undefined) {
-        const concatedAmount = amountArr[0].concat('000000000')
-        return concatedAmount
-    } else {
-        let concatedAmount = amountArr[0].concat(amountArr[1].slice(0, 9))
-        for (let i = 0; i < 9 - amountArr[1].length; i++) {
-            concatedAmount = concatedAmount.concat('0')
-        }
-        return concatedAmount
-    }
-}
-
-async function increaseAndDecreaseAllowanceMakeDeploy(activePublicKey, contractHash, amount, increase) {
-    try {
-        const publicKey = CLPublicKey.fromHex(activePublicKey);
-        const spender = ROUTER_PACKAGE_HASH;
-        const spenderByteArray = new CLByteArray(
-            Uint8Array.from(Buffer.from(spender, "hex"))
-        );
-        const paymentAmount = 5_000_000_000;
-
-        console.log('amount', spender, amount)
-
-        const runtimeArgs = RuntimeArgs.fromMap({
-            spender: createRecipientAddress(spenderByteArray),
-            amount: CLValueBuilder.u256(normilizeAmountToString(amount)),
-        });
-        const contractHashAsByteArray = Uint8Array.from(
-            Buffer.from(contractHash.slice(5), "hex")
-        );
-        const entryPoint = increase ? entryPointEnum.Increase_allowance : entryPointEnum.Decrease_allowance;
-        // Set contract installation deploy (unsigned).
-        const deploy = await makeDeployLiquidity(
-            publicKey,
-            contractHashAsByteArray,
-            entryPoint,
-            runtimeArgs,
-            paymentAmount
-        );
-
-        //const deploy = await makeDeployLiquidityWasm(publicKey, runtimeArgs, paymentAmount)
-        return deploy
-    } catch (error) {
-        console.log(__filename, "increaseAndDecreaseAllowanceMakeDeploy", error);
-        throw Error()
-    }
-}
-
 async function liquidityAgainstUserAndPair(accountHashStr: string, pairId: string) {
     try {
         const res = await apiClient.getLiquidityAgainstUserAndPair(accountHashStr, `hash-${pairId}`)
@@ -232,7 +181,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     const [confirmModal, setConfirmModal] = useState(false)
     const columns = getColumns()
     const poolColumns = React.useMemo(() => columns, [])
-    const [poolList, setPoolList] = useState([])
     const [gralData, setGralData] = useState({})
     const [isStaked, setStaked] = useState(false)
     const [linkExplorer, setLinkExplorer] = useState("")
@@ -256,9 +204,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     /**
      * Connect to the currently selected wallet
      * 
+     * @param name name of wallet to connect
+     * 
      * @returns wallet, balance, mainPurse, and walletAddress
      */
-    async function connect(): Promise<ConnectReturn> {
+    async function connect(name?: WalletName): Promise<ConnectReturn> {
         if (debounceConnect) {
             return {
                 wallet: state.wallet,
@@ -271,23 +221,26 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         debounceConnect = true
         let w: MaybeWallet
 
-        if (walletSelected === WalletName.CASPER_SIGNER) {
+        switch (name) {
+          case WalletName.CASPER_SIGNER:
             try {
                 if (state.wallet) {
                     state.wallet.disconnect()
                 }
 
-                w = new CasperSignerWallet()
+                w = new CasperSignerWallet(NETWORK_NAME)
                 await w.connect()
             } catch (e) {
                 debounceConnect = false
                 throw e
             }
+
             if (!w?.publicKey) {
                 debounceConnect = false
                 throw new Error("casper signer error")
             }
-        } else {
+            break
+        case WalletName.TORUS:
             /*
                 torus = new Torus();
 
@@ -391,7 +344,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         )
     }
 
-    async function onConnectWallet(ignoreError = false): Promise<void> {
+    async function onConnectWallet(name: WalletName = WalletName.CASPER_SIGNER, ignoreError = false): Promise<void> {
         if (state.wallet?.isConnected) {
             return
         }
@@ -402,7 +355,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
         const toastLoading = toast.loading("Try to connect your wallet")
         try {
-            const ret = await connect()
+            const ret = await connect(name)
 
             dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse: ret.mainPurse } })
             dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { wallet: ret.wallet } })
@@ -867,7 +820,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             pairState,
             onRemoveLiquidity,
             poolColumns,
-            setPoolList,
             getPoolList,
             getTVLandVolume,
             gralData,
