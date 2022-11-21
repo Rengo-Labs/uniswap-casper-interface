@@ -2,15 +2,20 @@ import React, { ReactNode } from 'react'
 import { WalletSelectionStyled } from './styles'
 
 interface WalletSelectionDivInterfaceProps {
-    walletSelected: string,
+    isSelected: boolean,
     children: ReactNode,
     onClick:any,
     style:any
 }
 
-export const WalletSelectionDiv = ({ walletSelected, children, onClick,style}: WalletSelectionDivInterfaceProps) => {
+export const WalletSelectionDiv = ({ 
+    isSelected, 
+    children, 
+    onClick,
+    style
+}: WalletSelectionDivInterfaceProps) => {
     return (
-        <WalletSelectionStyled isSelected={walletSelected === "casper" ? false : false} onClick={onClick} style={style}>
+        <WalletSelectionStyled isSelected={isSelected} onClick={onClick} style={style}>
             {children}
         </WalletSelectionStyled>
     )

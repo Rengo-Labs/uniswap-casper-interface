@@ -95,14 +95,16 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                     <ConfigModalBody>
                         <h1>Settings</h1>
                         <PillowDiv>
-                            <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === WalletName.CASPER_SIGNER ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
-                                <WalletSelectionImageStyled src={casperWallet} alt="" />
-                                <h2>Signer Wallet</h2>
-                            </WalletSelectionDiv>
-                            <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === WalletName.TORUS ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
-                                <WalletSelectionImageStyled src={torusWallet} alt="" />
-                                <h2>Torus Wallet</h2>
-                            </WalletSelectionDiv>
+                            {
+                              /*<WalletSelectionDiv style={{ backgroundColor: `${walletSelected === WalletName.CASPER_SIGNER ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
+                                    <WalletSelectionImageStyled src={casperWallet} alt="" />
+                                    <h2>Signer Wallet</h2>
+                                </WalletSelectionDiv>
+                                <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === WalletName.TORUS ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
+                                    <WalletSelectionImageStyled src={torusWallet} alt="" />
+                                    <h2>Torus Wallet</h2>
+                                </WalletSelectionDiv>*/
+                            }
                         </PillowDiv>
                         <PillowDiv>
                             Language Selection

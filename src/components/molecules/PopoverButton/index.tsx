@@ -14,14 +14,28 @@ import {ReactComponent as copyIcon} from "../../../assets/newIcons/copyIcon.svg"
 import {ReactComponent as recentTransactionIcon} from "../../../assets/newIcons/recentTransactionIcon.svg";
 import {ReactComponent as disconnectWallet} from "../../../assets/newIcons/disconnectWalletIcon.svg";
 
-export const PopoverButton = ({ isConnected, isOpened, toggling, onDisconnect, account = "" }: any)  => {
-    const end = account.length
-    const start = account.length - 3
-    const wallet = `${account.substring(0, 8)}...${account.substring(start, end)}`
-    const walletLabel = `${account.substring(0, 8)}...${account.substring(end - 8, end)}`
+export interface PopoverButtonInterface {
+  isConnected: boolean, 
+  isOpened: boolean, 
+  onToggle: () => void, 
+  onDisconnect: () => void, 
+  accountHashString: string,
+}
+
+export const PopoverButton = ({ 
+  isConnected, 
+  isOpened, 
+  onToggle, 
+  onDisconnect, 
+  accountHashString = "",
+}:PopoverButtonInterface)  => {
+    const end = accountHashString.length
+    const start = accountHashString.length - 3
+    const wallet = `${accountHashString.substring(0, 8)}...${accountHashString.substring(start, end)}`
+    const walletLabel = `${accountHashString.substring(0, 8)}...${accountHashString.substring(end - 8, end)}`
 
     const copyAccount = () => {
-        navigator.clipboard.writeText(account)
+        navigator.clipboard.writeText(accountHashString)
         toast('copied')
     }
 
@@ -33,7 +47,7 @@ export const PopoverButton = ({ isConnected, isOpened, toggling, onDisconnect, a
         <>
             {
                 isConnected &&
-                <ButtonStyle isSelected={isConnected} onClick={toggling}><NewIcons Icon={walletConnected} style={{alignSelf: "center", padding: "0", display: "flex"}} size="40px" /> {wallet}</ButtonStyle>
+                <ButtonStyle isSelected={isConnected} onClick={onToggle}><NewIcons Icon={walletConnected} style={{alignSelf: "center", padding: "0", display: "flex"}} size="40px" /> {wallet}</ButtonStyle>
             }
             {
                 isConnected &&  isOpened &&
