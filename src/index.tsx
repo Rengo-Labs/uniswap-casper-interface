@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import "@fontsource/epilogue";
 import { Home, Swap, Pools, Tokens } from './components/pages'
 import { NewLiquidity } from './components/pages/NewLiquidity';
 import { BigContext } from './contexts';
