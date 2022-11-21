@@ -97,6 +97,8 @@ const LiquidityNewModule = () => {
       searchParams.delete('remove')
       setSearchParams(searchParams)
     }
+
+    updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
   }, [isConnected])
 
   useEffect(() => {

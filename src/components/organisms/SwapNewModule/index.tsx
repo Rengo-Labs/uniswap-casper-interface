@@ -90,8 +90,9 @@ const SwapNewModule = () => {
       onSelectSecondToken(tokens[t1])
     }
 
-  }, [])
-
+    updateSwapDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
+  }, [isConnected])
+  
   async function onConnect() {
     onConnectWallet()
   }
