@@ -2,7 +2,9 @@ import store from 'store2'
 import { log } from '../utils'
 
 import {
+  CasperServiceByJsonRPC,
   CLPublicKey,
+  DeployUtil,
   Signer,
 } from 'casper-js-sdk'
 
@@ -11,6 +13,7 @@ import {
 } from './Wallet'
 
 import { Network, WalletName } from './types'
+import { NODE_ADDRESS } from '../../constant'
 
 export const CASPERSIGNER_PUBKEY_KEY = 'cs-pubk'
 
@@ -186,10 +189,14 @@ export class CasperSignerWallet implements Wallet{
   /** 
    * Async try and read the active key
    * 
-   * @returns the the public key on success or throw error
+   * @returns the the public key hex on success or throw error
    */
   async getActiveKey(): Promise<string> {
-    // clear the promise
+    if (this._publicKey) {
+      return this.publicKeyHex
+    }
+
+    // fetch the key
     const key = await Signer.getActivePublicKey()
 
     // store key
@@ -206,7 +213,7 @@ export class CasperSignerWallet implements Wallet{
    * 
    * @returns a promise for pass/fail
    */
-  disconnect(): void {
+  async disconnect(): Promise<void> {
     if (!this.isConnected) {
       return
     }
@@ -217,6 +224,49 @@ export class CasperSignerWallet implements Wallet{
       log.error(`Casper Signer - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
       
       // rethrow error
+      throw err
+    }
+  }
+
+  /**
+   * Sign a deploy
+   * 
+   * @params deploy Deploy to sign
+   * 
+   * @returns a signed deploy
+   */
+  async sign(deploy: DeployUtil.Deploy): Promise<DeployUtil.Deploy> {
+    try {
+      // Convert the deploy to a raw json
+      const deployJSON = DeployUtil.deployToJson(deploy)
+      // Sign the deploy with the signer
+      const signedDeployJSON = await Signer.sign(
+        deployJSON,
+        this.publicKeyHex,
+        this.publicKeyHex,
+      )
+      
+      // Convert the signed deploy json to a deploy
+      return DeployUtil.deployFromJson(signedDeployJSON).unwrap()
+    } catch (err) {
+      log.error(`Casper Signer - signAndDeploy error: ${err}`)
+      throw err
+    }
+  }
+  
+  /**
+   * Deploy a signed deploy
+   * 
+   * @params deploy Signed deploy to deploy
+   * 
+   * @returns a deploy hash
+   */
+  async deploy(signedDeploy: DeployUtil.Deploy): Promise<string> {
+    try {
+      const casperService = new CasperServiceByJsonRPC(NODE_ADDRESS)
+      return (await casperService.deploy(signedDeploy)).deploy_hash
+    } catch (err) {
+      log.error(`Casper Signer - signAndDeploy error: ${err}`)
       throw err
     }
   }

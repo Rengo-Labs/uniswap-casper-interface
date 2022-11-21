@@ -12,6 +12,7 @@ import BigNumber from 'bignumber.js';
 import { Wallet } from './Wallet'
 import { Network } from './types'
 import { log, sleep } from '../utils'
+import { walletAtom } from '../../contexts/ConfigAtom';
 
 /**
  * Client for working with Casper network
@@ -182,7 +183,7 @@ export class Client {
       const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
 
       // Put and confirm deploy
-      return this.putAndConfirmDeploy(signedDeploy)
+      return this.putAndConfirmDeploy(wallet, signedDeploy)
     } catch (err) {
       log.error(`Casper Client - signAndDeployContractCall error: ${err}`)
       
@@ -218,7 +219,7 @@ export class Client {
       const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
 
       // Put and confirm deploy
-      return this.putAndConfirmDeploy(signedDeploy)
+      return this.putAndConfirmDeploy(wallet, signedDeploy)
     } catch (err) {
       log.error(`Casper Client - signAndDeployWasm error: ${err}`)
       
@@ -245,18 +246,7 @@ export class Client {
         DeployUtil.standardPayment(gas.toNumber())
       )
 
-      // Convert the deploy to a raw json
-      const deployJSON = DeployUtil.deployToJson(deploy)
-
-      // Sign the deploy with the signer
-      const signedDeployJSON = await Signer.sign(
-        deployJSON,
-        wallet.publicKeyHex,
-        wallet.publicKeyHex,
-      )
-      
-      // Convert the signed deploy json to a deploy
-      return DeployUtil.deployFromJson(signedDeployJSON).unwrap()
+      return await wallet.sign(deploy)
     } catch (err) {
       log.error(`Casper Client - putAndConfirmDeploy error: ${err}`)
       
@@ -268,14 +258,16 @@ export class Client {
   /**
    * Execute putDeploy and getDeploy to confirm a successfully deploy
    * 
+   * @param wallet wallet to deploy using
    * @param signedDeploy deploy to putDeploy
+   * 
    * @returns the array with the deployHash and detailed deploy information
    */
-  async putAndConfirmDeploy(signedDeploy: DeployUtil.Deploy): Promise<[string, GetDeployResult]> {
+  async putAndConfirmDeploy(wallet: Wallet, signedDeploy: DeployUtil.Deploy): Promise<[string, GetDeployResult]> {
     try {
-      const casperClient = this.casperClient
-      // Issue the deploy
-      const deployHash = await casperClient.putDeploy(signedDeploy)
+      const deployHash = await wallet.deploy(signedDeploy)
+
+      console.log('deployHash', deployHash)
 
       // Get the deploy hash from the network
       const [_, deployResult] = await this.getDeploy(deployHash)

@@ -47,5 +47,23 @@ export interface Wallet {
    * 
    * @returns a promise for pass/fail
    */
-   disconnect: () => void
+  disconnect: () => Promise<void>
+
+  /**
+   * Sign a deploy
+   * 
+   * @params deploy Deploy to sign
+   * 
+   * @returns a signed deploy
+   */
+  sign: (deploy: DeployUtil.Deploy) => Promise<DeployUtil.Deploy>
+
+  /**
+   * Deploy a signed deploy
+   * 
+   * @params deploy Deploy to deploy
+   * 
+   * @returns a deploy hash
+   */
+  deploy: (deploy: DeployUtil.Deploy) => Promise<string>
 }

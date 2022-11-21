@@ -2,8 +2,8 @@ import React from 'react'
 import SwitchSwapIcon from '../../../assets/newIcons/loaders.svg'
 import styled from 'styled-components'
 const LoadersSwap = () => {
-    return (
-        <IconStyled src={SwitchSwapIcon} onClick={()=>{}} />)
+  return (
+    <IconStyled src={SwitchSwapIcon} onClick={() => { }} />)
 }
 
 const IconStyled = styled.img`

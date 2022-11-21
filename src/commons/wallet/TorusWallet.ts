@@ -3,8 +3,8 @@ import store from 'store2'
 import { log } from '../utils'
 
 import {
-  CLPublicKey,
-  Signer,
+  CasperServiceByJsonRPC,
+  CLPublicKey, DeployUtil,
 } from 'casper-js-sdk'
 
 import {
@@ -12,6 +12,7 @@ import {
 } from './Wallet'
 
 import { WalletName, Network } from './types'
+import { SafeEventEmitterProvider } from "casper-js-sdk/dist/services/ProviderTransport";
 
 export const TORUS_WALLET_PUBKEY_KEY = 'tw-pubk'
 
@@ -43,9 +44,6 @@ const SUPPORTED_NETWORKS = {
  */
 export class TorusWallet implements Wallet {
   private _connectPromise?: Promise<string>
-  private _connectEventHandler: any
-  private _disconnectEventHandler: any
-  private _previousConnectReject: any
   private _publicKey?: CLPublicKey
   private _isConnected = false
   private _torus?: Torus
@@ -59,7 +57,7 @@ export class TorusWallet implements Wallet {
       try {
         this._publicKey = CLPublicKey.fromHex(pubKeyHex)
       } catch(e) {
-        log.warn(`Casper Signer - constructor warning, could not decode cached hex: ${pubKeyHex}`)
+        log.warn(`Torus Wallet - constructor warning, could not decode cached hex: ${pubKeyHex}`)
       }
     }
   }
@@ -76,7 +74,7 @@ export class TorusWallet implements Wallet {
 
   // (getter) name for identifying the wallet
   get name(): WalletName {
-    return WalletName.CASPER_SIGNER
+    return WalletName.TORUS
   }
 
   // (getter) public key for connected wallet
@@ -115,21 +113,34 @@ export class TorusWallet implements Wallet {
     }
 
     try {
-      // create new Torus instance
-      const torus = this._torus = new Torus();
-      // initialize the Torus instance
-      await torus.init({
-        // TODO: multiplex basedo n URL
-        buildEnv: 'testing',
-        showTorusButton: true,
-        network: SUPPORTED_NETWORKS[this._network],
-      })
+      let torus = this._torus
+
+      if (!torus) {
+        // create new Torus instance
+        torus = this._torus = new Torus()
+        // initialize the Torus instance
+        await torus.init({
+          // TODO: multiplex based on URL
+          buildEnv: 'testing',
+          showTorusButton: true,
+          network: SUPPORTED_NETWORKS[this._network],
+        })
+
+        torus.showTorusButton()
+      }
       
       // login
-      const loginaccs = await torus?.login();
-      const zzz = (loginaccs || [])[0] || ""
-      console.log('zzz', zzz)
+      const loginaccs = await torus?.login()
+      const key = (loginaccs || [])[0] || ""
+
+      // store key
+      store.set(TORUS_WALLET_PUBKEY_KEY, key)
       
+      // set the key
+      this._publicKey = CLPublicKey.fromHex(key)
+
+      // we are connected
+      this._isConnected = true
     } catch (err) {
       log.error(`Torus Wallet - connect error: ${err}`)
 
@@ -141,19 +152,10 @@ export class TorusWallet implements Wallet {
   /** 
    * Async try and read the active key
    * 
-   * @returns the the public key on success or throw error
+   * @returns the the public key hex on success or throw error
    */
   async getActiveKey(): Promise<string> {
-    // clear the promise
-    const key = await Signer.getActivePublicKey()
-
-    // store key
-    store.set(TORUS_WALLET_PUBKEY_KEY, key)
-
-    // convert key to CLPublicKey type
-    this._publicKey = CLPublicKey.fromHex(key)
-
-    return key
+    return this.publicKeyHex
   }
   
   /** 
@@ -161,17 +163,48 @@ export class TorusWallet implements Wallet {
    * 
    * @returns a promise for pass/fail
    */
-  disconnect(): void {
+  async disconnect(): Promise<void> {
     if (!this.isConnected) {
       return
     }
 
     try {
-      return Signer.disconnectFromSite()
+      this._torus.hideTorusButton()
+
+      return await this._torus.logout()
     } catch (err) {
-      log.error(`Casper Signer - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
+      log.error(`Torus Wallet - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
       
       // rethrow error
+      throw err
+    }
+  }
+
+  /**
+   * Sign a deploy
+   * 
+   * @params deploy Deploy to sign
+   * 
+   * @returns a signed deploy
+   */
+  async sign(deploy: DeployUtil.Deploy): Promise<DeployUtil.Deploy> {
+    // Torus does the signing and deploy in one go
+    return deploy 
+  }
+  
+  /**
+   * Deploy a signed deploy
+   * 
+   * @params deploy Signed deploy to deploy
+   * 
+   * @returns a deploy hash
+   */
+  async deploy(signedDeploy: DeployUtil.Deploy): Promise<string> {
+    try {
+      const casperService = new CasperServiceByJsonRPC(this._torus?.provider as SafeEventEmitterProvider)
+      return (await casperService.deploy(signedDeploy)).deploy_hash
+    } catch (err) {
+      log.error(`Torus Wallet - signAndDeploy error: ${err}`)
       throw err
     }
   }

@@ -21,6 +21,7 @@
     "no-empty": "off",
     "no-unused-vars": "off",
     "no-case-declarations": "off",
+    "no-fallthrough": "off",
     "@typescript-eslint/ban-ts-comment": ["warn"],
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-explicit-any": "off",

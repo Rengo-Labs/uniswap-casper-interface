@@ -2,6 +2,7 @@ import { log } from '../utils'
 
 import {
   CLPublicKey,
+  DeployUtil,
   Signer,
 } from 'casper-js-sdk'
 
@@ -21,7 +22,7 @@ export class MockWallet implements Wallet{
   constructor(
     private _network: Network,
   ) {
-    
+
   }
 
   // is the wallet connected?
@@ -84,11 +85,33 @@ export class MockWallet implements Wallet{
    * 
    * @returns a promise for pass/fail
    */
-  disconnect(): void {
+  async disconnect(): Promise<void> {
     if (!this.isConnected) {
       return
     }
 
     this._isConnected = false
+  }
+
+  /**
+   * Sign a deploy
+   * 
+   * @params deploy Deploy to sign
+   * 
+   * @returns a signed deploy
+   */
+  async sign(deploy: DeployUtil.Deploy): Promise<DeployUtil.Deploy> {
+    return deploy
+  }  
+  
+  /**
+   * Deploy a signed deploy
+   * 
+   * @params deploy Signed deploy to deploy
+   * 
+   * @returns a deploy hash
+   */
+  async deploy(signedDeploy: DeployUtil.Deploy): Promise<string> {
+    return ''
   }
 }
