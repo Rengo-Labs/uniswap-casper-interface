@@ -5,12 +5,12 @@ import LiquidityNewModule from '../../organisms/LiquidityNewModule'
 import { LiquidityNewContainerCC } from '../../atoms'
 
 export const NewLiquidity = () => {
-    return (
-        <NewLayout>
-            <LiquidityNewContainerCC>
-                    <LiquidityNewModule />
-            </LiquidityNewContainerCC>
-        </NewLayout>
-    )
+  return (
+    <NewLayout>
+      <LiquidityNewContainerCC>
+        <LiquidityNewModule />
+      </LiquidityNewContainerCC>
+    </NewLayout>
+  )
 }
 

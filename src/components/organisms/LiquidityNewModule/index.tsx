@@ -413,6 +413,9 @@ const LiquidityNewModule = () => {
         }
         <ButtonSpaceNSM>
           {
+            !isConnected && <NewSwapButton style={{ height: "57px", width: "100%" }} content="Connect to Wallet" handler={async () => { onConnect() }} />
+          }
+          {
             !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount &&
             <NewSwapButton style={{ height: "57px", width: "100%" }} disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
           }
@@ -420,7 +423,9 @@ const LiquidityNewModule = () => {
             !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount &&
             <NewSwapButton style={{ height: "57px", width: "100%" }} disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
           }
-          <NewSwapButton style={{ height: "57px", width: "100%" }} disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
+          {
+            isApprovedA && isApprovedB && isConnected && <NewSwapButton style={{ height: "57px", width: "100%" }} disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
+          }
         </ButtonSpaceNSM>
 
       </ContainerSwapActionsNSM>
@@ -444,9 +449,9 @@ const LiquidityNewModule = () => {
                   secondSymbol={row.token1Symbol}
                   secondLiquidity={row.reserve1}
                   liquidity={row.balance}
-                  perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)} 
+                  perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)}
                 >
-                  <LiquidityRemovingModule 
+                  <LiquidityRemovingModule
                     isConnected={true}
                     openedPopup={openPopup}
                     firstHash={row.contract0}
@@ -461,12 +466,12 @@ const LiquidityNewModule = () => {
                     allowance={row.allowance}
                   >
                     <CircleButton>
-                      <TbTrash 
-                        style={{ 
-                          alignSelf: "center", 
-                          color: lightTheme.thirdBackgroundColor 
+                      <TbTrash
+                        style={{
+                          alignSelf: "center",
+                          color: lightTheme.thirdBackgroundColor
                         }}
-                        size="1.3rem" 
+                        size="1.3rem"
                       />
                     </CircleButton>
                   </LiquidityRemovingModule>

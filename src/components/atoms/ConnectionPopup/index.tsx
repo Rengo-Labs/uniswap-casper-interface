@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
-  CollapsingPopup,
   HRefLink,
   OverlayPopup,
   PopupBottom,
@@ -16,7 +15,6 @@ import { WalletSelectionDiv } from "../WalletSelectionDiv";
 import { WalletSelectionImageStyled } from "../../molecules/ConfigModal/styles";
 import casperWallet from "../../../assets/walletIcons/casper.png";
 import torusWallet from "../../../assets/walletIcons/torus-icon-blue-3.svg";
-import { HiChevronDown } from "react-icons/hi";
 import { WalletName } from "../../../commons";
 
 export interface ConnectionPopup {
@@ -26,6 +24,7 @@ export interface ConnectionPopup {
   onClose: () => void,
   onConnect: (name: WalletName) => void,
   onToggle: () => void,
+  showButton?: boolean
 }
 
 export const ConnectionPopup = ({
@@ -35,6 +34,7 @@ export const ConnectionPopup = ({
   onConnect,
   isOpened,
   onToggle,
+  showButton,
 }: ConnectionPopup) => {
 
   const closeHandler = (e) => {
@@ -44,8 +44,10 @@ export const ConnectionPopup = ({
   return (
     <>
       {
-        !isConnected && <>
-          <PopoverButtonStyled onClick={onToggle}>Connect Wallet</PopoverButtonStyled>
+        !isConnected && <> 
+          {
+            showButton !== false && <PopoverButtonStyled onClick={onToggle}>Connect Wallet</PopoverButtonStyled>
+          }
           <OverlayPopup isOpened={isOpened}>
             <PopupContainer>
               <PopupTitle><div style={{ flex: "1" }}>{title}</div><PopupClose onClick={closeHandler}>&times;</PopupClose></PopupTitle>
@@ -63,7 +65,9 @@ export const ConnectionPopup = ({
                     <h2>Torus Wallet</h2>
                   </WalletSelectionDiv>
                 </WalletContainer>
-                <CollapsingPopup>show uninstall wallets <HiChevronDown /></CollapsingPopup>
+                {
+                  //<CollapsingPopup>show uninstall wallets <HiChevronDown /></CollapsingPopup>
+                }
               </PopupContent>
               <PopupBottom><HRefLink>New Here? Get started on Casperswap</HRefLink></PopupBottom>
             </PopupContainer>
