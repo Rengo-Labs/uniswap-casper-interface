@@ -44,7 +44,10 @@ export const lightTheme = {
   NewAquamarineColor: "rgba(110, 235, 208, 1)",
   NewPurpleColor: "rgba(113, 95, 245, 1)",
   NewGrayColor: "#999999",
-  NewGreyColor: "#CCCCCC"
+  NewGreyColor: "#CCCCCC",
+  OPEN_WIDTH: "280px",
+  CLOSED_WIDTH: "108px",
+  NewNavigationCCBG:"rgb(120,100,244)"
 };
 
 export const darkTheme = {
