@@ -43,6 +43,7 @@ import {
 import { ConfigState } from '../../reducers/ConfigReducers'
 import { Row } from 'react-table'
 import { CasperServiceByJsonRPC } from 'casper-js-sdk';
+import { ConnectionPopup } from '../../components/atoms';
 
 type MaybeWallet = Wallet | undefined
 
@@ -182,6 +183,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   const [isStaked, setStaked] = useState(false)
   const [linkExplorer, setLinkExplorer] = useState("")
 
+  const [showConnectionPopup, setShowConnectionPopup] = useState(false)
+
   let debounceConnect = false
 
   /**
@@ -189,13 +192,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
    */
   type ConnectReturn = {
     // wallet
-    wallet: Wallet,
+    wallet?: Wallet,
     // balance of wallet
     balance: BigNumber,
     // main purse of wallet's address
     mainPurse: string,
     // wallet accountHashString
     walletAddress: string,
+    // was the connection successful?
+    isConnected: boolean,
   }
 
   /**
@@ -205,13 +210,14 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
    * 
    * @returns wallet, balance, mainPurse, and walletAddress
    */
-  async function connect(name?: WalletName): Promise<ConnectReturn> {
+  async function connect(name: WalletName = WalletName.NONE): Promise<ConnectReturn> {
     if (debounceConnect) {
       return {
         wallet: state.wallet,
         mainPurse: state.mainPurse,
-        walletAddress: state.wallet.accountHashString,
+        walletAddress: state.wallet?.accountHashString ?? '',
         balance: convertUIStringToBigNumber(tokenState.tokens.CSPR.amount),
+        isConnected: state.wallet?.isConnected ?? false,
       }
     }
 
@@ -256,7 +262,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         }
         break
       default:
-        throw new Error('ConfigContext - connect error - missing wallet implementation')
+        setShowConnectionPopup(true)
+        return {
+          mainPurse: '',
+          walletAddress: '',
+          balance: convertUIStringToBigNumber(tokenState.tokens.CSPR.amount),
+          isConnected: false,
+        }
     }
 
     const { balance, mainPurse } = await getStatus(w)
@@ -266,6 +278,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       balance,
       mainPurse,
       walletAddress: w.accountHashString,
+      isConnected: w.isConnected,
     }
   }
 
@@ -340,7 +353,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     )
   }
 
-  async function onConnectWallet(name: WalletName = WalletName.CASPER_SIGNER, ignoreError = false): Promise<void> {
+  async function onConnectWallet(name: WalletName = WalletName.NONE, ignoreError = false): Promise<void> {
     if (state.wallet?.isConnected) {
       return
     }
@@ -349,9 +362,16 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       return
     }
 
-    const toastLoading = toast.loading("Try to connect your wallet")
+    let toastLoading: any
+
     try {
       const ret = await connect(name)
+
+      if (!ret.isConnected) {
+        return
+      }
+
+      toastLoading = toast.loading("Connecting to your wallet...")
 
       dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse: ret.mainPurse } })
       dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { wallet: ret.wallet } })
@@ -359,7 +379,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       refresh(ret.wallet)
 
       toast.dismiss(toastLoading)
-      toast.success("your wallet is mounted and ready to ride!")
+      toast.success("Connected!")
     } catch (err) {
       log.error(`onConnectWallet error: ${err}`)
       toast.dismiss(toastLoading)
@@ -844,6 +864,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       <PopupsModule isOpen={confirmModal} handleOpen={setConfirmModal} progress={false}>
         Your <a href={linkExplorer} target='_blank'>deploy</a> was successful.
       </PopupsModule>
+      <ConnectionPopup 
+        isConnected={isConnected} 
+        isOpened={showConnectionPopup} 
+        onToggle={() => setShowConnectionPopup(!showConnectionPopup)} 
+        title="Connect your wallet to CasperSwap" 
+        onClose={() => setShowConnectionPopup(false)} 
+        onConnect={onConnectWallet} 
+        showButton={false}
+      />
     </ConfigProviderContext.Provider>
   )
 }

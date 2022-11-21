@@ -40,7 +40,7 @@ export const PopupContainer = styled.div`
     background: #fff;
     border-radius: 20px;
     width: 608px;
-    height: 262px;
+    height: 232px;
     display: flex;
     flex-direction: column;
     align-self: center;
@@ -90,7 +90,7 @@ export const PopupContent = styled.div`
     padding: 10px;
     margin: 0;
     border-radius: 0;
-    height: 162px;
+    height: 132px;
 `
 
 export const HRefLink = styled.button`
