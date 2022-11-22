@@ -50,16 +50,19 @@ export const ConnectionPopup = ({
           }
           <OverlayPopup isOpened={isOpened}>
             <PopupContainer>
+              {/* TODO: remove inline css*/}
               <PopupTitle><div style={{ flex: "1" }}>{title}</div><PopupClose onClick={closeHandler}>&times;</PopupClose></PopupTitle>
               <PopupContent>
                 <DisclaimerContent>
                   By connecting your wallet, you acknowledge that you have read, understand and accept the terms in the Disclaimer
                 </DisclaimerContent>
                 <WalletContainer>
+                  {/* TODO: remove inline css*/}
                   <WalletSelectionDiv style={{ backgroundColor: "lightgray" }} isSelected={false} onClick={() => onConnect(WalletName.CASPER_SIGNER)}>
                     <WalletSelectionImageStyled src={casperWallet} alt="" />
                     <h2>Signer Wallet</h2>
                   </WalletSelectionDiv>
+                  {/* TODO: remove inline css*/}
                   <WalletSelectionDiv style={{ backgroundColor: "lightgray" }} isSelected={false} onClick={() => onConnect(WalletName.TORUS)}>
                     <WalletSelectionImageStyled src={torusWallet} alt="" />
                     <h2>Torus Wallet</h2>

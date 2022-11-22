@@ -13,7 +13,7 @@ import { RouterBox, SlippageBox } from '../../atoms'
 import { PriceImpactLabel } from "../../atoms/ExchangeRateBox/styles";
 
 import { calculateMinimumTokenReceived } from '../../../contexts/PriceImpactContext'
-import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
+import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
 
 export const SwapDetail = ({
     firstSymbolToken = 'CSPR',
@@ -45,9 +45,11 @@ export const SwapDetail = ({
             <CollapsingBody>
                 <CollapsingRow>
                     <CollapsingColumnLeft>
+                        {/* TODO: remove inline css*/}
                         <PriceImpactLabel priceImpactTitle={priceImpactMessage} priceImpact={priceImpact} style={{ justifyContent: "flex-start" }} />
                     </CollapsingColumnLeft>
                     <CollapsingColumnRight data-testid="collapsing_column_right_id">
+                        {/* TODO: remove inline css*/}
                         <PriceImpactLabel priceImpactTitle={priceImpact + ' %'} priceImpact={priceImpact} style={{ justifyContent: "flex-end" }} />
                     </CollapsingColumnRight>
                 </CollapsingRow>
@@ -61,8 +63,10 @@ export const SwapDetail = ({
                 </CollapsingRow>
 
                 <CollapsingRow>
+                    {/* TODO: remove inline css*/}
                     <div style={{ width: "100%" }} className="collapsible">
                         <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({ onClick: handleOnClick })}>
+                            {/* TODO: remove inline css*/}
                             <CollapsingRow style={{ paddingTop: "0", color: "rgba(120, 100, 244, 1)" }}>
                                 more information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
                             </CollapsingRow>

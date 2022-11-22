@@ -1,14 +1,15 @@
 import React from 'react'
 
-export const NewIcons = ({ Icon, size, style={} }) => (
+export const NewIcons = ({ Icon, size, style = {} }) => (
     <div style={{
-        display: 'flex', 
+        display: 'flex',
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'center',
-        width: size + 'px', 
+        width: size + 'px',
         height: size + 'px'
     }}>
-        <Icon width={size} height={size} style={style}/>
+        {/* TODO: remove inline css*/}
+        <Icon width={size} height={size} style={style} />
     </div>
 )

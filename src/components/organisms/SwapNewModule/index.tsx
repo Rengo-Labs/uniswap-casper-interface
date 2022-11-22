@@ -333,12 +333,15 @@ const SwapNewModule = () => {
           />
         }
         <ButtonSpaceNSM>
+          {/* TODO: remove inline css*/}
           {
             !isConnected && <NewSwapButton style={{ height: "57px", width: "100%" }} content="Connect to Wallet" handler={async () => { onConnect() }} />
           }
+          {/* TODO: remove inline css*/}
           {
             !isApproved && isConnected && <NewSwapButton style={{ height: "57px", width: "100%" }} content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowance, firstTokenSelected.contractHash) }} />
           }
+          {/* TODO: remove inline css*/}
           {
             isApproved && isConnected && <NewSwapButton style={{ height: "57px", width: "100%" }} content="Swap" disabled={amountSwapTokenA <= 0 || amountSwapTokenB <= 0 || amountSwapTokenA > parseFloat(firstTokenSelected.amount)} handler={async () => { await onConfirmSwap() }} />
           }

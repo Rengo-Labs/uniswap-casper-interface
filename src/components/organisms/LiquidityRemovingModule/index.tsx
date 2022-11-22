@@ -159,17 +159,20 @@ export const LiquidityRemovingModule = ({
                                     {
                                         freeAllowanceLiq < 0 ?
                                             <RemoveButtonContainer>
+                                                {/* TODO: remove inline css*/}
                                                 <Button data-testid="liq_enable" style={{width: "391px", height: "57px",fontSize: "16px"}}
                                                         enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
                                             </RemoveButtonContainer> 
                                         :
                                             <RemoveButtonContainer>
+                                                {/* TODO: remove inline css*/}
                                                 <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px", marginTop: "10px"}}
                                                         enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
                                             </RemoveButtonContainer>
                                     }
                             </PopupContent>
                             <PopupBottom>
+                                {/* TODO: remove inline css*/}
                                 <Button style={{fontSize: "16px", backgroundColor: "transparent", width: "50%", height: "56px"}} handler={closeHandler} content="Cancel"/>
                             </PopupBottom>
                         </PopupContainer>

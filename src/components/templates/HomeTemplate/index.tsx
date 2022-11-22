@@ -38,7 +38,7 @@ const HeroSubtitle = styled.h2`
 `
 
 const Highlight = styled.span`
-  color: ${props => props.theme.NewAquamarineColor}
+  color: ${props => props.theme.NewAquamarineColor};
 `
 
 export const HomeTemplate = ({ title, url, content, isAnchor = false, to = '/', insideMessage = 'Analytics', handler, heroImage }: HomePropsInterface) => {
@@ -49,9 +49,11 @@ export const HomeTemplate = ({ title, url, content, isAnchor = false, to = '/', 
     <Container>
       <NavBar>
         <a href='/'>
+          {/* TODO: remove inline css*/}
           <WordMarkIcon style={{ fill: '#FFF' }}/>
         </a>
         <a href='/'>
+          {/* TODO: remove inline css*/}
           <NewIcons Icon={CasperIcon} size={64} style={{ fill: '#FFF' }}/>
         </a>
         {listOfLinks.length > 1 ? <NavigationBar listOfLinks={listOfLinks} /> : <></>}

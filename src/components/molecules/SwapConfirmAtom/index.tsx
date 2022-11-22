@@ -53,6 +53,7 @@ export const SwapConfirmAtom = ({
                 <TokenStyled>
                     <Tokens Token={firstTokenSelected} amoutSwapToken={amountSwapTokenA} />
                 </TokenStyled>
+                {/* TODO: remove inline css*/}
                 <div style={{ marginLeft: "50%" }}><AiOutlineArrowDown></AiOutlineArrowDown></div>
                 <TokenStyled>
                     <Tokens Token={secondTokenSelected} amoutSwapToken={amountSwapTokenB} />
@@ -69,6 +70,7 @@ export const SwapConfirmAtom = ({
             />
             {!liquidity && <div>output is estimated. you will receive at least {slippSwapToken} {secondTokenSelected.symbol} or the transaction will revert</div>}
             {liquidity && <div>you will receive at least {slippSwapToken} {secondTokenSelected.symbol}-{firstTokenSelected.symbol}-LP token or the transaction will revert</div>}
+            {/* TODO: remove inline css*/}
             <div style={{ marginLeft: "20%" }}>{children}</div>
 
         </ContainerStyled>

@@ -10,6 +10,7 @@ import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 
 const TitleBox = ({label, content}) => {
+    {/* TODO: remove inline css*/}
     return <div style={{flex: "2.9", padding: "10px 10px 10px 20px", backgroundColor: lightTheme.secondBackgroundColor, marginRight: "1vw", fontSize: "1vw",
         height: "3vh", display: "flex", alignItems: "center"}}>{label} {content}</div>
 }
@@ -26,10 +27,11 @@ export const Pools = () => {
         <NewLayout title="CASPERSWAP">
             <WrappedPool>
                 <WrappedPoolTitle>
+                    {/* TODO: remove inline css*/}
                     <div style={{flex: "1.2"}} />
                     <TitleBox label="TVL: $" content={gralData.tvl} />
                     <TitleBox label="VOLUME: $" content={gralData.totalVolume} />
-                    {/*<Button style={{flex: "1"}} content="Create pool" handler={() => {navigate("/liquidity")}} />*/}
+                    {/* TODO: remove inline css*/}
                     <div style={{flex: "6"}} />
                 </WrappedPoolTitle>
                 <CardContainer gridRow="3" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">

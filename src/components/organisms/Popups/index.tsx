@@ -63,6 +63,7 @@ export const PopupsModule = ({isOpen, handleOpen, progress, children}: any) => {
                   {children}
                 </PopupContent>
                 <PopupBottom>
+                    {/* TODO: remove inline css*/}
                     <Button style={{fontSize: "16px", backgroundColor: "transparent", width: "50%", height: "56px"}} handler={closeHandler} content="OK"/>
                 </PopupBottom>
             </PopupContainer>
