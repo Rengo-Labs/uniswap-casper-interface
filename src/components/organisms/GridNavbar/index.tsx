@@ -2,7 +2,7 @@ import React from 'react'
 
 
 import { NavBarStyle } from './styles'
-export const NavBar = ({ children }) => {
+export const GridNavbar = ({ children }) => {
   return (
     <NavBarStyle>
       { children }

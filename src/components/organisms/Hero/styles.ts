@@ -1,12 +1,10 @@
 import styled from 'styled-components'
 
 export const HeroStyles = styled.section`
-    width: 80%;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    place-self: center;
+    display: grid;
+    grid-template:1fr 1fr / auto;
+    place-items:center;
 `
 
 
