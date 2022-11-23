@@ -3,9 +3,9 @@ import styled from 'styled-components'
 
 const FavoritesTokensStyles = styled.div`
     display: flex;
-    gap:10px;
+    gap:3rem;
     font-size: 2rem;
-    justify-content:space-between;
+    justify-content:center;
     align-items:center;
 `
 
