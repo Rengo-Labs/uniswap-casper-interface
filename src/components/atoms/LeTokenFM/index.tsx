@@ -6,7 +6,6 @@ const LeToken = styled.div`
     align-items: center;
     font-size: 1rem;
     &:hover{
-        background-color:aquamarine;
         cursor: pointer;
     }
 `

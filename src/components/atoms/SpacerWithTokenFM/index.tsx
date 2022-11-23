@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 const SpacerWithTokenStyled = styled.div`
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;

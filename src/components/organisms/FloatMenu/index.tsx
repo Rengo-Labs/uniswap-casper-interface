@@ -122,7 +122,7 @@ const FloatMenu = ({
                                             <div style={{fontSize: "13px", paddingLeft: "5px"}}>{t.name}</div>
                                         </div>
                                     </TokenShortFM>
-                                    <div>{t.amount}</div>
+                                    <div style={{paddingRight: "15%"}}>{t.amount}</div>
                                 </SpacerWithTokenFM>
                             )
                         })}
