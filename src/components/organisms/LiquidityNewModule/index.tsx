@@ -16,7 +16,7 @@ import {
   ExchangeRateBox,
   IconPlaceNSM,
   NewBalanceSpaceNSM,
-  NewSwapButton,
+  NewSwapButtonWidth100,
   NewSwapContainerNSM,
   NewTokenDetailActionsNSM,
   NewTokenDetailItems1NSM,
@@ -27,7 +27,8 @@ import {
   SwapDetailsNSM,
   TokenSelectionNSM,
   TokenSelectNSM,
-  FlechaIcon
+  FlechaIcon,
+  TrashIcon
 } from '../../atoms'
 import LoadersSwap from '../../atoms/LoadersSwap'
 import SwitchSwap from '../../atoms/SwitchSwap'
@@ -36,8 +37,6 @@ import FloatMenu from '../FloatMenu'
 import { useSearchParams } from "react-router-dom";
 import { LiquidityRemovingModule } from "../LiquidityRemovingModule";
 import { LiquidityItem } from "../../molecules/LiquidityItem";
-import { TbTrash } from "react-icons/tb";
-import { lightTheme } from "../../../contexts/ThemeContext/themes";
 import { CircleButton } from "../../molecules/POCTBody/styles";
 
 import {
@@ -415,18 +414,19 @@ const LiquidityNewModule = () => {
         }
         <ButtonSpaceNSM>
           {
-            !isConnected && <NewSwapButton style={{ height: "57px", width: "100%" }} content="Connect to Wallet" handler={async () => { onConnect() }} />
+            !isConnected &&
+              <NewSwapButtonWidth100 content="Connect to Wallet" handler={async () => { onConnect() }} />
           }
           {
             !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount &&
-            <NewSwapButton style={{ height: "57px", width: "100%" }} disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
+            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
           }
           {
             !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount &&
-            <NewSwapButton style={{ height: "57px", width: "100%" }} disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
+            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
           }
           {
-            isApprovedA && isApprovedB && isConnected && <NewSwapButton style={{ height: "57px", width: "100%" }} disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
+            isApprovedA && isApprovedB && isConnected && <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
           }
         </ButtonSpaceNSM>
 
@@ -468,13 +468,7 @@ const LiquidityNewModule = () => {
                     allowance={row.allowance}
                   >
                     <CircleButton>
-                      <TbTrash
-                        style={{
-                          alignSelf: "center",
-                          color: lightTheme.thirdBackgroundColor
-                        }}
-                        size="1.3rem"
-                      />
+                      <TrashIcon />
                     </CircleButton>
                   </LiquidityRemovingModule>
                 </LiquidityItem>
