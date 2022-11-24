@@ -3,9 +3,9 @@ import styled from 'styled-components'
 const TokenListContainerStyled = styled.div<any>`
     display: flex;
     flex-direction: column;
+    align-content: center;
     overflow-y: auto;
     height: 332px;
-    display: grid;
     gap:10px;
 `
 export const TokenListContainerFM = ({children}) => {

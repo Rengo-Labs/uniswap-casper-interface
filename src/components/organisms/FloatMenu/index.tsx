@@ -105,9 +105,6 @@ const FloatMenu = ({
                 <UnderlineFM />
                 <TokenListContainerFM>
                     {/* TODO: remove inline css*/}
-                    <div style={{
-                        paddingRight: "15px"
-                    }}>
                         <SpacerFM>
                             <div></div>
                             <div>Balance</div>
@@ -122,11 +119,10 @@ const FloatMenu = ({
                                             <div style={{fontSize: "13px", paddingLeft: "5px"}}>{t.name}</div>
                                         </div>
                                     </TokenShortFM>
-                                    <div style={{paddingRight: "15%"}}>{t.amount}</div>
+                                    <div >{t.amount}</div>
                                 </SpacerWithTokenFM>
                             )
                         })}
-                    </div>
                 </TokenListContainerFM>
                 <UnderlineFM />
                 <FooterFM>
