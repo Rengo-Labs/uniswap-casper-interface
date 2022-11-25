@@ -1607,6 +1607,11 @@
     "@ethersproject/rlp" "^5.7.0"
     "@ethersproject/signing-key" "^5.7.0"
 
+"@fontsource/epilogue@^4.5.10":
+  version "4.5.10"
+  resolved "https://registry.yarnpkg.com/@fontsource/epilogue/-/epilogue-4.5.10.tgz#934bf10578e36da6b5fbdbac26b717dccc632c67"
+  integrity sha512-EqHRz7CoeTDWXlX07AHi2rLAcqqQag5/B+AssJ22E05slozPhL6oyQpun3fibr7+UsLWmkAqDy4NwhgYYZ0TPQ==
+
 "@gar/promisify@^1.0.1":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
