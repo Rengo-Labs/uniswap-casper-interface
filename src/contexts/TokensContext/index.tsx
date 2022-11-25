@@ -1,13 +1,13 @@
 import React, { createContext, ReactNode, useCallback, useEffect, useReducer, useState } from 'react'
 import { BASE_URL } from '../../constant';
 
-import { initialStateToken, TokenReducer } from '../../reducers/TokenReducers'
+import { initialTokenState, TokenReducer } from '../../reducers/TokenReducers'
 
 export const TokensProviderContext = createContext<any>({})
 export const TokensContext = ({ children }: { children: ReactNode }) => {
 
 
-  const [state, dispatch] = useReducer(TokenReducer, initialStateToken);
+  const [state, dispatch] = useReducer(TokenReducer, initialTokenState);
 
   // function tokensToObject(listTokens) {
 

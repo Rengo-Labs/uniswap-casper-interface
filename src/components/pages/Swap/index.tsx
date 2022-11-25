@@ -1,16 +1,17 @@
+import React from 'react'
 import NewLayout from '../../../layout/NewLayout'
+import { ContainerNSM } from '../../atoms/ContainerNSM'
+import { ModuleSwapNSM } from '../../atoms/ModuleSwapNSM'
 import SwapNewModule from '../../organisms/SwapNewModule'
-import { ContainerSwapModule } from '../../atoms/ContainerSwapModule'
 
 export const Swap = () => {
-
   return (
     <NewLayout>
-      <ContainerSwapModule>
-        <div>
+      <ContainerNSM>
+        <ModuleSwapNSM>
           <SwapNewModule />
-        </div>
-      </ContainerSwapModule>
+        </ModuleSwapNSM>
+      </ContainerNSM>
     </NewLayout>
   )
 }

@@ -27,9 +27,8 @@ import axios from "axios";
 import Torus from "@toruslabs/casper-embed";
 import { Some } from "ts-results";
 import { entryPointEnum } from "../../types";
-import { tokenReducerEnum } from "../../reducers/TokenReducers";
 
-const normilizeAmountToString = (amount) => {
+export const normilizeAmountToString = (amount) => {
   const strAmount = amount.toString().includes('e') ? amount.toFixed(9).toString() : amount.toString();
   const amountArr = strAmount.split('.')
   if (amountArr[1] === undefined) {
@@ -646,58 +645,6 @@ export async function swapMakeDeploy(
       toast.dismiss(toastLoadingg);
       toast.error("Oops we have an error! try again");
     });
-}
-
-export function updateBalances(
-  walletAddress,
-  tokens,
-  tokenDispatch,
-  secondTokenSelected,
-  firstTokenSelected,
-  casperBalance
-) {
-  if ("CSPR" === secondTokenSelected.symbol) {
-    tokenDispatch({ type: "BALANCE_SECOND_TOKEN", payload: casperBalance });
-  }
-  if ("CSPR" === firstTokenSelected.symbol) {
-    tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: "CSPR", data: casperBalance } })
-  } else {
-    tokenDispatch({ type: "LOAD_BALANCE_TOKEN", payload: { name: "CSPR", data: casperBalance } });
-  }
-  Object.keys(tokens).map((x) => {
-    if (tokens[`${x}`].contractHash.length > 0) {
-      const param = {
-        contractHash: tokens[`${x}`].contractHash.slice(5),
-        user: Buffer.from(
-          CLPublicKey.fromHex(walletAddress).toAccountHash()
-        ).toString("hex"),
-      };
-      console.log(casperBalance)
-      axios
-        .post(`${BASE_URL}/balanceagainstuser`, param)
-        .then((res) => {
-          const balance = parseInt(res.data.balance) / 10 ** 9;
-          tokenDispatch({
-            type: "LOAD_BALANCE_TOKEN",
-            payload: { name: x, data: balance },
-          });
-          if (x === secondTokenSelected.symbol) {
-            tokenDispatch({ type: "BALANCE_SECOND_TOKEN", payload: balance });
-          }
-
-          if (x === firstTokenSelected.symbol) {
-            tokenDispatch({ type: tokenReducerEnum.LOAD_BALANCE, payload: { name: x, data: balance } })
-          }
-          tokenDispatch({ type: "UPDATE_CASPER", payload: { amount: casperBalance } });
-          tokenDispatch({ type: "UPDATE_WCASPER", payload: { amount: casperBalance } });
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log(error.response);
-        });
-    }
-  })
-
 }
 
 export async function getStatus(casperService, walletAddress, setMainPurse) {

@@ -5,8 +5,8 @@ export const filterStyled = styled.span`
 `
 export const THeadStyled = styled.div`
     display: flex;
-    border-radius: 7px;
-    border: 1px solid black;
+    border-radius: 10px;
+    border: 2px solid black;
     padding: 7px 0px;
     color: ${props => props.theme.secondBackgroundColor};
 `

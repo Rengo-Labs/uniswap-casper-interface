@@ -1,19 +1,14 @@
 import React, { useContext } from 'react'
-import { AiFillSetting } from "react-icons/ai";
 import { useAtom } from 'jotai'
 
-import { ImgRender, Title, Button, Anchor, HeroImage } from '../../atoms';
-import { Brand, NavigationBar, ActionsBar, MarkedTitle, ConfigModal } from '../../molecules';
-import { NavBar, Hero, InfoBoxes } from '../../organisms'
-import { Container } from './styles'
+import { Button, HeroTitleDD, HighlightDD, HeroSubtitleDD, ContainerDD, HeroHeaderDD, HeroFooterDD, CircularButton, SquareButton, SquareGrayButton, HomeFooterDD } from '../../atoms';
+import { NavigationBar, ActionsBar, } from '../../molecules';
+import { NavBar, Hero, GridNavbar } from '../../organisms'
 
-import styled from 'styled-components'
 import { ReactComponent as WordMarkIcon } from '../../../assets/newIcons/casperswap-wordmark.svg'
 import { ReactComponent as CasperIcon } from '../../../assets/newIcons/casperIcon.svg'
 import { /*ButtonConnection,*/ NewIcons } from '../../../components/atoms'
 
-import { setConfig } from '../../../contexts/ConfigAtom';
-import { InitialProviderContext } from '../../../contexts/InitialContext';
 
 interface HomePropsInterface {
   title: any,
@@ -26,43 +21,36 @@ interface HomePropsInterface {
   heroImage: any
 }
 
-const HeroTitle = styled.h1`
-  font-family: Epilogue;
-  font-size: 85.25px;
-  padding: 15px 0;
-`
-
-const HeroSubtitle = styled.h2`
-  font-family: EpilogueLight;
-  font-size: 30px;
-`
-
-const Highlight = styled.span`
-  color: ${props => props.theme.NewAquamarineColor}
-`
-
 export const HomeTemplate = ({ title, url, content, isAnchor = false, to = '/', insideMessage = 'Analytics', handler, heroImage }: HomePropsInterface) => {
-  const { InfoBoxArray } = useContext(InitialProviderContext)
-  const [, setConfigAtomSet] = useAtom(setConfig)
   const listOfLinks: any[] = []
   return (
-    <Container>
-      <NavBar>
-        <a href='/'>
-          <WordMarkIcon style={{ fill: '#FFF' }}/>
+    <ContainerDD>
+      <GridNavbar>
+        <a href='/' style={{display:"grid",justifyItems:"start",alignItems:"center"}}>
+          <WordMarkIcon style={{ fill: '#FFF' }} />
         </a>
-        <a href='/'>
-          <NewIcons Icon={CasperIcon} size={64} style={{ fill: '#FFF' }}/>
+        <a href='/' style={{display:"grid",placeItems:"center"}}>
+          <NewIcons Icon={CasperIcon} size={64} style={{ fill: '#FFF' }} />
         </a>
-        {listOfLinks.length > 1 ? <NavigationBar listOfLinks={listOfLinks} /> : <></>}
         <ActionsBar>
-          <Button content={content} handler={handler} />
+          <></>
         </ActionsBar>
-      </NavBar>
+      </GridNavbar>
       <Hero>
-        <HeroTitle>Next Generation <Highlight>Defi</Highlight></HeroTitle>
-        <HeroSubtitle>Fast swaps. Deep liquidity. Big yield.</HeroSubtitle>
+        <HeroHeaderDD>
+          <HeroTitleDD>The evolution of <HighlightDD>Defi</HighlightDD></HeroTitleDD>
+          <HeroSubtitleDD>Light-speed swaps. Next-level liquidity. Friction-less yield.</HeroSubtitleDD>
+        </HeroHeaderDD>
+        <HeroFooterDD>
+          <SquareButton content={content} handler={handler} />
+          <CircularButton content={"Read Document"} handler={handler} />
+        </HeroFooterDD>
+
       </Hero>
-    </Container>
+      <HomeFooterDD>
+        <SquareGrayButton content={"$ 192.173.768"} title={"TOTAL VALUE LOCKED"} handler={handler} />
+        <SquareGrayButton content={"$ 50.870.295.291"} title={"TOTAL TRADING VOLUME"} handler={handler} />
+      </HomeFooterDD>
+    </ContainerDD>
   )
 }
