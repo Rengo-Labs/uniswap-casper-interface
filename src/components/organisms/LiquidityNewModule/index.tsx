@@ -25,31 +25,6 @@ import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {CircleButton} from "../../molecules/POCTBody/styles";
 import BigNumber from 'bignumber.js'
 
-import {
-    TokenSelectStyled,
-    TokenSelectionStyled,
-    NewTokenDetailSelectStyled,
-    NewTokenDetailItems1Styled,
-    NewTokenDetailItems2Styled,
-    NewTokenDetailItems3Styled,
-    NewTokenDetailItems4Styled,
-    NewSwapContainer,
-    NewTokenDetailActionsStyled,
-    NewBalanceSpace,
-    ArrowContainerStyle,
-    ActionContainerStyled,
-    BalanceInput,
-    BalanceInputContainerStyled,
-    BalanceInputItem1Styled,
-    BalanceInputItem2Styled,
-    SwapDetailsStyled,
-    IconPlaceStyle,
-    ButtonSpaceStyled,
-    ButtonHalfMax,
-    ButtonHalfMaxContainer,
-} from '../SwapNewModule'
-
-
 const LiquidityNewModule = () => {
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
@@ -471,5 +446,188 @@ const LiquidityNewModule = () => {
         </ContainerLiquidityNew>
     )
 }
+
+export const SwapDetailsStyled = styled.div`
+    font-size:16px;
+    color: ${props => props.theme.NewPurpleColor};
+`
+
+export const BalanceInput = styled.input`
+    all: unset;
+    width: 100%;
+    height: 100%;
+    text-align: right;
+    font-size: 22px;
+    &:active{
+        border: none;
+    }
+`
+
+export const BalanceInputContainerStyled = styled.div`
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto auto;
+    justify-items: end;
+    gap:10px;
+`
+export const BalanceInputItem1Styled = styled.div`
+    align-self: center;
+    color:${props => props.theme.NewPurpleColor};
+    font-size: 3em;
+`
+export const BalanceInputItem2Styled = styled.div`
+align-self: center;
+`
+
+export const ArrowContainerStyle = styled.div`
+    padding-top:10px;
+    align-self: start;
+`
+export const ActionContainerStyled = styled.div`
+    display: flex;
+`
+
+export const ButtonHalfMaxContainer = styled.div`
+    border-left: 3px solid ${props => props.theme.NewPurpleColor};
+    padding-left:10px;
+    display: grid;
+    gap:10px;
+`
+
+export const ButtonHalfMax = styled.div<any>`
+    background-color: ${props => props.theme.NewPurpleColor};
+    color: white;
+    padding:10px;
+    border-radius: 12px;
+    width: 21px;
+    height: 12px;
+    cursor: pointer;
+    font-size: 12px;
+`
+
+export const IconPlaceStyle = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`
+export const ButtonSpaceStyled = styled.div`
+    justify-self: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+`
+export const TokenSelectStyled = styled.div`
+    display: flex;
+    justify-content: space-between;
+`
+export const TokenSelectionStyled = styled.div`
+    display: flex;
+    align-items: center;
+    gap:10px;
+`
+
+const CoinContainerStyled = styled.div`
+    width: 27rem;
+    height: 3.5rem;
+    background-color: white;
+    box-sizing: border-box;
+    border:1px solid black;
+    border-radius: 20px;
+    padding:10px;
+    display: flex;
+    gap:10px;
+    align-items: center;
+`
+const ContainerSwapStatics = styled.section`
+    justify-self: start;
+    box-sizing: border-box;
+    width: 29rem;
+    height: 10rem;
+    padding:2rem;
+    border:1px solid black;
+    border-radius: 20px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    z-index: 2;
+`
+export const NewTokenDetailSelectStyled = styled.section`
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto;
+`
+export const NewTokenDetailItems1Styled = styled.section`
+    grid-column: 1/2;
+    grid-row: 1/2;
+    justify-self: center;
+`
+export const NewTokenDetailItems2Styled = styled.img`
+    grid-column: 1/2;
+    grid-row: 2/3;
+    align-self: center;
+`
+export const NewTokenDetailItems3Styled = styled.section`
+    grid-column: 1/2;
+    grid-row: 3/4;
+    justify-self: center;
+`
+export const NewTokenDetailItems4Styled = styled.section`
+    grid-column: 2/3;
+    grid-row: 2/3;
+    justify-self: center;
+`
+
+export const NewTokenDetailActionsStyled = styled.section`
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+`
+export const NewBalanceSpace = styled.section`
+    justify-self:end;
+`
+
+export const NewSwapContainer = styled.section`
+    background-color:white;
+    box-sizing: border-box; 
+    justify-self: center;
+    height: 8rem;
+    padding: 1rem;
+    border:1px solid black;
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+`
+
+const Container = styled.main`
+    box-sizing: border-box;
+    justify-self:center;
+    box-sizing: border-box;
+    width: 100%;
+    gap:10px;
+    color:black;
+    display: grid;
+    grid-template-columns: auto auto;
+    padding: 10px;
+`
+const ContainerSwapActions = styled.section`
+    justify-self: end;
+    box-sizing: border-box;
+    width: 462px;
+    border:1px solid black;
+    border-radius: 20px;
+    display:grid;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+    gap:10px;
+    padding: 20px 25px;
+    z-index: 3;
+`
 
 export default LiquidityNewModule
