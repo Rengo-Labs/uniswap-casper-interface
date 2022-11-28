@@ -19,7 +19,7 @@ import {
     InputStyled,
     RemoveButtonContainer
 } from "./styles";
-import {Button} from "../../atoms"
+import {Button, LiquidityCancelButton, LiquidityEnableButton, LiquidityRemoveButton} from "../../atoms"
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
@@ -41,18 +41,18 @@ export interface LiquidityRemovingModuleProps {
 }
 
 export const LiquidityRemovingModule = ({
-    isConnected, 
-    openedPopup, 
-    firstSymbol, 
-    firstLiquidity, 
-    firstHash, 
-    secondSymbol, 
-    secondLiquidity, 
-    secondHash, 
-    liquidityId, 
+    isConnected,
+    openedPopup,
+    firstSymbol,
+    firstLiquidity,
+    firstHash,
+    secondSymbol,
+    secondLiquidity,
+    secondHash,
+    liquidityId,
     liquidity,
     allowance,
-    liquidityUSD, 
+    liquidityUSD,
     children,
 }: LiquidityRemovingModuleProps) => {
 
@@ -87,16 +87,16 @@ export const LiquidityRemovingModule = ({
     const removeLiquidity = async () => {
         console.log('zz', firstHash, secondHash, firstLiquidity, secondLiquidity)
 
-        await onRemoveLiquidity(value, 
+        await onRemoveLiquidity(value,
             {
                 symbol: firstSymbol.replace('WCSPR', 'CSPR'),
                 packageHash: `hash-${firstHash}`,
             } as any, {
                 symbol: secondSymbol.replace('WCSPR', 'CSPR'),
                 packageHash: `hash-${secondHash}`,
-            } as any, 
-            firstLiquidity, 
-            secondLiquidity, 
+            } as any,
+            firstLiquidity,
+            secondLiquidity,
             slippageToleranceSelected,
         )
         closeHandler()
@@ -159,21 +159,18 @@ export const LiquidityRemovingModule = ({
                                     {
                                         freeAllowanceLiq < 0 ?
                                             <RemoveButtonContainer>
-                                                {/* TODO: remove inline css*/}
-                                                <Button data-testid="liq_enable" style={{width: "391px", height: "57px",fontSize: "16px"}}
-                                                        enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
-                                            </RemoveButtonContainer> 
+
+                                                <LiquidityEnableButton data-testid="liq_enable" enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
+                                            </RemoveButtonContainer>
                                         :
                                             <RemoveButtonContainer>
-                                                {/* TODO: remove inline css*/}
-                                                <Button data-testid="liq_remove" style={{width: "391px", height: "57px",fontSize: "16px", marginTop: "10px"}}
-                                                        enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
+                                                <LiquidityRemoveButton data-testid="liq_remove" enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
                                             </RemoveButtonContainer>
                                     }
                             </PopupContent>
                             <PopupBottom>
-                                {/* TODO: remove inline css*/}
-                                <Button style={{fontSize: "16px", backgroundColor: "transparent", width: "50%", height: "56px"}} handler={closeHandler} content="Cancel"/>
+
+                                <LiquidityCancelButton handler={closeHandler} content="Cancel"/>
                             </PopupBottom>
                         </PopupContainer>
                     </div>

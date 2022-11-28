@@ -1,37 +1,10 @@
 import styled from 'styled-components'
 import { AiOutlineArrowDown } from "react-icons/ai";
 import {CollapsingBox} from "../CollapsingBox";
-import React from "react";
+import { ContainerSCA, ContainerTokenSCA, InnerTokenSCA, LinerTokenSCA } from '../../atoms';
+import { TokensSCA } from '../../organisms';
 
 
-
-const ContainerStyled = styled.div`
-    display:grid;
-    gap:10px;
-    background-color:white;
-`
-
-const BorderStyled = styled.div`
-`
-
-const TokenStyled = styled.div`
-`
-
-
-const ContainerTokenStyled = styled.div`
-    padding: 10px;
-`
-
-const LinerTokenStyled = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`
-const InnerTokenStyled = styled.div`
-    display: flex;
-    align-items: center;
-    gap:10px;
-`
 
 export const SwapConfirmAtom = ({
                                     firstToken,
@@ -48,17 +21,17 @@ export const SwapConfirmAtom = ({
                                     liquidity=false
                                 }: any) => {
     return (
-        <ContainerStyled>
-            <BorderStyled>
-                <TokenStyled>
-                    <Tokens Token={firstTokenSelected} amoutSwapToken={amountSwapTokenA} />
-                </TokenStyled>
-                {/* TODO: remove inline css*/}
+        <ContainerSCA>
+            <div>
+                <div>
+                    <TokensSCA Token={firstTokenSelected} amoutSwapToken={amountSwapTokenA} />
+                </div>
+
                 <div style={{ marginLeft: "50%" }}><AiOutlineArrowDown></AiOutlineArrowDown></div>
-                <TokenStyled>
-                    <Tokens Token={secondTokenSelected} amoutSwapToken={amountSwapTokenB} />
-                </TokenStyled>
-            </BorderStyled>
+                <div>
+                    <TokensSCA Token={secondTokenSelected} amoutSwapToken={amountSwapTokenB} />
+                </div>
+            </div>
             <CollapsingBox firstToken={firstToken}
                            firstSymbolToken={firstTokenSelected}
                            receivedSymbolToken={secondTokenSelected}
@@ -73,24 +46,6 @@ export const SwapConfirmAtom = ({
             {/* TODO: remove inline css*/}
             <div style={{ marginLeft: "20%" }}>{children}</div>
 
-        </ContainerStyled>
-    )
-}
-
-
-const Tokens = ({ Token, amoutSwapToken }) => {
-    return (
-        <ContainerTokenStyled>
-            <LinerTokenStyled>
-                <InnerTokenStyled>
-                    <img src={Token.logoURI} width="50" height="50" />
-                    <p>{amoutSwapToken}</p>
-                </InnerTokenStyled>
-
-                <p>{Token.name} </p>
-
-            </LinerTokenStyled>
-
-        </ContainerTokenStyled>
+        </ContainerSCA>
     )
 }
