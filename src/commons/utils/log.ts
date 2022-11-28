@@ -18,5 +18,6 @@ export class Logger {
   }
   error(...elements: any[]) {
     this.log('ERROR', ...elements)
+    console.trace()
   }
 }

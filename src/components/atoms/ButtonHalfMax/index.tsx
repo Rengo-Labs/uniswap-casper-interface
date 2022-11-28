@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-
-const ButtonHalfMaxStyled = styled.div<any>`
+const ButtonHalfMaxStyle = styled.div<any>`
     background-color: ${props => props.theme.NewPurpleColor};
     color: white;
     padding:10px;
@@ -14,6 +13,6 @@ const ButtonHalfMaxStyled = styled.div<any>`
 
 export const ButtonHalfMax = ({children,onClick}) => {
   return (
-    <ButtonHalfMaxStyled onClick={onClick}>{children}</ButtonHalfMaxStyled>
+    <ButtonHalfMaxStyle onClick={onClick}>{children}</ButtonHalfMaxStyle>
   )
 }

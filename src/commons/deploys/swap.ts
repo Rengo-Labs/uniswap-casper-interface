@@ -13,6 +13,7 @@ import {
 
 import {
   APIClient,
+  Token,
 } from '../api'
 
 import {
@@ -57,11 +58,11 @@ export enum SwapEntryPoint {
  * @returns which swap endpoint should be used
  */
 export const selectSwapEntryPoint = (tokenASymbol: string, tokenBSymbol: string): SwapEntryPoint => {
-  if (tokenASymbol === 'WCSPR' && tokenBSymbol !== 'WCSPR') {
+  if (tokenASymbol === 'CSPR' && tokenBSymbol !== 'CSPR') {
     return SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS
-  } else if (tokenASymbol !== 'WCSPR' && tokenBSymbol === 'WCSPR') {
+  } else if (tokenASymbol !== 'CSPR' && tokenBSymbol === 'CSPR') {
     return SwapEntryPoint.SWAP_TOKENS_FOR_EXACT_CSPR_JS_CLIENT
-  } else if (tokenASymbol !== 'WCSPR' && tokenBSymbol !== 'WCSPR') {
+  } else if (tokenASymbol !== 'CSPR' && tokenBSymbol !== 'CSPR') {
     return SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS_JS_CLIENT
   }
 }
@@ -89,8 +90,8 @@ export const signAndDeploySwap = async (
   deadline: BigNumber.Value,
   amountIn: BigNumber.Value,
   amountOut: BigNumber.Value,
-  tokenASymbol: string,
-  tokenBSymbol: string,
+  tokenA: Token,
+  tokenB: Token,
   slippage: number,
   mainPurse: string,
 ): Promise<[string, GetDeployResult]> => {
@@ -98,12 +99,12 @@ export const signAndDeploySwap = async (
     //console.log('slippage', new BigNumber(amountIn).times(slippage + 1.04).toFixed(0))
     
     const publicKey = wallet.publicKey;
-    const entryPoint = selectSwapEntryPoint(tokenASymbol, tokenBSymbol)
+    const entryPoint = selectSwapEntryPoint(tokenA.symbol, tokenB.symbol)
     
-    const response = await apiClient.getPath(tokenASymbol, tokenBSymbol)
+    const response = await apiClient.getPath(tokenA.symbolPair, tokenB.symbolPair)
     const path = response.pathwithcontractHash.map((x) => new CLString("hash-".concat(x)))
 
-    log.debug("EntryPoint", entryPoint, tokenASymbol, tokenBSymbol, amountOut)
+    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountOut)
 
     switch(entryPoint) {
       case SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS_JS_CLIENT:

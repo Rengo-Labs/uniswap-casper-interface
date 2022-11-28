@@ -2,8 +2,8 @@ import styled from 'styled-components'
 
 export const PopoverContainer = styled("div")`
     position: absolute;
-    width: 11.5vw;
-    margin-left: -3.5vw;
+    width: 260px;
+    margin-left: -5.2vw;
     margin-top: 1vh;
 `
 
@@ -34,12 +34,12 @@ export const ItemList = styled("li")`
     padding-bottom: 0em;
     font-family: 'EpilogueLight';
     font-size: 0.7vw;
-    border-top: 1px solid black;
 `
 
 export const ItemMenu = styled(ItemList)`
     &:hover{
         cursor: pointer;
+        background-color: rgb(232, 228, 228);
     }
 `
 
@@ -64,8 +64,8 @@ export const ButtonStyle = styled.button<any>`
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
     padding:0px;
-    width: 8vw;
-    height: 5vh;
+    width: 230px;
+    height: 46px;
     border-radius: 10px;
     border:none;
     overflow:hidden; 

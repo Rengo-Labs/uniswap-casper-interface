@@ -1,17 +1,16 @@
 import React from 'react'
 import NewLayout from '../../../layout/NewLayout'
+import styled from 'styled-components'
 import LiquidityNewModule from '../../organisms/LiquidityNewModule'
-import { LiquidityNewContainer } from '../../atoms/LiquidityNewContainer'
-import { LiquidityModule } from '../../organisms'
+import { LiquidityNewContainerCC } from '../../atoms'
 
 export const NewLiquidity = () => {
-    return (
-        <NewLayout>
-            <LiquidityNewContainer>
-                <LiquidityModule>
-                    <LiquidityNewModule />
-                </LiquidityModule>
-            </LiquidityNewContainer>
-        </NewLayout>
-    )
+  return (
+    <NewLayout>
+      <LiquidityNewContainerCC>
+        <LiquidityNewModule />
+      </LiquidityNewContainerCC>
+    </NewLayout>
+  )
 }
+

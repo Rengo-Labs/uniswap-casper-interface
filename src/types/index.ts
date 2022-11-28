@@ -1,6 +1,6 @@
 export enum entryPointEnum {
   Approve = "approve",
-  Add_liquidity_js_client = "add_liquidity_js_client",
+  Add_liquidity = "add_liquidity",
   Remove_liquidity_js_client = "remove_liquidity_js_client",
   Swap_exact_cspr_for_tokens = "swap_exact_cspr_for_tokens",
   Swap_tokens_for_exact_cspr = "swap_tokens_for_exact_cspr",

@@ -137,7 +137,7 @@ export enum AddLiquidityEntryPoint {
         const tokenAContract = new CLByteArray(
           Uint8Array.from(Buffer.from(tokenA.packageHash.slice(5), "hex"))
         )    
-    
+        
         const tokenBContract = new CLByteArray(
           Uint8Array.from(Buffer.from(tokenB.packageHash.slice(5), "hex"))
         )

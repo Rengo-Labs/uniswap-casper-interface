@@ -1,5 +1,5 @@
 import React, {createContext, ReactNode, useReducer, useState} from 'react'
-import casprIcon from '../../assets/swapIcons/casprIcon.png'
+import casprIcon from '../../assets/swapIcons/casperIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 import {initialConfigState} from "../../reducers";
 
@@ -300,7 +300,7 @@ export const getPoolDetailByUser = async (hash) => {
 
 export const loadPoolDetailByUser = async (hash, poolList) => {
   const list = await getPoolDetailByUser(hash)
-
+  console.log("a cargar", list)
   const newList = poolList.map(d => {
     const data = list.filter(f => d.pair.token0 === f.token0 && d.pair.token1 === f.token1 || d.pair.token1 === f.token0 && d.pair.token0 === f.token1)
     if (data.length > 0) {

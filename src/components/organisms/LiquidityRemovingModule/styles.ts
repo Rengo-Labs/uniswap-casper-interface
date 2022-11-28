@@ -24,7 +24,6 @@ export const PopupContainer = styled.div`
     border: 1px solid black;
     border-radius: 20px;
     width: 462px;
-    height: 370px;
     top: 20%;
     position: relative;
     transition: all 1s ease-in-out;

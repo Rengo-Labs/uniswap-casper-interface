@@ -1,29 +1,42 @@
-import React, {useState} from 'react'
-import {ConnectionPopup} from "../../atoms";
-import {PopoverButton} from "../../molecules";
+import React, { useState } from 'react'
+import { WalletName } from '../../../commons';
+import { ConnectionPopup } from "../../atoms";
+import { PopoverButton } from "../../molecules";
 
-export const ButtonConnectionOver = ({ isConnected, onConnect, onDisconnect, Account = "" }: any) => {
-    const [isOpen, setIsOpen] = useState(false)
-    const toggling = () => setIsOpen(!isOpen);
+export interface ButtonConnectionOverProps {
+  isConnected: boolean,
+  onConnect: (name: WalletName) => void,
+  onDisconnect: () => void,
+  accountHashString: string,
+}
 
-    const handleCancel = () => {
-        setIsOpen(false)
-    }
+export const ButtonConnectionOver = ({
+  isConnected,
+  onConnect,
+  onDisconnect,
+  accountHashString = ""
+}: ButtonConnectionOverProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const onToggle = () => setIsOpen(!isOpen);
 
-    const handleConnection = () => {
-        onConnect()
-        setIsOpen(false)
-    }
+  const handleCancel = () => {
+    setIsOpen(false)
+  }
 
-    const handleDisconnect = () => {
-        onDisconnect()
-        setIsOpen(false)
-    }
+  const handleConnection = (name: WalletName) => {
+    onConnect(name)
+    setIsOpen(false)
+  }
 
-    return (
-        <>
-            <ConnectionPopup isConnected={isConnected} isOpened={isOpen} toggling={toggling} title="Connect your wallet to CasperSwap" onClose={handleCancel} onConnect={handleConnection} />
-            <PopoverButton isConnected={isConnected} isOpened={isOpen} toggling={toggling}  onDisconnect={handleDisconnect} account={Account}/>
-        </>
-    )
+  const handleDisconnect = () => {
+    onDisconnect()
+    setIsOpen(false)
+  }
+
+  return (
+    <>
+      <ConnectionPopup isConnected={isConnected} isOpened={isOpen} onToggle={onToggle} title="Connect your wallet to CasperSwap" onClose={handleCancel} onConnect={handleConnection} />
+      <PopoverButton isConnected={isConnected} isOpened={isOpen} onToggle={onToggle} onDisconnect={handleDisconnect} accountHashString={accountHashString} />
+    </>
+  )
 }
