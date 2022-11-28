@@ -65,7 +65,8 @@ const SwapNewModule = () => {
     onConfirmSwapConfig,
     getSwapDetails,
     onIncreaseAllow,
-    slippageToleranceSelected
+    slippageToleranceSelected,
+    getPoolList
   } = useContext(ConfigProviderContext)
 
   const [activeModalSwap, setActiveModalSwap] = React.useState(false)
@@ -79,6 +80,8 @@ const SwapNewModule = () => {
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
   const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] = useState<any>('')
   const [searchParams, setSearchParams] = useSearchParams()
+  const [valueAUSD, setValueAUSD] = useState("0")
+  const [valueBUSD, setValueBUSD] = useState("0")
 
   const [lastChanged, setLastChanged] = useState('')
 
@@ -91,6 +94,7 @@ const SwapNewModule = () => {
     }
 
     updateSwapDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
+    calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
   }, [isConnected])
   
   async function onConnect() {
@@ -162,6 +166,8 @@ const SwapNewModule = () => {
 
     const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
     amountSwapTokenBSetter(parseFloat(minTokenToReceive))
+
+    calculateUSDValues(filteredValue, parseFloat(minTokenToReceive))
   }
 
   async function changeTokenB(value: string) {
@@ -178,6 +184,8 @@ const SwapNewModule = () => {
 
     const minTokenToReceive = await updateSwapDetail(firstTokenSelected, secondTokenSelected, filteredValue, secondTokenSelected)
     amountSwapTokenASetter(parseFloat(minTokenToReceive))
+
+    calculateUSDValues(parseFloat(minTokenToReceive), filteredValue)
   }
 
   const [searchModalA, searchModalASetter] = useState(false)
@@ -218,6 +226,31 @@ const SwapNewModule = () => {
     freeAllowance >= 0
   )
 
+  const calculateUSDValues = (amountA, amountB) => {
+    const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
+
+    setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA)
+    setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB)
+  }
+
+  const calculateUSDtokens = (token0, token1, amount0, amount1) => {
+    const filter = getPoolList().filter(r => r.token0Symbol === token0 && r.token1Symbol === token1)
+    if (filter.length > 0) {
+      return [
+        new BigNumber(amount0).times(filter[0].token0Price).toFixed(2),
+        new BigNumber(amount1).times(filter[0].token1Price).toFixed(2),
+      ]
+    }
+
+    const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
+    if (filter2.length > 0) {
+      return [
+        new BigNumber(amount0).times(filter2[0].token0Price).toFixed(2),
+        new BigNumber(amount1).times(filter2[0].token1Price).toFixed(2),
+      ]
+    }
+  }
+
   return (
     <ContainerInnerNSM>
       <ContainerSwapActionsNSM>
@@ -256,7 +289,7 @@ const SwapNewModule = () => {
                       type="number" name="" id="" value={amountSwapTokenA} />
                   </BalanceInputItem1NSM>
                   <BalanceInputItem2NSM>
-                    <p>$34.75</p>
+                    <p>$ {valueAUSD}</p>
                   </BalanceInputItem2NSM>
                 </BalanceInputContainerNSM>
               </ActionContainerNSM>
@@ -310,7 +343,7 @@ const SwapNewModule = () => {
                       type="number" name="" id="" value={amountSwapTokenB} />
                   </BalanceInputItem1NSM>
                   <BalanceInputItem2NSM>
-                    <p>$34.75</p>
+                    <p>$ {valueBUSD}</p>
                   </BalanceInputItem2NSM>
                 </BalanceInputContainerNSM>
               </ActionContainerNSM>

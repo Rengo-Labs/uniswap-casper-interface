@@ -77,7 +77,9 @@ export interface ConfigContext {
   setStaked: (v: boolean) => void,
   filter: (onlyStaked: boolean, row: Row<PairData>) => any,
   getContractHashAgainstPackageHash,
-  onCalculateReserves: (v: any, reverse: boolean) => Promise<any>
+  onCalculateReserves: (v: any, reverse: boolean) => Promise<any>,
+  setRemovingPopup,
+  isRemovingPopupOpen
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any)
@@ -182,6 +184,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   const [gralData, setGralData] = useState({})
   const [isStaked, setStaked] = useState(false)
   const [linkExplorer, setLinkExplorer] = useState("")
+  const [isRemovingPopupOpen, setRemovingPopup] = useState(false)
 
   const [showConnectionPopup, setShowConnectionPopup] = useState(false)
 
@@ -855,7 +858,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       setStaked,
       filter,
       getContractHashAgainstPackageHash,
-      onCalculateReserves
+      onCalculateReserves,
+      setRemovingPopup,
+      isRemovingPopupOpen
     }}>
       {children}
       <PopupsModule isOpen={progressModal} handleOpen={setProgressModal} progress>

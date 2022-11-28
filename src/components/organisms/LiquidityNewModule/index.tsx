@@ -45,6 +45,7 @@ import {
 import { BalanceInput } from '../../atoms/BalanceInputNSM'
 import { ContainerLiquidityNSM } from '../../atoms/ContainerLiquidityNSM'
 import { ContainerLiquidityPoolList } from "../../atoms/ContainerLiquidityPoolList";
+import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 
 const LiquidityNewModule = () => {
   const {
@@ -61,7 +62,9 @@ const LiquidityNewModule = () => {
     slippageToleranceSelected,
     getLiquidityDetails,
     onIncreaseAllow,
-    getPoolList
+    getPoolList,
+    isRemovingPopupOpen,
+    setRemovingPopup
   } = useContext(ConfigProviderContext)
 
   const userPairData = Object.entries(pairState).map(([k, v]) => v)
@@ -90,11 +93,10 @@ const LiquidityNewModule = () => {
       onSelectFirstToken(tokens[t0])
       onSelectSecondToken(tokens[t1])
     }
-    const isOpened = searchParams.get("remove")
-    if (isOpened) {
+
+    if (isRemovingPopupOpen) {
       setOpenedRemoving(true)
-      searchParams.delete('remove')
-      setSearchParams(searchParams)
+      setRemovingPopup(false)
     }
 
     updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
@@ -299,6 +301,11 @@ const LiquidityNewModule = () => {
 
   const userPairDataNonZero = userPairData.filter(v => parseFloat(v.balance) > 0)
 
+  const refreshPrices = () => {
+    //TODO update the token amount to receive and prices
+
+  }
+
   return (
     <ContainerLiquidityNSM>
       <ContainerSwapActionsNSM>
@@ -354,7 +361,7 @@ const LiquidityNewModule = () => {
               exchangeRateB={exchangeRateB}
             />
           </SwapDetailsNSM>
-          <LoadersSwap />
+          <UpdatableCircle strokeWidth={12} percentage={1} handler={refreshPrices} />
         </IconPlaceNSM>
         {/*TODO: we need create another component with this background <NewSwapContainerNSM style={{backgroundColor: "white"}}>*/}
         <NewSwapContainerNSM>
