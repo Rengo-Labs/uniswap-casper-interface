@@ -22,6 +22,7 @@ import {
   IconPlaceNSM,
   NewBalanceSpaceNSM,
   NewSwapButton,
+  NewSwapButtonAlt,
   NewSwapContainerNSM,
   NewTokenDetailActionsNSM,
   NewTokenDetailItems1NSM,
@@ -426,8 +427,7 @@ const SwapNewModule = () => {
         )}
         <ButtonSpaceNSM>
           {!isConnected && (
-            <NewSwapButton
-              style={{ height: "57px", width: "100%" }}
+            <NewSwapButtonAlt
               content="Connect to Wallet"
               handler={async () => {
                 onConnect();
@@ -435,8 +435,7 @@ const SwapNewModule = () => {
             />
           )}
           {!isApproved && isConnected && (
-            <NewSwapButton
-              style={{ height: "57px", width: "100%" }}
+            <NewSwapButtonAlt
               content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`}
               handler={async () => {
                 await requestIncreaseAllowance(
@@ -447,8 +446,7 @@ const SwapNewModule = () => {
             />
           )}
           {isApproved && isConnected && (
-            <NewSwapButton
-              style={{ height: "57px", width: "100%" }}
+            <NewSwapButtonAlt
               content="Swap"
               disabled={
                 amountSwapTokenA <= 0 ||
