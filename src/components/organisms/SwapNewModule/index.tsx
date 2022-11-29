@@ -312,7 +312,7 @@ const SwapNewModule = () => {
         </NewSwapContainerNSM>
         <IconPlaceNSM>
           <SwitchSwap
-            onClick={onSwitchTokensHandler(
+            onClick={() => onSwitchTokensHandler(
               onSwitchTokens,
               lastChanged,
               changeTokenB,
