@@ -44,13 +44,6 @@ import { useSearchParams } from "react-router-dom";
 import { convertAllFormatsToUIFixedString, Token } from "../../../commons";
 import SwitchSwap from "../../atoms/SwitchSwap";
 import LoadersSwap from "../../atoms/LoadersSwap";
-import {
-  onConfirmSwap,
-  onConnect,
-  onSwitchTokensHandler,
-  resetAll,
-  updateSwapDetail,
-} from "../../../commons/logic-swap";
 
 const SwapNewModule = () => {
   const {
@@ -97,19 +90,72 @@ const SwapNewModule = () => {
       firstTokenSelected,
       secondTokenSelected,
       amountSwapTokenA,
-      firstTokenSelected,
-      getSwapDetails,
-      slippSwapToken,
-      feeToPay,
-      tokensToTransferSetter,
-      priceImpactSetter,
-      exchangeRateASetter,
-      exchangeRateBSetter,
-      defaultPriceImpactLabelSetter
+      firstTokenSelected
     );
   }, [isConnected]);
 
-  //TODO: Remove Logic in here
+  async function onConnect() {
+    onConnectWallet();
+  }
+
+  function onSwitchTokensHandler() {
+    onSwitchTokens();
+
+    if (lastChanged == "A") {
+      changeTokenB(amountSwapTokenA.toString());
+      setLastChanged("B");
+    } else if (lastChanged == "B") {
+      changeTokenA(amountSwapTokenB.toString());
+      setLastChanged("A");
+    }
+  }
+
+  function resetAll() {
+    amountSwapTokenASetter(0);
+    amountSwapTokenBSetter(0);
+  }
+
+  async function onConfirmSwap() {
+    setActiveModalSwap(false);
+    const waiting = await onConfirmSwapConfig(
+      amountSwapTokenA,
+      amountSwapTokenB,
+      slippSwapToken
+    );
+    resetAll();
+  }
+
+  async function updateSwapDetail(
+    tokenA,
+    tokenB,
+    value = amountSwapTokenA,
+    token = firstTokenSelected
+  ) {
+    const getSwapDetailP = getSwapDetails(
+      tokenA,
+      tokenB,
+      value,
+      token,
+      slippSwapToken,
+      feeToPay
+    );
+    const ps = [getSwapDetailP];
+
+    const [getSwapDetailResponse] = await Promise.all(ps);
+
+    const { tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB } =
+      getSwapDetailResponse;
+
+    tokensToTransferSetter(tokensToTransfer);
+    priceImpactSetter(priceImpact);
+    exchangeRateASetter(exchangeRateA);
+    exchangeRateBSetter(exchangeRateB);
+
+    defaultPriceImpactLabelSetter(
+      parseFloat(priceImpact) > 1 ? "Price Impact Warning" : "Low Price Impact"
+    );
+    return tokensToTransfer;
+  }
 
   async function requestIncreaseAllowance(amount, contractHash) {
     console.log("requestIncreaseAllowance");
@@ -118,15 +164,7 @@ const SwapNewModule = () => {
       firstTokenSelected,
       secondTokenSelected,
       amount,
-      firstTokenSelected,
-      getSwapDetails,
-      slippSwapToken,
-      feeToPay,
-      tokensToTransferSetter,
-      priceImpactSetter,
-      exchangeRateASetter,
-      exchangeRateBSetter,
-      defaultPriceImpactLabelSetter
+      firstTokenSelected
     );
   }
 
@@ -146,15 +184,7 @@ const SwapNewModule = () => {
       firstTokenSelected,
       secondTokenSelected,
       filteredValue,
-      firstTokenSelected,
-      getSwapDetails,
-      slippSwapToken,
-      feeToPay,
-      tokensToTransferSetter,
-      priceImpactSetter,
-      exchangeRateASetter,
-      exchangeRateBSetter,
-      defaultPriceImpactLabelSetter
+      firstTokenSelected
     );
     amountSwapTokenBSetter(parseFloat(minTokenToReceive));
   }
@@ -180,15 +210,7 @@ const SwapNewModule = () => {
       token,
       secondTokenSelected,
       amountSwapTokenA,
-      token,
-      getSwapDetails,
-      slippSwapToken,
-      feeToPay,
-      tokensToTransferSetter,
-      priceImpactSetter,
-      exchangeRateASetter,
-      exchangeRateBSetter,
-      defaultPriceImpactLabelSetter
+      token
     );
     amountSwapTokenBSetter(parseFloat(minTokenToReceive));
   }
@@ -204,15 +226,7 @@ const SwapNewModule = () => {
       firstTokenSelected,
       token,
       amountSwapTokenB,
-      token,
-      getSwapDetails,
-      slippSwapToken,
-      feeToPay,
-      tokensToTransferSetter,
-      priceImpactSetter,
-      exchangeRateASetter,
-      exchangeRateBSetter,
-      defaultPriceImpactLabelSetter
+      token
     );
     amountSwapTokenASetter(parseFloat(minTokenToReceive));
   }
@@ -311,17 +325,7 @@ const SwapNewModule = () => {
           </TokenSelectionNSM>
         </NewSwapContainerNSM>
         <IconPlaceNSM>
-          <SwitchSwap
-            onClick={() => onSwitchTokensHandler(
-              onSwitchTokens,
-              lastChanged,
-              changeTokenB,
-              amountSwapTokenA,
-              setLastChanged,
-              changeTokenA,
-              amountSwapTokenB
-            )}
-          />
+          <SwitchSwap onClick={onSwitchTokensHandler} />
           <SwapDetailsNSM>
             <ExchangeRateBox
               tokenASymbol={firstTokenSelected.symbol}
@@ -426,7 +430,7 @@ const SwapNewModule = () => {
             <NewSwapButtonAlt
               content="Connect to Wallet"
               handler={async () => {
-                onConnect(onConnectWallet);
+                onConnect();
               }}
             />
           )}
@@ -450,14 +454,7 @@ const SwapNewModule = () => {
                 amountSwapTokenA > parseFloat(firstTokenSelected.amount)
               }
               handler={async () => {
-                await onConfirmSwap(
-                  setActiveModalSwap,
-                  onConfirmSwapConfig,
-                  amountSwapTokenA,
-                  amountSwapTokenB,
-                  slippSwapToken,
-                  resetAll(amountSwapTokenASetter, amountSwapTokenBSetter)
-                );
+                await onConfirmSwap();
               }}
             />
           )}
@@ -490,14 +487,7 @@ const SwapNewModule = () => {
                 <NewSwapButton
                   content="Confirm Swap"
                   handler={async () => {
-                    await onConfirmSwap(
-                      setActiveModalSwap,
-                      onConfirmSwapConfig,
-                      amountSwapTokenA,
-                      amountSwapTokenB,
-                      slippSwapToken,
-                      resetAll(amountSwapTokenASetter, amountSwapTokenBSetter)
-                    );
+                    await onConfirmSwap();
                   }}
                 />
               </SwapConfirmAtom>
