@@ -125,7 +125,7 @@ export enum RemoveLiquidityEntryPoint {
               )
             ),
           }),
-          new BigNumber(5000000000),
+          new BigNumber(10000000000),
         )
       case RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_JS_CLIENT:
         // When adding token and token
@@ -150,7 +150,7 @@ export enum RemoveLiquidityEntryPoint {
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(5000000000),
+          new BigNumber(10000000000),
         )
       default: 
         throw new Error(`this shouldn't happen`)

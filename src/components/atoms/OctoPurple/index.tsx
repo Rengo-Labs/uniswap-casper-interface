@@ -1,5 +1,5 @@
 import React from 'react'
-import octoPurple from '../../../assets/newIcons/octoPurple.svg'
+import octoPurple from '../../../assets/logo.svg'
 import styled from 'styled-components'
 const OctoPurple = () => {
     return (

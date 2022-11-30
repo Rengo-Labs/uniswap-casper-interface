@@ -120,7 +120,7 @@ export const signAndDeploySwap = async (
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(20000000000),
         )
       case SwapEntryPoint.SWAP_TOKENS_FOR_EXACT_CSPR_JS_CLIENT:
         // When swapping token for exact casper
@@ -138,7 +138,7 @@ export const signAndDeploySwap = async (
             ),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(20000000000),
         )
       case SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS:
         // When swapping casper for tokens
@@ -165,7 +165,7 @@ export const signAndDeploySwap = async (
               AccessRights.READ_ADD_WRITE
             ),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(20000000000),
         )
       default: 
         throw new Error(`this shouldn't happen`)
