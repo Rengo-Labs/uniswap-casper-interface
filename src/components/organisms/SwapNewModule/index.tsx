@@ -482,8 +482,9 @@ const SwapNewModule = () => {
                 tokensToTransfer={tokensToTransfer}
                 priceImpact={priceImpact}
                 defaultPriceImpactLabel={defaultPriceImpactLabel}
-                slippSwapTokenSetter={slippSwapTokenSetter}
-              >
+                slippSwapTokenSetter={slippSwapTokenSetter} 
+                liquidity={false}
+                >
                 <NewSwapButton
                   content="Confirm Swap"
                   handler={async () => {

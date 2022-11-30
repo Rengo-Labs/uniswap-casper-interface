@@ -3,7 +3,21 @@ import { AiOutlineArrowDown } from "react-icons/ai";
 import {CollapsingBox} from "../CollapsingBox";
 import { ContainerSCA, ContainerTokenSCA, InnerTokenSCA, LinerTokenSCA } from '../../atoms';
 import { TokensSCA } from '../../organisms';
-
+import { Token } from '../../../commons';
+interface SwapConfirmAtomProps {
+    firstToken:number,
+    firstTokenSelected:Token,
+    secondTokenSelected:Token,
+    children:React.ReactNode,
+    amountSwapTokenA:number,
+    amountSwapTokenB:number,
+    slippSwapToken:any,
+    tokensToTransfer:number,
+    priceImpact:number,
+    defaultPriceImpactLabel:string,
+    slippSwapTokenSetter: (any) => void,
+    liquidity:boolean
+}
 
 
 export const SwapConfirmAtom = ({
@@ -19,7 +33,7 @@ export const SwapConfirmAtom = ({
                                     defaultPriceImpactLabel,
                                     slippSwapTokenSetter,
                                     liquidity=false
-                                }: any) => {
+                                }: SwapConfirmAtomProps) => {
     return (
         <ContainerSCA>
             <div>

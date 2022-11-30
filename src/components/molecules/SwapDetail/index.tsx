@@ -14,7 +14,19 @@ import { PriceImpactLabel } from "../../atoms/ExchangeRateBox/styles";
 
 import { calculateMinimumTokenReceived } from '../../../contexts/PriceImpactContext'
 import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
-
+interface SwapDetailProps {
+    firstSymbolToken?:string,
+    firstTokenAmount?:number,
+    secondSymbolToken?:string,
+    secondTokenAmount?:number,
+    priceImpact?:number,
+    priceImpactMessage?:string,
+    slippage?:number,
+    slippageSetter?(any):void,
+    className?:string,
+    fullExpanded?:boolean,
+    slippageEnabled?:boolean
+}
 export const SwapDetail = ({
     firstSymbolToken = 'CSPR',
     firstTokenAmount = 10,
@@ -27,7 +39,7 @@ export const SwapDetail = ({
     className = '',
     fullExpanded = true,
     slippageEnabled = false
-}: any) => {
+}: SwapDetailProps) => {
     const [isExpanded, setExpanded] = useState(fullExpanded);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
