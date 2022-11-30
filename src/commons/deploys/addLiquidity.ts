@@ -130,7 +130,7 @@ export enum AddLiquidityEntryPoint {
               AccessRights.READ_ADD_WRITE
             ),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(20000000000),
         )
       case AddLiquidityEntryPoint.ADD_LIQUIDITY_JS_CLIENT:
         // When adding token and token
@@ -157,7 +157,7 @@ export enum AddLiquidityEntryPoint {
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(20000000000),
         )
       default: 
         throw new Error(`this shouldn't happen`)
