@@ -63,6 +63,7 @@ export const LinearProgressButton = ({ content, handler, disabled = false, style
 
   return (
     <ButtonStyle isActive={isActive} style={style} onClick={click} disabled={disabled}>
+      {/* TODO: remove inline css*/}
       <div style={{flex: "1", display: "flex"}}><div style={{alignSelf: "center"}}>{content}</div></div>
       <Box sx={{display: isActive ? 'block' : 'inherit', width: '100%'}}>
         <LinearProgress sx={{
@@ -70,6 +71,7 @@ export const LinearProgressButton = ({ content, handler, disabled = false, style
             backgroundColor: lightTheme.NewAquamarineColor,
           }
         }} style={{borderRadius: "0 0 10px 10px", height: "10px", backgroundColor: lightTheme.NewPurpleColor}} valueBuffer={100} variant="determinate" value={progress} />
+      {/* TODO: remove inline css*/}
       </Box>
     </ButtonStyle>
   )

@@ -45,24 +45,33 @@ export const LiquidityItem = ({firstIcon, firstSymbol, firstLiquidity, secondIco
 
     return (
         <TWrapRow  className="collapsible">
+            {/* TODO: remove inline css*/}
             <TRow style={{cursor: "pointer", padding: "3px 25px"}} {...getToggleProps({onClick: handleOnClick}) }>
+                {/* TODO: remove inline css*/}
                 <TColumn1 style={{display: "flex"}}>
+                    {/* TODO: remove inline css*/}
                     <TColumn1 style={{display: "flex"}}>
                         <SwapIconImageStyled src={firstIcon} width="30" height="30" />
+                        {/* TODO: remove inline css*/}
                         <SwapIconImageStyled style={{position: "relative", left: "-10px"}} src={secondIcon} width="30" height="30" />
                     </TColumn1>
+                    {/* TODO: remove inline css*/}
                     <div style={{flex: "3", alignSelf: "center", textAlign: "left"}}>{firstSymbol}-{secondSymbol}</div>
                 </TColumn1>
+                {/* TODO: remove inline css*/}
                 <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>{isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</TColumn1>
             </TRow>
             <TBodyExpanded {...getCollapseProps()}>
+                {/* TODO: remove inline css*/}
                 <div style={{paddingLeft: "20px", paddingRight: "20px", paddingTop: "10px"}}>
+                    {/* TODO: remove inline css*/}
                     <div style={{borderTop: "1px solid black"}}/>
                 </div>
                 <WrappedRow>
                     <TColumn1>
                         Pooled ({firstSymbol})
                     </TColumn1>
+                    {/* TODO: remove inline css*/}
                     <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>
                         {firstLiquidity} {firstSymbol}
                     </TColumn1>
@@ -71,6 +80,7 @@ export const LiquidityItem = ({firstIcon, firstSymbol, firstLiquidity, secondIco
                     <TColumn1>
                         Pooled ({secondSymbol})
                     </TColumn1>
+                    {/* TODO: remove inline css*/}
                     <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>
                         {secondLiquidity} {secondSymbol}
                     </TColumn1>
@@ -79,6 +89,7 @@ export const LiquidityItem = ({firstIcon, firstSymbol, firstLiquidity, secondIco
                     <TColumn1>
                         Your liquidity
                     </TColumn1>
+                    {/* TODO: remove inline css*/}
                     <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>
                         {liquidity} LP
                     </TColumn1>
@@ -87,6 +98,7 @@ export const LiquidityItem = ({firstIcon, firstSymbol, firstLiquidity, secondIco
                     <TColumn1>
                         Your share
                     </TColumn1>
+                    {/* TODO: remove inline css*/}
                     <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>
                         {perLiquidity} %
                     </TColumn1>
@@ -94,17 +106,20 @@ export const LiquidityItem = ({firstIcon, firstSymbol, firstLiquidity, secondIco
                 <WrappedRow>
                     <TColumn1>
                         <TRow>
+                            {/* TODO: remove inline css*/}
                             <Button style={{borderRadius: "10px", width: "8vw", height: "4.6vh"}} content={'Add Liquidity'} handler={selectLiquidity}/>
                         </TRow>
                     </TColumn1>
                     <TColumn1>
                         <TRow>
                             <CircleButton onClick={() => {goTo("/swap")}}>
+                                {/* TODO: remove inline css*/}
                                 <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
                             {children}
                             {false &&
                                 <CircleButton onClick={() => {}}>
+                                    {/* TODO: remove inline css*/}
                                     <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
                                 </CircleButton>
                             }

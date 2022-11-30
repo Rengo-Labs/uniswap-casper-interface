@@ -6,10 +6,12 @@ const LogoIconStyled = styled.nav`
         fill: white;
     }
 `
-export const LogoIconCC = ({ collapse, children,onNewIcons}) => {
+export const LogoIconCC = ({ collapse, children, onNewIcons }) => {
   return (
+
     <LogoIconStyled>
-        {!collapse ? onNewIcons : <div style={{ height: 64 }}>{children}</div>}
+      {/* TODO: remove inline css*/}
+      {!collapse ? onNewIcons : <div style={{ height: 64 }}>{children}</div>}
     </LogoIconStyled>
   )
 }
