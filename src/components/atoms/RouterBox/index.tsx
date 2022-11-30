@@ -2,7 +2,12 @@ import React from 'react'
 import {AiFillQuestionCircle} from "react-icons/ai"
 import {RouterContainer, RouterRow, RouterColumnLeft, RouterColumnRight} from './styles'
 
-export const RouterBox = ({ tokenASymbol, tokenBSymbol }:any) => {
+interface RouterBoxProps {
+    tokenASymbol:string,
+    tokenBSymbol:string
+}
+
+export const RouterBox = ({ tokenASymbol, tokenBSymbol }:RouterBoxProps) => {
     return (
         <>
             {
