@@ -414,22 +414,18 @@ const LiquidityNewModule = () => {
             slippageSetter={slippSwapTokenSetter} />
         }
         <ButtonSpaceNSM>
-          {/* TODO: remove inline css*/}
           {
             !isConnected &&
               <NewSwapButtonWidth100 content="Connect to Wallet" handler={async () => { onConnect() }} />
           }
-          {/* TODO: remove inline css*/}
           {
             !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount &&
             <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
           }
-          {/* TODO: remove inline css*/}
           {
             !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount &&
             <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
           }
-          {/* TODO: remove inline css*/}
           {
             isApprovedA && isApprovedB && isConnected && <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
           }
