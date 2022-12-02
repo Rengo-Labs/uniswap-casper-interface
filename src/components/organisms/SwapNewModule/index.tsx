@@ -13,16 +13,13 @@ import {
   ButtonHalfMax,
   ButtonHalfMaxContainer,
   ButtonSpaceNSM,
-  CloseButtonAtom,
   ContainerInnerNSM,
   ContainerSwapActionsNSM,
   ExchangeRateBox,
   FlechaIcon,
-  HeaderModalAtom,
   IconPlaceNSM,
   NewBalanceSpaceNSM,
-  NewSwapButton,
-  NewSwapButtonAlt,
+  NewSwapButtonWidth100,
   NewSwapContainerNSM,
   NewTokenDetailActionsNSM,
   NewTokenDetailItems1NSM,
@@ -30,9 +27,7 @@ import {
   NewTokenDetailItems3NSM,
   NewTokenDetailItems4NSM,
   NewTokenDetailSelectNSM,
-  SwapContainerAtom,
   SwapDetailsNSM,
-  SwapHeaderAtom,
   TokenSelectionNSM,
   TokenSelectNSM,
 } from "../../atoms";
@@ -61,7 +56,6 @@ const SwapNewModule = () => {
     slippageToleranceSelected,
   } = useContext(ConfigProviderContext);
 
-  const [activeModalSwap, setActiveModalSwap] = React.useState(false);
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
   const [slippSwapToken, slippSwapTokenSetter] = useState<any>(
@@ -116,7 +110,6 @@ const SwapNewModule = () => {
   }
 
   async function onConfirmSwap() {
-    setActiveModalSwap(false);
     const waiting = await onConfirmSwapConfig(
       amountSwapTokenA,
       amountSwapTokenB,
@@ -427,7 +420,7 @@ const SwapNewModule = () => {
         )}
         <ButtonSpaceNSM>
           {!isConnected && (
-            <NewSwapButtonAlt
+            <NewSwapButtonWidth100
               content="Connect to Wallet"
               handler={async () => {
                 onConnect();
@@ -435,7 +428,7 @@ const SwapNewModule = () => {
             />
           )}
           {!isApproved && isConnected && (
-            <NewSwapButtonAlt
+            <NewSwapButtonWidth100
               content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`}
               handler={async () => {
                 await requestIncreaseAllowance(
@@ -446,7 +439,7 @@ const SwapNewModule = () => {
             />
           )}
           {isApproved && isConnected && (
-            <NewSwapButtonAlt
+            <NewSwapButtonWidth100
               content="Swap"
               disabled={
                 amountSwapTokenA <= 0 ||
@@ -459,42 +452,6 @@ const SwapNewModule = () => {
             />
           )}
         </ButtonSpaceNSM>
-        {activeModalSwap && (
-          <SwapModal>
-            <SwapContainerAtom>
-              <SwapHeaderAtom>
-                <HeaderModalAtom>Confirm Swap</HeaderModalAtom>
-                <CloseButtonAtom
-                  onClick={() => {
-                    setActiveModalSwap(false);
-                  }}
-                >
-                  <AiOutlineClose />
-                </CloseButtonAtom>
-              </SwapHeaderAtom>
-              <SwapConfirmAtom
-                firstToken={amountSwapTokenA}
-                firstTokenSelected={firstTokenSelected}
-                secondTokenSelected={secondTokenSelected}
-                amountSwapTokenA={amountSwapTokenA}
-                amountSwapTokenB={amountSwapTokenB}
-                slippSwapToken={slippSwapToken}
-                tokensToTransfer={tokensToTransfer}
-                priceImpact={priceImpact}
-                defaultPriceImpactLabel={defaultPriceImpactLabel}
-                slippSwapTokenSetter={slippSwapTokenSetter} 
-                liquidity={false}
-                >
-                <NewSwapButton
-                  content="Confirm Swap"
-                  handler={async () => {
-                    await onConfirmSwap();
-                  }}
-                />
-              </SwapConfirmAtom>
-            </SwapContainerAtom>
-          </SwapModal>
-        )}
       </ContainerSwapActionsNSM>
     </ContainerInnerNSM>
   );
