@@ -1,5 +1,5 @@
 import React from 'react'
-import { SwapButton,SwitchIcon } from '../../atoms'
+import { SwapButton } from '../../atoms'
 import { SwapModulesStyled } from './styles'
 
 export const LiquidityBox = () => {
