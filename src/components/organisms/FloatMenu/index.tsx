@@ -3,8 +3,8 @@ import { Token } from '../../../commons/api'
 import React from 'react'
 
 import { AiOutlineSearch, AiFillCloseCircle } from "react-icons/ai";
-import styled from 'styled-components'
 import { ContainerCenterFM, ContainerFM, FavoritesTokensFM, FooterFM, HeaderFM, IconContainerFM, LeTokenFM, LeTokenImageFM, LeTokenTitleFM, PopularContainerFM, PopularTokenFM, SearchAndFavoritesFM, SearchFM, SearchIconFM, SearchInputFM, SelectTokenImageFM, SpacerFM, SpacerWithTokenFM, TokenListContainerFM, TokenShortFM, UnderlineFM } from '../../atoms';
+
 export interface FloatMenuProps{
     tokens: Record<string, Token>,
     onSelectToken: (x: Token) => void,
