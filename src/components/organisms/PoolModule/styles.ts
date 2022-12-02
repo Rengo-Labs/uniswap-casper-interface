@@ -15,17 +15,7 @@ export const MenuStyled = styled.div`
     padding: .6rem .7rem
 `
 
-export const MenuSearchStyled = styled.div`
-    flex: 1;
-    align-self: center;
-`
-
 export const MenuToggleStyled = styled.div`
-    flex: 1;
-    align-self: center;
-`
-
-export const MenuFilterStyled = styled.div`
     flex: 1;
     align-self: center;
 `
@@ -37,8 +27,4 @@ export const MenuTitleStyled = styled.div`
     margin-left: 1%;
     font-family: 'Epilogue'; 
     font-size: 1em;
-`
-
-export const WrapToggle = styled.div`
-    display: flex;
 `

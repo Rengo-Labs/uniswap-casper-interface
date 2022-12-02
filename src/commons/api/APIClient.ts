@@ -1,7 +1,4 @@
 import axios from 'axios'
-import {
-  CLPublicKey,
-} from 'casper-js-sdk'
 
 import { 
   AllowanceAgainstOwnerAndSpenderResponse,

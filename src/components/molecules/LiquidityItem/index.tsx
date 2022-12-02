@@ -7,10 +7,14 @@ import {
     TWrapRow,
     WrappedRow,
     CircleButton,
-    SymbolContainer, TColumn1WithColor, TBodyExpandedDiv, TBodyExpandedDivBorder
+    SymbolContainer, 
+    TColumn1WithColor, 
+    TBodyExpandedDiv, 
+    TBodyExpandedDivBorder,
+    SwapIconImageStyled, 
+    SwapIconImageStyledRelative,
 } from "./styles";
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
-import {SwapIconImageStyled, SwapIconImageStyledRelative} from "../SwapToken/styles";
 import {IconOutlineSwap, LiquidityButton, LiquidityFarmIcon, NewIcons} from "../../atoms";
 import {useNavigate} from "react-router-dom";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";

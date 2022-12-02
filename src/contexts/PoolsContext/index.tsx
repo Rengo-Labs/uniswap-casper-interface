@@ -1,14 +1,9 @@
-import React, {createContext, ReactNode, useReducer, useState} from 'react'
+import React, {createContext, ReactNode, useState} from 'react'
 import casprIcon from '../../assets/swapIcons/casperIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 import {initialConfigState} from "../../reducers";
 
 export const PoolsProviderContext = createContext<any>({})
-const formatter = Intl.NumberFormat('en', {notation: 'compact'})
-
-export const convertNumber = (number) => {
-  return formatter.format(number)
-}
 
 export const getTVLandVolume = () => {
 
