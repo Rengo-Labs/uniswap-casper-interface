@@ -6,6 +6,7 @@ export const SwitchIcon = ({ switchHandler, icon="",isIcon=true, className }: an
     return (
         <SwitchButton data-testid="switch_button" onClick={switchHandler} className={className}>
             {icon}
+            {/* TODO: remove inline css*/}
             {isIcon && <AiOutlineSwap style={{transform: "rotate(90deg)"}} size="1.5rem" />}
         </SwitchButton>
     )

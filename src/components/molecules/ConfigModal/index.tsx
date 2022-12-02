@@ -95,16 +95,6 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                     <ConfigModalBody>
                         <h1>Settings</h1>
                         <PillowDiv>
-                            {
-                              /*<WalletSelectionDiv style={{ backgroundColor: `${walletSelected === WalletName.CASPER_SIGNER ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
-                                    <WalletSelectionImageStyled src={casperWallet} alt="" />
-                                    <h2>Signer Wallet</h2>
-                                </WalletSelectionDiv>
-                                <WalletSelectionDiv style={{ backgroundColor: `${walletSelected === WalletName.TORUS ? "rgba(240, 230, 50,0.5)" : ""}` }} walletSelected={"walletSelected"} onClick={switchWallet}>
-                                    <WalletSelectionImageStyled src={torusWallet} alt="" />
-                                    <h2>Torus Wallet</h2>
-                                </WalletSelectionDiv>*/
-                            }
                         </PillowDiv>
                         <PillowDiv>
                             Language Selection
@@ -114,8 +104,11 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
                         </PillowDiv>
                         <PillowDiv>
                             Slippage Tolerance
+                            {/* TODO: remove inline css*/}
                             <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "0.1" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.1") }} >0.1%</ButtonStyle>
+                            {/* TODO: remove inline css*/}
                             <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "0.5" ? "red" : ""}` }} onClick={() => { onSetSlippage("0.5") }} >0.5%</ButtonStyle>
+                            {/* TODO: remove inline css*/}
                             <ButtonStyle style={{ backgroundColor: `${slippageTolerance === "1.0" ? "red" : ""}` }} onClick={() => { onSetSlippage("1.0") }} >1.0%</ButtonStyle>
                         </PillowDiv>
                         <PillowDiv>

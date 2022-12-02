@@ -17,7 +17,11 @@ export const SwapIconStyled = styled.section`
 `
 export const SwapIconImageStyled = styled.img`
     border-radius: 50%;
-    
+`
+export const SwapIconImageStyledRelative = styled.img`
+    border-radius: 50%;
+    position: relative; 
+    left: -10px;
 `
 export const SwapNamingStyled = styled.section`
     grid-column:2/3;

@@ -14,6 +14,11 @@ export const TBody = styled.div`
     font-family: 'EpilogueLight'; 
     font-size: 1em;
 `
+export const SymbolContainer = styled.div`
+    flex: 3;
+    alignSelf: center;
+    textAlign: left
+`
 
 export const TWrapRow = styled.div`
     background-color: white;
@@ -35,6 +40,8 @@ export const TRow = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+    padding: 3px 25px
 `
 
 export const TColumn6 = styled.div`
@@ -47,11 +54,29 @@ export const TColumn3 = styled.div`
 
 export const TColumn1 = styled.div`
     flex: 1;
+    display: flex;
+`
+
+export const TColumn1WithColor = styled.div`
+    flex: 1;
+    text-align: right;
+    color: ${props => props.theme.secondBackgroundColor};
 `
 
 export const TBodyExpanded = styled.div`
     
 `
+
+export const TBodyExpandedDiv = styled.div`
+    padding-left: 20px;
+    padding-right: 20px; 
+    padding-top: 10px;
+`
+
+export const TBodyExpandedDivBorder = styled.div`
+    border-top: 1px solid black;
+`
+
 
 export const CircleButton = styled.button`
     background-color: ${props => props.theme.secondBackgroundColor};

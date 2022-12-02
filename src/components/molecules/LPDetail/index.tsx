@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import useCollapse from 'react-collapsed';
 import {
     CollapsingContainerStyled,
@@ -8,23 +8,23 @@ import {
     CollapsingHeader,
     CollapsingBody
 } from './styles'
-import {RouterBox, SlippageBox} from '../../atoms'
-import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
+import { RouterBox, SlippageBox } from '../../atoms'
+import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
 
 export const LPDetail = ({
-                             firstSymbolToken = 'CSPR',
-                             secondSymbolToken = 'ETH',
-                             secondTokenAmount = 200,
-                             liquidity = 10,
-                             firstReserve = 0.00,
-                             secondReserve = 0.00,
-                             slippage = 0.005,
-                             slippageSetter = () => {},
-                             className = '',
-                             fullExpanded = false,
-                             slippageEnabled = false
-                    }:any)  => {
-    const [ isExpanded, setExpanded ] = useState(fullExpanded);
+    firstSymbolToken = 'CSPR',
+    secondSymbolToken = 'ETH',
+    secondTokenAmount = 200,
+    liquidity = 10,
+    firstReserve = 0.00,
+    secondReserve = 0.00,
+    slippage = 0.005,
+    slippageSetter = () => { },
+    className = '',
+    fullExpanded = false,
+    slippageEnabled = false
+}: any) => {
+    const [isExpanded, setExpanded] = useState(fullExpanded);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
@@ -45,7 +45,7 @@ export const LPDetail = ({
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>Max Amount</CollapsingColumnLeft>
-                    <CollapsingColumnRight>{(secondTokenAmount * (1 - slippage/100)).toFixed(9)} {secondSymbolToken}</CollapsingColumnRight>
+                    <CollapsingColumnRight>{(secondTokenAmount * (1 - slippage / 100)).toFixed(9)} {secondSymbolToken}</CollapsingColumnRight>
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>Pool Liquidity ({firstSymbolToken})</CollapsingColumnLeft>
@@ -61,9 +61,11 @@ export const LPDetail = ({
                 </CollapsingRow>
 
                 <CollapsingRow>
-                    <div style={{width: "100%"}} className="collapsible">
-                        <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({onClick: handleOnClick})}>
-                            <CollapsingRow style={{paddingTop: "0", color: "rgba(120, 100, 244, 1)"}}>
+                    {/* TODO: remove inline css*/}
+                    <div style={{ width: "100%" }} className="collapsible">
+                        <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({ onClick: handleOnClick })}>
+                            {/* TODO: remove inline css*/}
+                            <CollapsingRow style={{ paddingTop: "0", color: "rgba(120, 100, 244, 1)" }}>
                                 more information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
                             </CollapsingRow>
                         </CollapsingHeader>
@@ -76,7 +78,7 @@ export const LPDetail = ({
                                 <CollapsingColumnRight>10 CSPR</CollapsingColumnRight>
                             </CollapsingRow>
                             <CollapsingRow>
-                                <RouterBox tokenASymbol={firstSymbolToken} tokenBSymbol={secondSymbolToken}/>
+                                <RouterBox tokenASymbol={firstSymbolToken} tokenBSymbol={secondSymbolToken} />
                             </CollapsingRow>
                         </div>
                     </div>

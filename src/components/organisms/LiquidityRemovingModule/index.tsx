@@ -159,6 +159,7 @@ export const LiquidityRemovingModule = ({
                                     {
                                         freeAllowanceLiq < 0 ?
                                             <RemoveButtonContainer>
+
                                                 <LiquidityEnableButton data-testid="liq_enable" enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
                                             </RemoveButtonContainer>
                                         :
@@ -168,6 +169,7 @@ export const LiquidityRemovingModule = ({
                                     }
                             </PopupContent>
                             <PopupBottom>
+
                                 <LiquidityCancelButton handler={closeHandler} content="Cancel"/>
                             </PopupBottom>
                         </PopupContainer>

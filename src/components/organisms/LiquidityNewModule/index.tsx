@@ -469,6 +469,7 @@ const LiquidityNewModule = () => {
                     allowance={row.allowance}
                   >
                     <CircleButton>
+
                       <TrashIcon />
                     </CircleButton>
                   </LiquidityRemovingModule>
