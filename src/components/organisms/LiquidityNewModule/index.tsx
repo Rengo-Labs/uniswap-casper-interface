@@ -78,7 +78,7 @@ const LiquidityNewModule = () => {
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
 
   const [totalLiquidity, setTotalLiquidity] = useState("0")
-  const [isOpenedRemoving, setOpenedRemoving] = useState(false)
+  const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen)
   const [searchParams, setSearchParams] = useSearchParams()
   const [currentFReserve, setFirstReserve] = useState(0)
   const [currentSReserve, setSecondReserve] = useState(0)
@@ -100,8 +100,10 @@ const LiquidityNewModule = () => {
     if (isRemovingPopupOpen) {
       setOpenedRemoving(true)
       setRemovingPopup(false)
+      console.log("Cambiando", isRemovingPopupOpen, isOpenedRemoving)
     }
 
+    console.log(isRemovingPopupOpen, isOpenedRemoving)
     updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
   }, [isConnected])
 
@@ -304,9 +306,11 @@ const LiquidityNewModule = () => {
 
   const userPairDataNonZero = userPairData.filter(v => parseFloat(v.balance) > 0)
 
-  const refreshPrices = () => {
+  const refreshPrices = async () => {
     //TODO update the token amount to receive and prices
-
+    console.log("value", amountSwapTokenA)
+    await changeTokenA(amountSwapTokenA)
+    console.log("calcular precios")
   }
 
   return (
@@ -415,7 +419,7 @@ const LiquidityNewModule = () => {
             firstSymbolToken={firstTokenSelected.symbol}
             secondSymbolToken={secondTokenSelected.symbol}
             secondTokenAmount={amountSwapTokenB}
-            liquidity={totalLiquidity}
+            liquidity={parseFloat(totalLiquidity)}
             firstReserve={currentFReserve}
             secondReserve={currentSReserve}
             gasFee={gasFee}
@@ -456,7 +460,7 @@ const LiquidityNewModule = () => {
                 // Apply the row props
                 <LiquidityItem
                   key={`${row.token0Symbol}-${row.token1Symbol}`}
-                  fullExpanded={isOpenedRemoving}
+                  fullExpanded={openPopup}
                   firstIcon={row.token0Icon}
                   firstSymbol={row.token0Symbol}
                   firstLiquidity={row.reserve0}

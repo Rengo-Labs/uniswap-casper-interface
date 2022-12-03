@@ -17,7 +17,7 @@ interface LPDetailProps {
     firstSymbolToken?:string,
     secondSymbolToken?:string,
     secondTokenAmount?:number,
-    liquidity?:number,
+    liquidity?: number,
     firstReserve?:number,
     secondReserve?:number,
     gasFee?: number,

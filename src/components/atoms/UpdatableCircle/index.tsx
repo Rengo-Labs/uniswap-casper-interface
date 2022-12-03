@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import {TrailCircular} from './styles'
 
-export const UpdatableCircle = ({ strokeWidth, percentage, handler }) => {
+export const UpdatableCircle = ({ strokeWidth, ms = 60000, percentage, handler }) => {
     const [progress, setProgress] = React.useState(percentage)
 
     const radius = (50 - strokeWidth / 2);
@@ -16,10 +16,11 @@ export const UpdatableCircle = ({ strokeWidth, percentage, handler }) => {
     useEffect(() => {
         const timer = setInterval(() => {
             setProgress((oldProgress) => {
-                if (oldProgress >= 95) {
+                if (oldProgress == 100) {
+                    //handler().then()
                     return 1;
                 }
-                return Math.min(oldProgress + 2, 100);
+                return Math.min(oldProgress + 100000/ms, 100);
             });
         }, 1000);
 
@@ -35,7 +36,6 @@ export const UpdatableCircle = ({ strokeWidth, percentage, handler }) => {
             await handler()
         } catch (e) {
             console.log("error ", e)
-        } finally {
         }
 
         setProgress(1)
