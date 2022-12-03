@@ -10,6 +10,7 @@ import {
 } from './styles'
 import {RouterBox, SlippageBox} from '../../atoms'
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
+import {GasFeeBox} from "../../atoms/GasFeeBox";
 
 export const LPDetail = ({
                              firstSymbolToken = 'CSPR',
@@ -18,6 +19,9 @@ export const LPDetail = ({
                              liquidity = 10,
                              firstReserve = 0.00,
                              secondReserve = 0.00,
+                             gasFee = 10,
+                             gasFeeSetter = () => {},
+                             gasFeeEnabled = false,
                              slippage = 0.005,
                              slippageSetter = () => {},
                              className = '',
@@ -72,8 +76,7 @@ export const LPDetail = ({
                                 <SlippageBox slippageEnabled={slippageEnabled} onSlippageChange={updateSlippage} slippage={slippage} />
                             </CollapsingRow>
                             <CollapsingRow>
-                                <CollapsingColumnLeft>Network gas fee</CollapsingColumnLeft>
-                                <CollapsingColumnRight>10 CSPR</CollapsingColumnRight>
+                                <GasFeeBox gasFeeEnabled={gasFeeEnabled} onGasFeeChange={gasFeeSetter} gasFee={gasFee} />
                             </CollapsingRow>
                             <CollapsingRow>
                                 <RouterBox tokenASymbol={firstSymbolToken} tokenBSymbol={secondSymbolToken}/>

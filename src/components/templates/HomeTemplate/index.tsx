@@ -6,7 +6,7 @@ import { NavigationBar, ActionsBar, } from '../../molecules';
 import { NavBar, Hero, GridNavbar } from '../../organisms'
 
 import { ReactComponent as WordMarkIcon } from '../../../assets/newIcons/casperswap-wordmark.svg'
-import { ReactComponent as CasperIcon } from '../../../assets/newIcons/casperIcon.svg'
+import { ReactComponent as CasperIcon } from '../../../assets/logo.svg'
 import { /*ButtonConnection,*/ NewIcons } from '../../../components/atoms'
 
 

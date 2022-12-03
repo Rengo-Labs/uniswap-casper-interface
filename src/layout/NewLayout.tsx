@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { ReactComponent as CasperIcon } from '../assets/newIcons/casperIcon.svg'
+import { ReactComponent as CasperIcon } from '../assets/logo.svg'
 import { ReactComponent as LiquidityIcon } from '../assets/newIcons/liquidityIcon.svg'
 import { ReactComponent as PoolIcon } from '../assets/newIcons/poolIcon.svg'
 import { ReactComponent as SwapIcon } from '../assets/newIcons/swapIcon.svg'

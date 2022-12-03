@@ -14,6 +14,7 @@ import { PriceImpactLabel } from "../../atoms/ExchangeRateBox/styles";
 
 import { calculateMinimumTokenReceived } from '../../../contexts/PriceImpactContext'
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
+import {GasFeeBox} from "../../atoms/GasFeeBox";
 
 export const SwapDetail = ({
     firstSymbolToken = 'CSPR',
@@ -22,6 +23,9 @@ export const SwapDetail = ({
     secondTokenAmount = 200,
     priceImpact = 1.5,
     priceImpactMessage = 'Title',
+    gasFee = 10,
+    gasFeeSetter = () => {},
+    gasFeeEnabled = false,
     slippage = 0.005,
     slippageSetter = () => { },
     className = '',
@@ -76,8 +80,7 @@ export const SwapDetail = ({
                                 <CollapsingColumnRight>{firstTokenAmount * 0.003} CSPR</CollapsingColumnRight>
                             </CollapsingRow>
                             <CollapsingRow>
-                                <CollapsingColumnLeft>Network gas fee</CollapsingColumnLeft>
-                                <CollapsingColumnRight>10 CSPR</CollapsingColumnRight>
+                                <GasFeeBox gasFeeEnabled={gasFeeEnabled} onGasFeeChange={gasFeeSetter} gasFee={gasFee} />
                             </CollapsingRow>
                             <CollapsingRow>
                                 <RouterBox tokenASymbol={firstSymbolToken} tokenBSymbol={secondSymbolToken} />

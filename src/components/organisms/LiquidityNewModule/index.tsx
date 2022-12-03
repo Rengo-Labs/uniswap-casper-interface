@@ -64,7 +64,8 @@ const LiquidityNewModule = () => {
     onIncreaseAllow,
     getPoolList,
     isRemovingPopupOpen,
-    setRemovingPopup
+    setRemovingPopup,
+    gasPriceSelectedForLiquidity
   } = useContext(ConfigProviderContext)
 
   const userPairData = Object.entries(pairState).map(([k, v]) => v)
@@ -85,6 +86,8 @@ const LiquidityNewModule = () => {
   const [lastChanged, setLastChanged] = useState('')
   const [valueAUSD, setValueAUSD] = useState("0")
   const [valueBUSD, setValueBUSD] = useState("0")
+
+  const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
 
   useEffect(() => {
     const t0 = searchParams.get("token0")
@@ -269,7 +272,7 @@ const LiquidityNewModule = () => {
 
   async function onLiquidity() {
 
-    await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
+    await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippSwapToken, gasFee)
     resetAll()
   }
 
@@ -287,15 +290,15 @@ const LiquidityNewModule = () => {
 
   const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenA)).toNumber()
 
-  const isApprovedA = firstTokenSelected.symbol == 'CSPR' || (
-    firstTokenSelected.symbol != 'CSPR' &&
+  const isApprovedA = firstTokenSelected.symbol === 'CSPR' || (
+    firstTokenSelected.symbol !== 'CSPR' &&
     freeAllowanceA >= 0
   )
 
   const freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenB)).toNumber()
 
-  const isApprovedB = secondTokenSelected.symbol == 'CSPR' || (
-    secondTokenSelected.symbol != 'CSPR' &&
+  const isApprovedB = secondTokenSelected.symbol === 'CSPR' || (
+    secondTokenSelected.symbol !== 'CSPR' &&
     freeAllowanceB >= 0
   )
 
@@ -415,6 +418,9 @@ const LiquidityNewModule = () => {
             liquidity={totalLiquidity}
             firstReserve={currentFReserve}
             secondReserve={currentSReserve}
+            gasFee={gasFee}
+            gasFeeSetter={gasFeeSetter}
+            gasFeeEnabled={true}
             slippage={slippSwapToken}
             slippageEnabled={true}
             slippageSetter={slippSwapTokenSetter} />
@@ -425,11 +431,11 @@ const LiquidityNewModule = () => {
               <NewSwapButtonWidth100 content="Connect to Wallet" handler={async () => { onConnect() }} />
           }
           {
-            !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount &&
+            !isApprovedA && isConnected &&
             <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
           }
           {
-            !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount &&
+            !isApprovedB && isConnected &&
             <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
           }
           {
@@ -444,13 +450,13 @@ const LiquidityNewModule = () => {
           {
             // Loop over the table rows
             userPairDataNonZero.map(row => {
-              const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbolPair && row.token1Symbol == secondTokenSelected.symbolPair
+              const openPopup = isOpenedRemoving && row.token0Symbol === firstTokenSelected.symbolPair && row.token1Symbol === secondTokenSelected.symbolPair
 
               return (
                 // Apply the row props
                 <LiquidityItem
                   key={`${row.token0Symbol}-${row.token1Symbol}`}
-                  fullExpanded={openPopup}
+                  fullExpanded={isOpenedRemoving}
                   firstIcon={row.token0Icon}
                   firstSymbol={row.token0Symbol}
                   firstLiquidity={row.reserve0}

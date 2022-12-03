@@ -31,7 +31,7 @@ import {
   calculateLiquidityDetails,
 
   log,
-  WalletName,
+  WalletName, sleep,
 } from '../../commons'
 
 import {
@@ -61,10 +61,10 @@ export interface ConfigContext {
   firstTokenSelected: Token,
   secondTokenSelected: Token,
   isConnected: boolean,
-  onConfirmSwapConfig: (amountA: number | string, amountB: number | string, slippage: number) => Promise<boolean>,
+  onConfirmSwapConfig: (amountA: number | string, amountB: number | string, slippage: number, gasFee: number) => Promise<boolean>,
   slippageToleranceSelected: number,
   onIncreaseAllow: (amount: number | string, contractHash: string) => Promise<boolean>,
-  onAddLiquidity: (amountA: number | string, amountB: number | string, slippage: number) => Promise<boolean>,
+  onAddLiquidity: (amountA: number | string, amountB: number | string, slippage: number, gasFee: number) => Promise<boolean>,
   pairState: PairState,
   onRemoveLiquidity: (liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number) => Promise<boolean>
 
@@ -78,8 +78,10 @@ export interface ConfigContext {
   filter: (onlyStaked: boolean, row: Row<PairData>) => any,
   getContractHashAgainstPackageHash,
   onCalculateReserves: (v: any, reverse: boolean) => Promise<any>,
-  setRemovingPopup,
-  isRemovingPopupOpen
+  setRemovingPopup: (v: any) => any,
+  isRemovingPopupOpen: boolean,
+  gasPriceSelectedForSwapping: number,
+  gasPriceSelectedForLiquidity: number
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any)
@@ -379,7 +381,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       dispatch({ type: ConfigActions.SELECT_MAIN_PURSE, payload: { mainPurse: ret.mainPurse } })
       dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { wallet: ret.wallet } })
 
-      refresh(ret.wallet)
+      await refresh(ret.wallet)
 
       toast.dismiss(toastLoading)
       toast.success("Connected!")
@@ -587,8 +589,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       }
 
       try {
-        result = await apiClient.getPairAgainstUser(wallet.accountHashString)        
+        result = await apiClient.getPairAgainstUser(wallet.accountHashString)
       } catch (err) {
+        console.error("Error - trying get pair against user", err.message)
         return
       }
       
@@ -671,7 +674,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     tokenDispatch({ type: TokenActions.SWITCH_TOKENS })
   }
 
-  async function onConfirmSwapConfig(amountA: number | string, amountB: number | string, slippage: number): Promise<boolean> {
+  async function onConfirmSwapConfig(amountA: number | string, amountB: number | string, slippage: number, gasFee: number): Promise<boolean> {
     const loadingToast = toast.loading("Swapping.")
 
     try {
@@ -686,6 +689,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         tokenState.tokens[tokenState.secondTokenSelected],
         slippage / 100,
         mainPurse,
+        gasFee
       );
 
       setProgressModal(true)
@@ -740,7 +744,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
-  async function onAddLiquidity(amountA: number | string, amountB: number | string, slippage: number): Promise<boolean> {
+  async function onAddLiquidity(amountA: number | string, amountB: number | string, slippage: number, gasFee: number): Promise<boolean> {
     const loadingToast = toast.loading("Adding liquidity.")
     try {
       const [deployHash, deployResult] = await signAndDeployAddLiquidity(
@@ -754,6 +758,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         tokenState.tokens[tokenState.secondTokenSelected],
         slippage / 100,
         mainPurse,
+        gasFee
       )
 
       setProgressModal(true)
@@ -763,16 +768,17 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       setProgressModal(false)
       setConfirmModal(true)
 
+      await sleep(15000)
+      await refresh(state.wallet)
       toast.dismiss(loadingToast)
       toast.success("Success.")
-      refresh(state.wallet)
       return true
     } catch (err) {
       setProgressModal(false)
       toast.dismiss(loadingToast)
+      await refresh(state.wallet)
       console.log("onAddLiquidity")
       toast.error(`${err}`)
-      refresh(state.wallet)
       return false
     }
   }
@@ -801,16 +807,17 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       setProgressModal(false)
       setConfirmModal(true)
 
+      await sleep(15000)
+      await refresh(state.wallet)
       toast.dismiss(loadingToast)
       toast.success("Success.")
-      refresh(state.wallet)
       return true
     } catch (err) {
       setProgressModal(false)
       toast.dismiss(loadingToast)
+      await refresh(state.wallet)
       console.log("onRemoveLiquidity")
       toast.error(`${err}`)
-      refresh(state.wallet)
       return false
     }
   }
@@ -860,7 +867,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       getContractHashAgainstPackageHash,
       onCalculateReserves,
       setRemovingPopup,
-      isRemovingPopupOpen
+      isRemovingPopupOpen,
+      gasPriceSelectedForSwapping: state.gasPriceSelectedForSwapping,
+      gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity
     }}>
       {children}
       <PopupsModule isOpen={progressModal} handleOpen={setProgressModal} progress>
