@@ -21,9 +21,11 @@ interface HomePropsInterface {
   heroImage: any
 }
 
+
 export const HomeTemplate = ({ title, url, content, isAnchor = false, to = '/', insideMessage = 'Analytics', handler, heroImage }: HomePropsInterface) => {
   const listOfLinks: any[] = []
   return (
+
     <ContainerDD>
       <GridNavbar>
         <a href='/' style={{display:"grid",justifyItems:"start",alignItems:"center"}}>

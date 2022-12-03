@@ -55,16 +55,23 @@ export const CollapsingRow = ({
     return (
         <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>
+                {/* TODO: remove inline css*/}
                 <TColumn6 style={{display: "flex"}}>
+                    {/* TODO: remove inline css*/}
                     <TColumn1 style={{alignSelf: "center"}}><AiFillStar style={{color: lightTheme.secondBackgroundColor}}/></TColumn1>
+                    {/* TODO: remove inline css*/}
                     <TColumn1 style={{display: "flex"}}>
                         <SwapIconImageStyled src={row.original.token0Icon} width="30" height="30" />
+                        {/* TODO: remove inline css*/}
                         <SwapIconImageStyled style={{position: "relative", left: "-12px"}} src={row.original.token1Icon} width="30" height="30" />
                     </TColumn1>
+                    {/* TODO: remove inline css*/}
                     <div style={{flex: "3", alignSelf: "center", textAlign: "left"}}>{row.original.name}</div>
                 </TColumn6>
+                {/* TODO: remove inline css*/}
                 <TColumn3 style={{display: "flex"}}>
                     <TColumn1 />
+                    {/* TODO: remove inline css*/}
                     <TColumn3 style={{textAlign: "left"}}>
                         $ {convertNumber(parseFloat(row.original.totalSupply))}
                     </TColumn3>
@@ -77,45 +84,56 @@ export const CollapsingRow = ({
             <TBodyExpanded {...getCollapseProps()}>
                 <WrappedRow>
                     <TColumn3>
+                        {/* TODO: remove inline css*/}
                         <TRow style={{color: lightTheme.secondBackgroundColor}}>
                             <TColumn1 />
+                            {/* TODO: remove inline css*/}
                             <TColumn3 style={{textAlign: "left"}}>Assets Pooled</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
+                            {/* TODO: remove inline css*/}
                             <TColumn3 style={{textAlign: "left"}}>{convertNumber(parseFloat(row.original.reserve0))} {row.original.token0Symbol}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
+                            {/* TODO: remove inline css*/}
                             <TColumn3 style={{textAlign: "left"}}>{convertNumber(parseFloat(row.original.reserve1))} {row.original.token1Symbol}</TColumn3>
                         </TRow>
                     </TColumn3>
                     <TColumn6>
+                        {/* TODO: remove inline css*/}
                         <TRow style={{color: lightTheme.secondBackgroundColor}}>
                             <TColumn1 />
                             <TColumn1 />
+                            {/* TODO: remove inline css*/}
                             <TColumn3 style={{textAlign: "left"}}>Your Liquidity</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
                             <TColumn1 />
+                            {/* TODO: remove inline css*/}
                             <TColumn3 style={{textAlign: "left"}}>$ {convertNumber(parseFloat(row.original.totalLiquidityUSD))}</TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
                             <TColumn1 />
+                            {/* TODO: remove inline css*/}
                             <TColumn3 style={{textAlign: "left"}}>{convertNumber(parseFloat(row.original.balance))} LP</TColumn3>
                         </TRow>
                     </TColumn6>
                     <TColumn3>
+                        {/* TODO: remove inline css*/}
                         <TRow style={{color: lightTheme.secondBackgroundColor}}>
                             <TColumn1 />
+                            {/* TODO: remove inline css*/}
                             <TColumn3 style={{textAlign: "left"}}>
                                 Your Share
                             </TColumn3>
                         </TRow>
                         <TRow>
                             <TColumn1 />
+                            {/* TODO: remove inline css*/}
                             <TColumn3 style={{textAlign: "left"}}>
                                 {
                                     row.original.balance ?
@@ -134,6 +152,7 @@ export const CollapsingRow = ({
                     <TColumn3>
                         <TRow>
                             <CircleButton onClick={() => {goTo("/swap")}}>
+                                {/* TODO: remove inline css*/}
                                 <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
                             <CircleButton disabled={parseFloat(row.original.balance) <= 0} onClick={() => {goTo("/liquidity", true)}}>
@@ -141,6 +160,7 @@ export const CollapsingRow = ({
                             </CircleButton>
                             {false &&
                                 <CircleButton onClick={() => {goTo("/farms")}}>
+                                    {/* TODO: remove inline css*/}
                                     <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
                                 </CircleButton>
                             }

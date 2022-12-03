@@ -1,24 +1,19 @@
 import React, {useContext, useState} from 'react';
 import useCollapse from 'react-collapsed';
-
-import {AiOutlineSwap} from "react-icons/ai";
-
 import {
     TBodyExpanded,
     TColumn1,
     TRow,
     TWrapRow,
     WrappedRow,
-    CircleButton
+    CircleButton,
+    SymbolContainer, TColumn1WithColor, TBodyExpandedDiv, TBodyExpandedDivBorder
 } from "./styles";
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
-import {SwapIconImageStyled} from "../SwapToken/styles";
-import {lightTheme} from "../../../contexts/ThemeContext/themes";
-import {Button, NewIcons} from "../../atoms";
-import {ReactComponent as FarmIcon} from "../../../assets/newIcons/farmIconCyan.svg";
+import {SwapIconImageStyled, SwapIconImageStyledRelative} from "../SwapToken/styles";
+import {IconOutlineSwap, LiquidityButton, LiquidityFarmIcon, NewIcons} from "../../atoms";
 import {useNavigate} from "react-router-dom";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
-
 
 export const LiquidityItem = ({firstIcon, firstSymbol, firstLiquidity, secondIcon, secondSymbol, secondLiquidity, liquidity, perLiquidity, fullExpanded = false, children}:any)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
@@ -44,68 +39,68 @@ export const LiquidityItem = ({firstIcon, firstSymbol, firstLiquidity, secondIco
     }
 
     return (
-        <TWrapRow  className="collapsible">
-            <TRow style={{cursor: "pointer", padding: "3px 25px"}} {...getToggleProps({onClick: handleOnClick}) }>
-                <TColumn1 style={{display: "flex"}}>
-                    <TColumn1 style={{display: "flex"}}>
+        <TWrapRow className="collapsible">
+            <TRow {...getToggleProps({onClick: handleOnClick}) }>
+                <TColumn1>
+                    <TColumn1>
                         <SwapIconImageStyled src={firstIcon} width="30" height="30" />
-                        <SwapIconImageStyled style={{position: "relative", left: "-10px"}} src={secondIcon} width="30" height="30" />
+                        <SwapIconImageStyledRelative src={secondIcon} width="30" height="30" />
                     </TColumn1>
-                    <div style={{flex: "3", alignSelf: "center", textAlign: "left"}}>{firstSymbol}-{secondSymbol}</div>
+                    <SymbolContainer>{firstSymbol}-{secondSymbol}</SymbolContainer>
                 </TColumn1>
-                <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>{isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</TColumn1>
+                <TColumn1WithColor>{isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</TColumn1WithColor>
             </TRow>
             <TBodyExpanded {...getCollapseProps()}>
-                <div style={{paddingLeft: "20px", paddingRight: "20px", paddingTop: "10px"}}>
-                    <div style={{borderTop: "1px solid black"}}/>
-                </div>
+                <TBodyExpandedDiv>
+                    <TBodyExpandedDivBorder />
+                </TBodyExpandedDiv>
                 <WrappedRow>
                     <TColumn1>
                         Pooled ({firstSymbol})
                     </TColumn1>
-                    <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>
+                    <TColumn1WithColor>
                         {firstLiquidity} {firstSymbol}
-                    </TColumn1>
+                    </TColumn1WithColor>
                 </WrappedRow>
                 <WrappedRow>
                     <TColumn1>
                         Pooled ({secondSymbol})
                     </TColumn1>
-                    <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>
+                    <TColumn1WithColor>
                         {secondLiquidity} {secondSymbol}
-                    </TColumn1>
+                    </TColumn1WithColor>
                 </WrappedRow>
                 <WrappedRow>
                     <TColumn1>
                         Your liquidity
                     </TColumn1>
-                    <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>
+                    <TColumn1WithColor>
                         {liquidity} LP
-                    </TColumn1>
+                    </TColumn1WithColor>
                 </WrappedRow>
                 <WrappedRow>
                     <TColumn1>
                         Your share
                     </TColumn1>
-                    <TColumn1 style={{textAlign: "right", color: lightTheme.secondBackgroundColor}}>
+                    <TColumn1WithColor>
                         {perLiquidity} %
-                    </TColumn1>
+                    </TColumn1WithColor>
                 </WrappedRow>
                 <WrappedRow>
                     <TColumn1>
                         <TRow>
-                            <Button style={{borderRadius: "10px", width: "8vw", height: "4.6vh"}} content={'Add Liquidity'} handler={selectLiquidity}/>
+                            <LiquidityButton content={'Add Liquidity'} handler={selectLiquidity}/>
                         </TRow>
                     </TColumn1>
                     <TColumn1>
                         <TRow>
                             <CircleButton onClick={() => {goTo("/swap")}}>
-                                <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
+                                <IconOutlineSwap size="1.3rem" />
                             </CircleButton>
                             {children}
                             {false &&
                                 <CircleButton onClick={() => {}}>
-                                    <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
+                                    <LiquidityFarmIcon />
                                 </CircleButton>
                             }
                         </TRow>

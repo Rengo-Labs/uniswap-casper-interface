@@ -16,6 +16,23 @@ import { calculateMinimumTokenReceived } from '../../../contexts/PriceImpactCont
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 import {GasFeeBox} from "../../atoms/GasFeeBox";
 
+interface SwapDetailProps {
+    firstSymbolToken?:string,
+    firstTokenAmount?:number,
+    secondSymbolToken?:string,
+    secondTokenAmount?:number,
+    priceImpact?:number,
+    priceImpactMessage?:string,
+    gasFee?: number,
+    gasFeeSetter?(any): void,
+    gasFeeEnabled?: boolean,
+    slippage?:number,
+    slippageSetter?(any):void,
+    className?:string,
+    fullExpanded?:boolean,
+    slippageEnabled?:boolean
+}
+
 export const SwapDetail = ({
     firstSymbolToken = 'CSPR',
     firstTokenAmount = 10,
@@ -31,7 +48,7 @@ export const SwapDetail = ({
     className = '',
     fullExpanded = true,
     slippageEnabled = false
-}: any) => {
+}: SwapDetailProps) => {
     const [isExpanded, setExpanded] = useState(fullExpanded);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
@@ -49,9 +66,11 @@ export const SwapDetail = ({
             <CollapsingBody>
                 <CollapsingRow>
                     <CollapsingColumnLeft>
+                        {/* TODO: remove inline css*/}
                         <PriceImpactLabel priceImpactTitle={priceImpactMessage} priceImpact={priceImpact} style={{ justifyContent: "flex-start" }} />
                     </CollapsingColumnLeft>
                     <CollapsingColumnRight data-testid="collapsing_column_right_id">
+                        {/* TODO: remove inline css*/}
                         <PriceImpactLabel priceImpactTitle={priceImpact + ' %'} priceImpact={priceImpact} style={{ justifyContent: "flex-end" }} />
                     </CollapsingColumnRight>
                 </CollapsingRow>
@@ -65,8 +84,10 @@ export const SwapDetail = ({
                 </CollapsingRow>
 
                 <CollapsingRow>
+                    {/* TODO: remove inline css*/}
                     <div style={{ width: "100%" }} className="collapsible">
                         <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({ onClick: handleOnClick })}>
+                            {/* TODO: remove inline css*/}
                             <CollapsingRow style={{ paddingTop: "0", color: "rgba(120, 100, 244, 1)" }}>
                                 more information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
                             </CollapsingRow>

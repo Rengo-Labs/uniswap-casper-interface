@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import useCollapse from 'react-collapsed';
 import {
     CollapsingContainerStyled,
@@ -8,27 +8,45 @@ import {
     CollapsingHeader,
     CollapsingBody
 } from './styles'
+
 import {RouterBox, SlippageBox} from '../../atoms'
 import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 import {GasFeeBox} from "../../atoms/GasFeeBox";
 
+interface LPDetailProps {
+    firstSymbolToken?:string,
+    secondSymbolToken?:string,
+    secondTokenAmount?:number,
+    liquidity?:number,
+    firstReserve?:number,
+    secondReserve?:number,
+    gasFee?: number,
+    gasFeeSetter?(any): void,
+    gasFeeEnabled?: boolean,
+    slippage?:number,
+    slippageSetter?(any):void,
+    className?:string,
+    fullExpanded?:boolean,
+    slippageEnabled?:boolean
+}
+
 export const LPDetail = ({
-                             firstSymbolToken = 'CSPR',
-                             secondSymbolToken = 'ETH',
-                             secondTokenAmount = 200,
-                             liquidity = 10,
-                             firstReserve = 0.00,
-                             secondReserve = 0.00,
-                             gasFee = 10,
-                             gasFeeSetter = () => {},
-                             gasFeeEnabled = false,
-                             slippage = 0.005,
-                             slippageSetter = () => {},
-                             className = '',
-                             fullExpanded = false,
-                             slippageEnabled = false
-                    }:any)  => {
-    const [ isExpanded, setExpanded ] = useState(fullExpanded);
+    firstSymbolToken = 'CSPR',
+    secondSymbolToken = 'ETH',
+    secondTokenAmount = 200,
+    liquidity = 10,
+    firstReserve = 0.00,
+    secondReserve = 0.00,
+    gasFee = 10,
+    gasFeeSetter = () => {},
+    gasFeeEnabled = false,
+    slippage = 0.005,
+    slippageSetter = () => { },
+    className = '',
+    fullExpanded = false,
+    slippageEnabled = false
+}: LPDetailProps) => {
+    const [isExpanded, setExpanded] = useState(fullExpanded);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
@@ -49,7 +67,7 @@ export const LPDetail = ({
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>Max Amount</CollapsingColumnLeft>
-                    <CollapsingColumnRight>{(secondTokenAmount * (1 - slippage/100)).toFixed(9)} {secondSymbolToken}</CollapsingColumnRight>
+                    <CollapsingColumnRight>{(secondTokenAmount * (1 - slippage / 100)).toFixed(9)} {secondSymbolToken}</CollapsingColumnRight>
                 </CollapsingRow>
                 <CollapsingRow>
                     <CollapsingColumnLeft>Pool Liquidity ({firstSymbolToken})</CollapsingColumnLeft>
@@ -65,9 +83,11 @@ export const LPDetail = ({
                 </CollapsingRow>
 
                 <CollapsingRow>
-                    <div style={{width: "100%"}} className="collapsible">
-                        <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({onClick: handleOnClick})}>
-                            <CollapsingRow style={{paddingTop: "0", color: "rgba(120, 100, 244, 1)"}}>
+                    {/* TODO: remove inline css*/}
+                    <div style={{ width: "100%" }} className="collapsible">
+                        <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({ onClick: handleOnClick })}>
+                            {/* TODO: remove inline css*/}
+                            <CollapsingRow style={{ paddingTop: "0", color: "rgba(120, 100, 244, 1)" }}>
                                 more information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
                             </CollapsingRow>
                         </CollapsingHeader>
@@ -79,7 +99,7 @@ export const LPDetail = ({
                                 <GasFeeBox gasFeeEnabled={gasFeeEnabled} onGasFeeChange={gasFeeSetter} gasFee={gasFee} />
                             </CollapsingRow>
                             <CollapsingRow>
-                                <RouterBox tokenASymbol={firstSymbolToken} tokenBSymbol={secondSymbolToken}/>
+                                <RouterBox tokenASymbol={firstSymbolToken} tokenBSymbol={secondSymbolToken} />
                             </CollapsingRow>
                         </div>
                     </div>
