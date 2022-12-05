@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import {device} from "../../../contexts/ThemeContext/themes";
 
 export const WalletContainer = styled.div`
     display: flex;
@@ -12,6 +13,18 @@ export const WalletContainer = styled.div`
     &:first-child {
         padding-top: 0.5em;
         padding-bottom: 0.5em;
+    }
+  
+    @media ${device.mobileS} {
+      font-size: 12px;
+    }
+  
+    @media ${device.tablet} {
+      font-size: 12px;
+    }
+  
+    @media ${device.laptop} {
+      font-size: 0.8vw;
     }
 `
 
@@ -44,6 +57,19 @@ export const PopupContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-self: center;
+  
+    @media ${device.mobileS} {
+        width: 100%;
+    }
+    @media ${device.mobileM} {
+        width: 100%;
+    }
+    @media ${device.mobileL} {
+        width: 100%;
+    }
+    @media ${device.tablet} {
+      width: 608px;
+    }
 `
 
 export const PopupTitle = styled.div`
@@ -125,6 +151,15 @@ export const PopoverButtonStyled= styled.div`
         background-color: ${props => props.theme.secondBackgroundColor};
         color: ${props => props.theme.thirdBackgroundColor};
     }
+
+  @media ${device.mobileS} {
+    width: 100px;
+    font-size: 12px;
+  }
+  @media ${device.tablet} {
+    width: 8vw;
+    font-size: 0.8vw;
+  }
 `
 
 export const DisclaimerContent = styled.div`
@@ -134,4 +169,14 @@ export const DisclaimerContent = styled.div`
     font-family: EpilogueLight;
     margin-bottom: 1.5vh;
     font-size: 0.8vw;
+  
+    @media ${device.mobileS} {
+      font-size: 12px;
+    }
+    @media ${device.tablet} {
+      font-size: 12px;
+    }
+    @media ${device.laptop} {
+      font-size: 0.8vw;
+    }
 `
