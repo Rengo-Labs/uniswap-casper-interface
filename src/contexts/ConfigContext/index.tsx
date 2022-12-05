@@ -81,7 +81,11 @@ export interface ConfigContext {
   setRemovingPopup: (v: any) => any,
   isRemovingPopupOpen: boolean,
   gasPriceSelectedForSwapping: number,
-  gasPriceSelectedForLiquidity: number
+  gasPriceSelectedForLiquidity: number,
+  progressBar: (v?: number) => any,
+  clearProgress: () => void,
+  setProgress: (v: number) => void,
+  getProgress: number
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any)
@@ -189,6 +193,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   const [isRemovingPopupOpen, setRemovingPopup] = useState(false)
 
   const [showConnectionPopup, setShowConnectionPopup] = useState(false)
+  const [progress, setProgress] = useState(1)
+  const [progressTimer, setProgressTimer] = useState<any>()
 
   let debounceConnect = false
 
@@ -836,6 +842,23 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
+  const progressBarExec = (ms = 60000) => {
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress >= 99) {
+          return 1;
+        }
+        return Math.min(oldProgress + 100000/ms, 100);
+      });
+    }, 1000)
+
+    setProgressTimer(timer)
+  }
+
+  const clearProgressBar = () => {
+    clearInterval(progressTimer)
+  }
+
   return (
     <ConfigProviderContext.Provider value={{
       onConnectWallet,
@@ -869,7 +892,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       setRemovingPopup,
       isRemovingPopupOpen,
       gasPriceSelectedForSwapping: state.gasPriceSelectedForSwapping,
-      gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity
+      gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity,
+      progressBar: progressBarExec,
+      clearProgress: clearProgressBar,
+      setProgress: setProgress,
+      getProgress: progress
     }}>
       {children}
       <PopupsModule isOpen={progressModal} handleOpen={setProgressModal} progress>

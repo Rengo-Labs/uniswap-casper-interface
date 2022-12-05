@@ -1,8 +1,9 @@
-import React, {useEffect} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {TrailCircular} from './styles'
+import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 
-export const UpdatableCircle = ({ strokeWidth, ms = 60000, percentage, handler }) => {
-    const [progress, setProgress] = React.useState(percentage)
+export const UpdatableCircle = ({ strokeWidth, handler }) => {
+    const {getProgress, setProgress, clearProgress} = useContext(ConfigProviderContext)
 
     const radius = (50 - strokeWidth / 2);
     const pathDescription = `
@@ -13,27 +14,11 @@ export const UpdatableCircle = ({ strokeWidth, ms = 60000, percentage, handler }
 
     const diameter = Math.PI * 2 * radius;
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setProgress((oldProgress) => {
-                if (oldProgress == 100) {
-                    //handler().then()
-                    return 1;
-                }
-                return Math.min(oldProgress + 100000/ms, 100);
-            });
-        }, 1000);
-
-        return () => {
-            clearInterval(timer)
-        }
-    }, [])
-
-
     const click = async () => {
 
         try {
             await handler()
+            clearProgress()
         } catch (e) {
             console.log("error ", e)
         }
@@ -66,7 +51,7 @@ export const UpdatableCircle = ({ strokeWidth, ms = 60000, percentage, handler }
 
                 isPrincipal={true}
                 diameter={diameter}
-                percentage={progress}
+                percentage={getProgress}
             />
       </svg>
   );

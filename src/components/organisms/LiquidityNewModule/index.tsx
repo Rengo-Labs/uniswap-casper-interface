@@ -65,7 +65,8 @@ const LiquidityNewModule = () => {
     getPoolList,
     isRemovingPopupOpen,
     setRemovingPopup,
-    gasPriceSelectedForLiquidity
+    gasPriceSelectedForLiquidity,
+    progressBar
   } = useContext(ConfigProviderContext)
 
   const userPairData = Object.entries(pairState).map(([k, v]) => v)
@@ -112,7 +113,9 @@ const LiquidityNewModule = () => {
 
     setTotalLiquidity(totalLP)
     calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
-  })
+
+    progressBar()
+  }, [])
 
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
@@ -368,7 +371,7 @@ const LiquidityNewModule = () => {
               exchangeRateB={exchangeRateB}
             />
           </SwapDetailsNSM>
-          <UpdatableCircle strokeWidth={12} percentage={1} handler={refreshPrices} />
+          <UpdatableCircle strokeWidth={12} handler={refreshPrices} />
         </IconPlaceNSM>
         {/*TODO: we need create another component with this background <NewSwapContainerNSM style={{backgroundColor: "white"}}>*/}
         <NewSwapContainerNSM>
