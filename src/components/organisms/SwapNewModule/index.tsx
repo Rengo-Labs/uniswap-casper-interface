@@ -145,7 +145,7 @@ const SwapNewModule = () => {
     exchangeRateBSetter(exchangeRateB);
 
     defaultPriceImpactLabelSetter(
-      parseFloat(priceImpact) > 1 ? "Price Impact Warning" : "Low Price Impact"
+      parseFloat(priceImpact) > 1 ? "Price Impact Warning" : "Price impact"
     );
     return tokensToTransfer;
   }
@@ -245,7 +245,7 @@ const SwapNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM>From</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems1NSM>from</NewTokenDetailItems1NSM>
               <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} />
               <NewTokenDetailItems3NSM>
                 {firstTokenSelected.symbol}
@@ -286,14 +286,14 @@ const SwapNewModule = () => {
                       makeHalf(firstTokenSelected.amount, changeTokenA);
                     }}
                   >
-                    Half
+                    half
                   </ButtonHalfMax>
                   <ButtonHalfMax
                     onClick={() => {
                       makeMax(firstTokenSelected.amount, changeTokenA);
                     }}
                   >
-                    Max
+                    max
                   </ButtonHalfMax>
                 </ButtonHalfMaxContainer>
                 <BalanceInputContainerNSM>
@@ -332,7 +332,7 @@ const SwapNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM>To</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems1NSM>to</NewTokenDetailItems1NSM>
               <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} />
               <NewTokenDetailItems3NSM>
                 {secondTokenSelected.symbol}
@@ -373,14 +373,14 @@ const SwapNewModule = () => {
                       makeHalf(secondTokenSelected.amount, changeTokenB);
                     }}
                   >
-                    Half
+                    half
                   </ButtonHalfMax>
                   <ButtonHalfMax
                     onClick={() => {
                       makeMax(secondTokenSelected.amount, changeTokenB);
                     }}
                   >
-                    Max
+                    max
                   </ButtonHalfMax>
                 </ButtonHalfMaxContainer>
                 <BalanceInputContainerNSM>
@@ -421,7 +421,7 @@ const SwapNewModule = () => {
         <ButtonSpaceNSM>
           {!isConnected && (
             <NewSwapButtonWidth100
-              content="Connect to Wallet"
+              content="Swap"
               handler={async () => {
                 onConnect();
               }}
