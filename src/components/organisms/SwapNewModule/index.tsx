@@ -1,7 +1,6 @@
 import BigNumber from "bignumber.js";
 
 import React, { useContext, useState, useEffect } from "react";
-import { AiOutlineClose } from "react-icons/ai";
 import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import {
   ActionContainerNSM,
@@ -38,7 +37,8 @@ import { useSearchParams } from "react-router-dom";
 
 import { convertAllFormatsToUIFixedString, Token } from "../../../commons";
 import SwitchSwap from "../../atoms/SwitchSwap";
-import LoadersSwap from "../../atoms/LoadersSwap";
+import {UpdatableCircle} from "../../atoms/UpdatableCircle";
+import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 
 const SwapNewModule = () => {
   const {
@@ -57,6 +57,8 @@ const SwapNewModule = () => {
     getPoolList,
     gasPriceSelectedForSwapping
   } = useContext(ConfigProviderContext)
+
+  const {clearProgress} = useContext(ProgressBarProviderContext)
 
   const [activeModalSwap, setActiveModalSwap] = React.useState(false)
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
@@ -93,6 +95,7 @@ const SwapNewModule = () => {
       firstTokenSelected
     );
 
+    clearProgress()
   }, [isConnected]);
 
   async function onConnect() {
@@ -170,7 +173,6 @@ const SwapNewModule = () => {
   }
 
   async function changeTokenA(value: string) {
-    console.log("Calcular nueva cantidad A")
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
@@ -182,7 +184,6 @@ const SwapNewModule = () => {
 
     amountSwapTokenASetter(filteredValue);
 
-    console.log("Calcular nueva cantidad A", value)
     const minTokenToReceive = await updateSwapDetail(
       firstTokenSelected,
       secondTokenSelected,
@@ -194,8 +195,12 @@ const SwapNewModule = () => {
     calculateUSDValues(filteredValue, parseFloat(minTokenToReceive))
   }
 
+  const refreshPrices = async () => {
+    console.log("refreshPrices", amountSwapTokenA)
+    await changeTokenA(amountSwapTokenA)
+  }
+
   async function changeTokenB(value: string) {
-    console.log("Calcular nueva cantidad B")
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
@@ -206,7 +211,6 @@ const SwapNewModule = () => {
     setLastChanged('B')
 
     amountSwapTokenBSetter(filteredValue)
-    console.log("Calcular nueva cantidad B", value)
     const minTokenToReceive = await updateSwapDetail(
         secondTokenSelected,
         firstTokenSelected,
@@ -381,7 +385,7 @@ const SwapNewModule = () => {
               exchangeRateB={exchangeRateB}
             />
           </SwapDetailsNSM>
-          <LoadersSwap />
+          <UpdatableCircle strokeWidth={12} handler={refreshPrices} />
         </IconPlaceNSM>
         <NewSwapContainerNSM>
           <TokenSelectNSM>

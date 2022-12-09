@@ -1,9 +1,9 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext} from 'react'
 import {TrailCircular} from './styles'
-import {ConfigProviderContext} from "../../../contexts/ConfigContext";
+import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 
 export const UpdatableCircle = ({ strokeWidth, handler }) => {
-    const {getProgress, setProgress, clearProgress} = useContext(ConfigProviderContext)
+    const {getProgress, clearProgress} = useContext(ProgressBarProviderContext)
 
     const radius = (50 - strokeWidth / 2);
     const pathDescription = `
@@ -22,8 +22,6 @@ export const UpdatableCircle = ({ strokeWidth, handler }) => {
         } catch (e) {
             console.log("error ", e)
         }
-
-        setProgress(1)
     }
 
     return (

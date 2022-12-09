@@ -30,7 +30,6 @@ import {
   FlechaIcon,
   TrashIcon
 } from '../../atoms'
-import LoadersSwap from '../../atoms/LoadersSwap'
 import SwitchSwap from '../../atoms/SwitchSwap'
 import { LPDetail } from '../../molecules'
 import FloatMenu from '../FloatMenu'
@@ -46,6 +45,7 @@ import { BalanceInput } from '../../atoms/BalanceInputNSM'
 import { ContainerLiquidityNSM } from '../../atoms/ContainerLiquidityNSM'
 import { ContainerLiquidityPoolList } from "../../atoms/ContainerLiquidityPoolList";
 import {UpdatableCircle} from "../../atoms/UpdatableCircle";
+import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 
 const LiquidityNewModule = () => {
   const {
@@ -65,9 +65,10 @@ const LiquidityNewModule = () => {
     getPoolList,
     isRemovingPopupOpen,
     setRemovingPopup,
-    gasPriceSelectedForLiquidity,
-    progressBar
+    gasPriceSelectedForLiquidity
   } = useContext(ConfigProviderContext)
+
+  const {clearProgress} = useContext(ProgressBarProviderContext)
 
   const userPairData = Object.entries(pairState).map(([k, v]) => v)
 
@@ -101,10 +102,8 @@ const LiquidityNewModule = () => {
     if (isRemovingPopupOpen) {
       setOpenedRemoving(true)
       setRemovingPopup(false)
-      console.log("Cambiando", isRemovingPopupOpen, isOpenedRemoving)
     }
 
-    console.log(isRemovingPopupOpen, isOpenedRemoving)
     updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
   }, [isConnected])
 
@@ -114,7 +113,7 @@ const LiquidityNewModule = () => {
     setTotalLiquidity(totalLP)
     calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
 
-    progressBar()
+    clearProgress()
   }, [])
 
   const calculateUSDValues = (amountA, amountB) => {
@@ -310,10 +309,8 @@ const LiquidityNewModule = () => {
   const userPairDataNonZero = userPairData.filter(v => parseFloat(v.balance) > 0)
 
   const refreshPrices = async () => {
-    //TODO update the token amount to receive and prices
-    console.log("value", amountSwapTokenA)
+    console.log("refreshPrices", amountSwapTokenA)
     await changeTokenA(amountSwapTokenA)
-    console.log("calcular precios")
   }
 
   return (

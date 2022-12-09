@@ -31,7 +31,7 @@ import {
   calculateLiquidityDetails,
 
   log,
-  WalletName, sleep,
+  WalletName, sleep, MinimumReceive,
 } from '../../commons'
 
 import {
@@ -42,7 +42,6 @@ import {
 } from '../../commons/deploys'
 import { ConfigState } from '../../reducers/ConfigReducers'
 import { Row } from 'react-table'
-import { CasperServiceByJsonRPC } from 'casper-js-sdk';
 import { ConnectionPopup } from '../../components/atoms';
 
 type MaybeWallet = Wallet | undefined
@@ -77,15 +76,12 @@ export interface ConfigContext {
   setStaked: (v: boolean) => void,
   filter: (onlyStaked: boolean, row: Row<PairData>) => any,
   getContractHashAgainstPackageHash,
-  onCalculateReserves: (v: any, reverse: boolean) => Promise<any>,
+  onCalculateReserves: (v: any, reverse: boolean) => Promise<MinimumReceive>,
   setRemovingPopup: (v: any) => any,
   isRemovingPopupOpen: boolean,
   gasPriceSelectedForSwapping: number,
   gasPriceSelectedForLiquidity: number,
-  progressBar: (v?: number) => any,
-  clearProgress: () => void,
-  setProgress: (v: number) => void,
-  getProgress: number
+  refreshAll: () => void
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any)
@@ -195,6 +191,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   const [showConnectionPopup, setShowConnectionPopup] = useState(false)
   const [progress, setProgress] = useState(1)
   const [progressTimer, setProgressTimer] = useState<any>()
+  const [progressInterval, setProgressInterval] = useState<any>(null)
 
   let debounceConnect = false
 
@@ -297,8 +294,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     wallet: Wallet,
     tokens: Record<string, Token>,
     tokenDispatch: React.Dispatch<TokenAction>,
+    isConnected: boolean
   ): Promise<void> {
-    if (!wallet.isConnected) {
+    if (!isConnected) {
       return
     }
 
@@ -355,12 +353,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   }
 
   async function refresh(wallet: Wallet) {
-    await fillPairs(wallet)
-    await fillPairDetail(wallet)
+    await fillPairs(wallet, state.isConnected)
+    await fillPairDetail(wallet, state.isConnected)
     await updateBalances(
       wallet,
       tokens,
       tokenDispatch,
+        state.isConnected
     )
   }
 
@@ -564,14 +563,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
-  async function fillPairs(wallet: Wallet): Promise<void> {
-    console.log('isConnected', wallet.isConnected)
-    if (!wallet.isConnected) {
+  async function fillPairs(wallet: Wallet, isConnected = false): Promise<void> {
+    console.log('isConnected', isConnected)
+    await loadPairs()
+
+    if (!isConnected) {
       return
     }
 
     try {
-      await loadPairs()
       const ps = []
       const pairList = Object.keys(pairState).map(x => pairState[x])
       for (const pair of pairList) {
@@ -587,7 +587,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
-  async function fillPairDetail(wallet: Wallet): Promise<void> {
+  async function fillPairDetail(wallet: Wallet, isConnected): Promise<void> {
+    if (!isConnected) {
+      return
+    }
+
     try {
       let result = {
         pairsdata:[],
@@ -627,7 +631,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
-  async function onCalculateReserves(value, reverse) {
+  async function onCalculateReserves(value, reverse): Promise<MinimumReceive> {
     try {
       if (!reverse) {
         return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
@@ -636,11 +640,11 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       }
     } catch (error) {
       console.log(__filename, "onCalculateReserves", error)
-      return { secondTokenReturn: 0, minAmountReturn: 0 }
+      return { secondTokenReturn: 0, minAmountReturn: "0" }
     }
   }
 
-  async function calculateReserves(firstTokenSelected, secondTokenSelected, value) {
+  async function calculateReserves(firstTokenSelected, secondTokenSelected, value): Promise<MinimumReceive> {
     try {
       const response = await axios.post(`${BASE_URL}/getpathreserves`, {
         path: [
@@ -656,7 +660,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       throw Error()
     } catch (error) {
       console.log(__filename, "onCalculateReserves", error)
-      return { secondTokenReturn: 0, minAmountReturn: 0 }
+      return { secondTokenReturn: 0, minAmountReturn: "0" }
     }
   }
 
@@ -842,21 +846,33 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
-  const progressBarExec = (ms = 60000) => {
-    const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        if (oldProgress >= 99) {
-          return 1;
-        }
-        return Math.min(oldProgress + 100000/ms, 100);
-      });
-    }, 1000)
+  const progressBarExec = (timer, sec = 60, handle) => {
+    if (progressInterval != null) return;
+
+    //const timer = new Timer();
+    timer.start();
+    setInterval(() => {
+      const timeInSeconds = Math.min((timer.getTime() / 1000) * (100/sec), 100);
+      if (timeInSeconds >= 99) {
+        //handle().then()
+        timer.reset()
+        setProgress(1)
+      } else {
+        setProgress(timeInSeconds)
+      }
+      console.log(timeInSeconds)
+    }, 2000)
 
     setProgressTimer(timer)
   }
 
   const clearProgressBar = () => {
-    clearInterval(progressTimer)
+    progressTimer.reset()
+  }
+
+  const refreshAll = async () => {
+    console.log(state)
+    await refresh(state.wallet)
   }
 
   return (
@@ -893,10 +909,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       isRemovingPopupOpen,
       gasPriceSelectedForSwapping: state.gasPriceSelectedForSwapping,
       gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity,
-      progressBar: progressBarExec,
-      clearProgress: clearProgressBar,
-      setProgress: setProgress,
-      getProgress: progress
+      refreshAll
     }}>
       {children}
       <PopupsModule isOpen={progressModal} handleOpen={setProgressModal} progress>
