@@ -188,6 +188,6 @@ export class APIClient {
 
     const response = await axios.post(`${this._baseURL}/getpairagainstuser`, pairParam)
 
-    return response.data
+    return response.data.success ? response.data : []
   }
 }

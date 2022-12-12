@@ -5,16 +5,16 @@ export const StyledCommunityMenu = styled.ul`
   background-color: white;
   box-sizing: border-box;
   justify-self: center;
-  height: 115px;
-  width: 200px;
+  height: 148px;
+  width: 180px;
   border: 1px solid ${(props) => props.theme.NewGreyColor};
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   z-index: 50;
-  margin-left: 490px;
-  margin-top: -80px;
+  margin-left: 465px;
+  margin-top: -100px;
   & > :first-child {
     border-radius: 10px 10px 0 0;
   }

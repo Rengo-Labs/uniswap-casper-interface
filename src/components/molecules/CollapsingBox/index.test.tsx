@@ -2,6 +2,9 @@ import '@testing-library/jest-dom'
 
 import {render, fireEvent} from '@testing-library/react'
 import {CollapsingBox} from "./index";
+import {jest} from "@jest/globals";
+jest.mock('axios', () => {})
+jest.mock('@toruslabs/casper-embed', () => {})
 
 describe("Test for swap details", () => {
     beforeEach(() => {
@@ -49,7 +52,7 @@ describe("Test for swap details", () => {
         const firstSymbolToken = 'WETH'
         const receivedSymbolToken = 'CSPR'
         const priceImpact = 1.40
-        let slippage = 0.003
+        let slippage: any = 0.003
         const priceImpactLabel = 'Warning price'
         const slippageSetter = jest.fn((value) => {
             slippage = value

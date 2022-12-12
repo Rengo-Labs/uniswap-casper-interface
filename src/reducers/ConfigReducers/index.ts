@@ -9,7 +9,8 @@ export type ConfigState = {
   languagesSelected?: string,
   visualModeSelected?: string,
   slippageToleranceSelected?: number,
-  gasPriceSelected?: number
+  gasPriceSelectedForSwapping?: number,
+  gasPriceSelectedForLiquidity?: number
 }
 
 export const initialConfigState: ConfigState = {
@@ -21,7 +22,8 @@ export const initialConfigState: ConfigState = {
   languagesSelected: "en",
   visualModeSelected: "light",
   slippageToleranceSelected: 0.5,
-  gasPriceSelected: 10_000_000_000,
+  gasPriceSelectedForSwapping: 20,
+  gasPriceSelectedForLiquidity: 15
 };
 
 export const initialLPPair = [{

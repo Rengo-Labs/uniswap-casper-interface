@@ -58,8 +58,8 @@ export const ConfigModal = ({ children }: { children?: ReactNode }) => {
         walletSelected,
         languagesSelected,
         visualModeSelected,
-        slippageToleranceSelected,
-        gasPriceSelected } = configState
+        slippageToleranceSelected
+    } = configState
     const { isUserLogged, slippageTolerance } = swapState
     const [walletSelect, walletSelectSetter] = useState('casper')
     const walletSelector = new WalletController()

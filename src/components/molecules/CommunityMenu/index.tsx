@@ -3,7 +3,7 @@ import { MenuItem } from '../../atoms';
 import { StyledCommunityMenu } from './styles';
 
 export interface MenuOption {
-  icon?: React.ReactNode;
+  icon?: any;
   text: string;
   navegateTo: string;
 }

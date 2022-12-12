@@ -33,13 +33,15 @@ export async function onConfirmSwap(
   amountSwapTokenA,
   amountSwapTokenB,
   slippSwapToken,
+  gasFee,
   resetAll
 ) {
   setActiveModalSwap(false);
   const waiting = await onConfirmSwapConfig(
     amountSwapTokenA,
     amountSwapTokenB,
-    slippSwapToken
+    slippSwapToken,
+    gasFee
   );
   resetAll();
 }
