@@ -10,6 +10,8 @@ import { SwapContext } from './SwapContext'
 import { NotificationContext } from './NotificationContext'
 import { Toaster } from 'react-hot-toast';
 import { ConfigContextWithReducer } from './ConfigContext'
+import {ProgressBarReducer} from "./ProgressBarContext";
+
 export const BigContext = ({ children }: { children: ReactNode }) => {
 
     return (
@@ -23,7 +25,9 @@ export const BigContext = ({ children }: { children: ReactNode }) => {
                                 <PoolsContext>
                                     <LiquidityContext>
                                         <TokensContext>
-                                            {children}
+                                            <ProgressBarReducer>
+                                                {children}
+                                            </ProgressBarReducer>
                                         </TokensContext>
                                     </LiquidityContext>
                                 </PoolsContext>

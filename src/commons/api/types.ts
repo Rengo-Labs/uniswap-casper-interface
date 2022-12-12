@@ -162,3 +162,11 @@ export interface PairAgainstUserResponse {
   message: string,
   success: boolean,
 }
+
+/**
+ *
+ */
+export interface MinimumReceive {
+  secondTokenReturn: number,
+  minAmountReturn: string
+}

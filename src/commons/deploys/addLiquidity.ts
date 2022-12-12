@@ -87,6 +87,7 @@ export enum AddLiquidityEntryPoint {
   tokenB: Token,
   slippage: number,
   mainPurse: string,
+  gasFee: number
 ): Promise<[string, GetDeployResult]> => {
   try {
     const publicKey = wallet.publicKey;
@@ -130,7 +131,7 @@ export enum AddLiquidityEntryPoint {
               AccessRights.READ_ADD_WRITE
             ),
           }),
-          new BigNumber(20000000000),
+          new BigNumber(gasFee * 10**9),
         )
       case AddLiquidityEntryPoint.ADD_LIQUIDITY_JS_CLIENT:
         // When adding token and token
@@ -157,7 +158,7 @@ export enum AddLiquidityEntryPoint {
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(20000000000),
+          new BigNumber(gasFee * 10**9),
         )
       default: 
         throw new Error(`this shouldn't happen`)

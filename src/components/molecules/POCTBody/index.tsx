@@ -17,7 +17,7 @@ export const POCTBody = ({
     rows, 
     prepareRow 
 }: POCTBodyProps) => {
-    const { isStaked, filter } = React.useContext(ConfigProviderContext)
+    const { isStaked, filter, setRemovingPopup } = React.useContext(ConfigProviderContext)
 
     return (
         <TBody {...getTableBodyProps()}>
@@ -28,7 +28,7 @@ export const POCTBody = ({
                     return (
                         // Apply the row props
                         (!isStaked || filter(isStaked, row)) &&
-                        <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} />
+                        <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} onRemovingPopupListener={setRemovingPopup} />
                     )
                 })
             }
