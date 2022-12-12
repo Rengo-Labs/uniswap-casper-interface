@@ -353,13 +353,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   }
 
   async function refresh(wallet: Wallet) {
-    await fillPairs(wallet, state.isConnected)
-    await fillPairDetail(wallet, state.isConnected)
+    await fillPairs(wallet, wallet?.isConnected)
+    await fillPairDetail(wallet, wallet?.isConnected)
     await updateBalances(
       wallet,
       tokens,
       tokenDispatch,
-        state.isConnected
+      wallet?.isConnected
     )
   }
 
