@@ -19,7 +19,13 @@ export const ButtonStyle = styled.div`
     padding: 0;
   }
   
-  @media ${device.mobileM} and ${device.mobileL} {
-    padding: 1rem;
+  @media ${device.mobileM} {
+    padding: 2px;
+    margin-bottom: 10px;
   }
+
+  @media ${device.mobileL} {
+    padding: 0.5rem;
+  }
+
 `

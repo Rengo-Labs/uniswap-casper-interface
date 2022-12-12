@@ -9,11 +9,15 @@ export const HomeFooterDDStyled = styled.footer`
     display: flex;
     gap:2rem;
   
-  @media ${device.mobileS} and ${device.mobileM}{
-    padding: 10px;
+  @media ${device.mobileS} {
+    padding: 0px;
+  }
+  
+  @media ${device.mobileM} {
+    padding: 0px;
   }
 
-  @media ${device.mobileM} and ${device.mobileL} {
+  @media ${device.mobileL} {
     padding: 1rem;
   }
 
