@@ -23,8 +23,17 @@ import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import { ButtonConnectionOver } from "../components/organisms/ButtonConnectionOver";
 import { WalletName } from '../commons'
+import { SettingMenu } from '../components/molecules'
+import { CommunityMenu, MenuOption } from '../components/molecules/CommunityMenu'
 
 const size = 20
+
+
+const settingMenuOptions: MenuOption[] = [
+  { text: "Twitter", navegateTo: "https://www.twitter.com" },
+  { text: "Discord", navegateTo: "https://www.discord.com" },
+  { text: "Instagram", navegateTo: "https://www.instagram.com"},
+]
 
 const IconTexts = [
   { icon: SwapIcon, text: "Swap", path: "/swap" },
@@ -36,9 +45,9 @@ const IconTexts = [
 ]
 
 const IconTextsTwo = [
-  { icon: ConfigIcon, text: "Settings" },
-  { icon: CommunityIcon, text: "Community" },
-  { icon: CasperIcon, text: "CasperSwap" },
+  { icon: ConfigIcon, text: "Settings", component: <SettingMenu/> },
+  { icon: CommunityIcon, text: "Community", component: <CommunityMenu communityOptions={settingMenuOptions} />},
+  { icon: CasperIcon, text: "CasperSwap", component: null},
 ]
 
 export interface NewLayoutProps {
@@ -52,6 +61,7 @@ const NewLayout = ({
 }: NewLayoutProps) => {
   const navigate = useNavigate()
   const [collapse, setCollapse] = useState(true)
+  const [selectedOption, setSelectedOption] = useState<string>('')
 
   const {
     onConnectWallet,
@@ -70,6 +80,14 @@ const NewLayout = ({
 
   function onDisconnect() {
     onDisconnectWallet()
+  }
+
+  function handleMouseEnter(option: string) {
+    setSelectedOption(option)
+  }
+
+  function handleMouseLeave() {
+    setSelectedOption('')
   }
 
   return (
@@ -111,11 +129,14 @@ const NewLayout = ({
                 <NavItemCC key={x.text}
                   redirect={() => { }}
                   collapse={collapse}
+                  onMouseEnter={() => handleMouseEnter(x.text)}
+                  onMouseLeave={() => handleMouseLeave()}
                 >
                   <IconTextCC collapse={collapse}
                     iconSet={<NewIcons Icon={x.icon} size={size} />}
                     text={x.text}
                   />
+                  {selectedOption === x.text && x.component}
                 </NavItemCC>
               )
             })}
