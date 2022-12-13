@@ -18,7 +18,7 @@ const ConnectButtonContainerStyled = styled.nav`
   }
   @media ${device.mobileL} {
     min-width: 60px;
-    top: 0;
+    top: 40px;
   }
   @media ${device.tablet} {
     min-width: auto;
