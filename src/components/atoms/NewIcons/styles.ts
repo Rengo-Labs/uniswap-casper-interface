@@ -8,7 +8,7 @@ export const IconContainerStyle = styled.div.attrs((props: { size: number }) => 
   justifyContent: 'center';
   height: ${props => props.size}px;
   width: ${props => props.size}px;
-
+  
   @media ${device.mobileS} {
     width: 32px;
     height: 32px;
