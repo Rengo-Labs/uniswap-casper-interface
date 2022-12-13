@@ -13,7 +13,7 @@ export const StyledCommunityMenu = styled.ul`
   flex-direction: column;
   gap: 10px;
   z-index: 50;
-  margin-left: 465px;
+  margin-left: 460px;
   margin-top: -100px;
   & > :first-child {
     border-radius: 10px 10px 0 0;

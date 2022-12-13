@@ -19,7 +19,7 @@ export const StyledSettingMenu = styled.ul`
   justify-content: flex-start;
   gap: 10px;
   z-index: 50;
-  margin-left: 735px;
+  margin-left: 730px;
   margin-top: -50px;
 `;
 
