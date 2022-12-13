@@ -1,9 +1,9 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 import { THeadStyled, THeader6Styled, THeader3Styled, THeaderStyled, THeaderTitle } from './styles'
 import { v4 as uuidv4 } from 'uuid';
-import {TbCircleDotted} from "react-icons/tb";
-
+import {UpdatableCircle} from "../../atoms/UpdatableCircle";
+import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 
 const Header = ({headerGroup, header } : any) => {
     return <THeader3Styled {...headerGroup.getHeaderGroupProps()} {...header.getHeaderProps(header.getSortByToggleProps())} key={uuidv4()}>
@@ -20,6 +20,14 @@ const Header = ({headerGroup, header } : any) => {
 }
 
 export const POCTHead = ({ headerGroups }) => {
+    const {refreshAll} = useContext(ConfigProviderContext)
+
+    //TODO we should restart the progress bar, but we don't have any useEffect for the liquidity pool page.
+    const refreshPrices = async () => {
+        console.log("refresh Pool List")
+        await refreshAll()
+    }
+
     return (
         <THeadStyled>
             {
@@ -41,7 +49,7 @@ export const POCTHead = ({ headerGroups }) => {
             <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[3]} />
             <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[4]} />
             <THeaderStyled>
-                <div><TbCircleDotted /></div>
+                <div><UpdatableCircle strokeWidth={12} handler={refreshPrices} /></div>
             </THeaderStyled>
         </THeadStyled>
     )

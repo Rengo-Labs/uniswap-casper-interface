@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import { ButtonConnectionOver } from "../components/organisms/ButtonConnectionOver";
 import { WalletName } from '../commons'
+import { INotification } from '../components/molecules/NotificationList'
 
 const size = 20
 
@@ -41,6 +42,24 @@ const IconTextsTwo = [
   { icon: CasperIcon, text: "CasperSwap" },
 ]
 
+const notificationList: INotification[] = [
+  {
+    id: '1',
+    message: 'This is the Notification 1',
+    isRead: true,
+  },
+  {
+    id: '2',
+    message: 'Notification 2',
+    isRead: false,
+  },
+  {
+    id: '3',
+    message: 'Notification 3',
+    isRead: true,
+  },
+];
+
 export interface NewLayoutProps {
   children?: React.ReactElement
   title?: string,
@@ -52,6 +71,8 @@ const NewLayout = ({
 }: NewLayoutProps) => {
   const navigate = useNavigate()
   const [collapse, setCollapse] = useState(true)
+  const [showNotifications, setShowNotifications] = useState<boolean>(false)
+  const [notifications, setNotifications] = useState<INotification[]>(notificationList)
 
   const {
     onConnectWallet,
@@ -70,6 +91,18 @@ const NewLayout = ({
 
   function onDisconnect() {
     onDisconnectWallet()
+  }
+
+  function updateNotificationReadState(id: string) {
+    console.log('updateNotificationReadState', id);
+    setNotifications((prev) =>
+      prev.map((x) => {
+        if (x.id === id) {
+          return { ...x, isRead: true };
+        }
+        return x;
+      })
+    );
   }
 
   return (
@@ -128,6 +161,10 @@ const NewLayout = ({
             onDisconnect={onDisconnect}
             accountHashString={walletAddress}
             WordMarkIcon={<WordMarkIcon />}
+            notifications={notifications}
+            showNotifications={showNotifications}
+            setShowNotifications={setShowNotifications}
+            updateNotificationReadState={updateNotificationReadState}
           />
           {children}
         </MainSpaceCC>
