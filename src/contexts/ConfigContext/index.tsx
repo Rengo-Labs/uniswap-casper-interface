@@ -554,6 +554,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             token1Price: pl.token1Price,
             contract0: pl.token0.id,
             contract1: pl.token1.id,
+            token0Name: pl.token0.name,
+            token1Name: pl.token1.name,
             id: pl.id,
           }
         })

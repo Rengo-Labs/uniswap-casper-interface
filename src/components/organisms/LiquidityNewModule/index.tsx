@@ -46,6 +46,7 @@ import { ContainerLiquidityNSM } from '../../atoms/ContainerLiquidityNSM'
 import { ContainerLiquidityPoolList } from "../../atoms/ContainerLiquidityPoolList";
 import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
+import {LiquidityRemovingWithInputRangeModule} from "../LiquidityRemovingWithInputRangeModule";
 
 const LiquidityNewModule = () => {
   const {
@@ -470,25 +471,31 @@ const LiquidityNewModule = () => {
                   liquidity={row.balance}
                   perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)}
                 >
-                  <LiquidityRemovingModule
+                  <LiquidityRemovingWithInputRangeModule
                     isConnected={true}
                     openedPopup={openPopup}
+                    firstName={row.token0Name}
                     firstHash={row.contract0}
                     firstSymbol={row.token0Symbol}
                     firstLiquidity={row.reserve0}
+                    firstPrice={row.token0Price}
+                    secondName={row.token1Name}
                     secondHash={row.contract1}
                     secondSymbol={row.token1Symbol}
                     secondLiquidity={row.reserve1}
+                    secondPrice={row.token1Price}
                     liquidityId={row.id}
                     liquidity={row.balance}
                     liquidityUSD={row.liquidityUSD}
                     allowance={row.allowance}
+                    firstIcon={row.token0Icon}
+                    secondIcon={row.token1Icon}
                   >
                     <CircleButton>
 
                       <TrashIcon />
                     </CircleButton>
-                  </LiquidityRemovingModule>
+                  </LiquidityRemovingWithInputRangeModule>
                 </LiquidityItem>
               )
             })

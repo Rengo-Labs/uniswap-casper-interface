@@ -22,7 +22,7 @@ export const ProgressBarReducer = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     //I must probably use an action list to manage different re loaders (for pool page, swap page, liq page)
-    progressBarExec(30, () => {})
+    progressBarExec(30, async () => { console.log("Hola mundo")})
   }, [! timer.getState()])
 
   const progressBarExec = (sec, handle) => {
@@ -36,6 +36,7 @@ export const ProgressBarReducer = ({ children }: { children: ReactNode }) => {
       if (timeInSeconds >= 99) {
 
         //TODO I need to execute this handle after getting 100
+        new Promise(handle).then()
         //handle().then()
         timer.reset()
         setProgress(1)

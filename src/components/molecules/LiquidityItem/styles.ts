@@ -16,8 +16,8 @@ export const TBody = styled.div`
 `
 export const SymbolContainer = styled.div`
     flex: 3;
-    alignSelf: center;
-    textAlign: left
+    align-self: center;
+    text-align: left
 `
 
 export const TWrapRow = styled.div`
