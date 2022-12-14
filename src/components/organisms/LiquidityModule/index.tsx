@@ -30,7 +30,6 @@ import {
   FlechaIcon,
   TrashIcon
 } from '../../atoms'
-import LoadersSwap from '../../atoms/LoadersSwap'
 import SwitchSwap from '../../atoms/SwitchSwap'
 import { LPDetail } from '../../molecules'
 import FloatMenu from '../FloatMenu'
@@ -39,13 +38,14 @@ import { LiquidityRemovingModule } from "../LiquidityRemovingModule";
 import { LiquidityItem } from "../../molecules/LiquidityItem";
 import { CircleButton } from "../../molecules/POCTBody/styles";
 
-
 import {
   convertAllFormatsToUIFixedString,
 } from '../../../commons'
 import { BalanceInput } from '../../atoms/BalanceInputNSM'
 import { ContainerLiquidityNSM } from '../../atoms/ContainerLiquidityNSM'
 import { ContainerLiquidityPoolList } from "../../atoms/ContainerLiquidityPoolList";
+import {UpdatableCircle} from "../../atoms/UpdatableCircle";
+import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 
 const LiquidityNewModule = () => {
   const {
@@ -62,8 +62,13 @@ const LiquidityNewModule = () => {
     slippageToleranceSelected,
     getLiquidityDetails,
     onIncreaseAllow,
-    getPoolList
+    getPoolList,
+    isRemovingPopupOpen,
+    setRemovingPopup,
+    gasPriceSelectedForLiquidity
   } = useContext(ConfigProviderContext)
+
+  const {clearProgress} = useContext(ProgressBarProviderContext)
 
   const userPairData = Object.entries(pairState).map(([k, v]) => v)
 
@@ -75,7 +80,7 @@ const LiquidityNewModule = () => {
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
 
   const [totalLiquidity, setTotalLiquidity] = useState("0")
-  const [isOpenedRemoving, setOpenedRemoving] = useState(false)
+  const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen)
   const [searchParams, setSearchParams] = useSearchParams()
   const [currentFReserve, setFirstReserve] = useState(0)
   const [currentSReserve, setSecondReserve] = useState(0)
@@ -84,6 +89,8 @@ const LiquidityNewModule = () => {
   const [valueAUSD, setValueAUSD] = useState("0")
   const [valueBUSD, setValueBUSD] = useState("0")
 
+  const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
+
   useEffect(() => {
     const t0 = searchParams.get("token0")
     const t1 = searchParams.get("token1")
@@ -91,11 +98,10 @@ const LiquidityNewModule = () => {
       onSelectFirstToken(tokens[t0])
       onSelectSecondToken(tokens[t1])
     }
-    const isOpened = searchParams.get("remove")
-    if (isOpened) {
+
+    if (isRemovingPopupOpen) {
       setOpenedRemoving(true)
-      searchParams.delete('remove')
-      setSearchParams(searchParams)
+      setRemovingPopup(false)
     }
 
     updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
@@ -106,7 +112,10 @@ const LiquidityNewModule = () => {
 
     setTotalLiquidity(totalLP)
     calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
-  })
+
+    console.log(clearProgress)
+    //clearProgress()
+  }, [])
 
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
@@ -268,7 +277,7 @@ const LiquidityNewModule = () => {
 
   async function onLiquidity() {
 
-    await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippSwapToken)
+    await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippSwapToken, gasFee)
     resetAll()
   }
 
@@ -286,19 +295,24 @@ const LiquidityNewModule = () => {
 
   const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenA)).toNumber()
 
-  const isApprovedA = firstTokenSelected.symbol == 'CSPR' || (
-    firstTokenSelected.symbol != 'CSPR' &&
+  const isApprovedA = firstTokenSelected.symbol === 'CSPR' || (
+    firstTokenSelected.symbol !== 'CSPR' &&
     freeAllowanceA >= 0
   )
 
   const freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenB)).toNumber()
 
-  const isApprovedB = secondTokenSelected.symbol == 'CSPR' || (
-    secondTokenSelected.symbol != 'CSPR' &&
+  const isApprovedB = secondTokenSelected.symbol === 'CSPR' || (
+    secondTokenSelected.symbol !== 'CSPR' &&
     freeAllowanceB >= 0
   )
 
   const userPairDataNonZero = userPairData.filter(v => parseFloat(v.balance) > 0)
+
+  const refreshPrices = async () => {
+    console.log("refreshPrices", amountSwapTokenA)
+    await changeTokenA(amountSwapTokenA)
+  }
 
   return (
     <ContainerLiquidityNSM>
@@ -355,7 +369,7 @@ const LiquidityNewModule = () => {
               exchangeRateB={exchangeRateB}
             />
           </SwapDetailsNSM>
-          <LoadersSwap />
+          <UpdatableCircle strokeWidth={12} handler={refreshPrices} />
         </IconPlaceNSM>
         {/*TODO: we need create another component with this background <NewSwapContainerNSM style={{backgroundColor: "white"}}>*/}
         <NewSwapContainerNSM>
@@ -406,9 +420,12 @@ const LiquidityNewModule = () => {
             firstSymbolToken={firstTokenSelected.symbol}
             secondSymbolToken={secondTokenSelected.symbol}
             secondTokenAmount={amountSwapTokenB}
-            liquidity={totalLiquidity}
+            liquidity={parseFloat(totalLiquidity)}
             firstReserve={currentFReserve}
             secondReserve={currentSReserve}
+            gasFee={gasFee}
+            gasFeeSetter={gasFeeSetter}
+            gasFeeEnabled={true}
             slippage={slippSwapToken}
             slippageEnabled={true}
             slippageSetter={slippSwapTokenSetter} />
@@ -419,11 +436,11 @@ const LiquidityNewModule = () => {
               <NewSwapButtonWidth100 content="Connect to Wallet" handler={async () => { onConnect() }} />
           }
           {
-            !isApprovedA && isConnected && amountSwapTokenA <= firstTokenSelected.amount &&
+            !isApprovedA && isConnected &&
             <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
           }
           {
-            !isApprovedB && isConnected && amountSwapTokenB <= secondTokenSelected.amount &&
+            !isApprovedB && isConnected &&
             <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
           }
           {
@@ -438,7 +455,7 @@ const LiquidityNewModule = () => {
           {
             // Loop over the table rows
             userPairDataNonZero.map(row => {
-              const openPopup = isOpenedRemoving && row.token0Symbol == firstTokenSelected.symbolPair && row.token1Symbol == secondTokenSelected.symbolPair
+              const openPopup = isOpenedRemoving && row.token0Symbol === firstTokenSelected.symbolPair && row.token1Symbol === secondTokenSelected.symbolPair
 
               return (
                 // Apply the row props

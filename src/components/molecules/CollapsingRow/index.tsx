@@ -28,11 +28,13 @@ import BigNumber from 'bignumber.js';
 export interface CollapsingRowProps {
     row: Row<PairData>,
     fullExpanded?: boolean,
+    onRemovingPopupListener: any
 }
 
 export const CollapsingRow = ({
     row, 
     fullExpanded = false,
+    onRemovingPopupListener
 }: CollapsingRowProps)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
     const navigate = useNavigate()
@@ -43,8 +45,11 @@ export const CollapsingRow = ({
         setExpanded(!isExpanded);
     }
 
-    const goTo = (path, optional='') => {
-        navigate({pathname: path, search: `token0=${row.original.token0Symbol.replace('WCSPR', 'CSPR')}&token1=${row.original.token1Symbol.replace('WCSPR', 'CSPR')}${optional}`})
+    const goTo = (path, removingPopup= false) => {
+        if (removingPopup) {
+            onRemovingPopupListener(true)
+        }
+        navigate({pathname: path, search: `token0=${row.original.token0Symbol.replace('WCSPR', 'CSPR')}&token1=${row.original.token1Symbol.replace('WCSPR', 'CSPR')}`})
     }
 
     return (
@@ -150,8 +155,7 @@ export const CollapsingRow = ({
                                 {/* TODO: remove inline css*/}
                                 <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
                             </CircleButton>
-                            <CircleButton disabled={parseFloat(row.original.balance) <= 0} onClick={() => {goTo("/liquidity", '&remove=true')}}>
-                                {/* TODO: remove inline css*/}
+                            <CircleButton disabled={parseFloat(row.original.balance) <= 0} onClick={() => {goTo("/liquidity", true)}}>
                                 <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
                             </CircleButton>
                             {false &&

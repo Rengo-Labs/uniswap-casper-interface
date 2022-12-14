@@ -13,7 +13,9 @@ import { RouterBox, SlippageBox } from '../../atoms'
 import { PriceImpactLabel } from "../../atoms/ExchangeRateBox/styles";
 
 import { calculateMinimumTokenReceived } from '../../../contexts/PriceImpactContext'
-import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
+import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
+import {GasFeeBox} from "../../atoms/GasFeeBox";
+
 interface SwapDetailProps {
     firstSymbolToken?:string,
     firstTokenAmount?:number,
@@ -21,12 +23,16 @@ interface SwapDetailProps {
     secondTokenAmount?:number,
     priceImpact?:number,
     priceImpactMessage?:string,
+    gasFee?: number,
+    gasFeeSetter?(any): void,
+    gasFeeEnabled?: boolean,
     slippage?:number,
     slippageSetter?(any):void,
     className?:string,
     fullExpanded?:boolean,
     slippageEnabled?:boolean
 }
+
 export const SwapDetail = ({
     firstSymbolToken = 'CSPR',
     firstTokenAmount = 10,
@@ -34,6 +40,9 @@ export const SwapDetail = ({
     secondTokenAmount = 200,
     priceImpact = 1.5,
     priceImpactMessage = 'Title',
+    gasFee = 10,
+    gasFeeSetter = () => {},
+    gasFeeEnabled = false,
     slippage = 0.005,
     slippageSetter = () => { },
     className = '',
@@ -56,6 +65,14 @@ export const SwapDetail = ({
         <CollapsingContainerStyled className={className}>
             <CollapsingBody>
                 <CollapsingRow>
+                    <CollapsingColumnLeft>Swapping Through</CollapsingColumnLeft>
+                    <CollapsingColumnRight>Casper Pool</CollapsingColumnRight>
+                </CollapsingRow>
+                <CollapsingRow>
+                    <CollapsingColumnLeft>Minimum received</CollapsingColumnLeft>
+                    <CollapsingColumnRight data-testid="collapsing_min_received">{calculateMinimumTokenReceived(secondTokenAmount, slippage)} {secondSymbolToken}</CollapsingColumnRight>
+                </CollapsingRow>
+                <CollapsingRow>
                     <CollapsingColumnLeft>
                         {/* TODO: remove inline css*/}
                         <PriceImpactLabel priceImpactTitle={priceImpactMessage} priceImpact={priceImpact} style={{ justifyContent: "flex-start" }} />
@@ -66,21 +83,12 @@ export const SwapDetail = ({
                     </CollapsingColumnRight>
                 </CollapsingRow>
                 <CollapsingRow>
-                    <CollapsingColumnLeft>Expected output</CollapsingColumnLeft>
-                    <CollapsingColumnRight>{secondTokenAmount} {secondSymbolToken}</CollapsingColumnRight>
-                </CollapsingRow>
-                <CollapsingRow>
-                    <CollapsingColumnLeft>Minimum received</CollapsingColumnLeft>
-                    <CollapsingColumnRight data-testid="collapsing_min_received">{calculateMinimumTokenReceived(secondTokenAmount, slippage)} {secondSymbolToken}</CollapsingColumnRight>
-                </CollapsingRow>
-
-                <CollapsingRow>
                     {/* TODO: remove inline css*/}
                     <div style={{ width: "100%" }} className="collapsible">
                         <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({ onClick: handleOnClick })}>
                             {/* TODO: remove inline css*/}
                             <CollapsingRow style={{ paddingTop: "0", color: "rgba(120, 100, 244, 1)" }}>
-                                more information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
+                                More information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
                             </CollapsingRow>
                         </CollapsingHeader>
                         <div {...getCollapseProps()}>
@@ -92,8 +100,7 @@ export const SwapDetail = ({
                                 <CollapsingColumnRight>{firstTokenAmount * 0.003} CSPR</CollapsingColumnRight>
                             </CollapsingRow>
                             <CollapsingRow>
-                                <CollapsingColumnLeft>Network gas fee</CollapsingColumnLeft>
-                                <CollapsingColumnRight>10 CSPR</CollapsingColumnRight>
+                                <GasFeeBox gasFeeEnabled={gasFeeEnabled} onGasFeeChange={gasFeeSetter} gasFee={gasFee} />
                             </CollapsingRow>
                             <CollapsingRow>
                                 <RouterBox tokenASymbol={firstSymbolToken} tokenBSymbol={secondSymbolToken} />

@@ -4,8 +4,24 @@ import wcasprIcon from '../../assets/swapIcons/wrappedCasperIcon.png'
 import wiseIcon from '../../assets/swapIcons/wiseIcon.png'
 import wethIcon from '../../assets/swapIcons/wethIcon.svg'
 
-export const LiquidityProviderContext = createContext<any>({})
+export interface LiquidityContext {
+  tokens: any,
+  fileteredTokens: any,
+  filterCriteriaSet: any,
+  filterCriteria: any,
+  primaryToken: any,
+  secondaryToken: any,
+  switchTokens: any,
+  setPrimaryToken: any,
+  setSecondaryToken: any,
+  isRemovingPopupOpen?: boolean,
+  setRemovingPopup?: any
+}
+
+export const LiquidityProviderContext = createContext<LiquidityContext>({} as any)
+
 export const LiquidityContext = ({ children }:{children:ReactNode}) => {
+  const [isRemovingPopupOpen, setRemovingPopup] = useState(false)
 
   const [tokens, setTokens] = useState(
     [
@@ -52,7 +68,19 @@ export const LiquidityContext = ({ children }:{children:ReactNode}) => {
   const [filterCriteria,filterCriteriaSet] = useState("")
   const fileteredTokens = tokens.filter(token => token.fullname.acron.toLowerCase().includes(filterCriteria.toLowerCase()))
   return (
-    <LiquidityProviderContext.Provider value={{ tokens,fileteredTokens,filterCriteriaSet,filterCriteria, primaryToken, secondaryToken, switchTokens,setPrimaryToken,setSecondaryToken }}>
+    <LiquidityProviderContext.Provider value={{
+      tokens,
+      fileteredTokens,
+      filterCriteriaSet,
+      filterCriteria,
+      primaryToken,
+      secondaryToken,
+      switchTokens,
+      setPrimaryToken,
+      setSecondaryToken,
+      isRemovingPopupOpen,
+      setRemovingPopup
+    }}>
       {children}
     </LiquidityProviderContext.Provider>
   )

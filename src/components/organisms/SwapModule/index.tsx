@@ -54,8 +54,10 @@ const SwapNewModule = () => {
     getSwapDetails,
     onIncreaseAllow,
     slippageToleranceSelected,
+    gasPriceSelectedForLiquidity,
   } = useContext(ConfigProviderContext);
 
+  const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
   const [slippSwapToken, slippSwapTokenSetter] = useState<any>(
@@ -113,7 +115,8 @@ const SwapNewModule = () => {
     const waiting = await onConfirmSwapConfig(
       amountSwapTokenA,
       amountSwapTokenB,
-      slippSwapToken
+      slippSwapToken,
+      gasFee,
     );
     resetAll();
   }

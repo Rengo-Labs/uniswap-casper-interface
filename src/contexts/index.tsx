@@ -8,25 +8,29 @@ import { InitialContext } from './InitialContext'
 import { TorusContext } from './TorusContext'
 import { Toaster } from 'react-hot-toast';
 import { ConfigContextWithReducer } from './ConfigContext'
+import {ProgressBarContextWithReducer} from "./ProgressBarContext";
+
 export const BigContext = ({ children }: { children: ReactNode }) => {
 
   return (
     <ThemeContext>
       <ConfigContextWithReducer>
-        <Toaster />
-        <TorusContext>
-          <InitialContext>
-            <TokensContext2>
-              <PoolsContext>
-                <LiquidityContext>
-                  <TokensContext>
-                    {children}
-                  </TokensContext>
-                </LiquidityContext>
-              </PoolsContext>
-            </TokensContext2>
-          </InitialContext>
-        </TorusContext>
+        <ProgressBarContextWithReducer>
+          <Toaster />
+          <TorusContext>
+            <InitialContext>
+              <TokensContext2>
+                <PoolsContext>
+                  <LiquidityContext>
+                    <TokensContext>
+                      {children}
+                    </TokensContext>
+                  </LiquidityContext>
+                </PoolsContext>
+              </TokensContext2>
+            </InitialContext>
+          </TorusContext>
+        </ProgressBarContextWithReducer>
       </ConfigContextWithReducer>
     </ThemeContext>
   )
