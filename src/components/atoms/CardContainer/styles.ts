@@ -1,6 +1,7 @@
 import styled from 'styled-components'
+import {device} from "../../../contexts/ThemeContext/themes";
 
-interface CardStyledInterface { 
+interface CardStyledInterface {
     width?: string;
     gridColumn?: string;
     gridRow?: string;
@@ -16,6 +17,24 @@ export const CardStyled = styled.section<CardStyledInterface>`
     background-color: ${props => props.theme.mainBackgroundColor};
     display: grid;
     grid-template-rows: auto 1fr;
+
+  @media ${device.mobileS} {
+    width: 100%;
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    grid-template-rows: auto 1fr;
+  }
+
+  @media ${device.mobileL} {
+    width: 100%;
+    grid-column: 2/11;
+  }
+  
+  @media ${device.tablet} {
+    width: ${props => props.width};
+    grid-column: ${props => props.gridColumn};
+  }
 `
 export const CardHeaderStyled = styled.section`
     padding:1rem ;
