@@ -37,3 +37,4 @@ export { SwapDetail } from './SwapDetail';
 export { LPDetail } from './LPDetail';
 export { GroupIconButtons } from './GroupIconsButtons';
 export { NotificationList } from './NotificationList';
+export { SettingMenu } from './SettingMenu'
