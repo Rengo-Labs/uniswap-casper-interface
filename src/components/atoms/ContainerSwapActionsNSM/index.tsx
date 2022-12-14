@@ -1,5 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
+import {device} from "../../../contexts/ThemeContext/themes";
+
 const ContainerSwapActions = styled.section`
     justify-self: end;
     box-sizing: border-box;
@@ -13,6 +15,13 @@ const ContainerSwapActions = styled.section`
     gap:10px;
     padding: 20px 25px;
     z-index: 2;
+
+  @media ${device.mobileS} {
+    width: auto;
+  }
+  @media ${device.tablet}{
+    width: 462px;
+  }
 `
 export const ContainerSwapActionsNSM = ({children}) => {
   return (
