@@ -124,15 +124,6 @@ export const HRefLink = styled.button`
     border: 0;
     background-color: transparent;
 `
-
-export const CollapsingPopup = styled.div`
-    color: black;
-    margin-top: 25px;
-    display: flex;
-    justify-content: center;
-    font-family: EpilogueLight
-`
-
 export const PopoverButtonStyled= styled.div`
     display: flex;
     align-items: center; 
@@ -179,4 +170,10 @@ export const DisclaimerContent = styled.div`
     @media ${device.laptop} {
       font-size: 0.8vw;
     }
+`
+
+export const WalletSelectionImageStyled = styled.img`
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
 `

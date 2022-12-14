@@ -32,13 +32,14 @@ import {
   TokenSelectNSM,
 } from "../../atoms";
 
-import { SwapConfirmAtom, SwapDetail, SwapModal } from "../../molecules";
+import { SwapDetail } from "../../molecules";
 import FloatMenu from "../FloatMenu";
 import { useSearchParams } from "react-router-dom";
 
 import { convertAllFormatsToUIFixedString, Token } from "../../../commons";
 import SwitchSwap from "../../atoms/SwitchSwap";
-import LoadersSwap from "../../atoms/LoadersSwap";
+import {UpdatableCircle} from "../../atoms/UpdatableCircle";
+import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 
 const SwapNewModule = () => {
   const {
@@ -55,7 +56,10 @@ const SwapNewModule = () => {
     onIncreaseAllow,
     slippageToleranceSelected,
     gasPriceSelectedForLiquidity,
+    refreshAll,
   } = useContext(ConfigProviderContext);
+
+  const {clearProgress} = useContext(ProgressBarProviderContext)
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
@@ -89,6 +93,10 @@ const SwapNewModule = () => {
       firstTokenSelected
     );
   }, [isConnected]);
+
+  useEffect(() => {    
+    clearProgress()
+  }, [])
 
   async function onConnect() {
     onConnectWallet();
@@ -241,6 +249,12 @@ const SwapNewModule = () => {
   const isApproved =
     firstTokenSelected.symbol == "CSPR" ||
     (firstTokenSelected.symbol != "CSPR" && freeAllowance >= 0);
+ 
+  const refreshPrices = async () => {
+    console.log("refreshPrices", amountSwapTokenA)
+    await refreshAll()
+    await changeTokenA(amountSwapTokenA)
+  }
 
   return (
     <ContainerInnerNSM>
@@ -330,7 +344,7 @@ const SwapNewModule = () => {
               exchangeRateB={exchangeRateB}
             />
           </SwapDetailsNSM>
-          <LoadersSwap />
+          <UpdatableCircle strokeWidth={12} handler={refreshPrices} />
         </IconPlaceNSM>
         <NewSwapContainerNSM>
           <TokenSelectNSM>

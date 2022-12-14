@@ -9,10 +9,10 @@ import {
   PopupTitle,
   WalletContainer,
   DisclaimerContent,
-  PopoverButtonStyled
+  PopoverButtonStyled,
+  WalletSelectionImageStyled,
 } from "./styles";
 import { WalletSelectionDiv } from "../WalletSelectionDiv";
-import { WalletSelectionImageStyled } from "../../molecules/ConfigModal/styles";
 import casperWallet from "../../../assets/walletIcons/casper.png";
 import torusWallet from "../../../assets/walletIcons/torus-icon-blue-3.svg";
 import { WalletName } from "../../../commons";
@@ -44,7 +44,7 @@ export const ConnectionPopup = ({
   return (
     <>
       {
-        !isConnected && <> 
+        !isConnected && <>
           {
             showButton !== false && <PopoverButtonStyled onClick={onToggle}>Connect Wallet</PopoverButtonStyled>
           }

@@ -7,8 +7,8 @@ import { WordMarkContainerStyledCC } from '../WordMarkContainerStyledCC';
 import { ReactComponent as NotificationR } from '../../../assets/newIcons/notificationActive.svg';
 import { ReactComponent as Notification } from '../../../assets/newIcons/notificationDesactive.svg';
 import { NewIcons } from '../NewIcons';
-import { GroupIconButtons } from '../../molecules';
-import { NotificationList } from '../../molecules';
+import { GroupIconButtons } from '../../molecules/GroupIconsButtons';
+import { NotificationList } from '../../molecules/NotificationList';
 import { INotification } from '../../molecules/NotificationList';
 import { IconButton } from '../IconButton';
 

@@ -14,8 +14,8 @@ import {
   SquareGrayButton,
   HomeFooterDD,
 } from '../../atoms';
-import { NavigationBar, ActionsBar, GroupIconButtons } from '../../molecules';
-import { NavBar, Hero, GridNavbar } from '../../organisms';
+import { ActionsBar, GroupIconButtons } from '../../molecules';
+import { Hero, GridNavbar } from '../../organisms';
 
 import { ReactComponent as WordMarkIcon } from '../../../assets/newIcons/casperswap-wordmark.svg';
 import { ReactComponent as CasperIcon } from '../../../assets/logo.svg';
