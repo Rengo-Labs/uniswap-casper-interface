@@ -9,8 +9,8 @@ const IconStyled = ({Icon, size, style = {}}) => {
       height: ${size}px;
       
       @media ${device.mobileS} {
-        width: 32px;
-        height: 32px;
+        width: 25px;
+        height: 25px;
       }
 
       @media ${device.mobileM} {

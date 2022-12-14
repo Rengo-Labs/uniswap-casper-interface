@@ -39,3 +39,8 @@ export const SUPPORTED_NETWORKS = {
     networkKey: CHAINS.CASPER_TESTNET,
   },
 };
+
+export const TWITTER_URL = "https://twitter.com/";
+export const DISCORD_URL = "https://discord.gg/";
+export const TELEGRAM_URL = "https://t.me/";
+export const GITBOOK_URL = "https://docs.tor.us";

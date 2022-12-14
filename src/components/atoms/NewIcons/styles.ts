@@ -10,11 +10,16 @@ export const IconContainerStyle = styled.div.attrs((props: { size: number }) => 
   width: ${props => props.size}px;
   
   @media ${device.mobileS} {
-    width: 32px;
-    height: 32px;
+    width: 25px;
+    height: 25px;
   }
 
   @media ${device.mobileM} {
+    width: ${props => props.size <= 20 ? props.size : 25}px;
+    height: ${props => props.size <= 20 ? props.size : 25}px;;
+  }
+  
+  @media ${device.mobileL} {
     width: ${props => props.size <= 20 ? props.size : 32}px;
     height: ${props => props.size <= 20 ? props.size : 32}px;;
   }

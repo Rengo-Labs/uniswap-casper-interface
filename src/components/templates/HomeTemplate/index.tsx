@@ -1,8 +1,5 @@
 import React, { useContext } from 'react';
-import { useAtom } from 'jotai';
-
 import {
-  Button,
   HeroTitleDD,
   HighlightDD,
   HeroSubtitleDD,
@@ -20,9 +17,11 @@ import { Hero, GridNavbar } from '../../organisms';
 import { ReactComponent as WordMarkIcon } from '../../../assets/newIcons/casperswap-wordmark.svg';
 import { ReactComponent as CasperIcon } from '../../../assets/logo.svg';
 import { ReactComponent as Twitter } from '../../../assets/newIcons/twitter.svg';
-import { ReactComponent as Instagram } from '../../../assets/newIcons/instagram.svg';
 import { ReactComponent as Discord } from '../../../assets/newIcons/discord.svg';
-import { /*ButtonConnection,*/ NewIcons } from '../../../components/atoms';
+import { ReactComponent as Telegram } from '../../../assets/newIcons/telegram.svg';
+import { ReactComponent as Gitbook } from '../../../assets/newIcons/gitbook.svg';
+import { NewIcons } from '../../../components/atoms';
+import {TWITTER_URL, DISCORD_URL, TELEGRAM_URL, GITBOOK_URL } from "../../../constant";
 
 interface HomePropsInterface {
   title: any;
@@ -46,6 +45,8 @@ export const HomeTemplate = ({
   heroImage,
 }: HomePropsInterface) => {
   const listOfLinks: any[] = [];
+  const showTVL = false;
+
   return (
     <ContainerDD>
       <GridNavbar>
@@ -64,25 +65,32 @@ export const HomeTemplate = ({
         </a>
         <GroupIconButtons>
           <a
-            href='https://www.twitter.com'
+            href={TWITTER_URL}
             target='_blank'
             style={{ display: 'grid', placeItems: 'center' }}
           >
             <NewIcons Icon={Twitter} size={32} style={{ fill: '#FFF' }} />
           </a>
           <a
-            href='https://www.instagram.com'
-            target='_blank'
-            style={{ display: 'grid', placeItems: 'center' }}
-          >
-            <NewIcons Icon={Instagram} size={32} style={{ fill: '#FFF' }} />
-          </a>
-          <a
-            href='https://www.discord.com'
-            target='_blank'
-            style={{ display: 'grid', placeItems: 'center' }}
+              href={DISCORD_URL}
+              target='_blank'
+              style={{ display: 'grid', placeItems: 'center' }}
           >
             <NewIcons Icon={Discord} size={32} style={{ fill: '#FFF' }} />
+          </a>
+          <a
+            href={TELEGRAM_URL}
+            target='_blank'
+            style={{ display: 'grid', placeItems: 'center' }}
+          >
+            <NewIcons Icon={Telegram} size={32} style={{ fill: '#FFF' }} />
+          </a>
+          <a
+              href={GITBOOK_URL}
+              target='_blank'
+              style={{ display: 'grid', placeItems: 'center' }}
+          >
+            <NewIcons Icon={Gitbook} size={32} style={{ fill: '#FFF' }} />
           </a>
         </GroupIconButtons>
 
@@ -93,7 +101,7 @@ export const HomeTemplate = ({
       <Hero>
         <HeroHeaderDD>
           <HeroTitleDD>
-            The evolution of <HighlightDD>Defi</HighlightDD>
+            The most liquid trading and capital-efficient liquidity marketplace on <HighlightDD>Casper</HighlightDD>
           </HeroTitleDD>
           <HeroSubtitleDD>
             Light-speed swaps. Next-level liquidity. Friction-less yield.
@@ -105,16 +113,21 @@ export const HomeTemplate = ({
         </HeroFooterDD>
       </Hero>
       <HomeFooterDD>
-        <SquareGrayButton
-          content={'$ 192.173.768'}
-          title={'TOTAL VALUE LOCKED'}
-          handler={handler}
-        />
-        <SquareGrayButton
-          content={'$ 50.870.295.291'}
-          title={'TOTAL TRADING VOLUME'}
-          handler={handler}
-        />
+        {
+          showTVL &&
+            <>
+              <SquareGrayButton
+                  content={'$ 192.173.768'}
+                  title={'TOTAL VALUE LOCKED'}
+                  handler={handler}
+              />
+              <SquareGrayButton
+                  content={'$ 50.870.295.291'}
+                  title={'TOTAL TRADING VOLUME'}
+                  handler={handler}
+              />
+            </>
+        }
       </HomeFooterDD>
     </ContainerDD>
   );

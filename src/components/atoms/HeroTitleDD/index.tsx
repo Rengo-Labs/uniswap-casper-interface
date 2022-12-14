@@ -8,9 +8,18 @@ const HeroTitle = styled.h1`
   padding: 15px 0;
   
   @media ${device.mobileS} {
-    font-size: 80px;
+    font-size: 45.25px;
   }
-  @media ${device.mobileM} and ${device.mobileL} {
+  
+  @media ${device.mobileM} {
+    font-size: 45.25px;
+  }
+  
+  @media ${device.mobileL} {
+    font-size: 50.25px;
+  }
+
+  @media ${device.tablet} {
     font-size: 85.25px;
   }
 `
