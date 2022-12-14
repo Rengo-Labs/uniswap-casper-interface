@@ -17,8 +17,8 @@ export const UpdatableCircle = ({ strokeWidth, handler }) => {
   const click = async () => {
 
     try {
-      await handler()
       clearProgress()
+      await handler()
     } catch (e) {
       console.log("error ", e)
     }

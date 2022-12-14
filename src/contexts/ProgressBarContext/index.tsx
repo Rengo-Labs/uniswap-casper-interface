@@ -42,7 +42,7 @@ export const ProgressBarContextWithReducer = ({ children }: { children: ReactNod
       } else {
         setProgress(timeInSeconds)
       }
-    }, 100)
+    }, 500)
 
     setProgressTimer(timer)
     //setInternalCallback(handle)

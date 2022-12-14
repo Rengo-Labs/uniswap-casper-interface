@@ -65,7 +65,8 @@ const LiquidityNewModule = () => {
     getPoolList,
     isRemovingPopupOpen,
     setRemovingPopup,
-    gasPriceSelectedForLiquidity
+    gasPriceSelectedForLiquidity,
+    refreshAll
   } = useContext(ConfigProviderContext)
 
   const {clearProgress} = useContext(ProgressBarProviderContext)
@@ -113,8 +114,7 @@ const LiquidityNewModule = () => {
     setTotalLiquidity(totalLP)
     calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
 
-    console.log(clearProgress)
-    //clearProgress()
+    clearProgress()
   }, [])
 
   const calculateUSDValues = (amountA, amountB) => {
@@ -311,6 +311,7 @@ const LiquidityNewModule = () => {
 
   const refreshPrices = async () => {
     console.log("refreshPrices", amountSwapTokenA)
+    await refreshAll()
     await changeTokenA(amountSwapTokenA)
   }
 
