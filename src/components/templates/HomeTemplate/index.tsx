@@ -101,10 +101,10 @@ export const HomeTemplate = ({
       <Hero>
         <HeroHeaderDD>
           <HeroTitleDD>
-            The most liquid trading and capital-efficient liquidity marketplace on <HighlightDD>Casper</HighlightDD>
+            Casper<HighlightDD>Swap</HighlightDD>
           </HeroTitleDD>
           <HeroSubtitleDD>
-            Light-speed swaps. Next-level liquidity. Friction-less yield.
+            The most liquid trading and capital-efficient liquidity marketplace on Casper.
           </HeroSubtitleDD>
         </HeroHeaderDD>
         <HeroFooterDD>
