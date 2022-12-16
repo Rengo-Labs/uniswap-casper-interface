@@ -1,8 +1,7 @@
 import BigNumber from "bignumber.js";
 
 import React, { useContext, useState, useEffect } from "react";
-import { AiOutlineClose } from "react-icons/ai";
-import { ConfigProviderContext } from "../../../contexts/ConfigContext";
+import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {
   ActionContainerNSM,
   ArrowContainerNSM,
@@ -57,6 +56,7 @@ const SwapNewModule = () => {
     slippageToleranceSelected,
     gasPriceSelectedForLiquidity,
     refreshAll,
+    calculateUSDtokens
   } = useContext(ConfigProviderContext);
 
   const {clearProgress} = useContext(ProgressBarProviderContext)
@@ -67,7 +67,6 @@ const SwapNewModule = () => {
   const [slippSwapToken, slippSwapTokenSetter] = useState<any>(
     slippageToleranceSelected
   );
-  const [tokensToTransfer, tokensToTransferSetter] = useState<any>(0);
   const [priceImpact, priceImpactSetter] = useState<any>(0);
   const [feeToPay, feeToPaySetter] = useState<any>(0.03);
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
@@ -76,7 +75,9 @@ const SwapNewModule = () => {
     useState<any>("");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [lastChanged, setLastChanged] = useState("");
+  const [lastChanged, setLastChanged] = useState("")
+  const [valueAUSD, setValueAUSD] = useState("0.00")
+  const [valueBUSD, setValueBUSD] = useState("0.00")
 
   useEffect(() => {
     const t0 = searchParams.get("token0");
@@ -150,7 +151,6 @@ const SwapNewModule = () => {
     const { tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB } =
       getSwapDetailResponse;
 
-    tokensToTransferSetter(tokensToTransfer);
     priceImpactSetter(priceImpact);
     exchangeRateASetter(exchangeRateA);
     exchangeRateBSetter(exchangeRateB);
@@ -158,6 +158,8 @@ const SwapNewModule = () => {
     defaultPriceImpactLabelSetter(
       parseFloat(priceImpact) > 1 ? "Price Impact Warning" : "Low Price Impact"
     );
+
+    calculateUSDValues(value, tokensToTransfer)
     return tokensToTransfer;
   }
 
@@ -200,6 +202,16 @@ const SwapNewModule = () => {
     } else if (filteredValue < 0) {
       filteredValue = Math.abs(filteredValue);
     }
+
+    amountSwapTokenBSetter(filteredValue);
+
+    const minTokenToReceive = await updateSwapDetail(
+      firstTokenSelected,
+      secondTokenSelected,
+      filteredValue,
+      secondTokenSelected
+    );
+    amountSwapTokenASetter(parseFloat(minTokenToReceive));
   }
 
   const [searchModalA, searchModalASetter] = useState(false);
@@ -254,6 +266,13 @@ const SwapNewModule = () => {
     console.log("refreshPrices", amountSwapTokenA)
     await refreshAll()
     await changeTokenA(amountSwapTokenA)
+  }
+
+  const calculateUSDValues = (amountA, amountB) => {
+    const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
+
+    setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA)
+    setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB)
   }
 
   return (
@@ -327,7 +346,7 @@ const SwapNewModule = () => {
                     />
                   </BalanceInputItem1NSM>
                   <BalanceInputItem2NSM>
-                    <p>$34.75</p>
+                    <p>$ {valueAUSD}</p>
                   </BalanceInputItem2NSM>
                 </BalanceInputContainerNSM>
               </ActionContainerNSM>
@@ -414,7 +433,7 @@ const SwapNewModule = () => {
                     />
                   </BalanceInputItem1NSM>
                   <BalanceInputItem2NSM>
-                    <p>$34.75</p>
+                    <p>$ {valueBUSD}</p>
                   </BalanceInputItem2NSM>
                 </BalanceInputContainerNSM>
               </ActionContainerNSM>
@@ -429,6 +448,9 @@ const SwapNewModule = () => {
             secondTokenAmount={amountSwapTokenB}
             priceImpactMessage={defaultPriceImpactLabel}
             priceImpact={priceImpact}
+            gasFee={gasFee}
+            gasFeeSetter={gasFeeSetter}
+            gasFeeEnabled={true}
             slippage={slippSwapToken}
             slippageEnabled={true}
             slippageSetter={slippSwapTokenSetter}
