@@ -81,7 +81,8 @@ export interface ConfigContext {
   isRemovingPopupOpen: boolean,
   gasPriceSelectedForSwapping: number,
   gasPriceSelectedForLiquidity: number,
-  refreshAll: () => void
+  refreshAll: () => void,
+  calculateUSDtokens: (t0, t1, amount0, amount1) => any[]
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any)
@@ -875,6 +876,24 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     await refresh(state.wallet)
   }
 
+  const calculateUSDtokens = (token0, token1, amount0, amount1): any[] => {
+    const filter = getPoolList().filter(r => r.token0Symbol === token0 && r.token1Symbol === token1)
+    if (filter.length > 0) {
+      return [
+        new BigNumber(amount0).times(filter[0].token0Price).toFixed(2),
+        new BigNumber(amount1).times(filter[0].token1Price).toFixed(2),
+      ]
+    }
+
+    const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
+    if (filter2.length > 0) {
+      return [
+        new BigNumber(amount0).times(filter2[0].token0Price).toFixed(2),
+        new BigNumber(amount1).times(filter2[0].token1Price).toFixed(2),
+      ]
+    }
+  }
+
   return (
     <ConfigProviderContext.Provider value={{
       onConnectWallet,
@@ -909,7 +928,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       isRemovingPopupOpen,
       gasPriceSelectedForSwapping: state.gasPriceSelectedForSwapping,
       gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity,
-      refreshAll
+      refreshAll,
+      calculateUSDtokens
     }}>
       {children}
       <PopupsModule isOpen={progressModal} handleOpen={setProgressModal} progress>

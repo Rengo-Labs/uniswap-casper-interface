@@ -66,7 +66,8 @@ const LiquidityNewModule = () => {
     isRemovingPopupOpen,
     setRemovingPopup,
     gasPriceSelectedForLiquidity,
-    refreshAll
+    refreshAll,
+    calculateUSDtokens
   } = useContext(ConfigProviderContext)
 
   const {clearProgress} = useContext(ProgressBarProviderContext)
@@ -144,31 +145,15 @@ const LiquidityNewModule = () => {
     const filter = getPoolList().filter(r => r.token0Symbol === token0 && r.token1Symbol === token1)
     if (filter.length > 0) {
       const userLP = new BigNumber(filter[0].totalSupply).toNumber().toFixed(9)
+      console.log("Lp", userLP)
       return userLP
     }
 
     const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
     if (filter2.length > 0) {
       const userLP = new BigNumber(filter2[0].totalSupply).toNumber().toFixed(9)
+      console.log("Lp", userLP)
       return userLP
-    }
-  }
-
-  const calculateUSDtokens = (token0, token1, amount0, amount1) => {
-    const filter = getPoolList().filter(r => r.token0Symbol === token0 && r.token1Symbol === token1)
-    if (filter.length > 0) {
-      return [
-        new BigNumber(amount0).times(filter[0].token0Price).toFixed(2),
-        new BigNumber(amount1).times(filter[0].token1Price).toFixed(2),
-      ]
-    }
-
-    const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
-    if (filter2.length > 0) {
-      return [
-        new BigNumber(amount0).times(filter2[0].token0Price).toFixed(2),
-        new BigNumber(amount1).times(filter2[0].token1Price).toFixed(2),
-      ]
     }
   }
 
@@ -202,6 +187,7 @@ const LiquidityNewModule = () => {
     setFirstReserve(firstReserve)
     setSecondReserve(secondReserve)
 
+    calculateUSDValues(value, tokensToTransfer)
     return tokensToTransfer
   }
 
