@@ -31,7 +31,7 @@ import {
   TokenSelectNSM,
 } from "../../atoms";
 
-import { SwapDetail } from "../../molecules";
+import { SwapDetail, SwapStadistics } from "../../molecules";
 import FloatMenu from "../FloatMenu";
 import { useSearchParams } from "react-router-dom";
 
@@ -58,7 +58,7 @@ const SwapNewModule = () => {
     refreshAll,
     calculateUSDtokens
   } = useContext(ConfigProviderContext);
-
+  console.log('tokens', tokens)
   const {clearProgress} = useContext(ProgressBarProviderContext)
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
@@ -145,6 +145,8 @@ const SwapNewModule = () => {
       feeToPay
     );
     const ps = [getSwapDetailP];
+
+    console.log('value', value)
 
     const [getSwapDetailResponse] = await Promise.all(ps);
 
@@ -270,7 +272,6 @@ const SwapNewModule = () => {
 
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
-
     setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA)
     setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB)
   }
@@ -310,7 +311,7 @@ const SwapNewModule = () => {
           <TokenSelectionNSM>
             <NewTokenDetailActionsNSM>
               <NewBalanceSpaceNSM>
-                Balance:{" "}
+                Balance:
                 {firstTokenSelected.amount
                   ? convertAllFormatsToUIFixedString(firstTokenSelected.amount)
                   : "--"}
@@ -492,6 +493,7 @@ const SwapNewModule = () => {
           )}
         </ButtonSpaceNSM>
       </ContainerSwapActionsNSM>
+      <SwapStadistics/>
     </ContainerInnerNSM>
   );
 };

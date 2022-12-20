@@ -11,10 +11,12 @@ const NewTokenDetailItems2Styled = styled.img`
 interface NewTokenDetailItems2NSMProps {
   src: string
   handleClick?: () => void
+  width?: number
+  height?: number
 }
 
-export const NewTokenDetailItems2NSM = ({src, handleClick}: NewTokenDetailItems2NSMProps) => {
+export const NewTokenDetailItems2NSM = ({src, handleClick, width = 50, height = 50}: NewTokenDetailItems2NSMProps) => {
   return (
-    <NewTokenDetailItems2Styled src={src} width="50" height={50} onClick={handleClick}/>
+    <NewTokenDetailItems2Styled src={src} width={width} height={height} onClick={handleClick}/>
   )
 }
