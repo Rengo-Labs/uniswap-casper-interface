@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "license": "GPLv3",
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "env-cmd -f .env.development react-app-rewired start",
+    "build": "env-cmd -f .env.development react-app-rewired build",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "test": "react-app-rewired test",
@@ -31,6 +31,7 @@
     "bignumber.js": "^9.1.0",
     "casper-js-sdk": "^2.10.0",
     "decimal.js": "^10.4.2",
+    "env-cmd": "^10.1.0",
     "jotai": "^1.8.5",
     "path": "^0.12.7",
     "react": "^18.2.0",

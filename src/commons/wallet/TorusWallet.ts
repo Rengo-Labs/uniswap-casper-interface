@@ -17,26 +17,14 @@ import { SafeEventEmitterProvider } from "casper-js-sdk/dist/services/ProviderTr
 export const TORUS_WALLET_PUBKEY_KEY = 'tw-pubk'
 
 const SUPPORTED_NETWORKS = {
-  [Network.CASPER_MAINNET]: {
-    blockExplorerUrl: "https://cspr.live",
-    chainId: "0x1",
-    displayName: "Casper Mainnet",
-    logo: "https://cspr.live/assets/icons/logos/cspr-live-full.svg",
-    rpcTarget: "https://casper-node.tor.us",
-    ticker: "CSPR",
-    tickerName: "Casper Token",
-    networkKey: Network.CASPER_MAINNET,
-  },
-  [Network.CASPER_TESTNET]: {
-    blockExplorerUrl: "https://testnet.cspr.live",
-    chainId: "0x2",
-    displayName: "Casper Testnet",
-    logo: "https://testnet.cspr.live/assets/icons/logos/cspr-live-full.svg",
-    rpcTarget: "https://testnet.casper-node.tor.us",
-    ticker: "CSPR",
-    tickerName: "Casper Token",
-    networkKey: Network.CASPER_TESTNET,
-  },
+  blockExplorerUrl: process.env.REACT_APP_BLOCK_EXPLORER_URL,
+  chainId: process.env.REACT_APP_CHAIN_ID,
+  displayName: process.env.REACT_APP_DISPLAY_NAME,
+  logo: process.env.REACT_APP_LOGO,
+  rpcTarget: process.env.REACT_APP_RPC_TARGET,
+  ticker: process.env.REACT_APP_TICKER,
+  tickerName: process.env.REACT_APP_TICKER_NAME,
+  networkKey: process.env.REACT_APP_NETWORK_KEY
 };
 
 /**
@@ -123,7 +111,7 @@ export class TorusWallet implements Wallet {
           // TODO: multiplex based on URL
           buildEnv: 'testing',
           showTorusButton: true,
-          network: SUPPORTED_NETWORKS[this._network],
+          network: SUPPORTED_NETWORKS
         })
 
         torus.showTorusButton()
