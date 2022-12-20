@@ -307,9 +307,9 @@ const LiquidityNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM>From</NewTokenDetailItems1NSM>
-              <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} />
-              <NewTokenDetailItems3NSM>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
+              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>From</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
+              <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
                 <ArrowContainerNSM>
                   <FlechaIcon onClick={() => { searchModalASetter(true) }} />
@@ -362,9 +362,9 @@ const LiquidityNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM>To</NewTokenDetailItems1NSM>
-              <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} />
-              <NewTokenDetailItems3NSM>{secondTokenSelected.symbol}</NewTokenDetailItems3NSM>
+              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>To</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
+              <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{secondTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
                 <ArrowContainerNSM>
                   <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
