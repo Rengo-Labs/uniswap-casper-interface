@@ -11,6 +11,14 @@ export const HeroStyles = styled.section`
     grid-template: 0.5fr 0.5fr / auto;
   }
 
+  @media ${device.mobileM}{
+    grid-template: 0.9fr 0.9fr / auto;
+  }
+
+  @media ${device.mobileL}{
+    grid-template:1fr 1fr / auto;
+  }
+
   @media ${device.tablet} {
     grid-template:1fr 1fr / auto;
   }
