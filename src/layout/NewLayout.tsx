@@ -24,7 +24,6 @@ import {
 } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
-import { ButtonConnectionOver } from "../components/organisms/ButtonConnectionOver";
 import { WalletName } from '../commons'
 import { SettingMenu } from '../components/molecules'
 import { CommunityMenu, MenuOption } from '../components/molecules/CommunityMenu'

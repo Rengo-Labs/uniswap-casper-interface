@@ -194,6 +194,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   const [progressTimer, setProgressTimer] = useState<any>()
   const [progressInterval, setProgressInterval] = useState<any>(null)
 
+  const [requestConnectWallet, setRequestConnectWallet] = useState(0);
+
   let debounceConnect = false
 
   /**
@@ -302,16 +304,16 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
 
     try {
-      console.log('tokenState', tokenState)
+      //console.log('tokenState', tokenState)
       const ps = Object.keys(tokens).map((x) => {
         const token = tokens[x]
 
-        console.log('token', x, token)
+        //console.log('token', x, token)
         if (tokens[x].contractHash) {
           return Promise.all([
             apiClient.getAllowanceAgainstOwnerAndSpender(wallet.accountHashString, token.contractHash)
               .then((response) => {
-                console.log('allowance', token, response.allowance)
+                //console.log('allowance', token, response.allowance)
                 tokenDispatch({
                   type: TokenActions.LOAD_ALLOWANCE,
                   payload: {
@@ -322,7 +324,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
               }),
             apiClient.getBalanceAgainstUser(wallet.accountHashString, token.contractHash)
               .then((response) => {
-                console.log('balance', response.balance)
+                //console.log('balance', response.balance)
                 tokenDispatch({
                   type: TokenActions.LOAD_BALANCE,
                   payload: {
@@ -335,7 +337,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         } else {
           return casperClient.getBalance(wallet)
             .then((balance) => {
-              console.log('balance', convertBigNumberToUIString(balance))
+              //console.log('balance', convertBigNumberToUIString(balance))
               tokenDispatch({
                 type: TokenActions.LOAD_BALANCE,
                 payload: {
@@ -413,7 +415,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       await getTVLandVolume()
       const data = await apiClient.getTokenList()
       const tokens = tokensToObject(data.tokens)
-      console.log('TOKENS', tokens)
+      //console.log('TOKENS', tokens)
       tokenDispatch({ type: TokenActions.UPDATE_TOKENS, payload: { tokens } as any })
     }
 
@@ -421,11 +423,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   }, [])
 
   useEffect(() => {
-    // console.log("localStorage.getItem(selectedWallet)", localStorage.getItem("selectedWallet"));
-    // if (props.selectedWallet === "Casper" || localStorage.getItem("selectedWallet") === "Casper") {
     window.addEventListener('signer:connected', msg => {
       console.log("signer:connected", msg)
-      //onConnectConfig()
     });
     window.addEventListener('signer:disconnected', msg => {
       console.log("signer:disconnected", msg)
@@ -435,13 +434,12 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       console.log("signer:tabUpdated", msg)
       //onConnectConfig()
     });
-    window.addEventListener('signer:activeKeyChanged', msg => {
+    window.addEventListener('signer:activeKeyChanged', async (msg) => {
       console.log("signer:activeKeyChanged", msg)
-      //onConnectConfig()
+      setRequestConnectWallet(Math.random() * 1 ** 9)
     });
     window.addEventListener('signer:locked', msg => {
       console.log("signer:locked", msg)
-      onDisconnectWallet()
     });
     window.addEventListener('signer:unlocked', msg => {
       console.log("signer:unlocked", msg)
@@ -452,8 +450,21 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       console.log("signer:initialState", msg)
       //connect()
     });
-    // }
   }, []);
+
+  useEffect(() => {
+    const fn = async () => {
+      //console.log('wat', state)
+      if (state?.wallet) {
+        console.log('update', state)
+        await state.wallet.getActiveKey()
+        dispatch({ type: ConfigActions.CONNECT_WALLET, payload: { wallet: state.wallet } })   
+        refresh(state.wallet)
+      }
+    }
+
+    fn()
+  }, [requestConnectWallet])
 
   function getColumns() {
     return [
@@ -535,8 +546,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
         const reserve0 = convertBigNumberToUIString(new BigNumber(pl.reserve0), token0Decimals)
         const reserve1 = convertBigNumberToUIString(new BigNumber(pl.reserve1), token1Decimals)
 
-        console.log('pl', pl)
-
         pairDispatch({
           type: PairActions.LOAD_PAIR,
           payload: {
@@ -565,7 +574,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   }
 
   async function fillPairs(wallet: Wallet, isConnected = false): Promise<void> {
-    console.log('isConnected', isConnected)
+    //console.log('isConnected', isConnected)
     await loadPairs()
 
     if (!isConnected) {
@@ -611,7 +620,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
       await Promise.all(pairList.map(async d => {
         const data = userPairs.filter(u => u.pair === d.id)
-        console.log('d', data)
+        //console.log('d', data)
         if (data[0]) {
           const token0Decimals = tokenState.tokens[d.token0.symbol].decimals
           const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
@@ -840,7 +849,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
         dispatch({ type: ConfigActions.DISCONNECT_WALLET, payload: {} }),
 
-          toast.success("Your wallet is disconnected")
+        toast.success("Your wallet is disconnected")
       }
     } catch (error) {
       toast.error("Error disconnecting wallet")
