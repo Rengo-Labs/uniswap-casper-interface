@@ -1,26 +1,28 @@
-import styled from "styled-components";
-import {device} from "../../../contexts/ThemeContext/themes";
+import styled from 'styled-components';
+import { device } from '../../../contexts/ThemeContext/themes';
 
-export const IconContainerStyle = styled.div.attrs((props: { size: number }) => props)`
+export const IconContainerStyle = styled.div.attrs(
+  (props: { size: any; width?: number; height?: number }) => props
+)`
   display: flex;
-  alignItems: 'center';
-  alignSelf: 'center';
-  justifyContent: 'center';
-  height: ${props => props.size}px;
-  width: ${props => props.size}px;
-  
+  alignitems: 'center';
+  alignself: 'center';
+  justifycontent: 'center';
+  height: ${(props) => props.height || props.size}px;
+  width: ${(props) => props.width || props.size}px;
+
   @media ${device.mobileS} {
     width: 32px;
     height: 32px;
   }
 
   @media ${device.mobileM} {
-    width: ${props => props.size <= 20 ? props.size : 32}px;
-    height: ${props => props.size <= 20 ? props.size : 32}px;;
+    width: ${(props) => (props.size <= 20 ? props.size : 32)}px;
+    height: ${(props) => (props.size <= 20 ? props.size : 32)}px;
   }
 
   @media ${device.tablet} {
-    width: ${props => props.size}px;
-    height: ${props => props.size}px;
+    height: ${(props) => props.height || props.size}px;
+    width: ${(props) => props.width || props.size}px;
   }
-`
+`;

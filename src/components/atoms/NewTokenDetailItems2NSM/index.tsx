@@ -6,8 +6,8 @@ const NewTokenDetailItems2Styled = styled.img`
     align-self: center;
     margin: 15px 0;
 `
-export const NewTokenDetailItems2NSM = ({src}) => {
+export const NewTokenDetailItems2NSM = ({src, height = 50, width = 50}) => {
   return (
-    <NewTokenDetailItems2Styled src={src} width="50" height={50}/>
+    <NewTokenDetailItems2Styled src={src} width={width} height={height}/>
   )
 }
