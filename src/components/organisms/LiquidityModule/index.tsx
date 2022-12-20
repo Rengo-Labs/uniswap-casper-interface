@@ -66,7 +66,8 @@ const LiquidityNewModule = () => {
     isRemovingPopupOpen,
     setRemovingPopup,
     gasPriceSelectedForLiquidity,
-    refreshAll
+    refreshAll,
+    calculateUSDtokens
   } = useContext(ConfigProviderContext)
 
   const {clearProgress} = useContext(ProgressBarProviderContext)
@@ -144,31 +145,15 @@ const LiquidityNewModule = () => {
     const filter = getPoolList().filter(r => r.token0Symbol === token0 && r.token1Symbol === token1)
     if (filter.length > 0) {
       const userLP = new BigNumber(filter[0].totalSupply).toNumber().toFixed(9)
+      console.log("Lp", userLP)
       return userLP
     }
 
     const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
     if (filter2.length > 0) {
       const userLP = new BigNumber(filter2[0].totalSupply).toNumber().toFixed(9)
+      console.log("Lp", userLP)
       return userLP
-    }
-  }
-
-  const calculateUSDtokens = (token0, token1, amount0, amount1) => {
-    const filter = getPoolList().filter(r => r.token0Symbol === token0 && r.token1Symbol === token1)
-    if (filter.length > 0) {
-      return [
-        new BigNumber(amount0).times(filter[0].token0Price).toFixed(2),
-        new BigNumber(amount1).times(filter[0].token1Price).toFixed(2),
-      ]
-    }
-
-    const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
-    if (filter2.length > 0) {
-      return [
-        new BigNumber(amount0).times(filter2[0].token0Price).toFixed(2),
-        new BigNumber(amount1).times(filter2[0].token1Price).toFixed(2),
-      ]
     }
   }
 
@@ -202,6 +187,7 @@ const LiquidityNewModule = () => {
     setFirstReserve(firstReserve)
     setSecondReserve(secondReserve)
 
+    calculateUSDValues(value, tokensToTransfer)
     return tokensToTransfer
   }
 
@@ -321,9 +307,9 @@ const LiquidityNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM>From</NewTokenDetailItems1NSM>
-              <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} />
-              <NewTokenDetailItems3NSM>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
+              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>From</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
+              <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
                 <ArrowContainerNSM>
                   <FlechaIcon onClick={() => { searchModalASetter(true) }} />
@@ -376,9 +362,9 @@ const LiquidityNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM>To</NewTokenDetailItems1NSM>
-              <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} />
-              <NewTokenDetailItems3NSM>{secondTokenSelected.symbol}</NewTokenDetailItems3NSM>
+              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>To</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
+              <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{secondTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
                 <ArrowContainerNSM>
                   <FlechaIcon onClick={() => { searchModalBSetter(true) }} />

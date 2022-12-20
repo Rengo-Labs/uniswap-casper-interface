@@ -5,9 +5,18 @@ const NewTokenDetailItems2Styled = styled.img`
     grid-row: 2/3;
     align-self: center;
     margin: 15px 0;
+    cursor: pointer;
 `
-export const NewTokenDetailItems2NSM = ({src}) => {
+
+interface NewTokenDetailItems2NSMProps {
+  src: string
+  handleClick?: () => void
+  width?: number
+  height?: number
+}
+
+export const NewTokenDetailItems2NSM = ({src, handleClick, width = 50, height = 50}: NewTokenDetailItems2NSMProps) => {
   return (
-    <NewTokenDetailItems2Styled src={src} width="50" height={50}/>
+    <NewTokenDetailItems2Styled src={src} width={width} height={height} onClick={handleClick}/>
   )
 }

@@ -1,14 +1,16 @@
-import styled from "styled-components";
-import {device} from "../../../contexts/ThemeContext/themes";
+import styled from 'styled-components';
+import { device } from '../../../contexts/ThemeContext/themes';
 
-export const IconContainerStyle = styled.div.attrs((props: { size: number }) => props)`
+export const IconContainerStyle = styled.div.attrs(
+  (props: { size: any; width?: number; height?: number }) => props
+)`
   display: flex;
-  alignItems: 'center';
-  alignSelf: 'center';
-  justifyContent: 'center';
-  height: ${props => props.size}px;
-  width: ${props => props.size}px;
-  
+  alignitems: 'center';
+  alignself: 'center';
+  justifycontent: 'center';
+  height: ${(props) => props.height || props.size}px;
+  width: ${(props) => props.width || props.size}px;
+
   @media ${device.mobileS} {
     width: 25px;
     height: 25px;
@@ -25,7 +27,7 @@ export const IconContainerStyle = styled.div.attrs((props: { size: number }) => 
   }
 
   @media ${device.tablet} {
-    width: ${props => props.size}px;
-    height: ${props => props.size}px;
+    height: ${(props) => props.height || props.size}px;
+    width: ${(props) => props.width || props.size}px;
   }
-`
+`;
