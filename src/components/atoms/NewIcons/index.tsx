@@ -1,13 +1,21 @@
-import React from 'react'
-import {IconContainerStyle} from "./styles";
+import React from 'react';
+import { IconContainerStyle } from './styles';
 import styled from 'styled-components';
-import {device} from "../../../contexts/ThemeContext/themes";
+import { device } from '../../../contexts/ThemeContext/themes';
 
-const IconStyled = styled.div<any>`
-  & > * {
-    width: ${props => props.size}px;
-    height: ${props => props.size}px;
-    
+interface IIconStyledProps {
+  Icon: any;
+  size?: any;
+  width?: number;
+  height?: number;
+  style?: any;
+}
+
+const IconStyled = ({ Icon, size, width, height, style = {} }: IIconStyledProps) => {
+  const IconStyled = styled(Icon)`
+    height: ${height || size}px;
+    width: ${width || size}px;
+
     @media ${device.mobileS} {
       width: 32px;
       height: 32px;
@@ -19,22 +27,23 @@ const IconStyled = styled.div<any>`
     }
 
     @media ${device.tablet} {
-      width: ${props => props.size}px;
-      height: ${props => props.size}px;
+      width:  ${width || size}px;
+      height: ${height || size}px;
     }
-  }
-`
+  `;
+  return (
+    <IconContainerStyle size={size} style={style} width={width} height={height}>
+      <IconStyled />
+    </IconContainerStyle>
+  );
+};
 
-const IconStyled2 = ({Icon, size, style = {}}) => {   
-    return (
-        <IconContainerStyle size={size} style={style}>
-            <IconStyled size={size}>
-              <Icon/>
-            </IconStyled>
-        </IconContainerStyle>
-    );
-}
-
-export const NewIcons = ({Icon, size, style = {}}) => (
-    <IconStyled2 Icon={Icon} size={size} style={style}/>
-)
+export const NewIcons = ({ Icon, size, width, height, style = {} }: IIconStyledProps) => (
+  <IconStyled
+    Icon={Icon}
+    size={size}
+    width={width}
+    height={height}
+    style={style}
+  />
+);
