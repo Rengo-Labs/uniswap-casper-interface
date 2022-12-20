@@ -19,11 +19,11 @@ export const initialConfigState: ConfigState = {
   walletAddress: "",
   mainPurse: "",
   walletSelected: WalletName.CASPER_SIGNER,
-  languagesSelected: "en",
-  visualModeSelected: "light",
-  slippageToleranceSelected: 0.5,
-  gasPriceSelectedForSwapping: 20,
-  gasPriceSelectedForLiquidity: 15
+  languagesSelected: process.env.REACT_APP_LANGUAGE_SELECTED,
+  visualModeSelected: process.env.REACT_APP_VISUAL_MODEL_SELECTED,
+  slippageToleranceSelected: parseInt(process.env.REACT_APP_VISUAL_MODEL_SELECTED),
+  gasPriceSelectedForSwapping: parseInt(process.env.REACT_APP_SLIPPAGE_TOLERANCE_FOR_SWAPPING),
+  gasPriceSelectedForLiquidity: parseInt(process.env.REACT_APP_SLIPPAGE_TOLERANCE_FOR_LIQUIDITY)
 };
 
 export enum ConfigActions {

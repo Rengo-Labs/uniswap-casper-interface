@@ -1,7 +1,7 @@
 import Torus from "@toruslabs/casper-embed";
 import { createContext, ReactNode, useState } from "react";
 
-import { CHAINS, SUPPORTED_NETWORKS } from '../../constant'
+import { SUPPORTED_NETWORKS } from '../../constant'
 
 export const TorusProviderContext = createContext<any>({})
 export const TorusContext = ({ children }: { children: ReactNode }) => {
@@ -35,7 +35,7 @@ export const TorusContext = ({ children }: { children: ReactNode }) => {
       await torus.init({
         buildEnv: "testing",
         showTorusButton: true,
-        network: SUPPORTED_NETWORKS[CHAINS.CASPER_MAINNET],
+        network: SUPPORTED_NETWORKS,
       });
       const loginaccs = await torus?.login();
       const userInfo = await torus.getUserInfo();
