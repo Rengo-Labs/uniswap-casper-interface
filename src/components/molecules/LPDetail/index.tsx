@@ -58,6 +58,8 @@ export const LPDetail = ({
         slippageSetter(event.target.value)
     }
 
+    console.log('token', secondTokenAmount, slippage)
+
     return (
         <CollapsingContainerStyled className={className}>
             <CollapsingBody>
