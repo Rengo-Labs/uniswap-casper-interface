@@ -22,7 +22,7 @@ export const ProgressBarReducer = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     //I must probably use an action list to manage different re loaders (for pool page, swap page, liq page)
-    progressBarExec(30, async () => { console.log("Hola mundo")})
+    progressBarExec(30, async () => {})
   }, [! timer.getState()])
 
   const progressBarExec = (sec, handle) => {

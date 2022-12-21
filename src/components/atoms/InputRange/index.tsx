@@ -1,6 +1,7 @@
 import React from 'react'
 import {FuchsiaPerItem, PerItem, StyledInputRange, WrappedInputRange, WrappedPerLabel} from './styles'
 import './styles.css'
+import { v4 as uuidv4 } from 'uuid';
 
 interface InputRangeProps {
     handler: any,
@@ -29,8 +30,8 @@ export const InputRange = ({ handler, rangeList=[0, 25, 50, 75, 100], initialVal
           <WrappedPerLabel>
               {
                   rangeList?.map((i) => {
-                      if (i === value) return <FuchsiaPerItem>{i}%</FuchsiaPerItem>
-                      return <PerItem>{i}%</PerItem>
+                      if (i === value) return <FuchsiaPerItem key={uuidv4()}>{i}%</FuchsiaPerItem>
+                      return <PerItem key={uuidv4()}>{i}%</PerItem>
                   })
               }
           </WrappedPerLabel>

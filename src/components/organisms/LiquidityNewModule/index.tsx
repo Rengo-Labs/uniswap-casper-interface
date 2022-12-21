@@ -47,12 +47,12 @@ import { ContainerLiquidityPoolList } from "../../atoms/ContainerLiquidityPoolLi
 import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 import {LiquidityRemovingWithInputRangeModule} from "../LiquidityRemovingWithInputRangeModule";
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 
 const LiquidityNewModule = () => {
   const {
     pairState,
     onConnectWallet,
-    onAddLiquidity,
     onSelectFirstToken,
     onSelectSecondToken,
     onSwitchTokens,
@@ -61,14 +61,17 @@ const LiquidityNewModule = () => {
     secondTokenSelected,
     isConnected,
     slippageToleranceSelected,
-    getLiquidityDetails,
     onIncreaseAllow,
     getPoolList,
-    isRemovingPopupOpen,
-    setRemovingPopup,
     gasPriceSelectedForLiquidity
   } = useContext(ConfigProviderContext)
 
+  const {
+    isRemovingPopupOpen,
+    setRemovingPopup,
+    onAddLiquidity,
+    getLiquidityDetails
+  } = useContext(LiquidityProviderContext)
   const {clearProgress} = useContext(ProgressBarProviderContext)
 
   const userPairData = Object.entries(pairState).map(([k, v]) => v)
@@ -486,13 +489,11 @@ const LiquidityNewModule = () => {
                     secondPrice={row.token1Price}
                     liquidityId={row.id}
                     liquidity={row.balance}
-                    liquidityUSD={row.liquidityUSD}
                     allowance={row.allowance}
                     firstIcon={row.token0Icon}
                     secondIcon={row.token1Icon}
                   >
                     <CircleButton>
-
                       <TrashIcon />
                     </CircleButton>
                   </LiquidityRemovingWithInputRangeModule>

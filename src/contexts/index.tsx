@@ -16,26 +16,26 @@ export const BigContext = ({ children }: { children: ReactNode }) => {
 
     return (
         <ThemeContext>
-            <SwapContext>
-                <ConfigContextWithReducer>
-                    <Toaster />
-                    <TorusContext>
-                        <InitialContext>
-                            <TokensContext2>
-                                <PoolsContext>
-                                    <LiquidityContext>
+            <ConfigContextWithReducer>
+                <SwapContext>
+                    <LiquidityContext>
+                        <Toaster />
+                        <TorusContext>
+                            <InitialContext>
+                                <TokensContext2>
+                                    <PoolsContext>
                                         <TokensContext>
                                             <ProgressBarReducer>
                                                 {children}
                                             </ProgressBarReducer>
                                         </TokensContext>
-                                    </LiquidityContext>
-                                </PoolsContext>
-                            </TokensContext2>
-                        </InitialContext>
-                    </TorusContext>
-                </ConfigContextWithReducer>
-            </SwapContext>
+                                    </PoolsContext>
+                                </TokensContext2>
+                            </InitialContext>
+                        </TorusContext>
+                    </LiquidityContext>
+                </SwapContext>
+            </ConfigContextWithReducer>
         </ThemeContext>
     )
 }

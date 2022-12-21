@@ -23,6 +23,7 @@ import {Button, LiquidityCancelButton, LiquidityEnableButton, LiquidityRemoveBut
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 
 export interface LiquidityRemovingModuleProps {
     isConnected: boolean,
@@ -61,11 +62,11 @@ export const LiquidityRemovingModule = ({
     const [contractHash, setContractHash] = useState("")
 
     const {
-        onRemoveLiquidity,
         onIncreaseAllow,
         getContractHashAgainstPackageHash,
         slippageToleranceSelected,
     } = useContext(ConfigProviderContext)
+    const {onRemoveLiquidity} = useContext(LiquidityProviderContext)
 
     const closeHandler = () => {
         setIsOpened(!isOpened)

@@ -39,6 +39,7 @@ import { convertAllFormatsToUIFixedString, Token } from "../../../commons";
 import SwitchSwap from "../../atoms/SwitchSwap";
 import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
+import {SwapProviderContext} from "../../../contexts/SwapContext";
 
 const SwapNewModule = () => {
   const {
@@ -50,17 +51,15 @@ const SwapNewModule = () => {
     firstTokenSelected,
     secondTokenSelected,
     isConnected,
-    onConfirmSwapConfig,
-    getSwapDetails,
     onIncreaseAllow,
     slippageToleranceSelected,
     getPoolList,
     gasPriceSelectedForSwapping
   } = useContext(ConfigProviderContext)
+  const {onConfirmSwapConfig, getSwapDetails} = useContext(SwapProviderContext)
 
   const {clearProgress} = useContext(ProgressBarProviderContext)
 
-  const [activeModalSwap, setActiveModalSwap] = React.useState(false)
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
   const [slippSwapToken, slippSwapTokenSetter] = useState<any>(

@@ -19,10 +19,9 @@ import {
 import {LiquidityCancelButton, LiquidityEnableButton, LiquidityRemoveButton} from "../../atoms"
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
-import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
 import {InputRange} from "../../atoms/InputRange";
 import {SwapIconImageStyled, SwapIconImageStyledRelative} from "../../molecules/SwapToken/styles";
-import { v4 as uuidv4 } from 'uuid';
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 
 export interface LiquidityRemovingWithInputRangeProps {
     isConnected: boolean,
@@ -40,7 +39,6 @@ export interface LiquidityRemovingWithInputRangeProps {
     liquidityId: string,
     liquidity: string,
     allowance: string,
-    liquidityUSD: string,
     firstIcon: any,
     secondIcon: any,
     children?: React.ReactNode,
@@ -62,7 +60,6 @@ export const LiquidityRemovingWithInputRangeModule = ({
     liquidityId,
     liquidity,
     allowance,
-    liquidityUSD,
     firstIcon,
     secondIcon,
     children,
@@ -76,11 +73,12 @@ export const LiquidityRemovingWithInputRangeModule = ({
     const [secondValue, setSecondValue] = useState("0.00")
 
     const {
-        onRemoveLiquidity,
         onIncreaseAllow,
         getContractHashAgainstPackageHash,
         slippageToleranceSelected,
     } = useContext(ConfigProviderContext)
+
+    const {onRemoveLiquidity} = useContext(LiquidityProviderContext)
 
     const closeHandler = () => {
         setIsOpened(!isOpened)
@@ -119,17 +117,13 @@ export const LiquidityRemovingWithInputRangeModule = ({
 
     const setInputValue = (inputValue) => {
         setValue(inputValue)
-        setLPValue((inputValue * parseFloat(liquidity)).toFixed(8))
-        setFirstValue((inputValue * parseFloat(firstLiquidity)).toFixed(8))
-        setSecondValue((inputValue * parseFloat(secondLiquidity)).toFixed(8))
+        setLPValue((inputValue * parseFloat(liquidity)/100).toFixed(8))
+        setFirstValue((inputValue * parseFloat(firstLiquidity)/100).toFixed(8))
+        setSecondValue((inputValue * parseFloat(secondLiquidity)/100).toFixed(8))
     }
 
     const enableButton = (value) => {
-        return isConnected && value && value > 0 && value <= liquidity
-    }
-
-    const calculateUSD = (value) => {
-        return (calculateLPPercentage(value, liquidity) * parseFloat(liquidityUSD)).toFixed(2)
+        return isConnected && value && value > 0 && value <= parseFloat(liquidity).toFixed(8)
     }
 
     const freeAllowanceLiq = parseFloat(allowance) - parseFloat(lpValue)

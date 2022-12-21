@@ -363,7 +363,7 @@ async function addLiquidityMakeDeployLiquidityV2(
       AccessRights.READ_ADD_WRITE
     ),
     deadline: CLValueBuilder.u256(deadline),
-    pair: new CLOption(Some(new CLKey(pair))),
+    pair: new CLKey(pair),
     router_hash: new CLKey(
       new CLByteArray(Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex")))
     ),
