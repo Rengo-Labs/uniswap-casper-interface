@@ -4,9 +4,16 @@ const NewTokenDetailItems1Styled = styled.section`
     grid-column: 1/2;
     grid-row: 1/2;
     justify-self: center;
+    cursor: pointer;
 `
-export const NewTokenDetailItems1NSM = ({children}) => {
+
+interface NewTokenDetailItems1NSMProps {
+  children: React.ReactNode
+  handleClick?: () => void
+}
+
+export const NewTokenDetailItems1NSM = ({children, handleClick}: NewTokenDetailItems1NSMProps) => {
   return (
-    <NewTokenDetailItems1Styled>{children}</NewTokenDetailItems1Styled>
+    <NewTokenDetailItems1Styled onClick={handleClick}>{children}</NewTokenDetailItems1Styled>
   )
 }

@@ -192,10 +192,6 @@ export class CasperSignerWallet implements Wallet{
    * @returns the the public key hex on success or throw error
    */
   async getActiveKey(): Promise<string> {
-    if (this._publicKey) {
-      return this.publicKeyHex
-    }
-
     // fetch the key
     const key = await Signer.getActivePublicKey()
 

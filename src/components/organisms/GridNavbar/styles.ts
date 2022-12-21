@@ -10,15 +10,15 @@ export const NavBarStyle = styled.nav`
   place-content: center;
 
   @media ${device.mobileS} {
-    padding: 10px 10px;
+    padding: 10px 5px;
   }
   
   @media ${device.mobileM} {
-    padding: 10px 15px;
+    padding: 10px 10px;
   }
   
   @media ${device.mobileL} {
-    padding: 10px 25px;
+    padding: 10px 15px;
   }
   
   @media ${device.tablet} {
