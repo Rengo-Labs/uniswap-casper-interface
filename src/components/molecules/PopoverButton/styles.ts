@@ -5,6 +5,9 @@ export const PopoverContainer = styled("div")`
     width: 260px;
     margin-left: -5.2vw;
     margin-top: 1vh;
+    top: 4vh;
+    right: 3vh;
+    z-index: 100;
 `
 
 export const ContainerList = styled("ul")`
@@ -45,17 +48,18 @@ export const ItemMenu = styled(ItemList)`
 
 export const WalletItemList = styled(ItemList)`
     justify-content: center; 
-    padding-top: 0.7em; 
-    padding-bottom: 0.7em;
+    padding-top: 1em; 
+    padding-bottom: 1em;
     padding-right: 1em;
     border-top: 0px; 
-    color: ${props => props.theme.secondBackgroundColor};
+    color: #39B54A;
     font-family: Epilogue;
 `
 
 export const ItemColumn = styled.div<any>`
-    flex: ${props => props.flex}
-    text-align: ${props => props.position}
+    flex: ${props => props.flex};
+    text-align: ${props => props.position};
+    padding: ${props => props.padding ? props.padding : 0};
 `
 
 export const ButtonStyle = styled.button<any>`
