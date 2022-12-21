@@ -87,6 +87,7 @@ export enum AddLiquidityEntryPoint {
   tokenB: Token,
   slippage: number,
   mainPurse: string,
+  gasFee: number
 ): Promise<[string, GetDeployResult]> => {
   try {
     const publicKey = wallet.publicKey;
@@ -111,9 +112,9 @@ export enum AddLiquidityEntryPoint {
             token: new CLKey(token),
             amount_cspr_desired: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
             amount_token_desired: CLValueBuilder.u256(new BigNumber(amountTokenDesired).toFixed(0)),
-            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(1 - slippage).toFixed(0)),
-            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0)),
-            pair: new CLOption(Some(new CLKey(token))),
+            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(.96 - slippage).toFixed(0)),
+            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(.96 - slippage).toFixed(0)),
+            pair: new CLOption(Some(new CLKey(token) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
 
@@ -130,7 +131,7 @@ export enum AddLiquidityEntryPoint {
               AccessRights.READ_ADD_WRITE
             ),
           }),
-          new BigNumber(20000000000),
+          new BigNumber(gasFee * 10**9),
         )
       case AddLiquidityEntryPoint.ADD_LIQUIDITY_JS_CLIENT:
         // When adding token and token
@@ -153,11 +154,11 @@ export enum AddLiquidityEntryPoint {
             amount_b_desired: CLValueBuilder.u256(new BigNumber(amountBDesired).toFixed(0)),
             amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(1 - slippage).toFixed(0)),
             amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(1 - slippage).toFixed(0)),
-            pair: new CLOption(Some(new CLKey(tokenBContract))),
+            pair: new CLOption(Some(new CLKey(tokenBContract) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(20000000000),
+          new BigNumber(gasFee * 10**9),
         )
       default: 
         throw new Error(`this shouldn't happen`)

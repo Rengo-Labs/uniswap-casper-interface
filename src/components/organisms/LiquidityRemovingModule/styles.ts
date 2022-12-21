@@ -74,35 +74,6 @@ export const PopupContent = styled.div`
     padding: 0.5vw;
 `
 
-export const PopupButtonStyled= styled.div`
-    display: flex;
-    align-items: center; 
-    height: 5vh; 
-    border-radius: 8px;
-    width: 8vw;
-    font-weight: 500;
-    font-size: 0.8vw;
-    justify-content: center;
-    color: ${props => props.theme.secondBackgroundColor};
-    background: ${props => props.theme.thirdBackgroundColor};
-    &:hover{
-        cursor: pointer;
-    }
-    &:active{
-        background-color: ${props => props.theme.secondBackgroundColor};
-        color: ${props => props.theme.thirdBackgroundColor};
-    }
-`
-
-export const DisclaimerContent = styled.div`
-    color: black;
-    padding: 5px;
-    text-align: center;
-    font-family: EpilogueLight;
-    margin-bottom: 1.5vh;
-    font-size: 0.8vw;
-`
-
 export const ButtonHalfMaxContainer = styled.div`
     display: grid;
     flex: 1;

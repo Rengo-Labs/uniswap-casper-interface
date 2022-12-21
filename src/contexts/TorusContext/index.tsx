@@ -1,38 +1,10 @@
 import Torus from "@toruslabs/casper-embed";
 import { createContext, ReactNode, useState } from "react";
 
+import { SUPPORTED_NETWORKS } from '../../constant'
 
 export const TorusProviderContext = createContext<any>({})
 export const TorusContext = ({ children }: { children: ReactNode }) => {
-
-  const CHAINS = {
-    CASPER_MAINNET: "casper",
-    CASPER_TESTNET: "casper-test",
-  };
-
-  const SUPPORTED_NETWORKS = {
-    [CHAINS.CASPER_MAINNET]: {
-      blockExplorerUrl: "https://cspr.live",
-      chainId: "0x1",
-      displayName: "Casper Mainnet",
-      logo: "https://cspr.live/assets/icons/logos/cspr-live-full.svg",
-      rpcTarget: "https://casper-node.tor.us",
-      ticker: "CSPR",
-      tickerName: "Casper Token",
-      networkKey: CHAINS.CASPER_MAINNET,
-    },
-    [CHAINS.CASPER_TESTNET]: {
-      blockExplorerUrl: "https://testnet.cspr.live",
-      chainId: "0x2",
-      displayName: "Casper Testnet",
-      logo: "https://testnet.cspr.live/assets/icons/logos/cspr-live-full.svg",
-      rpcTarget: "https://testnet.casper-node.tor.us",
-      ticker: "CSPR",
-      tickerName: "Casper Token",
-      networkKey: CHAINS.CASPER_TESTNET,
-    },
-  };
-
   const [userState, userStateSetter] = useState({
     isUserLogged: false,
     walletAddress: '',
@@ -63,7 +35,7 @@ export const TorusContext = ({ children }: { children: ReactNode }) => {
       await torus.init({
         buildEnv: "testing",
         showTorusButton: true,
-        network: SUPPORTED_NETWORKS[CHAINS.CASPER_MAINNET],
+        network: SUPPORTED_NETWORKS,
       });
       const loginaccs = await torus?.login();
       const userInfo = await torus.getUserInfo();

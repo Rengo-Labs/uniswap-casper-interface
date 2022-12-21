@@ -6,6 +6,9 @@ import { ReactComponent as SwapIcon } from '../assets/newIcons/swapIcon.svg'
 import { ReactComponent as ConfigIcon } from '../assets/newIcons/configIcon.svg'
 import { ReactComponent as CommunityIcon } from '../assets/newIcons/communityIcon.svg'
 import { ReactComponent as WordMarkIcon } from '../assets/newIcons/casperswap-wordmark.svg'
+import { ReactComponent as Twitter } from '../assets/newIcons/twitter.svg';
+import { ReactComponent as Instagram } from '../assets/newIcons/instagram.svg';
+import { ReactComponent as Discord } from '..//assets/newIcons/discord.svg';
 import {
   CollapseButtonCC,
   ExpansionAreaCC,
@@ -21,10 +24,19 @@ import {
 } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
-import { ButtonConnectionOver } from "../components/organisms/ButtonConnectionOver";
 import { WalletName } from '../commons'
+import { SettingMenu } from '../components/molecules'
+import { CommunityMenu, MenuOption } from '../components/molecules/CommunityMenu'
+import { INotification } from '../components/molecules/NotificationList'
 
 const size = 20
+
+
+const settingMenuOptions: MenuOption[] = [
+  { text: "Twitter", navegateTo: "https://www.twitter.com", icon: Twitter },
+  { text: "Discord", navegateTo: "https://www.discord.com", icon: Discord },
+  { text: "Instagram", navegateTo: "https://www.instagram.com", icon: Instagram},
+]
 
 const IconTexts = [
   { icon: SwapIcon, text: "Swap", path: "/swap" },
@@ -36,10 +48,28 @@ const IconTexts = [
 ]
 
 const IconTextsTwo = [
-  { icon: ConfigIcon, text: "Settings" },
-  { icon: CommunityIcon, text: "Community" },
-  { icon: CasperIcon, text: "CasperSwap" },
+  { icon: ConfigIcon, text: "Settings", component: <SettingMenu/> },
+  { icon: CommunityIcon, text: "Community", component: <CommunityMenu communityOptions={settingMenuOptions} />},
+  { icon: CasperIcon, text: "CasperSwap", component: null},
 ]
+
+const notificationList: INotification[] = [
+  {
+    id: '1',
+    message: 'This is the Notification 1',
+    isRead: true,
+  },
+  {
+    id: '2',
+    message: 'Notification 2',
+    isRead: false,
+  },
+  {
+    id: '3',
+    message: 'Notification 3',
+    isRead: true,
+  },
+];
 
 export interface NewLayoutProps {
   children?: React.ReactElement
@@ -52,6 +82,9 @@ const NewLayout = ({
 }: NewLayoutProps) => {
   const navigate = useNavigate()
   const [collapse, setCollapse] = useState(true)
+  const [selectedOption, setSelectedOption] = useState<string>('')
+  const [showNotifications, setShowNotifications] = useState<boolean>(false)
+  const [notifications, setNotifications] = useState<INotification[]>(notificationList)
 
   const {
     onConnectWallet,
@@ -70,6 +103,25 @@ const NewLayout = ({
 
   function onDisconnect() {
     onDisconnectWallet()
+  }
+
+  function handleMouseEnter(option: string) {
+    setSelectedOption(option)
+  }
+
+  function handleMouseLeave() {
+    setSelectedOption('')
+  }
+  function updateNotificationReadState(id: string) {
+    console.log('updateNotificationReadState', id);
+    setNotifications((prev) =>
+      prev.map((x) => {
+        if (x.id === id) {
+          return { ...x, isRead: true };
+        }
+        return x;
+      })
+    );
   }
 
   return (
@@ -111,11 +163,14 @@ const NewLayout = ({
                 <NavItemCC key={x.text}
                   redirect={() => { }}
                   collapse={collapse}
+                  onMouseEnter={() => handleMouseEnter(x.text)}
+                  onMouseLeave={() => handleMouseLeave()}
                 >
                   <IconTextCC collapse={collapse}
                     iconSet={<NewIcons Icon={x.icon} size={size} />}
                     text={x.text}
                   />
+                  {selectedOption === x.text && x.component}
                 </NavItemCC>
               )
             })}
@@ -128,6 +183,10 @@ const NewLayout = ({
             onDisconnect={onDisconnect}
             accountHashString={walletAddress}
             WordMarkIcon={<WordMarkIcon />}
+            notifications={notifications}
+            showNotifications={showNotifications}
+            setShowNotifications={setShowNotifications}
+            updateNotificationReadState={updateNotificationReadState}
           />
           {children}
         </MainSpaceCC>

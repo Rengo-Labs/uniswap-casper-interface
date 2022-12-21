@@ -6,32 +6,32 @@ import { TokensContext2 } from './TokenContext2'
 import { TokensContext } from './TokensContext'
 import { InitialContext } from './InitialContext'
 import { TorusContext } from './TorusContext'
-import { SwapContext } from './SwapContext'
-import { NotificationContext } from './NotificationContext'
 import { Toaster } from 'react-hot-toast';
 import { ConfigContextWithReducer } from './ConfigContext'
+import {ProgressBarContextWithReducer} from "./ProgressBarContext";
+
 export const BigContext = ({ children }: { children: ReactNode }) => {
 
-    return (
-        <ThemeContext>
-            <SwapContext>
-                <ConfigContextWithReducer>
-                    <Toaster />
-                    <TorusContext>
-                        <InitialContext>
-                            <TokensContext2>
-                                <PoolsContext>
-                                    <LiquidityContext>
-                                        <TokensContext>
-                                            {children}
-                                        </TokensContext>
-                                    </LiquidityContext>
-                                </PoolsContext>
-                            </TokensContext2>
-                        </InitialContext>
-                    </TorusContext>
-                </ConfigContextWithReducer>
-            </SwapContext>
-        </ThemeContext>
-    )
+  return (
+    <ThemeContext>
+      <ConfigContextWithReducer>
+        <ProgressBarContextWithReducer>
+          <Toaster />
+          <TorusContext>
+            <InitialContext>
+              <TokensContext2>
+                <PoolsContext>
+                  <LiquidityContext>
+                    <TokensContext>
+                      {children}
+                    </TokensContext>
+                  </LiquidityContext>
+                </PoolsContext>
+              </TokensContext2>
+            </InitialContext>
+          </TorusContext>
+        </ProgressBarContextWithReducer>
+      </ConfigContextWithReducer>
+    </ThemeContext>
+  )
 }

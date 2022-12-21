@@ -8,8 +8,27 @@ import {
     CollapsingHeader,
     CollapsingBody
 } from './styles'
-import { RouterBox, SlippageBox } from '../../atoms'
-import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
+
+import {RouterBox, SlippageBox} from '../../atoms'
+import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
+import {GasFeeBox} from "../../atoms/GasFeeBox";
+
+interface LPDetailProps {
+    firstSymbolToken?:string,
+    secondSymbolToken?:string,
+    secondTokenAmount?:number,
+    liquidity?: number,
+    firstReserve?:number,
+    secondReserve?:number,
+    gasFee?: number,
+    gasFeeSetter?(any): void,
+    gasFeeEnabled?: boolean,
+    slippage?:number,
+    slippageSetter?(any):void,
+    className?:string,
+    fullExpanded?:boolean,
+    slippageEnabled?:boolean
+}
 
 export const LPDetail = ({
     firstSymbolToken = 'CSPR',
@@ -18,12 +37,15 @@ export const LPDetail = ({
     liquidity = 10,
     firstReserve = 0.00,
     secondReserve = 0.00,
+    gasFee = 10,
+    gasFeeSetter = () => {},
+    gasFeeEnabled = false,
     slippage = 0.005,
     slippageSetter = () => { },
     className = '',
     fullExpanded = false,
     slippageEnabled = false
-}: any) => {
+}: LPDetailProps) => {
     const [isExpanded, setExpanded] = useState(fullExpanded);
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
@@ -74,8 +96,7 @@ export const LPDetail = ({
                                 <SlippageBox slippageEnabled={slippageEnabled} onSlippageChange={updateSlippage} slippage={slippage} />
                             </CollapsingRow>
                             <CollapsingRow>
-                                <CollapsingColumnLeft>Network gas fee</CollapsingColumnLeft>
-                                <CollapsingColumnRight>10 CSPR</CollapsingColumnRight>
+                                <GasFeeBox gasFeeEnabled={gasFeeEnabled} onGasFeeChange={gasFeeSetter} gasFee={gasFee} />
                             </CollapsingRow>
                             <CollapsingRow>
                                 <RouterBox tokenASymbol={firstSymbolToken} tokenBSymbol={secondSymbolToken} />
