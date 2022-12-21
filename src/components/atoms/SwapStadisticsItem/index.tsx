@@ -17,7 +17,7 @@ interface ISwapStadisticsItemProps {
 }
 
 export const SwapStadisticsItem = ({ stadistic }: ISwapStadisticsItemProps) => {
-  const { id, token, price, percent, grafic } = stadistic;
+  const { token, price, percent } = stadistic;
   return (
     <Wrapper>
       <NewTokenDetailItems2NSM src={token.logoURI} width={35} height={35}/>
@@ -27,7 +27,7 @@ export const SwapStadisticsItem = ({ stadistic }: ISwapStadisticsItemProps) => {
       <Divider/>
       <PriceContainer>
         <PriceTitle>Price</PriceTitle>
-        <PriceValue>$ {price}</PriceValue>
+        <PriceValue>${price}</PriceValue>
       </PriceContainer>
       <PriceContainer>
         <PriceTitle>24H%</PriceTitle>
