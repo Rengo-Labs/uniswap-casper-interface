@@ -114,7 +114,7 @@ export enum AddLiquidityEntryPoint {
             amount_token_desired: CLValueBuilder.u256(new BigNumber(amountTokenDesired).toFixed(0)),
             amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(.96 - slippage).toFixed(0)),
             amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(.96 - slippage).toFixed(0)),
-            pair: new CLOption(Some(new CLKey(token))),
+            pair: new CLOption(Some(new CLKey(token) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
 
@@ -154,7 +154,7 @@ export enum AddLiquidityEntryPoint {
             amount_b_desired: CLValueBuilder.u256(new BigNumber(amountBDesired).toFixed(0)),
             amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(1 - slippage).toFixed(0)),
             amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(1 - slippage).toFixed(0)),
-            pair: new CLOption(Some(new CLKey(tokenBContract))),
+            pair: new CLOption(Some(new CLKey(tokenBContract) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
