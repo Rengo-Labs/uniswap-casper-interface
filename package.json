@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "license": "GPLv3",
   "scripts": {
-    "start": "env-cmd -f .env.development react-app-rewired start",
-    "build": "env-cmd -f .env.production react-app-rewired build",
+    "start": "npx env-cmd -f .env.development react-app-rewired start",
+    "build": "npx env-cmd -f .env.production react-app-rewired build",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "test": "react-app-rewired test",
