@@ -1,7 +1,7 @@
-import BigNumber from "bignumber.js";
+import BigNumber from 'bignumber.js';
 
-import React, { useContext, useState, useEffect } from "react";
-import {ConfigProviderContext} from "../../../contexts/ConfigContext";
+import React, { useContext, useState, useEffect } from 'react';
+import { ConfigProviderContext } from '../../../contexts/ConfigContext';
 import {
   ActionContainerNSM,
   ArrowContainerNSM,
@@ -29,16 +29,26 @@ import {
   SwapDetailsNSM,
   TokenSelectionNSM,
   TokenSelectNSM,
-} from "../../atoms";
+} from '../../atoms';
 
-import { SwapDetail, SwapStadistics } from "../../molecules";
-import FloatMenu from "../FloatMenu";
-import { useSearchParams } from "react-router-dom";
+import { SwapDetail, SwapStadistics } from '../../molecules';
+import FloatMenu from '../FloatMenu';
+import { useSearchParams } from 'react-router-dom';
 
-import { convertAllFormatsToUIFixedString, Token } from "../../../commons";
-import SwitchSwap from "../../atoms/SwitchSwap";
-import {UpdatableCircle} from "../../atoms/UpdatableCircle";
-import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
+import { convertAllFormatsToUIFixedString, Token } from '../../../commons';
+import SwitchSwap from '../../atoms/SwitchSwap';
+import { UpdatableCircle } from '../../atoms/UpdatableCircle';
+import { ProgressBarProviderContext } from '../../../contexts/ProgressBarContext';
+import styled from 'styled-components';
+
+const Wrapper = styled.section`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: black;
+`;
 
 const SwapNewModule = () => {
   const {
@@ -56,12 +66,12 @@ const SwapNewModule = () => {
     slippageToleranceSelected,
     gasPriceSelectedForLiquidity,
     refreshAll,
-    calculateUSDtokens
+    calculateUSDtokens,
   } = useContext(ConfigProviderContext);
-  console.log('tokens', tokens)
-  const {clearProgress} = useContext(ProgressBarProviderContext)
+  console.log('tokens', tokens);
+  const { clearProgress } = useContext(ProgressBarProviderContext);
 
-  const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
+  const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity);
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
   const [slippSwapToken, slippSwapTokenSetter] = useState<any>(
@@ -72,16 +82,16 @@ const SwapNewModule = () => {
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0);
   const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] =
-    useState<any>("");
+    useState<any>('');
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [lastChanged, setLastChanged] = useState("")
-  const [valueAUSD, setValueAUSD] = useState("0.00")
-  const [valueBUSD, setValueBUSD] = useState("0.00")
+  const [lastChanged, setLastChanged] = useState('');
+  const [valueAUSD, setValueAUSD] = useState('0.00');
+  const [valueBUSD, setValueBUSD] = useState('0.00');
 
   useEffect(() => {
-    const t0 = searchParams.get("token0");
-    const t1 = searchParams.get("token1");
+    const t0 = searchParams.get('token0');
+    const t1 = searchParams.get('token1');
     if (t0) {
       onSelectFirstToken(tokens[t0]);
       onSelectSecondToken(tokens[t1]);
@@ -95,9 +105,9 @@ const SwapNewModule = () => {
     );
   }, [isConnected]);
 
-  useEffect(() => {    
-    clearProgress()
-  }, [])
+  useEffect(() => {
+    clearProgress();
+  }, []);
 
   async function onConnect() {
     onConnectWallet();
@@ -106,12 +116,12 @@ const SwapNewModule = () => {
   function onSwitchTokensHandler() {
     onSwitchTokens();
 
-    if (lastChanged == "A") {
+    if (lastChanged == 'A') {
       changeTokenB(amountSwapTokenA.toString());
-      setLastChanged("B");
-    } else if (lastChanged == "B") {
+      setLastChanged('B');
+    } else if (lastChanged == 'B') {
       changeTokenA(amountSwapTokenB.toString());
-      setLastChanged("A");
+      setLastChanged('A');
     }
   }
 
@@ -125,7 +135,7 @@ const SwapNewModule = () => {
       amountSwapTokenA,
       amountSwapTokenB,
       slippSwapToken,
-      gasFee,
+      gasFee
     );
     resetAll();
   }
@@ -146,7 +156,7 @@ const SwapNewModule = () => {
     );
     const ps = [getSwapDetailP];
 
-    console.log('value', value)
+    console.log('value', value);
 
     const [getSwapDetailResponse] = await Promise.all(ps);
 
@@ -158,15 +168,15 @@ const SwapNewModule = () => {
     exchangeRateBSetter(exchangeRateB);
 
     defaultPriceImpactLabelSetter(
-      parseFloat(priceImpact) > 1 ? "Price Impact Warning" : "Low Price Impact"
+      parseFloat(priceImpact) > 1 ? 'Price Impact Warning' : 'Low Price Impact'
     );
 
-    calculateUSDValues(value, tokensToTransfer)
+    calculateUSDValues(value, tokensToTransfer);
     return tokensToTransfer;
   }
 
   async function requestIncreaseAllowance(amount, contractHash) {
-    console.log("requestIncreaseAllowance");
+    console.log('requestIncreaseAllowance');
     await onIncreaseAllow(amount, contractHash);
     await updateSwapDetail(
       firstTokenSelected,
@@ -184,7 +194,7 @@ const SwapNewModule = () => {
       filteredValue = Math.abs(filteredValue);
     }
 
-    setLastChanged("A");
+    setLastChanged('A');
 
     amountSwapTokenASetter(filteredValue);
 
@@ -261,240 +271,271 @@ const SwapNewModule = () => {
     .toNumber();
 
   const isApproved =
-    firstTokenSelected.symbol == "CSPR" ||
-    (firstTokenSelected.symbol != "CSPR" && freeAllowance >= 0);
- 
+    firstTokenSelected.symbol == 'CSPR' ||
+    (firstTokenSelected.symbol != 'CSPR' && freeAllowance >= 0);
+
   const refreshPrices = async () => {
-    console.log("refreshPrices", amountSwapTokenA)
-    await refreshAll()
-    await changeTokenA(amountSwapTokenA)
-  }
+    console.log('refreshPrices', amountSwapTokenA);
+    await refreshAll();
+    await changeTokenA(amountSwapTokenA);
+  };
 
   const calculateUSDValues = (amountA, amountB) => {
-    const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
-    setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA)
-    setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB)
-  }
+    const [usdA, usdB] = calculateUSDtokens(
+      firstTokenSelected.symbolPair,
+      secondTokenSelected.symbolPair,
+      amountA,
+      amountB
+    );
+    setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA);
+    setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB);
+  };
 
   return (
-    <ContainerInnerNSM>
-      <ContainerSwapActionsNSM>
-        <NewSwapContainerNSM>
-          <TokenSelectNSM>
-            <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>From</NewTokenDetailItems1NSM>
-              <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
-              <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>
-                {firstTokenSelected.symbol}
-              </NewTokenDetailItems3NSM>
-              <NewTokenDetailItems4NSM>
-                <ArrowContainerNSM>
-                  <FlechaIcon
-                    onClick={() => {
-                      searchModalASetter(true);
-                    }}
-                  />
-                  {searchModalA && (
-                    <FloatMenu
-                      excludedSymbols={[secondTokenSelected.symbol]}
-                      tokens={tokens}
-                      onSelectToken={selectAndCloseTokenA}
+    <Wrapper>
+      <ContainerInnerNSM>
+        <ContainerSwapActionsNSM>
+          <NewSwapContainerNSM>
+            <TokenSelectNSM>
+              <NewTokenDetailSelectNSM>
+                <NewTokenDetailItems1NSM
+                  handleClick={() => searchModalASetter(true)}
+                >
+                  From
+                </NewTokenDetailItems1NSM>
+                <NewTokenDetailItems2NSM
+                  src={firstTokenSelected.logoURI}
+                  handleClick={() => searchModalASetter(true)}
+                />
+                <NewTokenDetailItems3NSM
+                  handleClick={() => searchModalASetter(true)}
+                >
+                  {firstTokenSelected.symbol}
+                </NewTokenDetailItems3NSM>
+                <NewTokenDetailItems4NSM>
+                  <ArrowContainerNSM>
+                    <FlechaIcon
                       onClick={() => {
-                        searchModalASetter(false);
+                        searchModalASetter(true);
                       }}
                     />
-                  )}
-                </ArrowContainerNSM>
-              </NewTokenDetailItems4NSM>
-            </NewTokenDetailSelectNSM>
-          </TokenSelectNSM>
-          <TokenSelectionNSM>
-            <NewTokenDetailActionsNSM>
-              <NewBalanceSpaceNSM>
-                Balance:
-                {firstTokenSelected.amount
-                  ? convertAllFormatsToUIFixedString(firstTokenSelected.amount)
-                  : "--"}
-              </NewBalanceSpaceNSM>
-              <ActionContainerNSM>
-                <ButtonHalfMaxContainer>
-                  <ButtonHalfMax
-                    onClick={() => {
-                      makeHalf(firstTokenSelected.amount, changeTokenA);
-                    }}
-                  >
-                    Half
-                  </ButtonHalfMax>
-                  <ButtonHalfMax
-                    onClick={() => {
-                      makeMax(firstTokenSelected.amount, changeTokenA);
-                    }}
-                  >
-                    Max
-                  </ButtonHalfMax>
-                </ButtonHalfMaxContainer>
-                <BalanceInputContainerNSM>
-                  <BalanceInputItem1NSM>
-                    <BalanceInputNSM
-                      min={0}
-                      onChange={(e) => {
-                        changeTokenA(e.target.value);
-                      }}
-                      type="number"
-                      name=""
-                      id=""
-                      value={amountSwapTokenA}
-                    />
-                  </BalanceInputItem1NSM>
-                  <BalanceInputItem2NSM>
-                    <p>$ {valueAUSD}</p>
-                  </BalanceInputItem2NSM>
-                </BalanceInputContainerNSM>
-              </ActionContainerNSM>
-            </NewTokenDetailActionsNSM>
-          </TokenSelectionNSM>
-        </NewSwapContainerNSM>
-        <IconPlaceNSM>
-          <SwitchSwap onClick={onSwitchTokensHandler} />
-          <SwapDetailsNSM>
-            <ExchangeRateBox
-              tokenASymbol={firstTokenSelected.symbol}
-              tokenBSymbol={secondTokenSelected.symbol}
-              exchangeRateA={exchangeRateA}
-              exchangeRateB={exchangeRateB}
-            />
-          </SwapDetailsNSM>
-          <UpdatableCircle strokeWidth={12} handler={refreshPrices} />
-        </IconPlaceNSM>
-        <NewSwapContainerNSM>
-          <TokenSelectNSM>
-            <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>To</NewTokenDetailItems1NSM>
-              <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
-              <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>
-                {secondTokenSelected.symbol}
-              </NewTokenDetailItems3NSM>
-              <NewTokenDetailItems4NSM>
-                <ArrowContainerNSM>
-                  <FlechaIcon
-                    onClick={() => {
-                      searchModalBSetter(true);
-                    }}
-                  />
-                  {searchModalB && (
-                    <FloatMenu
-                      excludedSymbols={[firstTokenSelected.symbol]}
-                      tokens={tokens}
-                      onSelectToken={selectAndCloseTokenB}
+                    {searchModalA && (
+                      <FloatMenu
+                        excludedSymbols={[secondTokenSelected.symbol]}
+                        tokens={tokens}
+                        onSelectToken={selectAndCloseTokenA}
+                        onClick={() => {
+                          searchModalASetter(false);
+                        }}
+                      />
+                    )}
+                  </ArrowContainerNSM>
+                </NewTokenDetailItems4NSM>
+              </NewTokenDetailSelectNSM>
+            </TokenSelectNSM>
+            <TokenSelectionNSM>
+              <NewTokenDetailActionsNSM>
+                <NewBalanceSpaceNSM>
+                  Balance:
+                  {firstTokenSelected.amount
+                    ? convertAllFormatsToUIFixedString(
+                        firstTokenSelected.amount
+                      )
+                    : '--'}
+                </NewBalanceSpaceNSM>
+                <ActionContainerNSM>
+                  <ButtonHalfMaxContainer>
+                    <ButtonHalfMax
                       onClick={() => {
-                        searchModalBSetter(false);
+                        makeHalf(firstTokenSelected.amount, changeTokenA);
+                      }}
+                    >
+                      Half
+                    </ButtonHalfMax>
+                    <ButtonHalfMax
+                      onClick={() => {
+                        makeMax(firstTokenSelected.amount, changeTokenA);
+                      }}
+                    >
+                      Max
+                    </ButtonHalfMax>
+                  </ButtonHalfMaxContainer>
+                  <BalanceInputContainerNSM>
+                    <BalanceInputItem1NSM>
+                      <BalanceInputNSM
+                        min={0}
+                        onChange={(e) => {
+                          changeTokenA(e.target.value);
+                        }}
+                        type='number'
+                        name=''
+                        id=''
+                        value={amountSwapTokenA}
+                      />
+                    </BalanceInputItem1NSM>
+                    <BalanceInputItem2NSM>
+                      <p>$ {valueAUSD}</p>
+                    </BalanceInputItem2NSM>
+                  </BalanceInputContainerNSM>
+                </ActionContainerNSM>
+              </NewTokenDetailActionsNSM>
+            </TokenSelectionNSM>
+          </NewSwapContainerNSM>
+          <IconPlaceNSM>
+            <SwitchSwap onClick={onSwitchTokensHandler} />
+            <SwapDetailsNSM>
+              <ExchangeRateBox
+                tokenASymbol={firstTokenSelected.symbol}
+                tokenBSymbol={secondTokenSelected.symbol}
+                exchangeRateA={exchangeRateA}
+                exchangeRateB={exchangeRateB}
+              />
+            </SwapDetailsNSM>
+            <UpdatableCircle strokeWidth={12} handler={refreshPrices} />
+          </IconPlaceNSM>
+          <NewSwapContainerNSM>
+            <TokenSelectNSM>
+              <NewTokenDetailSelectNSM>
+                <NewTokenDetailItems1NSM
+                  handleClick={() => searchModalASetter(true)}
+                >
+                  To
+                </NewTokenDetailItems1NSM>
+                <NewTokenDetailItems2NSM
+                  src={secondTokenSelected.logoURI}
+                  handleClick={() => searchModalASetter(true)}
+                />
+                <NewTokenDetailItems3NSM
+                  handleClick={() => searchModalASetter(true)}
+                >
+                  {secondTokenSelected.symbol}
+                </NewTokenDetailItems3NSM>
+                <NewTokenDetailItems4NSM>
+                  <ArrowContainerNSM>
+                    <FlechaIcon
+                      onClick={() => {
+                        searchModalBSetter(true);
                       }}
                     />
-                  )}
-                </ArrowContainerNSM>
-              </NewTokenDetailItems4NSM>
-            </NewTokenDetailSelectNSM>
-          </TokenSelectNSM>
-          <TokenSelectionNSM>
-            <NewTokenDetailActionsNSM>
-              <NewBalanceSpaceNSM>
-                Balance:{" "}
-                {secondTokenSelected.amount
-                  ? convertAllFormatsToUIFixedString(secondTokenSelected.amount)
-                  : "--"}
-              </NewBalanceSpaceNSM>
-              <ActionContainerNSM>
-                <ButtonHalfMaxContainer>
-                  <ButtonHalfMax
-                    onClick={() => {
-                      makeHalf(secondTokenSelected.amount, changeTokenB);
-                    }}
-                  >
-                    Half
-                  </ButtonHalfMax>
-                  <ButtonHalfMax
-                    onClick={() => {
-                      makeMax(secondTokenSelected.amount, changeTokenB);
-                    }}
-                  >
-                    Max
-                  </ButtonHalfMax>
-                </ButtonHalfMaxContainer>
-                <BalanceInputContainerNSM>
-                  <BalanceInputItem1NSM>
-                    <BalanceInputNSM
-                      min={0}
-                      onChange={(e) => {
-                        changeTokenB(e.target.value);
+                    {searchModalB && (
+                      <FloatMenu
+                        excludedSymbols={[firstTokenSelected.symbol]}
+                        tokens={tokens}
+                        onSelectToken={selectAndCloseTokenB}
+                        onClick={() => {
+                          searchModalBSetter(false);
+                        }}
+                      />
+                    )}
+                  </ArrowContainerNSM>
+                </NewTokenDetailItems4NSM>
+              </NewTokenDetailSelectNSM>
+            </TokenSelectNSM>
+            <TokenSelectionNSM>
+              <NewTokenDetailActionsNSM>
+                <NewBalanceSpaceNSM>
+                  Balance:{' '}
+                  {secondTokenSelected.amount
+                    ? convertAllFormatsToUIFixedString(
+                        secondTokenSelected.amount
+                      )
+                    : '--'}
+                </NewBalanceSpaceNSM>
+                <ActionContainerNSM>
+                  <ButtonHalfMaxContainer>
+                    <ButtonHalfMax
+                      onClick={() => {
+                        makeHalf(secondTokenSelected.amount, changeTokenB);
                       }}
-                      type="number"
-                      name=""
-                      id=""
-                      value={amountSwapTokenB}
-                    />
-                  </BalanceInputItem1NSM>
-                  <BalanceInputItem2NSM>
-                    <p>$ {valueBUSD}</p>
-                  </BalanceInputItem2NSM>
-                </BalanceInputContainerNSM>
-              </ActionContainerNSM>
-            </NewTokenDetailActionsNSM>
-          </TokenSelectionNSM>
-        </NewSwapContainerNSM>
-        {amountSwapTokenB > 0 && (
-          <SwapDetail
-            firstSymbolToken={firstTokenSelected.symbol}
-            firstTokenAmount={amountSwapTokenA}
-            secondSymbolToken={secondTokenSelected.symbol}
-            secondTokenAmount={amountSwapTokenB}
-            priceImpactMessage={defaultPriceImpactLabel}
-            priceImpact={priceImpact}
-            gasFee={gasFee}
-            gasFeeSetter={gasFeeSetter}
-            gasFeeEnabled={true}
-            slippage={slippSwapToken}
-            slippageEnabled={true}
-            slippageSetter={slippSwapTokenSetter}
-            fullExpanded={false}
-          />
-        )}
-        <ButtonSpaceNSM>
-          {!isConnected && (
-            <NewSwapButtonWidth100
-              content="Connect to Wallet"
-              handler={async () => {
-                onConnect();
-              }}
+                    >
+                      Half
+                    </ButtonHalfMax>
+                    <ButtonHalfMax
+                      onClick={() => {
+                        makeMax(secondTokenSelected.amount, changeTokenB);
+                      }}
+                    >
+                      Max
+                    </ButtonHalfMax>
+                  </ButtonHalfMaxContainer>
+                  <BalanceInputContainerNSM>
+                    <BalanceInputItem1NSM>
+                      <BalanceInputNSM
+                        min={0}
+                        onChange={(e) => {
+                          changeTokenB(e.target.value);
+                        }}
+                        type='number'
+                        name=''
+                        id=''
+                        value={amountSwapTokenB}
+                      />
+                    </BalanceInputItem1NSM>
+                    <BalanceInputItem2NSM>
+                      <p>$ {valueBUSD}</p>
+                    </BalanceInputItem2NSM>
+                  </BalanceInputContainerNSM>
+                </ActionContainerNSM>
+              </NewTokenDetailActionsNSM>
+            </TokenSelectionNSM>
+          </NewSwapContainerNSM>
+          {amountSwapTokenB > 0 && (
+            <SwapDetail
+              firstSymbolToken={firstTokenSelected.symbol}
+              firstTokenAmount={amountSwapTokenA}
+              secondSymbolToken={secondTokenSelected.symbol}
+              secondTokenAmount={amountSwapTokenB}
+              priceImpactMessage={defaultPriceImpactLabel}
+              priceImpact={priceImpact}
+              gasFee={gasFee}
+              gasFeeSetter={gasFeeSetter}
+              gasFeeEnabled={true}
+              slippage={slippSwapToken}
+              slippageEnabled={true}
+              slippageSetter={slippSwapTokenSetter}
+              fullExpanded={false}
             />
           )}
-          {!isApproved && isConnected && (
-            <NewSwapButtonWidth100
-              content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`}
-              handler={async () => {
-                await requestIncreaseAllowance(
-                  -freeAllowance,
-                  firstTokenSelected.contractHash
-                );
-              }}
-            />
-          )}
-          {isApproved && isConnected && (
-            <NewSwapButtonWidth100
-              content="Swap"
-              disabled={
-                amountSwapTokenA <= 0 ||
-                amountSwapTokenB <= 0 ||
-                amountSwapTokenA > parseFloat(firstTokenSelected.amount)
-              }
-              handler={async () => {
-                await onConfirmSwap();
-              }}
-            />
-          )}
-        </ButtonSpaceNSM>
-      </ContainerSwapActionsNSM>
-      <SwapStadistics/>
-    </ContainerInnerNSM>
+          <ButtonSpaceNSM>
+            {!isConnected && (
+              <NewSwapButtonWidth100
+                content='Connect to Wallet'
+                handler={async () => {
+                  onConnect();
+                }}
+              />
+            )}
+            {!isApproved && isConnected && (
+              <NewSwapButtonWidth100
+                content={`Approve ${-freeAllowance} ${
+                  firstTokenSelected.symbol
+                }`}
+                handler={async () => {
+                  await requestIncreaseAllowance(
+                    -freeAllowance,
+                    firstTokenSelected.contractHash
+                  );
+                }}
+              />
+            )}
+            {isApproved && isConnected && (
+              <NewSwapButtonWidth100
+                content='Swap'
+                disabled={
+                  amountSwapTokenA <= 0 ||
+                  amountSwapTokenB <= 0 ||
+                  amountSwapTokenA > parseFloat(firstTokenSelected.amount)
+                }
+                handler={async () => {
+                  await onConfirmSwap();
+                }}
+              />
+            )}
+          </ButtonSpaceNSM>
+        </ContainerSwapActionsNSM>
+      </ContainerInnerNSM>
+      <SwapStadistics />
+    </Wrapper>
   );
 };
 
