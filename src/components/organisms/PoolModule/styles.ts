@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import {device} from "../../../contexts/ThemeContext/themes";
 
 export const PoolModulesStyled = styled.section`
     margin: 0;
@@ -7,6 +8,11 @@ export const PoolModulesStyled = styled.section`
     flex-direction: column;
     justify-content: center;
     align-items:center;
+
+  @media ${device.mobileS} {
+    padding: 2px;
+  }
+  
 `
 
 export const MenuStyled = styled.div`
@@ -15,17 +21,7 @@ export const MenuStyled = styled.div`
     padding: .6rem .7rem
 `
 
-export const MenuSearchStyled = styled.div`
-    flex: 1;
-    align-self: center;
-`
-
 export const MenuToggleStyled = styled.div`
-    flex: 1;
-    align-self: center;
-`
-
-export const MenuFilterStyled = styled.div`
     flex: 1;
     align-self: center;
 `

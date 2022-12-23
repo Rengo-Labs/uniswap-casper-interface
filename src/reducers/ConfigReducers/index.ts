@@ -19,22 +19,12 @@ export const initialConfigState: ConfigState = {
   walletAddress: "",
   mainPurse: "",
   walletSelected: WalletName.CASPER_SIGNER,
-  languagesSelected: "en",
-  visualModeSelected: "light",
-  slippageToleranceSelected: 0.5,
-  gasPriceSelectedForSwapping: 20,
-  gasPriceSelectedForLiquidity: 15
+  languagesSelected: process.env.REACT_APP_LANGUAGE_SELECTED,
+  visualModeSelected: process.env.REACT_APP_VISUAL_MODEL_SELECTED,
+  slippageToleranceSelected: parseFloat(process.env.REACT_APP_SLIPPAGE_TOLERANCE_SELECTED),
+  gasPriceSelectedForSwapping: parseInt(process.env.REACT_APP_GAS_PRICE_FOR_SWAPPING),
+  gasPriceSelectedForLiquidity: parseInt(process.env.REACT_APP_GAS_PRICE_FOR_LIQUIDITY)
 };
-
-export const initialLPPair = [{
-  t0: 'CSX', t1: 'WCSPR'
-}, {
-  t0: 'CSX', t1: 'CSPR'
-}, {
-  t0: 'WETH', t1: 'WCSPR'
-}, {
-  t0: 'WETH', t1: 'CSPR'
-}]
 
 export enum ConfigActions {
   CONNECT_WALLET = "CONNECT_WALLET",

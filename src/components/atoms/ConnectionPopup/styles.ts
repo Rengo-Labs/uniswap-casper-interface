@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import {device} from "../../../contexts/ThemeContext/themes";
 
 export const WalletContainer = styled.div`
     display: flex;
@@ -12,6 +13,18 @@ export const WalletContainer = styled.div`
     &:first-child {
         padding-top: 0.5em;
         padding-bottom: 0.5em;
+    }
+  
+    @media ${device.mobileS} {
+      font-size: 12px;
+    }
+  
+    @media ${device.tablet} {
+      font-size: 12px;
+    }
+  
+    @media ${device.laptop} {
+      font-size: 0.8vw;
     }
 `
 
@@ -44,6 +57,19 @@ export const PopupContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-self: center;
+  
+    @media ${device.mobileS} {
+        width: 100%;
+    }
+    @media ${device.mobileM} {
+        width: 100%;
+    }
+    @media ${device.mobileL} {
+        width: 100%;
+    }
+    @media ${device.tablet} {
+      width: 608px;
+    }
 `
 
 export const PopupTitle = styled.div`
@@ -55,7 +81,7 @@ export const PopupTitle = styled.div`
     margin-top: 0;
     background-color: ${props => props.theme.mainBackgroundColor};
     color: ${props => props.theme.secondBackgroundColor};
-    font-family: EpilogueLight;
+    font-family: 'EpilogueLight';
     font-size: 19px;
     border-bottom: .5px solid black;
 `
@@ -98,15 +124,6 @@ export const HRefLink = styled.button`
     border: 0;
     background-color: transparent;
 `
-
-export const CollapsingPopup = styled.div`
-    color: black;
-    margin-top: 25px;
-    display: flex;
-    justify-content: center;
-    font-family: EpilogueLight
-`
-
 export const PopoverButtonStyled= styled.div`
     display: flex;
     align-items: center; 
@@ -125,13 +142,42 @@ export const PopoverButtonStyled= styled.div`
         background-color: ${props => props.theme.secondBackgroundColor};
         color: ${props => props.theme.thirdBackgroundColor};
     }
+
+  @media ${device.mobileS} {
+    width: 100px;
+    font-size: 12px;
+  }
+  @media ${device.tablet} {
+    width: 8vw;
+    font-size: 0.8vw;
+  }
 `
 
 export const DisclaimerContent = styled.div`
     color: black;
     padding: 5px;
     text-align: center;
-    font-family: EpilogueLight;
+    font-family: 'EpilogueLight';
     margin-bottom: 1.5vh;
     font-size: 0.8vw;
+  
+    @media ${device.mobileS} {
+      font-size: 12px;
+    }
+    @media ${device.tablet} {
+      font-size: 12px;
+    }
+    @media ${device.laptop} {
+      font-size: 0.8vw;
+    }
+`
+
+export const WalletSelectionImageStyled = styled.img`
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+`
+
+export const ButtonText = styled.h2`
+  font-family: 'EpilogueLight';
 `

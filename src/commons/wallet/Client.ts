@@ -5,14 +5,12 @@ import {
   DeployUtil,
   GetDeployResult,
   RuntimeArgs,
-  Signer,
 } from 'casper-js-sdk'
 import BigNumber from 'bignumber.js';
 
 import { Wallet } from './Wallet'
 import { Network } from './types'
 import { log, sleep } from '../utils'
-import { walletAtom } from '../../contexts/ConfigAtom';
 
 /**
  * Client for working with Casper network

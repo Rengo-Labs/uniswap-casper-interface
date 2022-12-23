@@ -2,10 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 
 const ButtonHalfMaxContainerStyles = styled.div`
-    border-left: 3px solid ${props => props.theme.NewPurpleColor};
+    border-left: 1px solid ${props => props.theme.NewGreyColor};
     padding-left:10px;
     display: grid;
-    gap:10px;
+    gap:5px;
+    margin: 20px 0px;
 `
 
 export const ButtonHalfMaxContainer = ({children}) => {

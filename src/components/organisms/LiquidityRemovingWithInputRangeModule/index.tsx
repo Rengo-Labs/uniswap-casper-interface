@@ -14,14 +14,20 @@ import {
     TColumn3,
     PriceContainer,
     PriceLabel,
-    PriceTokenLabel, TokenSymbol, TokenName, SymbolContainer, TColumn1Right, PriceRowLabel
+    PriceTokenLabel,
+    TokenSymbol,
+    TokenName,
+    SymbolContainer,
+    TColumn1Right,
+    PriceRowLabel,
+    SwapIconImageStyled,
+    SwapIconImageStyledRelative
 } from "./styles";
 import {LiquidityCancelButton, LiquidityEnableButton, LiquidityRemoveButton} from "../../atoms"
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
-import {InputRange} from "../../atoms/InputRange";
-import {SwapIconImageStyled, SwapIconImageStyledRelative} from "../../molecules/SwapToken/styles";
-import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
+import {InputRange} from "../../atoms/InputRange"
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext"
 
 export interface LiquidityRemovingWithInputRangeProps {
     isConnected: boolean,

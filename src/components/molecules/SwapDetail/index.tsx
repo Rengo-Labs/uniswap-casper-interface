@@ -65,6 +65,14 @@ export const SwapDetail = ({
         <CollapsingContainerStyled className={className}>
             <CollapsingBody>
                 <CollapsingRow>
+                    <CollapsingColumnLeft>Swapping Through</CollapsingColumnLeft>
+                    <CollapsingColumnRight>Casper Pool</CollapsingColumnRight>
+                </CollapsingRow>
+                <CollapsingRow>
+                    <CollapsingColumnLeft>Minimum received</CollapsingColumnLeft>
+                    <CollapsingColumnRight data-testid="collapsing_min_received">{calculateMinimumTokenReceived(secondTokenAmount, slippage)} {secondSymbolToken}</CollapsingColumnRight>
+                </CollapsingRow>
+                <CollapsingRow>
                     <CollapsingColumnLeft>
                         {/* TODO: remove inline css*/}
                         <PriceImpactLabel priceImpactTitle={priceImpactMessage} priceImpact={priceImpact} style={{ justifyContent: "flex-start" }} />
@@ -75,21 +83,12 @@ export const SwapDetail = ({
                     </CollapsingColumnRight>
                 </CollapsingRow>
                 <CollapsingRow>
-                    <CollapsingColumnLeft>Expected output</CollapsingColumnLeft>
-                    <CollapsingColumnRight>{secondTokenAmount} {secondSymbolToken}</CollapsingColumnRight>
-                </CollapsingRow>
-                <CollapsingRow>
-                    <CollapsingColumnLeft>Minimum received</CollapsingColumnLeft>
-                    <CollapsingColumnRight data-testid="collapsing_min_received">{calculateMinimumTokenReceived(secondTokenAmount, slippage)} {secondSymbolToken}</CollapsingColumnRight>
-                </CollapsingRow>
-
-                <CollapsingRow>
                     {/* TODO: remove inline css*/}
                     <div style={{ width: "100%" }} className="collapsible">
                         <CollapsingHeader data-testid="collapsing_id" {...getToggleProps({ onClick: handleOnClick })}>
                             {/* TODO: remove inline css*/}
                             <CollapsingRow style={{ paddingTop: "0", color: "rgba(120, 100, 244, 1)" }}>
-                                more information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
+                                More information {isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
                             </CollapsingRow>
                         </CollapsingHeader>
                         <div {...getCollapseProps()}>

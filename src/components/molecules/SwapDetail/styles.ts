@@ -6,7 +6,7 @@ export const CollapsingContainerStyled = styled.div`
     justify-self: center;
     width: 100%;
     padding: 1rem;
-    border:1px solid black;
+    border: 1px solid ${props => props.theme.NewGrayColor};
     border-radius: 20px;
     gap: 10px;
 `

@@ -198,3 +198,11 @@ export const SymbolSubTitle = styled.div`
     font-size: 11px;
     padding: 2px 0 0 0;
 `
+export const SwapIconImageStyled = styled.img`
+    border-radius: 50%;
+`
+export const SwapIconImageStyledRelative = styled.img`
+    border-radius: 50%;
+    position: relative; 
+    left: -10px;
+`

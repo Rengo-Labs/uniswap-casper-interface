@@ -45,6 +45,7 @@ export const lightTheme = {
   NewPurpleColor: "rgba(113, 95, 245, 1)",
   NewGrayColor: "#999999",
   NewGreyColor: "#CCCCCC",
+  NewGreenColor: "#1DC90A",
   OPEN_WIDTH: "280px",
   CLOSED_WIDTH: "108px",
   NewNavigationCCBG:"rgb(120,100,244)"
@@ -52,6 +53,27 @@ export const lightTheme = {
 
 export const darkTheme = {
   PrimaryColor: "rgba(255,255,255,1)",
+};
+
+ const sizeScreen = {
+  mobileS: '320px',
+  mobileM: '375px',
+  mobileL: '425px',
+  tablet: '768px',
+  laptop: '1024px',
+  laptopL: '1440px',
+  desktop: '2560px'
+}
+
+export const device = {
+  mobileS: `(min-width: ${sizeScreen.mobileS})`,
+  mobileM: `(min-width: ${sizeScreen.mobileM})`,
+  mobileL: `(min-width: ${sizeScreen.mobileL})`,
+  tablet: `(min-width: ${sizeScreen.tablet})`,
+  laptop: `(min-width: ${sizeScreen.laptop})`,
+  laptopL: `(min-width: ${sizeScreen.laptopL})`,
+  desktop: `(min-width: ${sizeScreen.desktop})`,
+  desktopL: `(min-width: ${sizeScreen.desktop})`
 };
 
 export const GlobalStyles = createGlobalStyle<{ theme: LightThemeInterface }>`

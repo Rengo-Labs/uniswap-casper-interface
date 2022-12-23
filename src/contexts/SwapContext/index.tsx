@@ -1,6 +1,5 @@
 import React, {createContext, ReactNode, useContext, useReducer} from 'react'
 
-import { initialStateWallet, reducerWallet } from '../../reducers/WalletReducers'
 import toast from "react-hot-toast";
 import {calculateSwapDetails, convertUIStringToBigNumber, signAndDeploySwap, SwapDetails, Token} from "../../commons";
 import {DEADLINE} from "../../constant";
@@ -9,9 +8,7 @@ import BigNumber from "bignumber.js";
 
 export interface SwapContext {
     onConfirmSwapConfig: (amountA: number | string, amountB: number | string, slippage: number, gasFee: number) => Promise<boolean>,
-    getSwapDetails: (tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage: number, fee: number) => Promise<SwapDetails>,
-    swapState: any,
-    swapDispatch: any
+    getSwapDetails: (tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage: number, fee: number) => Promise<SwapDetails>
 }
 
 export const SwapProviderContext = createContext<SwapContext>({} as any)
@@ -26,8 +23,6 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         setLinkExplorer,
         setProgressModal
     } = useContext(ConfigProviderContext)
-
-    const [state, dispatch] = useReducer(reducerWallet, initialStateWallet)
 
     async function onConfirmSwapConfig(amountA: number | string, amountB: number | string, slippage: number, gasFee: number): Promise<boolean> {
         const loadingToast = toast.loading("Swapping.")
@@ -86,8 +81,6 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
 
     return (
         <SwapProviderContext.Provider value={{
-            swapState: state,
-            swapDispatch: dispatch,
             onConfirmSwapConfig,
             getSwapDetails
         }}>

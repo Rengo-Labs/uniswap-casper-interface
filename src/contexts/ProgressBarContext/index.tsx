@@ -12,7 +12,7 @@ export interface ProgressBarContext {
 
 export const ProgressBarProviderContext = createContext<ProgressBarContext>({} as any)
 
-export const ProgressBarReducer = ({ children }: { children: ReactNode }) => {
+export const ProgressBarContextWithReducer = ({ children }: { children: ReactNode }) => {
 
   const [progress, setProgress] = useState(1)
   const [progressTimer, setProgressTimer] = useState<any>()
@@ -43,7 +43,7 @@ export const ProgressBarReducer = ({ children }: { children: ReactNode }) => {
       } else {
         setProgress(timeInSeconds)
       }
-    }, 2000)
+    }, 500)
 
     setProgressTimer(timer)
     //setInternalCallback(handle)
