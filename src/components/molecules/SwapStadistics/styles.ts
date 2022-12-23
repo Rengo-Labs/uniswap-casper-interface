@@ -6,7 +6,7 @@ export const Wrapper = styled.section`
     border-radius: 20px;
     display:flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 20px 25px;
     height: 190px;
     width: 462px;
     gap: 1rem;
