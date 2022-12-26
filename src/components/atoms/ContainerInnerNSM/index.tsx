@@ -5,7 +5,6 @@ const Container = styled.main`
     justify-self:center;
     box-sizing: border-box;
     width: 100%;
-    gap:10px;
     color:black;
     display: grid;
     grid-template-columns: auto auto;
