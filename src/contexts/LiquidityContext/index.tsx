@@ -77,7 +77,7 @@ export const LiquidityContext = ({ children }:{children:ReactNode}) => {
 
   async function onRemoveLiquidity(liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number): Promise<boolean> {
     const loadingToast = toast.loading("Removing liquidity.")
-    console.log('zzz', tokenA, tokenB, amountA, amountB)
+    
     try {
       const [deployHash, deployResult] = await signAndDeployRemoveLiquidity(
           apiClient,
