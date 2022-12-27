@@ -4,7 +4,7 @@ import React, { createContext, ReactNode, useEffect, useReducer, useState } from
 import toast from 'react-hot-toast';
 
 import { PopupsModule } from '../../components/organisms';
-import { BASE_URL, DEADLINE, NODE_ADDRESS, ROUTER_PACKAGE_HASH } from '../../constant';
+import { BASE_URL, NODE_ADDRESS } from '../../constant';
 
 import { initialConfigState, ConfigReducer, ConfigActions } from '../../reducers'
 import { initialPairsState, PairsReducer, PairActions, PairData, PairState } from '../../reducers/PairsReducer';
@@ -24,21 +24,12 @@ import {
   convertBigNumberToUIString,
   convertUIStringToBigNumber,
 
-  SwapDetails,
-  calculateSwapDetails,
-
-  LiquidityDetails,
-  calculateLiquidityDetails,
-
   log,
-  WalletName, sleep, MinimumReceive,
+  WalletName,
 } from '../../commons'
 
 import {
-  signAndDeploySwap,
   signAndDeployAllowance,
-  signAndDeployAddLiquidity,
-  signAndDeployRemoveLiquidity,
 } from '../../commons/deploys'
 import { ConfigState } from '../../reducers/ConfigReducers'
 import { Row } from 'react-table'
@@ -47,41 +38,36 @@ import { ConnectionPopup } from '../../components/atoms';
 type MaybeWallet = Wallet | undefined
 
 export interface ConfigContext {
-  onConnectWallet: (name?: WalletName, ignoreError?: boolean) => Promise<void>,
-  onDisconnectWallet: () => Promise<void>,
-  configState: ConfigState,
-  tokenState: TokenState,
-  onSelectFirstToken: (token: string | Token) => void,
-  onSelectSecondToken: (token: string | Token) => void,
-  onSwitchTokens: () => void,
-  getSwapDetails: (tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage: number, fee: number) => Promise<SwapDetails>,
-  getLiquidityDetails: (tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage: number, fee: number) => Promise<LiquidityDetails>,
-  tokens: Record<string, Token>,
-  firstTokenSelected: Token,
-  secondTokenSelected: Token,
-  isConnected: boolean,
-  onConfirmSwapConfig: (amountA: number | string, amountB: number | string, slippage: number, gasFee: number) => Promise<boolean>,
-  slippageToleranceSelected: number,
-  onIncreaseAllow: (amount: number | string, contractHash: string) => Promise<boolean>,
-  onAddLiquidity: (amountA: number | string, amountB: number | string, slippage: number, gasFee: number) => Promise<boolean>,
-  pairState: PairState,
-  onRemoveLiquidity: (liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number) => Promise<boolean>
+  onConnectWallet?: (name?: WalletName, ignoreError?: boolean) => Promise<void>,
+  onDisconnectWallet?: () => Promise<void>,
+  configState?: ConfigState,
+  tokenState?: TokenState,
+  onSelectFirstToken?: (token: string | Token) => void,
+  onSelectSecondToken?: (token: string | Token) => void,
+  onSwitchTokens?: () => void,
+  tokens?: Record<string, Token>,
+  firstTokenSelected?: Token,
+  secondTokenSelected?: Token,
+  isConnected?: boolean,
+  slippageToleranceSelected?: number,
+  onIncreaseAllow?: (amount: number | string, contractHash: string) => Promise<boolean>,
+  pairState?: PairState,
 
   // To Delete
-  poolColumns: any[],
-  getPoolList: () => PairData[],
-  getTVLandVolume: () => Promise<void>,
-  gralData: Record<string, string>,
-  isStaked: boolean,
-  setStaked: (v: boolean) => void,
-  filter: (onlyStaked: boolean, row: Row<PairData>) => any,
-  getContractHashAgainstPackageHash,
-  onCalculateReserves: (v: any, reverse: boolean) => Promise<MinimumReceive>,
-  setRemovingPopup: (v: any) => any,
-  isRemovingPopupOpen: boolean,
-  gasPriceSelectedForSwapping: number,
-  gasPriceSelectedForLiquidity: number,
-  refreshAll: () => void,
+  poolColumns?: any[],
+  getPoolList?: () => PairData[],
+  getTVLandVolume?: () => Promise<void>,
+  gralData?: Record<string, string>,
+  isStaked?: boolean,
+  setStaked?: (v: boolean) => void,
+  filter?: (onlyStaked: boolean, row: Row<PairData>) => any,
+  getContractHashAgainstPackageHash?,
+  gasPriceSelectedForSwapping?: number,
+  gasPriceSelectedForLiquidity?: number,
+  refreshAll?: () => Promise<void>,
+  setLinkExplorer?: (link: string) => void,
+  setProgressModal?: (visible: boolean) => void,
+  setConfirmModal?: (visible: boolean) => void,
   calculateUSDtokens: (t0, t1, amount0, amount1) => any[]
 }
 
@@ -138,25 +124,6 @@ function tokensToObject(listTokens: Token[]): Record<string, Token> {
   }, {})
 }
 
-/***
- * it returns tokensToTransfer, priceImpact, minTokenBToTransfer, exchangeRateA and exchangeRateB that belong to the swap detail
- * @param tokenA first token
- * @param tokenB second token
- * @param inputValue input tokens
- * @param token input token types matching one of tokenA or tokenB
- * @param slippage decimal slippage
- * @param fee decimal fee
- * 
- * @return SwapDetails
- */
-async function getSwapDetails(tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<SwapDetails> {
-  return calculateSwapDetails(apiClient, tokenA, tokenB, inputValue, token, slippage, fee)
-}
-
-async function getLiquidityDetails(tokenA: Token, tokenB: Token, inputValue: BigNumber.Value, token: Token, slippage = 0.005, fee = 0.003): Promise<LiquidityDetails> {
-  return calculateLiquidityDetails(apiClient, tokenA, tokenB, inputValue, token, slippage, fee)
-}
-
 async function allowanceAgainstOwnerAndSpenderPairContract(accountHashStr: string, pairId: string) {
   try {
     const res = await apiClient.getAllowanceAgainstOwnerAndSpenderPairContract(accountHashStr, `hash-${pairId}`)
@@ -187,12 +154,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
   const [gralData, setGralData] = useState({})
   const [isStaked, setStaked] = useState(false)
   const [linkExplorer, setLinkExplorer] = useState("")
-  const [isRemovingPopupOpen, setRemovingPopup] = useState(false)
 
   const [showConnectionPopup, setShowConnectionPopup] = useState(false)
-  const [progress, setProgress] = useState(1)
-  const [progressTimer, setProgressTimer] = useState<any>()
-  const [progressInterval, setProgressInterval] = useState<any>(null)
 
   const [requestConnectWallet, setRequestConnectWallet] = useState(0);
 
@@ -564,6 +527,8 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             token1Price: pl.token1Price,
             contract0: pl.token0.id,
             contract1: pl.token1.id,
+            token0Name: pl.token0.name,
+            token1Name: pl.token1.name,
             id: pl.id,
           }
         })
@@ -641,39 +606,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
-  async function onCalculateReserves(value, reverse): Promise<MinimumReceive> {
-    try {
-      if (!reverse) {
-        return await calculateReserves(firstTokenSelected, secondTokenSelected, value)
-      } else {
-        return await calculateReserves(secondTokenSelected, firstTokenSelected, value)
-      }
-    } catch (error) {
-      console.log(__filename, "onCalculateReserves", error)
-      return { secondTokenReturn: 0, minAmountReturn: "0" }
-    }
-  }
-
-  async function calculateReserves(firstTokenSelected, secondTokenSelected, value): Promise<MinimumReceive> {
-    try {
-      const response = await axios.post(`${BASE_URL}/getpathreserves`, {
-        path: [
-          firstTokenSelected.symbolPair,
-          secondTokenSelected.symbolPair,
-        ]
-      })
-      if (response.data.success) {
-        const secondTokenReturn = parseFloat((value * parseFloat(response.data.reserve0)).toString().slice(0, 10))
-        const minAmountReturn = (secondTokenReturn - (secondTokenReturn * 0.5) / 100).toString().slice(0, 5)
-        return { secondTokenReturn, minAmountReturn }
-      }
-      throw Error()
-    } catch (error) {
-      console.log(__filename, "onCalculateReserves", error)
-      return { secondTokenReturn: 0, minAmountReturn: "0" }
-    }
-  }
-
   function onSelectFirstToken(token: string | Token): void {
     if (typeof token === 'string') {
       tokenDispatch({ type: TokenActions.SELECT_FIRST_TOKEN, payload: token })
@@ -692,44 +624,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
 
   function onSwitchTokens(): void {
     tokenDispatch({ type: TokenActions.SWITCH_TOKENS })
-  }
-
-  async function onConfirmSwapConfig(amountA: number | string, amountB: number | string, slippage: number, gasFee: number): Promise<boolean> {
-    const loadingToast = toast.loading("Swapping.")
-
-    try {
-      const [deployHash, deployResult] = await signAndDeploySwap(
-        apiClient,
-        casperClient,
-        state.wallet,
-        DEADLINE,
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
-        tokenState.tokens[tokenState.firstTokenSelected],
-        tokenState.tokens[tokenState.secondTokenSelected],
-        slippage / 100,
-        mainPurse,
-        gasFee
-      );
-
-      setProgressModal(true)
-      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-      const result = await casperClient.waitForDeployExecution(deployHash)
-      setProgressModal(false)
-      setConfirmModal(true)
-
-      toast.dismiss(loadingToast)
-      refresh(state.wallet)
-      return true
-    } catch (err) {
-      setProgressModal(false)
-      toast.dismiss(loadingToast)
-      console.log("onConfirmSwapConfig")
-      toast.error(`${err}`)
-      refresh(state.wallet)
-      return false
-    }
   }
 
   async function onIncreaseAllow(amount: number | string, contractHash: string): Promise<boolean> {
@@ -764,84 +658,6 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
-  async function onAddLiquidity(amountA: number | string, amountB: number | string, slippage: number, gasFee: number): Promise<boolean> {
-    const loadingToast = toast.loading("Adding liquidity.")
-    try {
-      const [deployHash, deployResult] = await signAndDeployAddLiquidity(
-        apiClient,
-        casperClient,
-        state.wallet,
-        DEADLINE,
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
-        tokenState.tokens[tokenState.firstTokenSelected],
-        tokenState.tokens[tokenState.secondTokenSelected],
-        slippage / 100,
-        mainPurse,
-        gasFee
-      )
-
-      setProgressModal(true)
-      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-      const result = await casperClient.waitForDeployExecution(deployHash)
-      setProgressModal(false)
-      setConfirmModal(true)
-
-      await sleep(15000)
-      await refresh(state.wallet)
-      toast.dismiss(loadingToast)
-      toast.success("Success.")
-      return true
-    } catch (err) {
-      setProgressModal(false)
-      toast.dismiss(loadingToast)
-      await refresh(state.wallet)
-      console.log("onAddLiquidity")
-      toast.error(`${err}`)
-      return false
-    }
-  }
-
-  async function onRemoveLiquidity(liquidity: number | string, tokenA: Token, tokenB: Token, amountA: number | string, amountB: number | string, slippage: number): Promise<boolean> {
-    const loadingToast = toast.loading("Removing liquidity.")
-    console.log('zzz', tokenA, tokenB, amountA, amountB)
-    try {
-      const [deployHash, deployResult] = await signAndDeployRemoveLiquidity(
-        apiClient,
-        casperClient,
-        state.wallet,
-        DEADLINE,
-        convertUIStringToBigNumber(liquidity),
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
-        tokenA,
-        tokenB,
-        slippage / 100,
-      )
-
-      setProgressModal(true)
-      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`)
-
-      const result = await casperClient.waitForDeployExecution(deployHash)
-      setProgressModal(false)
-      setConfirmModal(true)
-
-      await sleep(15000)
-      await refresh(state.wallet)
-      toast.dismiss(loadingToast)
-      toast.success("Success.")
-      return true
-    } catch (err) {
-      setProgressModal(false)
-      toast.dismiss(loadingToast)
-      await refresh(state.wallet)
-      console.log("onRemoveLiquidity")
-      toast.error(`${err}`)
-      return false
-    }
-  }
-
   async function onDisconnectWallet(): Promise<void> {
     try {
       if (state.wallet) {
@@ -856,32 +672,7 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
     }
   }
 
-  const progressBarExec = (timer, sec = 60, handle) => {
-    if (progressInterval != null) return;
-
-    //const timer = new Timer();
-    timer.start();
-    setInterval(() => {
-      const timeInSeconds = Math.min((timer.getTime() / 1000) * (100/sec), 100);
-      if (timeInSeconds >= 99) {
-        //handle().then()
-        timer.reset()
-        setProgress(1)
-      } else {
-        setProgress(timeInSeconds)
-      }
-      console.log(timeInSeconds)
-    }, 2000)
-
-    setProgressTimer(timer)
-  }
-
-  const clearProgressBar = () => {
-    progressTimer.reset()
-  }
-
-  const refreshAll = async () => {
-    console.log(state)
+  const refreshAll = async (): Promise<void> => {
     await refresh(state.wallet)
   }
 
@@ -912,18 +703,13 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       onSelectFirstToken,
       onSelectSecondToken,
       onSwitchTokens,
-      getSwapDetails,
-      getLiquidityDetails,
       tokens,
       firstTokenSelected: tokenState.tokens[tokenState.firstTokenSelected],
       secondTokenSelected: tokenState.tokens[tokenState.secondTokenSelected],
       isConnected,
-      onConfirmSwapConfig,
       slippageToleranceSelected,
       onIncreaseAllow,
-      onAddLiquidity,
       pairState,
-      onRemoveLiquidity,
       poolColumns,
       getPoolList,
       getTVLandVolume,
@@ -932,12 +718,12 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       setStaked,
       filter,
       getContractHashAgainstPackageHash,
-      onCalculateReserves,
-      setRemovingPopup,
-      isRemovingPopupOpen,
       gasPriceSelectedForSwapping: state.gasPriceSelectedForSwapping,
       gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity,
       refreshAll,
+      setLinkExplorer,
+      setProgressModal,
+      setConfirmModal,
       calculateUSDtokens
     }}>
       {children}

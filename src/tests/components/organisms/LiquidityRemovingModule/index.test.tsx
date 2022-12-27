@@ -1,19 +1,20 @@
 import '@testing-library/jest-dom'
 import {render, fireEvent} from '@testing-library/react'
-import {LiquidityRemovingModule} from "./index";
+import {LiquidityRemovingModule} from "../../../../components/organisms/LiquidityRemovingModule";
 
 import {jest} from "@jest/globals";
-import {ConfigContextWithReducer} from '../../../contexts/ConfigContext'
+import {TestContext} from "../../../../mocks/contexts/LiquidityContext/index.mocks";
+import {LiquidityContext} from "../../../../contexts/LiquidityContext";
 
 jest.mock('axios', () => {})
 jest.mock('@toruslabs/casper-embed', () => {})
 
 describe('Liquidity removing popup', () => {
-    test('Test 1 - it updates lp price', async () => {
-        //liq_popup | liq_half | liq_max | liq_input | liq_enable | liq_remove
 
+    test('Test 1 - it updates lp price', async () => {
         const component = render(
-            <ConfigContextWithReducer>
+          <TestContext>
+              <LiquidityContext>
                 <LiquidityRemovingModule isConnected={true}
                                          openedPopup={false}
                                          firstSymbol="WETH"
@@ -27,7 +28,8 @@ describe('Liquidity removing popup', () => {
                                          allowance={'10'}
                                          liquidityUSD={'15'}
                 />
-            </ConfigContextWithReducer>
+              </LiquidityContext>
+            </TestContext>
         )
 
         const popupButton = await component.findByTestId("liq_popup")

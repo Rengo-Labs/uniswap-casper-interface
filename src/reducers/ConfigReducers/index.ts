@@ -21,7 +21,7 @@ export const initialConfigState: ConfigState = {
   walletSelected: WalletName.CASPER_SIGNER,
   languagesSelected: process.env.REACT_APP_LANGUAGE_SELECTED,
   visualModeSelected: process.env.REACT_APP_VISUAL_MODEL_SELECTED,
-  slippageToleranceSelected: 0.05,
+  slippageToleranceSelected: parseFloat(process.env.REACT_APP_SLIPPAGE_TOLERANCE_SELECTED),
   gasPriceSelectedForSwapping: parseInt(process.env.REACT_APP_GAS_PRICE_FOR_SWAPPING),
   gasPriceSelectedForLiquidity: parseInt(process.env.REACT_APP_GAS_PRICE_FOR_LIQUIDITY)
 };

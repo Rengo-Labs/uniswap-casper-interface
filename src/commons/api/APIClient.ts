@@ -13,6 +13,7 @@ import {
 } from './types'
 
 import { ROUTER_PACKAGE_HASH } from '../../constant';
+import {Wallet} from "../wallet";
 
 /**
  * Client for working with Caspwerswap API

@@ -40,6 +40,7 @@ import SwitchSwap from '../../atoms/SwitchSwap';
 import { UpdatableCircle } from '../../atoms/UpdatableCircle';
 import { ProgressBarProviderContext } from '../../../contexts/ProgressBarContext';
 import styled from 'styled-components';
+import {SwapProviderContext} from "../../../contexts/SwapContext";
 
 const Wrapper = styled.section`
   display: flex;
@@ -60,15 +61,13 @@ const SwapNewModule = () => {
     firstTokenSelected,
     secondTokenSelected,
     isConnected,
-    onConfirmSwapConfig,
-    getSwapDetails,
     onIncreaseAllow,
     slippageToleranceSelected,
     gasPriceSelectedForLiquidity,
     refreshAll,
     calculateUSDtokens,
   } = useContext(ConfigProviderContext);
-  console.log('tokens', tokens);
+  const {onConfirmSwapConfig, getSwapDetails} = useContext(SwapProviderContext)
   const { clearProgress } = useContext(ProgressBarProviderContext);
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity);

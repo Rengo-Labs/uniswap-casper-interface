@@ -40,8 +40,9 @@ export const UpdatableCircle = ({ strokeWidth, handler }) => {
           fillOpacity={0}
           diameter={diameter}
           percentage={100}
-
           isPrincipal={false}
+          style={{strokeDasharray: `${diameter}px ${diameter}px`,
+            strokeDashoffset: `${((100 - 100) / 100 * diameter)}px`}}
         />
 
         <TrailCircular
@@ -49,10 +50,11 @@ export const UpdatableCircle = ({ strokeWidth, handler }) => {
           d={pathDescription}
           strokeWidth={strokeWidth}
           fillOpacity={0}
-
           isPrincipal={true}
           diameter={diameter}
           percentage={getProgress}
+          style={{strokeDasharray: `${diameter}px ${diameter}px`,
+            strokeDashoffset: `${((100 - getProgress) / 100 * diameter)}px`}}
         />
       </svg>
     </div>

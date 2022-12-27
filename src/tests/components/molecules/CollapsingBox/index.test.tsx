@@ -1,14 +1,12 @@
 import '@testing-library/jest-dom'
 
 import {render, fireEvent} from '@testing-library/react'
-import {CollapsingBox} from "./index";
+import {CollapsingBox} from "../../../../components/molecules/CollapsingBox";
 import {jest} from "@jest/globals";
 jest.mock('axios', () => {})
 jest.mock('@toruslabs/casper-embed', () => {})
 
 describe("Test for swap details", () => {
-    beforeEach(() => {
-    })
 
     test("Test 1 - Changing right column when I expand/click the swap detail box", async () => {
 
