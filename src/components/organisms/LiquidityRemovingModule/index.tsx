@@ -160,12 +160,11 @@ export const LiquidityRemovingModule = ({
                                     {
                                         freeAllowanceLiq < 0 ?
                                             <RemoveButtonContainer>
-
-                                                <LiquidityEnableButton data-testid="liq_enable" enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
+                                                <LiquidityEnableButton testid="liq_enable" enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
                                             </RemoveButtonContainer>
                                         :
                                             <RemoveButtonContainer>
-                                                <LiquidityRemoveButton data-testid="liq_remove" enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
+                                                <LiquidityRemoveButton testid="liq_remove" enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
                                             </RemoveButtonContainer>
                                     }
                             </PopupContent>

@@ -1,6 +1,3 @@
-import BigNumber from 'bignumber.js'
-
-import csprIcon from "../../assets/swapIcons/casperIcon.png"
 import wcsprIcon from "../../assets/swapIcons/wrappedCasperIcon.png"
 import csxIcon from "../../assets/swapIcons/coinstoxIcon.png"
 import wethIcon from "../../assets/swapIcons/wethIcon.svg"

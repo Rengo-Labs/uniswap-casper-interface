@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import { LiquidityContext } from './LiquidityContext'
-import { PoolsContext } from './PoolsContext'
+import { PoolsContext } from '../mocks/components/organisms/PoolsContext'
 import { ThemeContext } from './ThemeContext'
 import { TokensContext2 } from './TokenContext2'
 import { TokensContext } from './TokensContext'

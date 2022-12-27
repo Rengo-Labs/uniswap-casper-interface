@@ -1,9 +1,9 @@
 import React from 'react'
 import { ButtonStyle } from './styles'
 
-export const LiquidityEnableButton = ({ content, handler, enabled= true}) => {
+export const LiquidityEnableButton = ({ testid="", content, handler, enabled= true}) => {
     return (
-        <ButtonStyle enabled={enabled} onClick={ handler } disabled={!enabled}>
+        <ButtonStyle data-testid={testid} enabled={enabled} onClick={ handler } disabled={!enabled}>
             { content }
         </ButtonStyle>
     )

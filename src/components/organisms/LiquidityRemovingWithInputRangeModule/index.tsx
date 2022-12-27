@@ -73,10 +73,10 @@ export const LiquidityRemovingWithInputRangeModule = ({
 
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState(0)
-    const [lpValue, setLPValue] = useState("0.00")
+    const [lpValue, setLPValue] = useState(0.00)
     const [contractHash, setContractHash] = useState("")
-    const [firstValue, setFirstValue] = useState("0.00")
-    const [secondValue, setSecondValue] = useState("0.00")
+    const [firstValue, setFirstValue] = useState(0.00)
+    const [secondValue, setSecondValue] = useState(0.00)
 
     const {
         onIncreaseAllow,
@@ -87,8 +87,8 @@ export const LiquidityRemovingWithInputRangeModule = ({
     const {onRemoveLiquidity} = useContext(LiquidityProviderContext)
 
     const closeHandler = () => {
-        setIsOpened(!isOpened)
         setValue(0)
+        setIsOpened(!isOpened)
     }
 
     useEffect(() => {
@@ -123,16 +123,16 @@ export const LiquidityRemovingWithInputRangeModule = ({
 
     const setInputValue = (inputValue) => {
         setValue(inputValue)
-        setLPValue((inputValue * parseFloat(liquidity)/100).toFixed(8))
-        setFirstValue((inputValue * parseFloat(firstLiquidity)/100).toFixed(8))
-        setSecondValue((inputValue * parseFloat(secondLiquidity)/100).toFixed(8))
+        setLPValue((inputValue * parseFloat(liquidity)/100))
+        setFirstValue(inputValue * parseFloat(firstLiquidity)/100)
+        setSecondValue(inputValue * parseFloat(secondLiquidity)/100)
     }
 
     const enableButton = (value) => {
-        return isConnected && value && value > 0 && value <= parseFloat(liquidity).toFixed(8)
+        return isConnected && value && parseFloat(value) > 0 && value <= parseFloat(liquidity)
     }
 
-    const freeAllowanceLiq = parseFloat(allowance) - parseFloat(lpValue)
+    const freeAllowanceLiq = parseFloat(allowance) - lpValue
 
     return (
         <>
@@ -174,8 +174,8 @@ export const LiquidityRemovingWithInputRangeModule = ({
                                                 </TokenName>
                                             </SymbolContainer>
                                         </TColumn3>
-                                        <TColumn1Right>
-                                            {lpValue || "0.00"}
+                                        <TColumn1Right data-testid="liq_pair">
+                                            {lpValue.toFixed(8) || "0.00"}
                                         </TColumn1Right>
                                     </TColumn1>
                                 </LPContainer>
@@ -189,7 +189,7 @@ export const LiquidityRemovingWithInputRangeModule = ({
                                             <SymbolSubTitle>{firstSymbol}</SymbolSubTitle>
                                         </TColumn3>
                                         <TColumn1Right>
-                                            {firstValue}
+                                            {firstValue.toFixed(8)}
                                         </TColumn1Right>
                                     </TColumn1>
                                 </LPContainer>
@@ -203,7 +203,7 @@ export const LiquidityRemovingWithInputRangeModule = ({
                                             <SymbolSubTitle>{secondSymbol}</SymbolSubTitle>
                                         </TColumn3>
                                         <TColumn1Right>
-                                            {secondValue}
+                                            {secondValue.toFixed(8)}
                                         </TColumn1Right>
                                     </TColumn1>
                                 </LPContainer>
@@ -217,17 +217,15 @@ export const LiquidityRemovingWithInputRangeModule = ({
                                     {
                                         freeAllowanceLiq < 0 ?
                                             <RemoveButtonContainer>
-
-                                                <LiquidityEnableButton data-testid="liq_enable" enabled={enableButton(lpValue)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
+                                                <LiquidityEnableButton testid="liq_enable" enabled={enableButton(lpValue)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
                                             </RemoveButtonContainer>
                                         :
                                             <RemoveButtonContainer>
-                                                <LiquidityRemoveButton data-testid="liq_remove" enabled={enableButton(lpValue)} handler={removeLiquidity} content="Remove Liquidity"/>
+                                                <LiquidityRemoveButton testid="liq_remove" enabled={enableButton(lpValue)} handler={removeLiquidity} content="Remove Liquidity"/>
                                             </RemoveButtonContainer>
                                     }
                             </PopupContent>
                             <PopupBottom>
-
                                 <LiquidityCancelButton handler={closeHandler} content="Cancel"/>
                             </PopupBottom>
                         </PopupContainer>

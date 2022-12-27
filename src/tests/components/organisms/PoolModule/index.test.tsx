@@ -1,47 +1,46 @@
 import '@testing-library/jest-dom'
 import {BrowserRouter as Router} from 'react-router-dom';
 import {render, fireEvent} from '@testing-library/react'
-import {PoolModule} from "./index";
+import {PoolModule} from "../../../../components/organisms/PoolModule";
 
 import {jest} from "@jest/globals";
 jest.mock('axios', () => {})
 jest.mock('@toruslabs/casper-embed', () => {})
 
-import {getColumns, getPoolList, loadPoolDetailByUser} from "../../../contexts/PoolsContext";
-import {ConfigContextWithReducer} from "../../../contexts/ConfigContext";
+import {getColumns, getPoolList, loadPoolDetailByUser} from "../../../../mocks/components/organisms/PoolsContext";
+import {TestContext} from "../../../../mocks/contexts/PoolContext/index.mocks";
 
 describe("Test for Pool Module", () => {
 
     test("Test 1 - toggle for checking active pools only", async () => {
         const headers = getColumns()
-        const poolList = getPoolList()
+        const poolList = await getPoolList()
 
-        //we load PoolsContext and Router to use our context and useNavigate in PoolModule
         const poolModule = render(
-            <ConfigContextWithReducer>
+            <TestContext>
                 <Router>
-                    <PoolModule columns={headers} data={poolList as any}/>
+                    <PoolModule columns={headers} data={poolList}/>
                 </Router>
-            </ConfigContextWithReducer>
+            </TestContext>
         )
 
         const labelChangedBefore = await poolModule.getAllByRole("row")
-        expect(labelChangedBefore).toHaveLength(9)
+        expect(labelChangedBefore).toHaveLength(5)
 
         const button = await poolModule.findByTestId("toggle_id")
         fireEvent.click(button)
 
         //After clicking the toggle button, the poolList must be updated
-        const newPoolList = await loadPoolDetailByUser("hash", poolList)
+        const newPoolList = await loadPoolDetailByUser("hash")
         poolModule.rerender(
-            <ConfigContextWithReducer>
+            <TestContext>
                 <Router>
                     <PoolModule columns={headers} data={newPoolList}/>
                 </Router>
-            </ConfigContextWithReducer>
+            </TestContext>
         )
 
         const labelChanged = await poolModule.getAllByRole("row")
-        expect(labelChanged).toHaveLength(3);
+        expect(labelChanged).toHaveLength(1);
     })
 })

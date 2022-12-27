@@ -20,7 +20,7 @@ export const InputRange = ({ handler, rangeList=[0, 25, 50, 75, 100], initialVal
 
     return (
       <WrappedInputRange className={"wrap"}>
-        <StyledInputRange type="range"
+        <StyledInputRange data-testid="input_range" type="range"
                           min={0}
                           max={100}
                           step={5}
