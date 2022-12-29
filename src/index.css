@@ -19,6 +19,24 @@
   font-weight: light;
 }
 
+@font-face {
+  font-family: "MiryadPro";
+  src: local("MiryadPro"),
+  url("./assets/fonts/MiryadPro/MYRIADPRO-REGULAR.OTF") format("opentype");
+}
+
+@font-face {
+  font-family: "MiryadProSemiBold";
+  src: local("MiryadPro"),
+  url("./assets/fonts/MiryadPro/MYRIADPRO-SEMIBOLD.OTF") format("opentype");
+}
+
+@font-face {
+  font-family: "MiryadProLight";
+  src: local("MiryadPro"),
+  url("./assets/fonts/MiryadPro/MyriadPro-Light.otf") format("opentype");
+}
+
 /*
 body {
   margin: 0;

@@ -5,6 +5,11 @@ const NewTokenDetailItems3Styled = styled.section`
     grid-row: 3/4;
     justify-self: center;
     cursor: pointer;
+    font-family: 'MiryadProLight';
+    font-weight: 400;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    color: ${(props) => props.theme.NewBlackColor};
 `
 
 interface NewTokenDetailItems3NSMProps {
