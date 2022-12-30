@@ -9,7 +9,7 @@ export const Container = styled.main`
     display: grid;
     grid-template: auto 1fr auto/ 1fr;
     background-image: url(${BackgroundImage});
-    background-position: initial;
+    background-position: center;
     background-size: cover;
 `
 export const ContainerDD = ({children}) => {
