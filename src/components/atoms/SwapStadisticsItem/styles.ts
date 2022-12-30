@@ -11,6 +11,7 @@ export const Wrapper = styled.div`
   border: 1px solid ${props => props.theme.NewGreyColor};
   border-radius: 25px;
   padding: 0 1rem;
+  background-color: white;
 `
 
 export const PriceContainer = styled.div`

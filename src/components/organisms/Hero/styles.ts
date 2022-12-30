@@ -16,7 +16,7 @@ export const HeroStyles = styled.section`
   }
 
   @media ${device.mobileL}{
-    grid-template:1fr 1fr / auto;
+    grid-template: 0.9fr 0.9fr / auto;
   }
 
   @media ${device.tablet} {
