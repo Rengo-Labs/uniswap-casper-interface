@@ -6,7 +6,7 @@ const NewSwapContainer = styled.section`
     justify-self: center;
     height: 100%;
     padding: 1rem;
-    border:1px solid ${props => props.theme.NewGrayColor};
+    border:1px solid ${props => props.theme.NewBlackColor};
     border-radius: 20px;
     display: grid;
     grid-template-columns: auto 1fr;

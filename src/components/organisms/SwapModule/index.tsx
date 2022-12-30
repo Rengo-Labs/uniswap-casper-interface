@@ -300,7 +300,7 @@ const SwapNewModule = () => {
                 <NewTokenDetailItems1NSM
                   handleClick={() => searchModalASetter(true)}
                 >
-                  From
+                  from
                 </NewTokenDetailItems1NSM>
                 <NewTokenDetailItems2NSM
                   src={firstTokenSelected.logoURI}
@@ -398,7 +398,7 @@ const SwapNewModule = () => {
                 <NewTokenDetailItems1NSM
                   handleClick={() => searchModalASetter(true)}
                 >
-                  To
+                  to
                 </NewTokenDetailItems1NSM>
                 <NewTokenDetailItems2NSM
                   src={secondTokenSelected.logoURI}
