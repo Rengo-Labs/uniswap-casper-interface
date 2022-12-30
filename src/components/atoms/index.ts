@@ -89,3 +89,4 @@ export {IconOutlineSwap} from './IconOutlineSwap'
 export {LiquidityFarmIcon} from './LiquidityFarmIcon'
 export { MenuItem } from './MenuItem';
 export { SwapStadisticsItem } from './SwapStadisticsItem'
+export { ProgressBar } from './ProgressBar'
