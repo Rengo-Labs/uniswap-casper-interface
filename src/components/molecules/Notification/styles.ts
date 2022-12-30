@@ -41,7 +41,7 @@ export const TitleWrapper = styled.div`
 export const Title = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  font-family: 'MiryadPro';
+  font-family: 'MyriadPro';
   letter-spacing:  0.02em;
   color: ${(props) => props.theme.NewBlackColor};
 `;
@@ -50,7 +50,7 @@ export const SubTitle = styled.p`
   font-size: .8rem;
   font-weight: 400;
   line-height: 1rem;
-  font-family: 'MiryadPro';
+  font-family: 'MyriadPro';
   letter-spacing: 0.02em;
   color: ${(props) => props.theme.NewBlackColor};
 `;

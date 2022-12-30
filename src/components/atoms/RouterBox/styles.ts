@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const RouterColumnLeft = styled.section`
   width: 50%;
   text-align: start;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -14,7 +14,7 @@ export const RouterColumnLeft = styled.section`
 export const RouterColumnRight = styled.section`
   width: 50%;
   text-align: end;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

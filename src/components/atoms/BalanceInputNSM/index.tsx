@@ -5,7 +5,7 @@ export const BalanceInput = styled.input`
   width: 100%;
   height: 100%;
   text-align: right;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 22px;

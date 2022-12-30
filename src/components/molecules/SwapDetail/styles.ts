@@ -24,7 +24,7 @@ export const CollapsingRow = styled.div`
 export const CollapsingColumnLeft = styled.div`
   flex: 1;
   text-align: left;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

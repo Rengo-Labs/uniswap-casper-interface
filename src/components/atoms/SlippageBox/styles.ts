@@ -9,7 +9,7 @@ export const SlippageContainer = styled.section`
 export const SlippageColumnLeft = styled.section`
   width: 50%;
   text-align: start;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -20,7 +20,7 @@ export const SlippageColumnLeft = styled.section`
 export const SlippageColumnRight = styled.section`
   width: 50%;
   text-align: end;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

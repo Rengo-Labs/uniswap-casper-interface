@@ -15,7 +15,7 @@ export const ExchangeRateRow = styled.section`
 export const ExchangeRateColumnLeft = styled.section`
   padding-right: 10px;
   text-align: left;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 22px;
@@ -25,7 +25,7 @@ export const ExchangeRateColumnLeft = styled.section`
 `;
 export const ExchangeRateColumnRight = styled.section`
   text-align: left;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 22px;

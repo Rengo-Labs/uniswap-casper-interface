@@ -5,7 +5,7 @@ const NewTokenDetailItems3Styled = styled.section`
     grid-row: 3/4;
     justify-self: center;
     cursor: pointer;
-    font-family: 'MiryadProLight';
+    font-family: 'MyriadProLight';
     font-weight: 400;
     font-size: 1rem;
     letter-spacing: 0.02em;

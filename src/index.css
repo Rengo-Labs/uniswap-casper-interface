@@ -20,21 +20,21 @@
 }
 
 @font-face {
-  font-family: "MiryadPro";
-  src: local("MiryadPro"),
-  url("./assets/fonts/MiryadPro/MYRIADPRO-REGULAR.OTF") format("opentype");
+  font-family: "MyriadPro";
+  src: local("MyriadPro"),
+  url("./assets/fonts/MyriadPro/MYRIADPRO-REGULAR.OTF") format("opentype");
 }
 
 @font-face {
-  font-family: "MiryadProSemiBold";
-  src: local("MiryadPro"),
-  url("./assets/fonts/MiryadPro/MYRIADPRO-SEMIBOLD.OTF") format("opentype");
+  font-family: "MyriadProSemiBold";
+  src: local("MyriadPro"),
+  url("./assets/fonts/MyriadPro/MYRIADPRO-SEMIBOLD.OTF") format("opentype");
 }
 
 @font-face {
-  font-family: "MiryadProLight";
-  src: local("MiryadPro"),
-  url("./assets/fonts/MiryadPro/MyriadPro-Light.otf") format("opentype");
+  font-family: "MyriadProLight";
+  src: local("MyriadPro"),
+  url("./assets/fonts/MyriadPro/MyriadPro-Light.otf") format("opentype");
 }
 
 /*

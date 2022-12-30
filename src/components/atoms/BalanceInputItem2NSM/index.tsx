@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 const BalanceInputItem2Styled = styled.div`
   align-self: center;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

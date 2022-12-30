@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 const NewBalanceSpace = styled.section`
   justify-self: end;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 16px;

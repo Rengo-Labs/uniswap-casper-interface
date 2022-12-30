@@ -8,7 +8,7 @@ export const ButtonSpaceStyled = styled.div`
   align-items: center;
   flex-direction: column;
   gap: 10px;
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
