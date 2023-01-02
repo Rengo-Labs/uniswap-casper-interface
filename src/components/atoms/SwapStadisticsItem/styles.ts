@@ -8,7 +8,7 @@ export const Wrapper = styled.div`
   display: flex;
   gap: 1.5rem;
   align-items: center;
-  border: 1px solid ${props => props.theme.NewGreyColor};
+  border: 1px solid ${props => props.theme.NewBlackColor};
   border-radius: 25px;
   padding: 0 1rem;
 `
@@ -31,10 +31,10 @@ export const PriceTitle = styled.div`
   font-size: .9rem;
   font-weight: 500;
   color: #000;
-  font-family: 'EpilogueRegular';
+  font-family: 'Epilogue';
 `
 export const PriceValue = styled.div<IPriceValue>`
   font-size: .9rem;
   color: ${props => props.percent ? props.theme.NewGreenColor : props.theme.NewGrayColor};
-  font-family:  'EpilogueLight' ;
+  font-family:  'Epilogue' ;
 `

@@ -12,28 +12,9 @@ interface IIconStyledProps {
 }
 
 const IconStyled = ({ Icon, size, width, height, style = {} }: IIconStyledProps) => {
-  const IconStyled = styled(Icon)`
-    height: ${height || size}px;
-    width: ${width || size}px;
-
-    @media ${device.mobileS} {
-      width: 32px;
-      height: 32px;
-    }
-
-    @media ${device.mobileM} {
-      width: 32px;
-      height: 32px;
-    }
-
-    @media ${device.tablet} {
-      width:  ${width || size}px;
-      height: ${height || size}px;
-    }
-  `;
   return (
     <IconContainerStyle size={size} style={style} width={width} height={height}>
-      <IconStyled />
+      <Icon/>
     </IconContainerStyle>
   );
 };

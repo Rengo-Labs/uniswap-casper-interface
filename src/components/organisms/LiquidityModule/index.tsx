@@ -302,7 +302,7 @@ const LiquidityNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>From</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>from</NewTokenDetailItems1NSM>
               <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
               <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
@@ -357,7 +357,7 @@ const LiquidityNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>To</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>to</NewTokenDetailItems1NSM>
               <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
               <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{secondTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
