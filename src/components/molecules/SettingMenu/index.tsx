@@ -1,5 +1,4 @@
-import { useReducer, useState } from 'react';
-import { initialConfigState, ConfigReducer, ConfigActions } from '../../../reducers/ConfigReducers';
+import { useState } from 'react';
 import {
   StyledSettingMenu,
   StyleSettingValue,
@@ -10,22 +9,20 @@ import {
   StyleSettingValueInputContainer,
   StyleTitle,
 } from './styles';
+import { globalStore } from '../../../store/store'
 
 export const SettingMenu = () => {
-
-  const [state, dispatch] = useReducer(ConfigReducer, initialConfigState);
+  const { updateSlippageTolerance, slippageTolerance} = globalStore();
   
-  const [slippageTolerance, setSlippageTolerance] = useState<number>(state.slippageToleranceSelected || 0);
+  const [slippageToleranceValue, setSlippageToleranceValue] = useState<number>(slippageTolerance || 0);
 
-  const handleSlippageTolerance = (value: number) => {
-    setSlippageTolerance(value);
+  const handleSlippageTolerance = (value: any) => {
+    setSlippageToleranceValue(value);
   };
 
-  console.log('stateSettings', state.slippageToleranceSelected)
-
   const handleSaveSlippageTolerance = () => {
-    if(slippageTolerance !== 0){
-      dispatch({ type: ConfigActions.SELECT_SLIPPAGE, payload: { slippageToleranceSelected: slippageTolerance } });
+    if(slippageToleranceValue !== 0){
+      updateSlippageTolerance(Number(slippageToleranceValue));
     }
   };
 
@@ -34,14 +31,14 @@ export const SettingMenu = () => {
     <StyledSettingMenu>
       <StyleTitle>Slippage Tolerance</StyleTitle>
       <StyleSettingValueContainer>
-        <StyleSettingValue customColor={slippageTolerance == 0.1} onClick={() => handleSlippageTolerance(0.1)}>0.1%</StyleSettingValue>
-        <StyleSettingValue customColor={slippageTolerance == 0.5} onClick={() => handleSlippageTolerance(0.5)}>0.5%</StyleSettingValue>
-        <StyleSettingValue customColor={slippageTolerance == 1.0} onClick={() => handleSlippageTolerance(1.0)}>1.0%</StyleSettingValue>
+        <StyleSettingValue customColor={slippageToleranceValue == 0.1} onClick={() => handleSlippageTolerance(0.1)}>0.1%</StyleSettingValue>
+        <StyleSettingValue customColor={slippageToleranceValue == 0.5} onClick={() => handleSlippageTolerance(0.5)}>0.5%</StyleSettingValue>
+        <StyleSettingValue customColor={slippageToleranceValue == 1.0} onClick={() => handleSlippageTolerance(1.0)}>1.0%</StyleSettingValue>
         <StyleSettingValueInputContainer>
-          <StyleSettingValueInput type='text' onChange={(e:  React.ChangeEvent<HTMLInputElement>) => handleSlippageTolerance(Number(e.target.value))}/> %
+          <StyleSettingValueInput type='text' onChange={(e:  React.ChangeEvent<HTMLInputElement>) => handleSlippageTolerance(e.target.value)} value={slippageToleranceValue}/> %
         </StyleSettingValueInputContainer>
       </StyleSettingValueContainer>
-      <StyleSettingValueInputButton disabled={slippageTolerance === 0} onClick={() => handleSaveSlippageTolerance()}>
+      <StyleSettingValueInputButton disabled={!slippageToleranceValue} onClick={() => handleSaveSlippageTolerance()}>
         <StyleSettingValueInputButtonText>
           Save
         </StyleSettingValueInputButtonText>

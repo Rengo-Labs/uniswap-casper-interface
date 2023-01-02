@@ -11,7 +11,7 @@ export const StyledSettingMenu = styled.ul`
   justify-self: center;
   height: 227px;
   width: 499px;
-  border: 1px solid #080808;
+  border: 1px solid ${(props) => props.theme.NewBlackColor};
   border-radius: 10px;
   z-index: 50;
   margin-left: 790px;
@@ -50,7 +50,7 @@ export const StyleSettingValue = styled.div<ISettingValueProp>`
   align-items: center;
   padding: 16px 32px;
   gap: 4px;
-  border: 1px solid #080808;
+  border: 1px solid ${(props) => props.theme.NewBlackColor};
   border-radius: 12px;
 `;
 
@@ -70,6 +70,7 @@ export const StyleSettingValueInput = styled.input`
   width: 100%;
   padding: 16px;
   border-radius: 12px;
+  color: ${(props) => props.theme.NewPurpleColor};
   &:focus {
     outline: none;
   }
@@ -90,7 +91,7 @@ export const StyleSettingValueInputButton = styled.button`
 `;
 
 export const StyleSettingValueInputButtonText = styled.h4`
-  font-family: 'Myriad Pro';
+  font-family: 'MyriadPro';
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
