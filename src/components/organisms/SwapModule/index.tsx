@@ -69,7 +69,7 @@ const SwapNewModule = () => {
     calculateUSDtokens,
   } = useContext(ConfigProviderContext);
   const {onConfirmSwapConfig, getSwapDetails} = useContext(SwapProviderContext)
-  const { clearProgress } = useContext(ProgressBarProviderContext);
+  const { progressBar } = useContext(ProgressBarProviderContext);
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity);
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
@@ -105,8 +105,10 @@ const SwapNewModule = () => {
   }, [isConnected]);
 
   useEffect(() => {
-    clearProgress();
-  }, []);
+    progressBar(async () => {
+      await changeTokenA(amountSwapTokenA)
+    })
+  }, [amountSwapTokenA]);
 
   async function onConnect() {
     onConnectWallet();

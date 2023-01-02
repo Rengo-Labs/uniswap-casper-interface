@@ -74,7 +74,7 @@ const LiquidityNewModule = () => {
     onAddLiquidity,
     getLiquidityDetails
   } = useContext(LiquidityProviderContext)
-  const {clearProgress} = useContext(ProgressBarProviderContext)
+  const { progressBar } = useContext(ProgressBarProviderContext)
 
   const userPairData = Object.entries(pairState).map(([k, v]) => v)
 
@@ -110,17 +110,14 @@ const LiquidityNewModule = () => {
       setRemovingPopup(false)
     }
 
-    updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
+    updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected).then()
   }, [isConnected])
 
   useEffect(() => {
-    const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
-    console.log(totalLP)
-    setTotalLiquidity(totalLP)
-    calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
-
-    clearProgress()
-  }, [])
+    progressBar(async () => {
+      await changeTokenA(amountSwapTokenA)
+    })
+  }, [amountSwapTokenA])
 
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
@@ -296,7 +293,6 @@ const LiquidityNewModule = () => {
   const userPairDataNonZero = userPairData.filter(v => parseFloat(v.balance) > 0)
 
   const refreshPrices = async () => {
-    console.log("refreshPrices", amountSwapTokenA)
     await refreshAll()
     await changeTokenA(amountSwapTokenA)
   }
