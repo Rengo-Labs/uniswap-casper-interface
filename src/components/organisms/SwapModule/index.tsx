@@ -41,6 +41,7 @@ import { UpdatableCircle } from '../../atoms/UpdatableCircle';
 import { ProgressBarProviderContext } from '../../../contexts/ProgressBarContext';
 import styled from 'styled-components';
 import {SwapProviderContext} from "../../../contexts/SwapContext";
+import { globalStore } from '../../../store/store';
 
 const Wrapper = styled.section`
   display: flex;
@@ -68,14 +69,11 @@ const SwapNewModule = () => {
     calculateUSDtokens,
   } = useContext(ConfigProviderContext);
   const {onConfirmSwapConfig, getSwapDetails} = useContext(SwapProviderContext)
-  const { clearProgress } = useContext(ProgressBarProviderContext);
+  const { progressBar } = useContext(ProgressBarProviderContext);
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity);
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
-  const [slippSwapToken, slippSwapTokenSetter] = useState<any>(
-    slippageToleranceSelected
-  );
   const [priceImpact, priceImpactSetter] = useState<any>(0);
   const [feeToPay, feeToPaySetter] = useState<any>(0.03);
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
@@ -87,6 +85,8 @@ const SwapNewModule = () => {
   const [lastChanged, setLastChanged] = useState('');
   const [valueAUSD, setValueAUSD] = useState('0.00');
   const [valueBUSD, setValueBUSD] = useState('0.00');
+
+  const { slippageTolerance, updateSlippageTolerance } = globalStore()
 
   useEffect(() => {
     const t0 = searchParams.get('token0');
@@ -105,12 +105,15 @@ const SwapNewModule = () => {
   }, [isConnected]);
 
   useEffect(() => {
-    clearProgress();
-  }, []);
+    progressBar(async () => {
+      await changeTokenA(amountSwapTokenA)
+    })
+  }, [amountSwapTokenA]);
 
   async function onConnect() {
     onConnectWallet();
   }
+
 
   function onSwitchTokensHandler() {
     onSwitchTokens();
@@ -133,7 +136,7 @@ const SwapNewModule = () => {
     const waiting = await onConfirmSwapConfig(
       amountSwapTokenA,
       amountSwapTokenB,
-      slippSwapToken,
+      slippageTolerance,
       gasFee
     );
     resetAll();
@@ -150,12 +153,10 @@ const SwapNewModule = () => {
       tokenB,
       value,
       token,
-      slippSwapToken,
+      slippageTolerance,
       feeToPay
     );
     const ps = [getSwapDetailP];
-
-    console.log('value', value);
 
     const [getSwapDetailResponse] = await Promise.all(ps);
 
@@ -184,7 +185,7 @@ const SwapNewModule = () => {
       firstTokenSelected
     );
   }
-
+  
   async function changeTokenA(value: string) {
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
@@ -489,9 +490,9 @@ const SwapNewModule = () => {
               gasFee={gasFee}
               gasFeeSetter={gasFeeSetter}
               gasFeeEnabled={true}
-              slippage={slippSwapToken}
+              slippage={slippageTolerance}
               slippageEnabled={true}
-              slippageSetter={slippSwapTokenSetter}
+              slippageSetter={updateSlippageTolerance}
               fullExpanded={false}
             />
           )}

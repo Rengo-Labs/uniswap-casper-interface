@@ -7,13 +7,13 @@ export const StyledCommunityMenu = styled.ul`
   justify-self: center;
   height: 148px;
   width: 180px;
-  border: 1px solid ${(props) => props.theme.NewGreyColor};
+  border: 1px solid ${(props) => props.theme.NewBlackColor};
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   z-index: 50;
-  margin-left: 460px;
+  margin-left: 470px;
   margin-top: -100px;
   & > :first-child {
     border-radius: 10px 10px 0 0;
