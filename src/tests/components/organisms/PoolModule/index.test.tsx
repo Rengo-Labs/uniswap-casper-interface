@@ -9,6 +9,7 @@ jest.mock('@toruslabs/casper-embed', () => {})
 
 import {getColumns, getPoolList, loadPoolDetailByUser} from "../../../../mocks/components/organisms/PoolsContext";
 import {TestContext} from "../../../../mocks/contexts/PoolContext/index.mocks";
+import {ProgressBarContextWithReducer} from "../../../../contexts/ProgressBarContext";
 
 describe("Test for Pool Module", () => {
 
@@ -18,9 +19,11 @@ describe("Test for Pool Module", () => {
 
         const poolModule = render(
             <TestContext>
-                <Router>
-                    <PoolModule columns={headers} data={poolList}/>
-                </Router>
+                <ProgressBarContextWithReducer>
+                    <Router>
+                        <PoolModule columns={headers} data={poolList}/>
+                    </Router>
+                </ProgressBarContextWithReducer>
             </TestContext>
         )
 
@@ -34,9 +37,11 @@ describe("Test for Pool Module", () => {
         const newPoolList = await loadPoolDetailByUser("hash")
         poolModule.rerender(
             <TestContext>
-                <Router>
-                    <PoolModule columns={headers} data={newPoolList}/>
-                </Router>
+                <ProgressBarContextWithReducer>
+                    <Router>
+                        <PoolModule columns={headers} data={newPoolList}/>
+                    </Router>
+                </ProgressBarContextWithReducer>
             </TestContext>
         )
 
