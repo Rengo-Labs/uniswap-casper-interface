@@ -8,7 +8,7 @@ export const Wrapper = styled.div`
   display: flex;
   gap: 1.5rem;
   align-items: center;
-  border: 1px solid ${props => props.theme.NewGreyColor};
+  border: 1px solid ${props => props.theme.NewBlackColor};
   border-radius: 25px;
   padding: 0 1rem;
   background-color: white;
