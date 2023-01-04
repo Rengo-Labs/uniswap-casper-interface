@@ -81,7 +81,7 @@ export const PopupTitle = styled.div`
     margin-top: 0;
     background-color: ${props => props.theme.mainBackgroundColor};
     color: ${props => props.theme.secondBackgroundColor};
-    font-family: EpilogueLight;
+    font-family: 'EpilogueLight';
     font-size: 19px;
     border-bottom: .5px solid black;
 `
@@ -157,7 +157,7 @@ export const DisclaimerContent = styled.div`
     color: black;
     padding: 5px;
     text-align: center;
-    font-family: EpilogueLight;
+    font-family: 'EpilogueLight';
     margin-bottom: 1.5vh;
     font-size: 0.8vw;
   
@@ -176,4 +176,8 @@ export const WalletSelectionImageStyled = styled.img`
     width: 36px;
     height: 36px;
     border-radius: 50%;
+`
+
+export const ButtonText = styled.h2`
+  font-family: 'EpilogueLight';
 `

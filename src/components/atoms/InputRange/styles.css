@@ -1,0 +1,45 @@
+datalist {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    writing-mode: horizontal-tb;
+
+}
+
+option {
+    padding: 0;
+}
+
+input[type=range] {
+    display: block;
+    height: 20px;
+    appearance: none;
+}
+
+input[type=range]:focus {
+    background-color: transparent;
+    border: 0 solid transparent;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    height: 4px;
+    cursor: pointer;
+    background: rgba(113, 95, 245, 1);
+}
+
+input[type=range]::-webkit-slider-thumb {
+    border: 1px solid #333;
+    border-radius: 50%;
+    height: 15px;
+    width: 15px;
+    background-color: fuchsia;
+    -webkit-appearance: none;
+    margin-top: -6px;
+}
+
+input[type=range]::-moz-range-thumb {
+    border: 1px solid transparent;
+    height: 20px;
+    width: 6px;
+    background: #fff;
+}

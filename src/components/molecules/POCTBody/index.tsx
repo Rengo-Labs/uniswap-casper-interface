@@ -1,10 +1,11 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { TBody} from './styles'
 import {CollapsingRow} from '../'
 import { v4 as uuidv4 } from 'uuid'
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { Row, TableBodyPropGetter, TableBodyProps } from 'react-table'
 import { PairData } from '../../../reducers/PairsReducer'
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 
 export interface POCTBodyProps {
     getTableBodyProps: (propGetter?: TableBodyPropGetter<PairData>) => TableBodyProps,
@@ -17,7 +18,8 @@ export const POCTBody = ({
     rows, 
     prepareRow 
 }: POCTBodyProps) => {
-    const { isStaked, filter, setRemovingPopup } = React.useContext(ConfigProviderContext)
+    const { isStaked, filter } = React.useContext(ConfigProviderContext)
+    const {setRemovingPopup} = useContext(LiquidityProviderContext)
 
     return (
         <TBody {...getTableBodyProps()}>

@@ -45,6 +45,8 @@ export const lightTheme = {
   NewPurpleColor: "rgba(113, 95, 245, 1)",
   NewGrayColor: "#999999",
   NewGreyColor: "#CCCCCC",
+  NewGreenColor: "#1DC90A",
+  NewBlackColor: "#080808",
   OPEN_WIDTH: "280px",
   CLOSED_WIDTH: "108px",
   NewNavigationCCBG:"rgb(120,100,244)"

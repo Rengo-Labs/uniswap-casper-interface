@@ -1,18 +1,15 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import {
   HeroTitleDD,
-  HighlightDD,
-  HeroSubtitleDD,
   ContainerDD,
   HeroHeaderDD,
   HeroFooterDD,
-  CircularButton,
   SquareButton,
   SquareGrayButton,
   HomeFooterDD,
 } from '../../atoms';
 import { ActionsBar, GroupIconButtons } from '../../molecules';
-import { Hero, GridNavbar } from '../../organisms';
+import { Hero, GridNavbar, GridNavbarFooter } from '../../organisms';
 
 import { ReactComponent as WordMarkIcon } from '../../../assets/newIcons/casperswap-wordmark.svg';
 import { ReactComponent as CasperIcon } from '../../../assets/logo.svg';
@@ -20,8 +17,9 @@ import { ReactComponent as Twitter } from '../../../assets/newIcons/twitter.svg'
 import { ReactComponent as Discord } from '../../../assets/newIcons/discord.svg';
 import { ReactComponent as Telegram } from '../../../assets/newIcons/telegram.svg';
 import { ReactComponent as Gitbook } from '../../../assets/newIcons/gitbook.svg';
-import { NewIcons } from '../../../components/atoms';
-import {TWITTER_URL, DISCORD_URL, TELEGRAM_URL, GITBOOK_URL } from "../../../constant";
+import { ReactComponent as Medium } from '../../../assets/newIcons/medium.svg';
+import { NewIcons, CasperIcons } from '../../../components/atoms';
+import {TWITTER_URL, DISCORD_URL, TELEGRAM_URL, GITBOOK_URL, MEDIUM_URL } from "../../../constant";
 
 interface HomePropsInterface {
   title: any;
@@ -50,26 +48,33 @@ export const HomeTemplate = ({
   return (
     <ContainerDD>
       <GridNavbar>
-        <a
-          href='/'
-          style={{
-            display: 'grid',
-            justifyItems: 'start',
-            alignItems: 'center',
-          }}
-        >
+        <a href='/'>
           <WordMarkIcon style={{ fill: '#FFF' }} />
         </a>
-        <a href='/' style={{ display: 'grid', placeItems: 'center' }}>
-          <NewIcons Icon={CasperIcon} size={64} style={{ fill: '#FFF' }} />
+        <a href='/'>
+          <CasperIcons Icon={CasperIcon} width={36} height={44} style={{ fill: '#FFF' }} />
         </a>
         <GroupIconButtons>
           <a
-            href={TWITTER_URL}
-            target='_blank'
-            style={{ display: 'grid', placeItems: 'center' }}
+              href={GITBOOK_URL}
+              target='_blank'
+              style={{ display: 'grid', placeItems: 'center' }}
           >
-            <NewIcons Icon={Twitter} size={32} style={{ fill: '#FFF' }} />
+            <NewIcons Icon={Gitbook} size={32} style={{ fill: '#FFF' }} />
+          </a>
+          <a
+              href={MEDIUM_URL}
+              target='_blank'
+              style={{ display: 'grid', placeItems: 'center' }}
+          >
+            <NewIcons Icon={Medium} size={32} style={{ fill: '#FFF' }} />
+          </a>
+          <a
+              href={TELEGRAM_URL}
+              target='_blank'
+              style={{ display: 'grid', placeItems: 'center' }}
+          >
+            <NewIcons Icon={Telegram} size={32} style={{ fill: '#FFF' }} />
           </a>
           <a
               href={DISCORD_URL}
@@ -79,18 +84,11 @@ export const HomeTemplate = ({
             <NewIcons Icon={Discord} size={32} style={{ fill: '#FFF' }} />
           </a>
           <a
-            href={TELEGRAM_URL}
+            href={TWITTER_URL}
             target='_blank'
             style={{ display: 'grid', placeItems: 'center' }}
           >
-            <NewIcons Icon={Telegram} size={32} style={{ fill: '#FFF' }} />
-          </a>
-          <a
-              href={GITBOOK_URL}
-              target='_blank'
-              style={{ display: 'grid', placeItems: 'center' }}
-          >
-            <NewIcons Icon={Gitbook} size={32} style={{ fill: '#FFF' }} />
+            <NewIcons Icon={Twitter} size={32} style={{ fill: '#FFF' }} />
           </a>
         </GroupIconButtons>
 
@@ -101,18 +99,57 @@ export const HomeTemplate = ({
       <Hero>
         <HeroHeaderDD>
           <HeroTitleDD>
-            Casper<HighlightDD>Swap</HighlightDD>
+            The most liquid trading and capital-efficient liquidity marketplace on Casper
           </HeroTitleDD>
-          <HeroSubtitleDD>
-            The most liquid trading and capital-efficient liquidity marketplace on Casper.
-          </HeroSubtitleDD>
         </HeroHeaderDD>
         <HeroFooterDD>
           <SquareButton content={content} handler={handler} />
-          <CircularButton content={'Read Document'} handler={handler} />
+          <SquareButton content={'Testnet Coming Soon'}  handler={'#'} />
         </HeroFooterDD>
       </Hero>
       <HomeFooterDD>
+        <GridNavbarFooter>
+          <a href='/'>
+            <WordMarkIcon style={{ fill: '#FFF' }} />
+          </a>
+          <GroupIconButtons>
+            <a
+                href={GITBOOK_URL}
+                target='_blank'
+                style={{ display: 'grid', placeItems: 'center' }}
+            >
+              <NewIcons Icon={Gitbook} size={32} style={{ fill: '#FFF' }} />
+            </a>
+            <a
+                href={MEDIUM_URL}
+                target='_blank'
+                style={{ display: 'grid', placeItems: 'center' }}
+            >
+              <NewIcons Icon={Medium} size={32} style={{ fill: '#FFF' }} />
+            </a>
+            <a
+                href={TELEGRAM_URL}
+                target='_blank'
+                style={{ display: 'grid', placeItems: 'center' }}
+            >
+              <NewIcons Icon={Telegram} size={32} style={{ fill: '#FFF' }} />
+            </a>
+            <a
+                href={DISCORD_URL}
+                target='_blank'
+                style={{ display: 'grid', placeItems: 'center' }}
+            >
+              <NewIcons Icon={Discord} size={32} style={{ fill: '#FFF' }} />
+            </a>
+            <a
+                href={TWITTER_URL}
+                target='_blank'
+                style={{ display: 'grid', placeItems: 'center' }}
+            >
+              <NewIcons Icon={Twitter} size={32} style={{ fill: '#FFF' }} />
+            </a>
+          </GroupIconButtons>
+        </GridNavbarFooter>
         {
           showTVL &&
             <>

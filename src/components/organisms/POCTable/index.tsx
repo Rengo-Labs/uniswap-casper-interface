@@ -11,7 +11,7 @@ export const POCTable = ({
     getTableBodyProps, 
     rows, 
     prepareRow,
-}: TableInstance<PairData>) => {
+}: TableInstance<any>) => {
     return (
         <POCTableStyled {...getTableProps()}>
             <POCTHead headerGroups={headerGroups} />

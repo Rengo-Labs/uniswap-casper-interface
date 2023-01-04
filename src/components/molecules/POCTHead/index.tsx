@@ -1,9 +1,10 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 import { THeadStyled, THeader6Styled, THeader3Styled, THeaderStyled, THeaderTitle } from './styles'
 import { v4 as uuidv4 } from 'uuid';
 import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
+import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 
 const Header = ({headerGroup, header } : any) => {
     return <THeader3Styled {...headerGroup.getHeaderGroupProps()} {...header.getHeaderProps(header.getSortByToggleProps())} key={uuidv4()}>
@@ -21,10 +22,15 @@ const Header = ({headerGroup, header } : any) => {
 
 export const POCTHead = ({ headerGroups }) => {
     const {refreshAll} = useContext(ConfigProviderContext)
+    const {progressBar} = useContext(ProgressBarProviderContext)
 
-    //TODO we should restart the progress bar, but we don't have any useEffect for the liquidity pool page.
+    useEffect(() => {
+      progressBar(async () => {
+        await refreshAll()
+      })
+    }, [])
+
     const refreshPrices = async () => {
-        console.log("refresh Pool List")
         await refreshAll()
     }
 

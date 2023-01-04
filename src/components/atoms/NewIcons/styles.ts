@@ -30,4 +30,24 @@ export const IconContainerStyle = styled.div.attrs(
     height: ${(props) => props.height || props.size}px;
     width: ${(props) => props.width || props.size}px;
   }
+
+  & > * {
+    height: ${(props) => props.height || props.size}px;
+    width: ${(props) => props.width || props.size}px;
+
+    @media ${device.mobileS} {
+      width: 32px;
+      height: 32px;
+    }
+
+    @media ${device.mobileM} {
+      width: 32px;
+      height: 32px;
+    }
+
+    @media ${device.tablet} {
+      width:  ${(props) => props.width || props.size}px;
+      height: ${(props) => props.height || props.size}px;
+    }
+  }
 `;

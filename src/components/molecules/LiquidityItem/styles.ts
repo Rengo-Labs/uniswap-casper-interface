@@ -2,8 +2,8 @@ import styled from 'styled-components'
 
 export const SymbolContainer = styled.div`
     flex: 3;
-    alignSelf: center;
-    textAlign: left
+    align-self: center;
+    text-align: left
 `
 
 export const TWrapRow = styled.div`
@@ -12,7 +12,7 @@ export const TWrapRow = styled.div`
     border: 1px solid black;
     padding: 7px 0px 7px 0px;
     margin: 2px 0 2px 0;
-    width: 462px;
+    width: 100%;
 `
 
 export const WrappedRow = styled.div`

@@ -1,6 +1,3 @@
-import BigNumber from 'bignumber.js'
-
-import csprIcon from "../../assets/swapIcons/casperIcon.png"
 import wcsprIcon from "../../assets/swapIcons/wrappedCasperIcon.png"
 import csxIcon from "../../assets/swapIcons/coinstoxIcon.png"
 import wethIcon from "../../assets/swapIcons/wethIcon.svg"
@@ -30,6 +27,8 @@ export type PairData = {
   totalLiquidityUSD?: string,
   contract0?: string,
   contract1?: string,
+  token0Name?: string,
+  token1Name?: string,
 }
 
 export type PairState = Record<string, PairData>
@@ -48,6 +47,8 @@ export const initialPairsState: PairState = {
     token1Icon: csxIcon,
     token0Symbol: 'WETH',
     token1Symbol: 'CSX',
+    token0Name: 'Wrapper Ether',
+    token1Name: 'Coinstox'
   },
   "WCSPR-CSX": {
     name: "WCSPR-CSX",
@@ -62,6 +63,8 @@ export const initialPairsState: PairState = {
     token1Icon: csxIcon,
     token0Symbol: 'WCSPR',
     token1Symbol: 'CSX',
+    token0Name: 'Wrapper Casper',
+    token1Name: 'Coinstox'
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
@@ -76,6 +79,8 @@ export const initialPairsState: PairState = {
     token1Icon: wethIcon,
     token0Symbol: 'WETH',
     token1Symbol: 'WCSPR',
+    token0Name: 'Wrapper Ether',
+    token1Name: 'Wrapper Casper'
   },
 }
 
@@ -113,6 +118,8 @@ export type PairActionLoadPairPayLoad = {
   token1Price: string,
   contract0: string,
   contract1: string,
+  token0Name?: string,
+  token1Name?: string
 }
 
 export type PairActionLoadUserPairPayLoad = {
@@ -171,6 +178,8 @@ export function PairsReducer(state: PairState, action: PairAction) {
             token1Price: action.payload.token1Price,
             contract0: action.payload.contract0,
             contract1: action.payload.contract1,
+            token0Name: action.payload.token0Name,
+            token1Name: action.payload.token1Name,
             id: action.payload.id,
           },
         }
