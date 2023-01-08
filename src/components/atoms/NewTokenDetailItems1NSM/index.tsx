@@ -8,7 +8,8 @@ const NewTokenDetailItems1Styled = styled.section`
     font-family: 'MyriadPro';
     font-weight: 400;
     font-size: 1rem;
-    letter-spacing: 0.02em
+    letter-spacing: 0.02em;
+    align-self: center;
 `
 
 interface NewTokenDetailItems1NSMProps {

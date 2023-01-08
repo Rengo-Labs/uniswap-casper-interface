@@ -7,6 +7,8 @@ type TProps = {
 
 export const Wrapper = styled.div<TProps>`
   box-sizing: border-box;
+  position: fixed;
+  top: 0;
   width: 342px;
   height: ${(props) => props.chargerBar ? 92 : 75}px;
   display: flex;
@@ -15,6 +17,10 @@ export const Wrapper = styled.div<TProps>`
   gap: 10px; ;
   border: 2px solid ${(props) => props.color || props.theme.NewPurpleColor};
   border-radius: 8px;
+  z-index: 1000;
+  background-color: white;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.8);
+  margin-top: 5px;
 `;
 
 export const Content = styled.div`
