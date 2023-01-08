@@ -34,7 +34,6 @@ import SwitchSwap from '../../atoms/SwitchSwap'
 import { LPDetail } from '../../molecules'
 import FloatMenu from '../FloatMenu'
 import { useSearchParams } from "react-router-dom";
-import { LiquidityRemovingModule } from "../LiquidityRemovingModule";
 import { LiquidityItem } from "../../molecules/LiquidityItem";
 import { CircleButton } from "../../molecules/POCTBody/styles";
 
@@ -46,12 +45,14 @@ import { ContainerLiquidityNSM } from '../../atoms/ContainerLiquidityNSM'
 import { ContainerLiquidityPoolList } from "../../atoms/ContainerLiquidityPoolList";
 import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
+import {LiquidityRemovingWithInputRangeModule} from "../LiquidityRemovingWithInputRangeModule";
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
+import { globalStore } from '../../../store/store'
 
 const LiquidityNewModule = () => {
   const {
     pairState,
     onConnectWallet,
-    onAddLiquidity,
     onSelectFirstToken,
     onSelectSecondToken,
     onSwitchTokens,
@@ -60,23 +61,25 @@ const LiquidityNewModule = () => {
     secondTokenSelected,
     isConnected,
     slippageToleranceSelected,
-    getLiquidityDetails,
     onIncreaseAllow,
     getPoolList,
-    isRemovingPopupOpen,
-    setRemovingPopup,
     gasPriceSelectedForLiquidity,
     refreshAll,
     calculateUSDtokens
   } = useContext(ConfigProviderContext)
 
-  const {clearProgress} = useContext(ProgressBarProviderContext)
+  const {
+    isRemovingPopupOpen,
+    setRemovingPopup,
+    onAddLiquidity,
+    getLiquidityDetails
+  } = useContext(LiquidityProviderContext)
+  const { progressBar } = useContext(ProgressBarProviderContext)
 
   const userPairData = Object.entries(pairState).map(([k, v]) => v)
 
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
-  const [slippSwapToken, slippSwapTokenSetter] = useState<any>(slippageToleranceSelected)
   const [feeToPay, feeToPaySetter] = useState<any>(0.03)
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
@@ -92,6 +95,7 @@ const LiquidityNewModule = () => {
   const [valueBUSD, setValueBUSD] = useState("0")
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
+  const { slippageTolerance, updateSlippageTolerance } = globalStore()
 
   useEffect(() => {
     const t0 = searchParams.get("token0")
@@ -106,17 +110,14 @@ const LiquidityNewModule = () => {
       setRemovingPopup(false)
     }
 
-    updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected)
+    updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected).then()
   }, [isConnected])
 
   useEffect(() => {
-    const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
-
-    setTotalLiquidity(totalLP)
-    calculateUSDValues(amountSwapTokenA, amountSwapTokenB)
-
-    clearProgress()
-  }, [])
+    progressBar(async () => {
+      await changeTokenA(amountSwapTokenA)
+    })
+  }, [amountSwapTokenA])
 
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
@@ -166,7 +167,7 @@ const LiquidityNewModule = () => {
       tokenB,
       value,
       token,
-      slippSwapToken,
+      slippageTolerance,
       feeToPay
     )
     const ps = [getLiquidityDetailP]
@@ -205,8 +206,10 @@ const LiquidityNewModule = () => {
 
     amountSwapTokenASetter(filteredValue)
     const minTokenToReceive = await updateLiquidityDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
-
     amountSwapTokenBSetter(minTokenToReceive)
+
+    const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
+    setTotalLiquidity(totalLP)
   }
 
   async function changeTokenB(value) {
@@ -219,8 +222,10 @@ const LiquidityNewModule = () => {
 
     amountSwapTokenBSetter(filteredValue)
     const minTokenToReceive = await updateLiquidityDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
-
     amountSwapTokenASetter(minTokenToReceive)
+
+    const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
+    setTotalLiquidity(totalLP)
   }
 
   const [searchModalA, searchModalASetter] = useState(false)
@@ -233,9 +238,6 @@ const LiquidityNewModule = () => {
 
     const minTokenToReceive = await updateLiquidityDetail(token, secondTokenSelected, amountSwapTokenA, token)
     amountSwapTokenBSetter(minTokenToReceive)
-
-    const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
-    setTotalLiquidity(totalLP)
   }
   const [searchModalB, searchModalBSetter] = useState(false)
   async function selectAndCloseTokenB(token) {
@@ -247,9 +249,6 @@ const LiquidityNewModule = () => {
 
     const minTokenToReceive = await updateLiquidityDetail(firstTokenSelected, token, amountSwapTokenB, token)
     amountSwapTokenASetter(minTokenToReceive)
-
-    const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
-    setTotalLiquidity(totalLP)
   }
 
   function makeHalf(amount, Setter) {
@@ -261,7 +260,7 @@ const LiquidityNewModule = () => {
 
   async function onLiquidity() {
 
-    await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippSwapToken, gasFee)
+    await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippageTolerance, gasFee)
     resetAll()
   }
 
@@ -294,7 +293,6 @@ const LiquidityNewModule = () => {
   const userPairDataNonZero = userPairData.filter(v => parseFloat(v.balance) > 0)
 
   const refreshPrices = async () => {
-    console.log("refreshPrices", amountSwapTokenA)
     await refreshAll()
     await changeTokenA(amountSwapTokenA)
   }
@@ -305,7 +303,7 @@ const LiquidityNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>From</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>from</NewTokenDetailItems1NSM>
               <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
               <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
@@ -360,7 +358,7 @@ const LiquidityNewModule = () => {
         <NewSwapContainerNSM>
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
-              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>To</NewTokenDetailItems1NSM>
+              <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>to</NewTokenDetailItems1NSM>
               <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
               <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{secondTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
@@ -411,9 +409,9 @@ const LiquidityNewModule = () => {
             gasFee={gasFee}
             gasFeeSetter={gasFeeSetter}
             gasFeeEnabled={true}
-            slippage={slippSwapToken}
+            slippage={slippageTolerance}
             slippageEnabled={true}
-            slippageSetter={slippSwapTokenSetter} />
+            slippageSetter={updateSlippageTolerance} />
         }
         <ButtonSpaceNSM>
           {
@@ -456,25 +454,29 @@ const LiquidityNewModule = () => {
                   liquidity={row.balance}
                   perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)}
                 >
-                  <LiquidityRemovingModule
+                  <LiquidityRemovingWithInputRangeModule
                     isConnected={true}
                     openedPopup={openPopup}
+                    firstName={row.token0Name}
                     firstHash={row.contract0}
                     firstSymbol={row.token0Symbol}
                     firstLiquidity={row.reserve0}
+                    firstPrice={row.token0Price}
+                    secondName={row.token1Name}
                     secondHash={row.contract1}
                     secondSymbol={row.token1Symbol}
                     secondLiquidity={row.reserve1}
+                    secondPrice={row.token1Price}
                     liquidityId={row.id}
                     liquidity={row.balance}
-                    liquidityUSD={row.liquidityUSD}
                     allowance={row.allowance}
+                    firstIcon={row.token0Icon}
+                    secondIcon={row.token1Icon}
                   >
                     <CircleButton>
-
                       <TrashIcon />
                     </CircleButton>
-                  </LiquidityRemovingModule>
+                  </LiquidityRemovingWithInputRangeModule>
                 </LiquidityItem>
               )
             })

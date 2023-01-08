@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { Anchor } from './index'
+import { Anchor } from '../../../../components/atoms/Anchor'
 import { MemoryRouter } from 'react-router'
 
 

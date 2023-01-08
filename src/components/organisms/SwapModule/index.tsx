@@ -40,6 +40,8 @@ import SwitchSwap from '../../atoms/SwitchSwap';
 import { UpdatableCircle } from '../../atoms/UpdatableCircle';
 import { ProgressBarProviderContext } from '../../../contexts/ProgressBarContext';
 import styled from 'styled-components';
+import {SwapProviderContext} from "../../../contexts/SwapContext";
+import { globalStore } from '../../../store/store';
 
 const Wrapper = styled.section`
   display: flex;
@@ -60,23 +62,18 @@ const SwapNewModule = () => {
     firstTokenSelected,
     secondTokenSelected,
     isConnected,
-    onConfirmSwapConfig,
-    getSwapDetails,
     onIncreaseAllow,
     slippageToleranceSelected,
     gasPriceSelectedForLiquidity,
     refreshAll,
     calculateUSDtokens,
   } = useContext(ConfigProviderContext);
-  console.log('tokens', tokens);
-  const { clearProgress } = useContext(ProgressBarProviderContext);
+  const {onConfirmSwapConfig, getSwapDetails} = useContext(SwapProviderContext)
+  const { progressBar } = useContext(ProgressBarProviderContext);
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity);
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
-  const [slippSwapToken, slippSwapTokenSetter] = useState<any>(
-    slippageToleranceSelected
-  );
   const [priceImpact, priceImpactSetter] = useState<any>(0);
   const [feeToPay, feeToPaySetter] = useState<any>(0.03);
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
@@ -88,6 +85,8 @@ const SwapNewModule = () => {
   const [lastChanged, setLastChanged] = useState('');
   const [valueAUSD, setValueAUSD] = useState('0.00');
   const [valueBUSD, setValueBUSD] = useState('0.00');
+
+  const { slippageTolerance, updateSlippageTolerance } = globalStore()
 
   useEffect(() => {
     const t0 = searchParams.get('token0');
@@ -106,12 +105,15 @@ const SwapNewModule = () => {
   }, [isConnected]);
 
   useEffect(() => {
-    clearProgress();
-  }, []);
+    progressBar(async () => {
+      await changeTokenA(amountSwapTokenA)
+    })
+  }, [amountSwapTokenA]);
 
   async function onConnect() {
     onConnectWallet();
   }
+
 
   function onSwitchTokensHandler() {
     onSwitchTokens();
@@ -134,7 +136,7 @@ const SwapNewModule = () => {
     const waiting = await onConfirmSwapConfig(
       amountSwapTokenA,
       amountSwapTokenB,
-      slippSwapToken,
+      slippageTolerance,
       gasFee
     );
     resetAll();
@@ -151,12 +153,10 @@ const SwapNewModule = () => {
       tokenB,
       value,
       token,
-      slippSwapToken,
+      slippageTolerance,
       feeToPay
     );
     const ps = [getSwapDetailP];
-
-    console.log('value', value);
 
     const [getSwapDetailResponse] = await Promise.all(ps);
 
@@ -185,7 +185,7 @@ const SwapNewModule = () => {
       firstTokenSelected
     );
   }
-
+  
   async function changeTokenA(value: string) {
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
@@ -301,7 +301,7 @@ const SwapNewModule = () => {
                 <NewTokenDetailItems1NSM
                   handleClick={() => searchModalASetter(true)}
                 >
-                  From
+                  from
                 </NewTokenDetailItems1NSM>
                 <NewTokenDetailItems2NSM
                   src={firstTokenSelected.logoURI}
@@ -399,7 +399,7 @@ const SwapNewModule = () => {
                 <NewTokenDetailItems1NSM
                   handleClick={() => searchModalASetter(true)}
                 >
-                  To
+                  to
                 </NewTokenDetailItems1NSM>
                 <NewTokenDetailItems2NSM
                   src={secondTokenSelected.logoURI}
@@ -490,9 +490,9 @@ const SwapNewModule = () => {
               gasFee={gasFee}
               gasFeeSetter={gasFeeSetter}
               gasFeeEnabled={true}
-              slippage={slippSwapToken}
+              slippage={slippageTolerance}
               slippageEnabled={true}
-              slippageSetter={slippSwapTokenSetter}
+              slippageSetter={updateSlippageTolerance}
               fullExpanded={false}
             />
           )}
