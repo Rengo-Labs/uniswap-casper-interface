@@ -13,10 +13,7 @@ const ContainerLiquidityStyles = styled.main`
   display: grid;
   grid-template-columns: auto auto;
   align-items: start;
-
-  @media ${device.mobileS} {
-    display: flex;
-  }
+  
   @media ${device.tablet} {
     display: grid;
     width: auto;

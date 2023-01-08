@@ -141,6 +141,6 @@ table {
         margin: 0;
         box-sizing: border-box;
         color:${(props) => props.theme.PrimaryColor};
-        background-image: ${(props) => props.theme.backgroundColor} ;
+        background-color: #F7FCFE;
     }
 `;
