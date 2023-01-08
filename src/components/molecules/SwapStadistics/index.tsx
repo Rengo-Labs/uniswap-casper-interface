@@ -3,8 +3,6 @@ import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { SwapStadisticsItem } from '../../atoms'
 import { Wrapper, Main } from './styles'
 
-
-
 export const SwapStadistics = () => {
   const {
     firstTokenSelected,

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import {device} from "../../../contexts/ThemeContext/themes";
 
 export const Main = styled.main`
   box-sizing: border-box;
@@ -14,23 +15,27 @@ export const Main = styled.main`
 export const Wrapper = styled.section`
   justify-self: end;
   box-sizing: border-box;
-  width: auto;
+  width: 463px;
   border: 1px solid black;
   border-radius: 20px;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
   justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
   gap: 10px;
   padding: 20px 25px;
   z-index: 2;
+
+  @media ${device.mobileS} {
+    width: auto;
+    padding: 0;
+    border: none;
+  }
+  
+  @media ${device.tablet} {
+    width: 462px;
+    padding: 20px 25px;
+    border: 1px solid black;
+  }
 
   & > *:not(:last-child){
     margin-bottom: 1rem;
