@@ -6,10 +6,10 @@ import { TokensContext2 } from './TokenContext2'
 import { TokensContext } from './TokensContext'
 import { InitialContext } from './InitialContext'
 import { TorusContext } from './TorusContext'
-import { Toaster } from 'react-hot-toast';
 import { ConfigContextWithReducer } from './ConfigContext'
 import {ProgressBarContextWithReducer} from "./ProgressBarContext"
 import {SwapContext} from "./SwapContext";
+import { NotificationSystem } from '../components/organisms'
 
 
 export const BigContext = ({ children }: { children: ReactNode }) => {
@@ -20,7 +20,7 @@ export const BigContext = ({ children }: { children: ReactNode }) => {
         <SwapContext>
           <LiquidityContext>
             <ProgressBarContextWithReducer>
-              <Toaster />
+              <NotificationSystem />
               <TorusContext>
                 <InitialContext>
                   <TokensContext2>

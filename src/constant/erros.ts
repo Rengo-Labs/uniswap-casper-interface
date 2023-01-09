@@ -60,5 +60,11 @@ export const ERROR_BLOCKCHAIN = {
   },
   "Error: Contract execution: ApiError::InvalidArgument [3]": {
     message: "Error there's an Invalid Argument"
+  },
+  "Error: Contract execution: Out of gas error": {
+    message: "Error gas fee is not enough"
+  },
+  "TypeError: Cannot read properties of undefined (reading 'deploy')": {
+    message: "The wallet is disconnected"
   }
 }

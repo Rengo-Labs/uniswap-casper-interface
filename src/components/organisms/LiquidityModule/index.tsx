@@ -47,6 +47,7 @@ import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 import {LiquidityRemovingWithInputRangeModule} from "../LiquidityRemovingWithInputRangeModule";
 import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
+import { globalStore } from '../../../store/store'
 
 const LiquidityNewModule = () => {
   const {
@@ -79,7 +80,6 @@ const LiquidityNewModule = () => {
 
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
-  const [slippSwapToken, slippSwapTokenSetter] = useState<any>(slippageToleranceSelected)
   const [feeToPay, feeToPaySetter] = useState<any>(0.03)
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
@@ -95,6 +95,7 @@ const LiquidityNewModule = () => {
   const [valueBUSD, setValueBUSD] = useState("0")
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
+  const { slippageTolerance, updateSlippageTolerance } = globalStore()
 
   useEffect(() => {
     const t0 = searchParams.get("token0")
@@ -166,7 +167,7 @@ const LiquidityNewModule = () => {
       tokenB,
       value,
       token,
-      slippSwapToken,
+      slippageTolerance,
       feeToPay
     )
     const ps = [getLiquidityDetailP]
@@ -259,7 +260,7 @@ const LiquidityNewModule = () => {
 
   async function onLiquidity() {
 
-    await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippSwapToken, gasFee)
+    await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippageTolerance, gasFee)
     resetAll()
   }
 
@@ -408,9 +409,9 @@ const LiquidityNewModule = () => {
             gasFee={gasFee}
             gasFeeSetter={gasFeeSetter}
             gasFeeEnabled={true}
-            slippage={slippSwapToken}
+            slippage={slippageTolerance}
             slippageEnabled={true}
-            slippageSetter={slippSwapTokenSetter} />
+            slippageSetter={updateSlippageTolerance} />
         }
         <ButtonSpaceNSM>
           {

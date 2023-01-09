@@ -28,6 +28,7 @@ import { WalletName } from '../commons'
 import { SettingMenu } from '../components/molecules'
 import { CommunityMenu, MenuOption } from '../components/molecules/CommunityMenu'
 import { INotification } from '../components/molecules/NotificationList'
+import { NotificationSystem } from '../components/organisms'
 
 const size = 20
 
@@ -188,6 +189,7 @@ const NewLayout = ({
             setShowNotifications={setShowNotifications}
             updateNotificationReadState={updateNotificationReadState}
           />
+          {/* <NotificationSystem /> */}
           {children}
         </MainSpaceCC>
       </LayoutStyledCC>

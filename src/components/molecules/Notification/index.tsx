@@ -4,6 +4,7 @@ import { ReactComponent as Info } from '../../../assets/newIcons/info.svg';
 import { ReactComponent as Check } from '../../../assets/newIcons/check-circle.svg';
 import { ReactComponent as Alert } from '../../../assets/newIcons/alert-circle.svg';
 import { ReactComponent as Close } from '../../../assets/newIcons/x.svg';
+import { ReactComponent as Loading } from '../../../assets/newIcons/loading.svg';
 import { NotificationType } from '../../../constant';
 import { NewIcons, ProgressBar } from '../../atoms';
 import {
@@ -15,6 +16,7 @@ import {
   TitleWrapper,
   Wrapper,
 } from './styles';
+import { notificationStore } from '../../../store/store';
 
 const notificationType = {
   [NotificationType.Success]: {
@@ -28,6 +30,10 @@ const notificationType = {
   [NotificationType.Info]: {
     color: 'rgba(113, 95, 245, 1)',
     icon: Info,
+  },
+  [NotificationType.Loading]: {
+    color: 'rgba(113, 95, 245, 1)',
+    icon: Loading,
   },
 };
 
@@ -46,13 +52,15 @@ export const Notification = ({
   type,
   onClose,
   chargerBar = false,
-  timeToClose = 20,
+  timeToClose,
 }: INotification) => {
   const [value, setValue] = useState(1);
   const timeRef = useRef(1);
+  const { notification } = notificationStore();
 
   useEffect(() => {
     if (chargerBar) {
+
       const interval = setInterval(() => {
         if (timeRef.current === timeToClose) {
           onClose();
@@ -64,7 +72,7 @@ export const Notification = ({
 
       return () => clearInterval(interval);
     }
-  }, []);
+  }, [notification.show, chargerBar, timeToClose, onClose, title, subtitle]);
 
   return (
     <Wrapper color={notificationType[type].color} chargerBar={chargerBar}>
@@ -92,7 +100,7 @@ export const Notification = ({
         <ProgressBar
           color={notificationType[type].color}
           progress={value}
-          borderRadius='0 0 0 .5rem'
+          borderRadius='0 0 0 .2rem'
         />
       )}
     </Wrapper>
