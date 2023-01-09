@@ -94,12 +94,10 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       console.log('onConfirmSwapConfig');
       updateNotification({
         type: NotificationType.Error,
-        title: 'Error',
-        subtitle: `${err}`,
+        title: `${err}`,
         show: true,
         chargerBar: true
       });
-      await refreshAll();
       return false;
     }
   }
