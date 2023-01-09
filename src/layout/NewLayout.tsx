@@ -21,13 +21,16 @@ import {
   NavItemCC,
   NewIcons,
   NewNavigationCC,
+  CasperIcons,
+  ContainerMobile
 } from '../components/atoms'
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import { WalletName } from '../commons'
-import { SettingMenu } from '../components/molecules'
+import { SettingMenu, MobileMenu} from '../components/molecules'
 import { CommunityMenu, MenuOption } from '../components/molecules/CommunityMenu'
 import { INotification } from '../components/molecules/NotificationList'
+import isMobileScreen from "../hooks/isMobileScreen";
 import { NotificationSystem } from '../components/organisms'
 
 const size = 20
@@ -86,6 +89,7 @@ const NewLayout = ({
   const [selectedOption, setSelectedOption] = useState<string>('')
   const [showNotifications, setShowNotifications] = useState<boolean>(false)
   const [notifications, setNotifications] = useState<INotification[]>(notificationList)
+  const isMobile = isMobileScreen();
 
   const {
     onConnectWallet,
@@ -125,76 +129,157 @@ const NewLayout = ({
     );
   }
 
-  return (
-    <>
-      <ExpansionAreaCC
-        collapse={collapse}
-        onMouseEnter={() => setCollapse(false)}
-      >
-      </ExpansionAreaCC>
-      <LayoutStyledCC collapse={collapse}>
-        <NewNavigationCC
-          onMouseLeave={() => setCollapse(true)}
-        >
-          <CollapseButtonCC>
-            <a href='/'>
-              <LogoIconCC collapse={false} onNewIcons={<NewIcons Icon={CasperIcon} size={64} />}>
-                casperswap
-              </LogoIconCC>
-            </a>
-          </CollapseButtonCC>
-          <MenuCenterCC>
-            {IconTexts.map(x => {
-              return (
-                <NavItemCC key={x.text}
-                  redirect={() => { navigate(x.path) }}
-                  collapse={collapse}
-                >
-                  <IconTextCC collapse={collapse}
-                    iconSet={<NewIcons Icon={x.icon} size={size} />}
-                    text={x.text}
-                  />
-                </NavItemCC>
-              )
-            })}
-          </MenuCenterCC>
-          <MenuCenterCC>
-            {IconTextsTwo.map(x => {
-              return (
-                <NavItemCC key={x.text}
-                  redirect={() => { }}
-                  collapse={collapse}
-                  onMouseEnter={() => handleMouseEnter(x.text)}
-                  onMouseLeave={() => handleMouseLeave()}
-                >
-                  <IconTextCC collapse={collapse}
-                    iconSet={<NewIcons Icon={x.icon} size={size} />}
-                    text={x.text}
-                  />
-                  {selectedOption === x.text && x.component}
-                </NavItemCC>
-              )
-            })}
-          </MenuCenterCC>
-        </NewNavigationCC>
-        <MainSpaceCC>
-          <NavBarCD
-            isConnected={isConnected}
-            onConnect={onConnect}
-            onDisconnect={onDisconnect}
-            accountHashString={walletAddress}
-            WordMarkIcon={<WordMarkIcon />}
-            notifications={notifications}
-            showNotifications={showNotifications}
-            setShowNotifications={setShowNotifications}
-            updateNotificationReadState={updateNotificationReadState}
-          />
-          {/* <NotificationSystem /> */}
-          {children}
-        </MainSpaceCC>
-      </LayoutStyledCC>
-    </>
-  )
+    return (
+        <>
+            {
+                isMobile ? (
+                    <ContainerMobile>
+                        <MainSpaceCC>
+                            <MobileMenu isConnected={isConnected}
+                                        onConnect={onConnect}
+                                        onDisconnect={onDisconnect}
+                                        accountHashString={walletAddress}
+                                        icon={<CasperIcons Icon={CasperIcon} width={36} height={44}/>}
+                                        notifications={notifications}
+                                        showNotifications={showNotifications}
+                                        setShowNotifications={setShowNotifications}
+                                        updateNotificationReadState={updateNotificationReadState}
+                                        open={collapse}
+                                        setOpen={setCollapse}
+                                        menuIcons={
+                                            <>
+                                                <CollapseButtonCC>
+                                                  <a href='/'>
+                                                    <LogoIconCC collapse={false}
+                                                                onNewIcons={<CasperIcons Icon={CasperIcon} width={36}
+                                                                                         height={44}/>}>
+                                                      casperswap
+                                                    </LogoIconCC>
+                                                  </a>
+                                                </CollapseButtonCC>
+                                                <MenuCenterCC>
+                                                  {IconTexts.map(x => {
+                                                    return (
+                                                        <NavItemCC key={x.text}
+                                                                   redirect={() => {
+                                                                       navigate(x.path)
+                                                                       setCollapse(!collapse)
+                                                                   }}
+                                                                   collapse={!collapse}
+                                                        >
+                                                          <IconTextCC collapse={!collapse}
+                                                                      iconSet={<NewIcons Icon={x.icon} size={size}/>}
+                                                                      text={x.text}
+                                                          />
+                                                        </NavItemCC>
+                                                    )
+                                                  })}
+                                                </MenuCenterCC>
+                                                <MenuCenterCC>
+                                                  {IconTextsTwo.map(x => {
+                                                    return (
+                                                        <NavItemCC key={x.text}
+                                                                   redirect={() => {
+                                                                       setCollapse(!collapse)
+                                                                   }}
+                                                                   collapse={!collapse}
+                                                                   onMouseEnter={() => handleMouseEnter(x.text)}
+                                                                   onMouseLeave={() => handleMouseLeave()}
+                                                        >
+                                                          <IconTextCC collapse={!collapse}
+                                                                      iconSet={<NewIcons Icon={x.icon} size={size}/>}
+                                                                      text={x.text}
+                                                          />
+                                                          {selectedOption === x.text && x.component}
+                                                        </NavItemCC>
+                                                    )
+                                                  })}
+                                                </MenuCenterCC>
+                                            </>
+                                        }
+                            />
+                            {children}
+                        </MainSpaceCC>
+                    </ContainerMobile>
+
+                ) : (
+                    <>
+                        <ExpansionAreaCC
+                            collapse={collapse}
+                            onMouseEnter={() => setCollapse(false)}
+                        >
+                        </ExpansionAreaCC>
+                        <LayoutStyledCC collapse={collapse}>
+                            <NewNavigationCC
+                                onMouseLeave={() => setCollapse(true)}
+                            >
+                                <CollapseButtonCC>
+                                    <a href='/'>
+                                        <LogoIconCC collapse={false}
+                                                    onNewIcons={<CasperIcons Icon={CasperIcon} width={36}
+                                                                             height={44}/>}>
+                                            casperswap
+                                        </LogoIconCC>
+                                    </a>
+                                </CollapseButtonCC>
+                                <MenuCenterCC>
+                                    {IconTexts.map(x => {
+                                        return (
+                                            <NavItemCC key={x.text}
+                                                       redirect={() => {
+                                                           navigate(x.path)
+                                                       }}
+                                                       collapse={collapse}
+                                            >
+                                                <IconTextCC collapse={collapse}
+                                                            iconSet={<NewIcons Icon={x.icon} size={size}/>}
+                                                            text={x.text}
+                                                />
+                                            </NavItemCC>
+                                        )
+                                    })}
+                                </MenuCenterCC>
+                                <MenuCenterCC>
+                                    {IconTextsTwo.map(x => {
+                                        return (
+                                            <NavItemCC key={x.text}
+                                                       redirect={() => {
+                                                       }}
+                                                       collapse={collapse}
+                                                       onMouseEnter={() => handleMouseEnter(x.text)}
+                                                       onMouseLeave={() => handleMouseLeave()}
+                                            >
+                                                <IconTextCC collapse={collapse}
+                                                            iconSet={<NewIcons Icon={x.icon} size={size}/>}
+                                                            text={x.text}
+                                                />
+                                                {selectedOption === x.text && x.component}
+                                            </NavItemCC>
+                                        )
+                                    })}
+                                </MenuCenterCC>
+                            </NewNavigationCC>
+                            <MainSpaceCC>
+                                <NavBarCD
+                                    isConnected={isConnected}
+                                    onConnect={onConnect}
+                                    onDisconnect={onDisconnect}
+                                    accountHashString={walletAddress}
+                                    WordMarkIcon={<WordMarkIcon/>}
+                                    notifications={notifications}
+                                    showNotifications={showNotifications}
+                                    setShowNotifications={setShowNotifications}
+                                    updateNotificationReadState={updateNotificationReadState}
+                                />
+                              {/* <NotificationSystem /> */}
+                              {children}
+                            </MainSpaceCC>
+                        </LayoutStyledCC>
+                    </>
+                )
+            }
+        </>
+    )
 }
 
 export default NewLayout

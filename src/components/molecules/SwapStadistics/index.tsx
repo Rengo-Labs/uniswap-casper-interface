@@ -1,9 +1,7 @@
 import { useContext } from 'react'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { SwapStadisticsItem } from '../../atoms'
-import { Wrapper } from './styles'
-
-
+import { Wrapper, Main } from './styles'
 
 export const SwapStadistics = () => {
   const {
@@ -28,12 +26,14 @@ export const SwapStadistics = () => {
     }
   ]
   return (
-    <Wrapper>
-      {
-        stadistics.map((stadistic) => (
-          <SwapStadisticsItem key={stadistic.id} stadistic={stadistic} />
-        ))
-      }
-    </Wrapper>
+      <Main>
+        <Wrapper>
+          {
+            stadistics.map((stadistic) => (
+                <SwapStadisticsItem key={stadistic.id} stadistic={stadistic} />
+            ))
+          }
+        </Wrapper>
+      </Main>
   )
 }
