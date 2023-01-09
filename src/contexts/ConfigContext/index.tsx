@@ -95,7 +95,7 @@ export const ConfigProviderContext = createContext<ConfigContext>({} as any);
 
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
-export const apiClient = new APIClient(BASE_URL);
+export const apiClient = new APIClient(BASE_URL, casperClient);
 
 const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -185,7 +185,10 @@ export const ConfigContextWithReducer = ({
     TokenReducer,
     initialTokenState
   );
-  const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
+  const [pairState, pairDispatch] = useReducer(
+    PairsReducer, 
+    initialPairsState
+  );
   const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
   const [progressModal, setProgressModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -318,8 +321,8 @@ export const ConfigContextWithReducer = ({
         if (tokens[x].contractHash) {
           return Promise.all([
             apiClient
-              .getAllowanceAgainstOwnerAndSpender(
-                wallet.accountHashString,
+              .getERC20Allowance(
+                wallet,
                 token.contractHash
               )
               .then((response) => {
@@ -329,14 +332,14 @@ export const ConfigContextWithReducer = ({
                   payload: {
                     name: x,
                     allowance: convertBigNumberToUIString(
-                      new BigNumber(response.allowance)
+                      new BigNumber(response)
                     ),
                   },
                 });
               }),
             apiClient
-              .getBalanceAgainstUser(
-                wallet.accountHashString,
+              .getERC20Balance(
+                wallet,
                 token.contractHash
               )
               .then((response) => {
@@ -346,7 +349,7 @@ export const ConfigContextWithReducer = ({
                   payload: {
                     name: x,
                     amount: convertBigNumberToUIString(
-                      new BigNumber(response.balance)
+                      new BigNumber(response)
                     ),
                   },
                 });
@@ -439,19 +442,21 @@ export const ConfigContextWithReducer = ({
 
   useEffect(() => {
     const fn = async () => {
-      await loadPairs();
-      await getTVLandVolume();
-      const data = await apiClient.getTokenList();
+      if (state.wallet) {
+        await loadPairs(state.wallet);
+        await getTVLandVolume();
+      }
+      /*const data = await apiClient.getTokenList();
       const tokens = tokensToObject(data.tokens);
       //console.log('TOKENS', tokens)
       tokenDispatch({
         type: TokenActions.UPDATE_TOKENS,
         payload: { tokens } as any,
-      });
+      });*/
     };
 
     fn().catch((e) => log.error(`UPDATE_TOKENS error": ${e}`));
-  }, []);
+  }, [state.wallet]);
 
   useEffect(() => {
     window.addEventListener('signer:connected', (msg) => {
@@ -573,52 +578,58 @@ export const ConfigContextWithReducer = ({
     return row;
   };
 
-  async function loadPairs(): Promise<void> {
+  async function loadPairs(wallet: Wallet): Promise<void> {
     try {
-      const pairListResponse = await apiClient.getPairList();
-      pairListResponse.pairList.map((pl) => {
-        const token0Decimals = tokenState.tokens[pl.token0.symbol].decimals;
-        const token1Decimals = tokenState.tokens[pl.token1.symbol].decimals;
+      const keys = Object.keys(initialPairsState)
+
+      console.log('keys', keys)
+      for (const k of keys) {
+        const pl = initialPairsState[k]
+
+        const pairDataResponse = await apiClient.getPairData(wallet, `hash-${pl.id}`)
+
+        const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
+        const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
         const reserve0 = convertBigNumberToUIString(
-          new BigNumber(pl.reserve0),
+          new BigNumber(pairDataResponse.reserve0),
           token0Decimals
         );
         const reserve1 = convertBigNumberToUIString(
-          new BigNumber(pl.reserve1),
+          new BigNumber(pairDataResponse.reserve1),
           token1Decimals
         );
 
         pairDispatch({
           type: PairActions.LOAD_PAIR,
           payload: {
-            name: `${pl.token0.symbol}-${pl.token1.symbol}`,
-            token0Symbol: pl.token0.symbol,
-            token1Symbol: pl.token1.symbol,
+            name: `${pl.token0Symbol}-${pl.token1Symbol}`,
+            token0Symbol: pl.token0Symbol,
+            token1Symbol: pl.token1Symbol,
             totalLiquidityUSD: new BigNumber(reserve0)
               .times(pl.token0Price)
               .plus(new BigNumber(reserve1).times(pl.token1Price))
               .toString(),
             volume7d: new BigNumber(
-              convertBigNumberToUIString(new BigNumber(pl.volumeUSD), 9)
+              convertBigNumberToUIString(new BigNumber(0), 9)
             ).toFixed(2),
             fees24h: '0',
             oneYFees: '0',
-            volume: convertBigNumberToUIString(new BigNumber(pl.volumeUSD), 9),
+            volume: convertBigNumberToUIString(new BigNumber(0), 9),
             totalReserve0: reserve0,
             totalReserve1: reserve1,
             totalSupply: convertBigNumberToUIString(
-              new BigNumber(pl.totalSupply)
+              new BigNumber(pairDataResponse.totalSupply)
             ),
             token0Price: pl.token0Price,
             token1Price: pl.token1Price,
-            contract0: pl.token0.id,
-            contract1: pl.token1.id,
-            token0Name: pl.token0.name,
-            token1Name: pl.token1.name,
+            contract0: tokenState.tokens[pl.token0Symbol].contractHash,
+            contract1: tokenState.tokens[pl.token1Symbol].contractHash,
+            token0Name: tokenState.tokens[pl.token0Symbol].name,
+            token1Name: tokenState.tokens[pl.token1Symbol].name,
             id: pl.id,
           },
         });
-      });
+      }
     } catch (err) {
       log.error('loadPairs', err.message);
     }
@@ -626,7 +637,7 @@ export const ConfigContextWithReducer = ({
 
   async function fillPairs(wallet: Wallet, isConnected = false): Promise<void> {
     //console.log('isConnected', isConnected)
-    await loadPairs();
+    await loadPairs(wallet);
 
     if (!isConnected) {
       return;
@@ -637,31 +648,25 @@ export const ConfigContextWithReducer = ({
       const pairList = Object.keys(pairState).map((x) => pairState[x]);
       for (const pair of pairList) {
         ps.push(
-          liquidityAgainstUserAndPair(wallet.accountHashString, pair.id).then(
-            (liquidity) =>
+          apiClient.getPairUserData(wallet, `hash-${pair.id}`).then(
+            (pairUserDataResponse) => {
               pairDispatch({
                 type: PairActions.ADD_BALANCE_TO_PAIR,
                 payload: {
                   name: pair.name,
-                  balance: convertBigNumberToUIString(new BigNumber(liquidity)),
+                  balance: convertBigNumberToUIString(new BigNumber(pairUserDataResponse.balance)),
                 },
               })
+              pairDispatch({
+                type: PairActions.ADD_ALLOWANCE_TO_PAIR,
+                payload: {
+                  name: pair.name,
+                  allowance: convertBigNumberToUIString(new BigNumber(pairUserDataResponse.allowance)),
+                },
+              })
+            }
           )
-        );
-        ps.push(
-          allowanceAgainstOwnerAndSpenderPairContract(
-            wallet.accountHashString,
-            pair.id
-          ).then((allowance) =>
-            pairDispatch({
-              type: PairActions.ADD_ALLOWANCE_TO_PAIR,
-              payload: {
-                name: pair.name,
-                allowance: convertBigNumberToUIString(new BigNumber(allowance)),
-              },
-            })
-          )
-        );
+        )
       }
 
       await Promise.all(ps);

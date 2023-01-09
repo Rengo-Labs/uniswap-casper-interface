@@ -1,6 +1,12 @@
 import axios from 'axios'
 
 import { 
+  CasperServiceByJsonRPC,
+  CLValueParsers, 
+  Contracts,
+} from 'casper-js-sdk'
+
+import { 
   AllowanceAgainstOwnerAndSpenderResponse,
   DeployWasmDataResponse,
   TokenList,
@@ -12,16 +18,57 @@ import {
   PairAgainstUserResponse,
 } from './types'
 
+import {
+  Client as CasperClient,
+} from '../wallet'
+
+import {
+  createRecipientAddress,
+} from '../utils'
+
+import { NODE_ADDRESS } from '../../constant'
+
 import { ROUTER_PACKAGE_HASH } from '../../constant';
 import {Wallet} from "../wallet";
+
+const { Contract } = Contracts
+
+export const enum ERC20Keys {
+  TOTAL_SUPPLY = 'total_supply',
+}
+
+export const enum ERC20Dictionaries {
+  BALANCES = 'balances',
+  ALLOWANCES = 'allowance'
+}
+
+export const enum PairKeys {
+  RESERVE0 = 'reserve0',
+  RESERVE1 = 'reserve1',  
+  LIQUIDITY = 'liquidity',
+}
+
+export interface PairDataResponse {
+  reserve0: string 
+  reserve1: string
+  totalSupply: string
+}
+
+export interface PairUserDataResponse {
+  balance: string
+  allowance: string
+}
 
 /**
  * Client for working with Caspwerswap API
  */
 export class APIClient {
+
   constructor(
-    private _baseURL: string
-  ){}
+    private _baseURL: string,
+    private _client: CasperClient,
+  ){
+  }
 
   /**
    * Get the list of all tokens supported
@@ -187,5 +234,187 @@ export class APIClient {
     const response = await axios.post(`${this._baseURL}/getpairagainstuser`, pairParam)
 
     return response.data.success ? response.data : []
+  }
+
+  
+
+  /**
+   * Get the user's balances
+   * 
+   * @param wallet user wallet
+   * @param contractHash contract hash
+   * @param dictionaryKey dictionary's key
+   * @param itemKey item's key in dictionary
+   * @param stateRootHash optional state root hash
+   * 
+   * @returns the dictionary item
+   */
+   async getDictionaryItem(contractHash: string, dictionaryKey: string, itemKey: string, stateRootHash?: string): Promise<string> {
+    // set up the contract client
+    const contractClient = new Contract(this._client.casperClient)
+    contractClient.setContractHash(contractHash)
+
+    let srh = stateRootHash ?? ''
+
+    if (!srh) {
+      srh = await this._client.getStateRootHash()
+    }
+    
+    try {
+      const result = await contractClient.queryContractDictionary(
+        dictionaryKey,
+        itemKey,
+        srh,
+      )
+
+      return result.toString()
+    } catch (e) {
+      console.log('get erc20 gett dictionary error', e)
+      return '0'
+    }
+  }
+
+  /**
+   * Get the user's balances
+   * 
+   * @param wallet user wallet
+   * @param contract hash contract hash
+   * @param stateRootHash optional state root hash
+   * 
+   * @returns the balance as a string
+   */
+  async getERC20Balance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
+    // set up the contract client
+    const contractClient = new Contract(this._client.casperClient)
+    contractClient.setContractHash(contractHash)
+
+    const ownerKey = createRecipientAddress(wallet.publicKey)
+
+    const keyBytes = CLValueParsers.toBytes(ownerKey).unwrap();
+    const itemKey = Buffer.from(keyBytes).toString("base64");
+    
+    try {
+      return this.getDictionaryItem(contractHash, ERC20Dictionaries.BALANCES, itemKey, stateRootHash)
+    } catch (e) {
+      console.log('get erc20 balance error', e)
+      return '0'
+    }
+  }
+
+  /**
+   * Get the user's allowance
+   * 
+   * @param wallet user wallet
+   * @param contract hash contract hash
+   * @param stateRootHash optional state root hash
+   * 
+   * @returns the allowance as a string
+   */
+  async getERC20Allowance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
+    // set up the contract client
+    const contractClient = new Contract(this._client.casperClient)
+    contractClient.setContractHash(contractHash)
+
+    const ownerKey = createRecipientAddress(wallet.publicKey)
+
+    const keyBytes = CLValueParsers.toBytes(ownerKey).unwrap();
+    const itemKey = Buffer.from(keyBytes).toString("base64");
+    
+    try {
+      return this.getDictionaryItem(contractHash, ERC20Dictionaries.ALLOWANCES, itemKey, stateRootHash)
+    } catch (e) {
+      console.log('get erc20 balance error', e)
+      return '0'
+    }
+  }
+
+  /**
+   * Get the pair data
+   * 
+   * @param wallet user wallet
+   * @param contract hash contract hash
+   * @param stateRootHash optional state root hash
+   * 
+   * @returns the a PairDataResponse
+   */
+   async getPairData(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<PairDataResponse> {
+    // set up the service
+    const casperService = new CasperServiceByJsonRPC(NODE_ADDRESS)
+    
+    let srh = stateRootHash ?? ''
+
+    if (!srh) {
+      srh = await this._client.getStateRootHash()
+    }
+    
+    try {
+      const [reserve0, reserve1, totalSupply]: any[] = await Promise.all([
+        casperService.getBlockState(
+          srh,
+          contractHash,
+          [PairKeys.RESERVE0],
+        ),
+        casperService.getBlockState(
+          srh,
+          contractHash,
+          [PairKeys.RESERVE1],
+        ),
+        casperService.getBlockState(
+          srh,
+          contractHash,
+          [ERC20Keys.TOTAL_SUPPLY],
+        )
+      ])
+
+      return {
+        reserve0: reserve0?.CLValue?.isCLValue ? reserve0?.CLValue?.value() : '0',
+        reserve1: reserve1?.CLValue?.isCLValue ? reserve0?.CLValue?.value() : '0',
+        totalSupply: totalSupply?.CLValue?.isCLValue ? totalSupply?.CLValue?.value() : '0'
+      }
+    } catch (e) {
+      console.log('get pair data error', e)
+
+      return {
+        reserve0: '0',
+        reserve1: '0',
+        totalSupply: '0',
+      }
+    }
+  }
+
+  /**
+   * Get the user's pair data
+   * 
+   * @param wallet user wallet
+   * @param contract hash contract hash
+   * @param stateRootHash optional state root hash
+   * 
+   * @returns the a PairUserDataResponse
+   */
+   async getPairUserData(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<PairUserDataResponse> {   
+    let srh = stateRootHash ?? ''
+
+    if (!srh) {
+      srh = await this._client.getStateRootHash()
+    }
+    
+    try {
+      const [allowance, balance]: any[] = await Promise.all([
+        this.getERC20Balance(wallet, contractHash, srh),
+        this.getERC20Allowance(wallet, contractHash, srh),        
+      ])
+
+      return {
+        allowance,
+        balance,
+      }
+    } catch (e) {
+      console.log('get pair data error', e)
+
+      return {
+        allowance: '0',
+        balance: '0',
+      }
+    }
   }
 }

@@ -104,8 +104,6 @@ export const LiquidityRemovingWithInputRangeModule = ({
     }
 
     const removeLiquidity = async () => {
-        console.log('zz', firstHash, secondHash, firstLiquidity, secondLiquidity)
-
         await onRemoveLiquidity(lpValue,
             {
                 symbol: firstSymbol.replace('WCSPR', 'CSPR'),

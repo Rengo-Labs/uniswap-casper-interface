@@ -32,7 +32,7 @@ import {
 
 import {
   createRecipientAddress
-} from './utils'
+} from '../utils'
 
 /**
  * All swap smart contract endpoints

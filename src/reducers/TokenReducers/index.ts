@@ -31,9 +31,9 @@ export const initialTokenState: TokenState = {
       symbolPair: "CSX",
       decimals: 9,
       contractHash:
-        "hash-5240db456a1a2cb63cabcdebb86a5177d0e9ceddab7a737b3bd90caeae33e80e",
+        "hash-df0180b2233a674667fc2b65610ba8f70a401ace164c292166d41db87ddbaa94",
       packageHash:
-        "hash-bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
+        "hash-4a2e5b5169b756d571e5014baf9bb76deb5b780509e8db17fb80ed6251204deb",
       logoURI: csxIcon,
       amount: "",
       allowance: "0.0000",
@@ -45,9 +45,9 @@ export const initialTokenState: TokenState = {
       symbolPair: "WETH",
       decimals: 9,
       contractHash:
-        "hash-9aef66efbac45daf71f92f3446422a00fd3adaaf206a1c29d80f26bc513c105d",
+        "hash-82a894a18840f988dd87b3121a52ed951bb16236ff772572b9531f93a51aa7f7",
       packageHash:
-        "hash-03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
+        "hash-28eed3da2b123334c7913d84c4aea0ed426fd268d29410cb12c6bc8a453183f6",
       logoURI: wethIcon,
       amount: "",
       allowance: "0.0000",
@@ -59,9 +59,9 @@ export const initialTokenState: TokenState = {
       symbolPair: "WCSPR",
       decimals: 9,
       contractHash:
-        "hash-238834bc76aed9e18ad0260e65d2ef751999c97c13da92dee83bd511e31e2d2d",
+        "hash-785aa60c219869f1770d1aa44cebfaf3a8fc0004551677b67d1441bdc57470c1",
       packageHash:
-        "hash-afcaa550ebb63266fb2752b58ecd7e8fcd78e0a75777ecd57045213a013d9813",
+        "hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a",
       logoURI: wcsprIcon,
       amount: "",
       allowance: "0.0000",

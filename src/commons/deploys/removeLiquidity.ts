@@ -1,14 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { 
-  Some,
-} from 'ts-results'
-
 import {
-  AccessRights,
   CLByteArray,
   CLKey,
-  CLOption,
   CLValueBuilder,
   GetDeployResult,
   RuntimeArgs,
@@ -35,7 +29,7 @@ import {
 
 import {
   createRecipientAddress
-} from './utils'
+} from '../utils'
 
 /**
  * All remove liquidity smart contract endpoints

@@ -22,7 +22,7 @@ import {
 
 import {
   createRecipientAddress
-} from './utils'
+} from '../utils'
 
 /**
  * All allowance smart contract endpoints

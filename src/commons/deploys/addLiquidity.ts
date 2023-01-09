@@ -35,7 +35,7 @@ import {
 
 import {
   createRecipientAddress
-} from './utils'
+} from '../utils'
 
 /**
  * All add liquidity smart contract endpoints

@@ -34,41 +34,41 @@ export type PairData = {
 export type PairState = Record<string, PairData>
 
 export const initialPairsState: PairState = {
-  "WETH-CSX": {
-    name: "WETH-CSX",
-    id: "c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+  "CSX-WETH": {
+    name: "CSX-WETH",
+    id: "b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
     totalReserve1: '0',
     balance: '0',
     allowance: '0',  
-    token0Icon: wethIcon,
-    token1Icon: csxIcon,
-    token0Symbol: 'WETH',
-    token1Symbol: 'CSX',
+    token0Icon: csxIcon,
+    token1Icon: wethIcon,
+    token0Symbol: 'CSX',
+    token1Symbol: 'WETH',
     token0Name: 'Wrapper Ether',
     token1Name: 'Coinstox'
   },
-  "WCSPR-CSX": {
-    name: "WCSPR-CSX",
-    id: "a84382872d1402a5ec8d8453f516586166100d8252f997b0bcdeed8c4737588d",
+  "CSX-WCSPR": {
+    name: "CSX-WCSPR",
+    id: "9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
     totalReserve1: '0',
     balance: '0',
     allowance: '0',
-    token0Icon: wcsprIcon,
-    token1Icon: csxIcon,
-    token0Symbol: 'WCSPR',
-    token1Symbol: 'CSX',
+    token0Icon: csxIcon,
+    token1Icon: wcsprIcon,
+    token0Symbol: 'CSX',
+    token1Symbol: 'WCSPR',
     token0Name: 'Wrapper Casper',
     token1Name: 'Coinstox'
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
-    id: "cb0f9f291ae73928b739c90c03eca70cd610d945304ea606fe4adced3fa07060",
+    id: "38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
