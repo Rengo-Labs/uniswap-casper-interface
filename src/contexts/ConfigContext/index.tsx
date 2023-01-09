@@ -532,6 +532,15 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
             id: pl.id,
           }
         })
+
+        pairDispatch({
+          type: PairActions.LOAD_USER_PAIR, payload: {
+            name: `${pl.token0.symbol}-${pl.token1.symbol}`,
+            reserve0: convertBigNumberToUIString(new BigNumber(0), token0Decimals),
+            reserve1: convertBigNumberToUIString(new BigNumber(0), token1Decimals),
+            liquidityUSD: new BigNumber(convertBigNumberToUIString(new BigNumber(0), token1Decimals)).toFixed(2),
+          }
+        })
       })
     } catch (err) {
       log.error("loadPairs", err.message)
@@ -586,10 +595,9 @@ export const ConfigContextWithReducer = ({ children }: { children: ReactNode }) 
       await Promise.all(pairList.map(async d => {
         const data = userPairs.filter(u => u.pair === d.id)
         //console.log('d', data)
+        const token0Decimals = tokenState.tokens[d.token0.symbol].decimals
+        const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
         if (data[0]) {
-          const token0Decimals = tokenState.tokens[d.token0.symbol].decimals
-          const token1Decimals = tokenState.tokens[d.token1.symbol].decimals
-
           pairDispatch({
             type: PairActions.LOAD_USER_PAIR, payload: {
               name: `${d.token0.symbol}-${d.token1.symbol}`,

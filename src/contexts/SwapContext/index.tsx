@@ -5,6 +5,7 @@ import {calculateSwapDetails, convertUIStringToBigNumber, signAndDeploySwap, Swa
 import {DEADLINE} from "../../constant";
 import {apiClient, casperClient, ConfigProviderContext} from "../ConfigContext";
 import BigNumber from "bignumber.js";
+import {ERROR_BLOCKCHAIN} from "../../constant/erros";
 
 export interface SwapContext {
     onConfirmSwapConfig: (amountA: number | string, amountB: number | string, slippage: number, gasFee: number) => Promise<boolean>,
@@ -57,8 +58,8 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         } catch (err) {
             setProgressModal(false)
             toast.dismiss(loadingToast)
-            console.log("onConfirmSwapConfig")
-            toast.error(`${err}`)
+            console.log("onConfirmSwapConfig", err)
+            toast.error(ERROR_BLOCKCHAIN[err.message].message || err)
             await refreshAll()
             return false
         }

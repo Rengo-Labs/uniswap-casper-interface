@@ -12,6 +12,7 @@ import {
 import {DEADLINE} from "../../constant";
 import {apiClient, casperClient, ConfigProviderContext} from "../ConfigContext";
 import BigNumber from "bignumber.js";
+import {ERROR_BLOCKCHAIN} from "../../constant/erros";
 
 export interface LiquidityContext {
   onAddLiquidity: (amountA: number | string, amountB: number | string, slippage: number, gasFee: number) => Promise<boolean>,
@@ -69,8 +70,8 @@ export const LiquidityContext = ({ children }:{children:ReactNode}) => {
       setProgressModal(false)
       toast.dismiss(loadingToast)
       await refreshAll()
-      console.log("onAddLiquidity")
-      toast.error(`${err}`)
+      console.log("onAddLiquidity", err)
+      toast.error(ERROR_BLOCKCHAIN[err.message].message || err)
       return false
     }
   }
@@ -108,8 +109,8 @@ export const LiquidityContext = ({ children }:{children:ReactNode}) => {
       setProgressModal(false)
       toast.dismiss(loadingToast)
       await refreshAll()
-      console.log("onRemoveLiquidity")
-      toast.error(`${err}`)
+      console.log("onRemoveLiquidity", err)
+      toast.error(ERROR_BLOCKCHAIN[err].message || err)
       return false
     }
   }
