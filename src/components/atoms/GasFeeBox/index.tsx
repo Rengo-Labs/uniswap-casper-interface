@@ -8,6 +8,11 @@ import {
 } from './styles'
 
 export const GasFeeBox = ({ onGasFeeChange, gasFee, gasFeeEnabled = false, className }:any) => {
+
+    const onChange = (value) => {
+      onGasFeeChange(value.target.value)
+    }
+
     return (
         <SlippageContainer className={className}>
             <SlippageColumnLeft>Network gas fee</SlippageColumnLeft>
@@ -15,7 +20,7 @@ export const GasFeeBox = ({ onGasFeeChange, gasFee, gasFeeEnabled = false, class
                 {
                     gasFeeEnabled &&
                     <label>
-                        <Input onChange={onGasFeeChange} value={gasFee} type="number" placeholder="10"/>
+                        <Input onChange={onChange} value={gasFee} type="number"/>
                         <Span>CSPR</Span>
                     </label>
                 }

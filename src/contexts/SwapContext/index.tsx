@@ -15,6 +15,7 @@ import {
 } from '../ConfigContext';
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
+import {ERROR_BLOCKCHAIN} from "../../constant/erros";
 
 export interface SwapContext {
   onConfirmSwapConfig: (
@@ -94,7 +95,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       console.log('onConfirmSwapConfig');
       updateNotification({
         type: NotificationType.Error,
-        title: `${err}`,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         show: true,
         chargerBar: true
       });

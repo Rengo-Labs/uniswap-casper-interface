@@ -51,6 +51,7 @@ import { ConfigState } from '../../reducers/ConfigReducers';
 import { Row } from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
+import {ERROR_BLOCKCHAIN} from "../../constant/erros";
 
 type MaybeWallet = Wallet | undefined;
 
@@ -616,9 +617,18 @@ export const ConfigContextWithReducer = ({
             token0Name: pl.token0.name,
             token1Name: pl.token1.name,
             id: pl.id,
-          },
-        });
-      });
+          }
+        })
+
+        pairDispatch({
+          type: PairActions.LOAD_USER_PAIR, payload: {
+            name: `${pl.token0.symbol}-${pl.token1.symbol}`,
+            reserve0: convertBigNumberToUIString(new BigNumber(0), token0Decimals),
+            reserve1: convertBigNumberToUIString(new BigNumber(0), token1Decimals),
+            liquidityUSD: new BigNumber(convertBigNumberToUIString(new BigNumber(0), token1Decimals)).toFixed(2),
+          }
+        })
+      })
     } catch (err) {
       log.error('loadPairs', err.message);
     }
@@ -798,7 +808,7 @@ export const ConfigContextWithReducer = ({
       console.log('onIncreaseAllow');
       updateNotification({
         type: NotificationType.Error,
-        title: `${err}`,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         show: true,
         chargerBar: true
       });

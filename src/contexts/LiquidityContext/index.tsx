@@ -22,6 +22,7 @@ import {
 } from '../ConfigContext';
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
+import {ERROR_BLOCKCHAIN} from "../../constant/erros";
 
 export interface LiquidityContext {
   onAddLiquidity: (
@@ -112,13 +113,14 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       });
       return true;
     } catch (err) {
+
       setProgressModal(false);
       dismissNotification();
       await refreshAll();
       console.log('onAddLiquidity');
       updateNotification({
         type: NotificationType.Error,
-        title: `${err}`,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         show: true,
         chargerBar: true,
       });
@@ -172,17 +174,18 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       });
       return true;
     } catch (err) {
+
       setProgressModal(false);
       dismissNotification();
       await refreshAll();
       console.log('onRemoveLiquidity');
       updateNotification({
         type: NotificationType.Error,
-        title: `${err}`,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         show: true,
         chargerBar: true,
       });
-      return false;
+      return false
     }
   }
 
