@@ -9,6 +9,10 @@ const Container = styled.div`
     display: grid;
     place-items: center;
     font-family: 'Epilogue'; 
+    backdrop-filter: blur(5px);
+    background-color: rgba(0,0,0,0.7);
+    opacity: 1;
+    z-index: 1;
 `
 export const ContainerFM = ({children}) => {
   return (

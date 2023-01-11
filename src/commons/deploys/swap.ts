@@ -94,9 +94,10 @@ export const signAndDeploySwap = async (
   tokenB: Token,
   slippage: number,
   mainPurse: string,
+  gasFee: number
 ): Promise<[string, GetDeployResult]> => {
   try {
-    //console.log('slippage', new BigNumber(amountIn).times(slippage + 1.04).toFixed(0))
+    console.log('slippage', new BigNumber(amountIn).times(slippage + 1.04).toFixed(0))
     
     const publicKey = wallet.publicKey;
     const entryPoint = selectSwapEntryPoint(tokenA.symbol, tokenB.symbol)
@@ -120,7 +121,7 @@ export const signAndDeploySwap = async (
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(20000000000),
+          new BigNumber(gasFee * 10**9),
         )
       case SwapEntryPoint.SWAP_TOKENS_FOR_EXACT_CSPR_JS_CLIENT:
         // When swapping token for exact casper
@@ -138,7 +139,7 @@ export const signAndDeploySwap = async (
             ),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(20000000000),
+          new BigNumber(gasFee * 10**9),
         )
       case SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS:
         // When swapping casper for tokens
@@ -165,7 +166,7 @@ export const signAndDeploySwap = async (
               AccessRights.READ_ADD_WRITE
             ),
           }),
-          new BigNumber(20000000000),
+          new BigNumber(gasFee * 10**9),
         )
       default: 
         throw new Error(`this shouldn't happen`)

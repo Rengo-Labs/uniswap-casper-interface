@@ -9,10 +9,11 @@ import {
   PopupTitle,
   WalletContainer,
   DisclaimerContent,
-  PopoverButtonStyled
+  PopoverButtonStyled,
+  WalletSelectionImageStyled,
+  ButtonText
 } from "./styles";
 import { WalletSelectionDiv } from "../WalletSelectionDiv";
-import { WalletSelectionImageStyled } from "../../molecules/ConfigModal/styles";
 import casperWallet from "../../../assets/walletIcons/casper.png";
 import torusWallet from "../../../assets/walletIcons/torus-icon-blue-3.svg";
 import { WalletName } from "../../../commons";
@@ -44,7 +45,7 @@ export const ConnectionPopup = ({
   return (
     <>
       {
-        !isConnected && <> 
+        !isConnected && <>
           {
             showButton !== false && <PopoverButtonStyled onClick={onToggle}>Connect Wallet</PopoverButtonStyled>
           }
@@ -60,12 +61,12 @@ export const ConnectionPopup = ({
                   {/* TODO: remove inline css*/}
                   <WalletSelectionDiv style={{ backgroundColor: "lightgray" }} isSelected={false} onClick={() => onConnect(WalletName.CASPER_SIGNER)}>
                     <WalletSelectionImageStyled src={casperWallet} alt="" />
-                    <h2>Signer Wallet</h2>
+                    <ButtonText>Signer Wallet</ButtonText>
                   </WalletSelectionDiv>
                   {/* TODO: remove inline css*/}
                   <WalletSelectionDiv style={{ backgroundColor: "lightgray" }} isSelected={false} onClick={() => onConnect(WalletName.TORUS)}>
                     <WalletSelectionImageStyled src={torusWallet} alt="" />
-                    <h2>Torus Wallet</h2>
+                    <ButtonText>Torus Wallet</ButtonText>
                   </WalletSelectionDiv>
                 </WalletContainer>
                 {

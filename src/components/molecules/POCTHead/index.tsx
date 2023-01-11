@@ -1,9 +1,10 @@
-import React from 'react'
+import React, {useContext, useEffect} from 'react'
 import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 import { THeadStyled, THeader6Styled, THeader3Styled, THeaderStyled, THeaderTitle } from './styles'
 import { v4 as uuidv4 } from 'uuid';
-import {TbCircleDotted} from "react-icons/tb";
-
+import {UpdatableCircle} from "../../atoms/UpdatableCircle";
+import {ConfigProviderContext} from "../../../contexts/ConfigContext";
+import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 
 const Header = ({headerGroup, header } : any) => {
     return <THeader3Styled {...headerGroup.getHeaderGroupProps()} {...header.getHeaderProps(header.getSortByToggleProps())} key={uuidv4()}>
@@ -20,6 +21,19 @@ const Header = ({headerGroup, header } : any) => {
 }
 
 export const POCTHead = ({ headerGroups }) => {
+    const {refreshAll} = useContext(ConfigProviderContext)
+    const {progressBar} = useContext(ProgressBarProviderContext)
+
+    useEffect(() => {
+      progressBar(async () => {
+        await refreshAll()
+      })
+    }, [])
+
+    const refreshPrices = async () => {
+        await refreshAll()
+    }
+
     return (
         <THeadStyled>
             {
@@ -41,7 +55,7 @@ export const POCTHead = ({ headerGroups }) => {
             <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[3]} />
             <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[4]} />
             <THeaderStyled>
-                <div><TbCircleDotted /></div>
+                <div><UpdatableCircle strokeWidth={12} handler={refreshPrices} /></div>
             </THeaderStyled>
         </THeadStyled>
     )

@@ -1,9 +1,6 @@
 import axios from 'axios'
-import {
-  CLPublicKey,
-} from 'casper-js-sdk'
 
-import { 
+import {
   AllowanceAgainstOwnerAndSpenderResponse,
   DeployWasmDataResponse,
   TokenList,
@@ -16,6 +13,7 @@ import {
 } from './types'
 
 import { ROUTER_PACKAGE_HASH } from '../../constant';
+import {Wallet} from "../wallet";
 
 /**
  * Client for working with Caspwerswap API
@@ -27,7 +25,7 @@ export class APIClient {
 
   /**
    * Get the list of all tokens supported
-   * 
+   *
    * @returns a list of tokens
    */
   async getTokenList(): Promise<TokenList> {
@@ -38,7 +36,7 @@ export class APIClient {
 
   /**
    * Get the list of all tokens supported
-   * 
+   *
    * @returns a list of tokens
    */
    async getPairList(): Promise<PairListResponse> {
@@ -49,10 +47,10 @@ export class APIClient {
 
   /**
    * Get the reserves for a specific path/pair
-   * 
+   *
    * @param tokenASymbol first token
    * @param tokenBSymbol second token
-   * 
+   *
    * @returns reserve data for path/pair
    */
   async getPathReserves(tokenASymbol: string, tokenBSymbol: string): Promise<PathReservesResponse> {
@@ -74,7 +72,7 @@ export class APIClient {
    * Get the liquidity pair path for swapping
    * @param tokenASymbol first token
    * @param tokenBSymbol second token
-   * 
+   *
    * @returns the path for swapping
    */
   async getPath(tokenASymbol: string, tokenBSymbol: string): Promise<PathResponse> {
@@ -87,7 +85,7 @@ export class APIClient {
   }
   /**
    * Get the latest deploy wasm data
-   * 
+   *
    * @returns deploy wasm for special purse functions
    */
   async getDeployWasmData(): Promise<DeployWasmDataResponse> {
@@ -98,10 +96,10 @@ export class APIClient {
 
   /**
    * Get the allowance for the router contract for a CEP-18 allowed by a user
-   * 
-   * @param ownerAccountHashHex owner's account hash string  
+   *
+   * @param ownerAccountHashHex owner's account hash string
    * @param contractHash CEP-18 contract hash
-   * 
+   *
    * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
    */
   async getAllowanceAgainstOwnerAndSpender(ownerAccountHashHex: string, contractHash: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
@@ -116,13 +114,13 @@ export class APIClient {
 
     return response.data
   }
-  
+
   /**
    * Get the allowance for the router contract for a CEP-18 Pair allowed by a user
-   * 
+   *
    * @param accountHashHex user account hash
    * @param pairPackageHash pair package hash
-   * 
+   *
    * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
    */
   async getAllowanceAgainstOwnerAndSpenderPairContract(accountHashHex: string, pairPackageHash: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
@@ -137,13 +135,13 @@ export class APIClient {
 
     return response.data
   }
-  
+
   /**
    * Get the user's liquidity for a specific pair
-   * 
+   *
    * @param accountHashHex user account hash
    * @param pairPackageHash pair package hash
-   * 
+   *
    * @returns the liquidity for a pair contract
    */
   async getLiquidityAgainstUserAndPair(accountHashHex: string, pairPackageHash: string): Promise<LiquidityAgainstUserAndPairResponse>{
@@ -159,7 +157,7 @@ export class APIClient {
 
   /**
    * Get the user's balance for a contract hash
-   * 
+   *
    * @param accountHashHex user account hash
    * @param contractHash pair package hash
    * @returns the balance for a contract
@@ -177,7 +175,7 @@ export class APIClient {
 
   /**
    * Get the user's pair balances
-   * 
+   *
    * @param accountHashHex user account hash
    * @returns the pair balances for a user
    */
@@ -188,6 +186,6 @@ export class APIClient {
 
     const response = await axios.post(`${this._baseURL}/getpairagainstuser`, pairParam)
 
-    return response.data
+    return response.data.success ? response.data : []
   }
 }

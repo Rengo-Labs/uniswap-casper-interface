@@ -23,6 +23,7 @@ import {Button, LiquidityCancelButton, LiquidityEnableButton, LiquidityRemoveBut
 
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { calculateLPPercentage } from '../../../contexts/PriceImpactContext'
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 
 export interface LiquidityRemovingModuleProps {
     isConnected: boolean,
@@ -59,13 +60,13 @@ export const LiquidityRemovingModule = ({
     const [isOpened, setIsOpened] = useState(openedPopup)
     const [value, setValue] = useState("0")
     const [contractHash, setContractHash] = useState("")
-    console.log(liquidityId)
+
     const {
-        onRemoveLiquidity,
         onIncreaseAllow,
         getContractHashAgainstPackageHash,
         slippageToleranceSelected,
     } = useContext(ConfigProviderContext)
+    const {onRemoveLiquidity} = useContext(LiquidityProviderContext)
 
     const closeHandler = () => {
         setIsOpened(!isOpened)
@@ -159,12 +160,11 @@ export const LiquidityRemovingModule = ({
                                     {
                                         freeAllowanceLiq < 0 ?
                                             <RemoveButtonContainer>
-
-                                                <LiquidityEnableButton data-testid="liq_enable" enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
+                                                <LiquidityEnableButton testid="liq_enable" enabled={enableButton(value)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`}/>
                                             </RemoveButtonContainer>
                                         :
                                             <RemoveButtonContainer>
-                                                <LiquidityRemoveButton data-testid="liq_remove" enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
+                                                <LiquidityRemoveButton testid="liq_remove" enabled={enableButton(value)} handler={removeLiquidity} content="Remove Liquidity"/>
                                             </RemoveButtonContainer>
                                     }
                             </PopupContent>

@@ -1,19 +1,12 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 
 import {Button, CardContainer} from '../../atoms'
 import { PoolModule } from '../../organisms'
 
 import {useNavigate} from "react-router-dom";
 import NewLayout from "../../../layout/NewLayout";
-import {WrappedPool, WrappedPoolTitle} from "./styles";
-import {lightTheme} from "../../../contexts/ThemeContext/themes";
+import {WrappedPool, WrappedPoolTitle, TitleBox, Column6, Column1} from "./styles";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
-
-const TitleBox = ({label, content}) => {
-    {/* TODO: remove inline css*/}
-    return <div style={{flex: "2.9", padding: "10px 10px 10px 20px", backgroundColor: lightTheme.secondBackgroundColor, marginRight: "1vw", fontSize: "1vw",
-        height: "3vh", display: "flex", alignItems: "center"}}>{label} {content}</div>
-}
 
 export const Pools = () => {
     const navigate = useNavigate()
@@ -27,12 +20,12 @@ export const Pools = () => {
         <NewLayout title="CASPERSWAP">
             <WrappedPool>
                 <WrappedPoolTitle>
+                    <Column1/>
+                    <TitleBox>TVL: $ {gralData.tvl}</TitleBox>
+                    <TitleBox>VOLUME: $ {gralData.totalVolume}</TitleBox>
                     {/* TODO: remove inline css*/}
-                    <div style={{flex: "1.2"}} />
-                    <TitleBox label="TVL: $" content={gralData.tvl} />
-                    <TitleBox label="VOLUME: $" content={gralData.totalVolume} />
-                    {/* TODO: remove inline css*/}
-                    <div style={{flex: "6"}} />
+                    <Button style={{flex: "1", height: "2.8rem"}} content="Create pool" handler={() => {navigate("/liquidity")}} />
+                    <Column6/>
                 </WrappedPoolTitle>
                 <CardContainer gridRow="3" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
                     <PoolModule columns={poolColumns} data={getPoolList()} />
