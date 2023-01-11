@@ -1,9 +1,12 @@
 import {
   CLAccountHash,
   CLKey,
-  CLKeyParameters,
   CLPublicKey,
+  CLByteArray,
+  PUBLIC_KEY_ID,
 } from 'casper-js-sdk';
+
+export type RecipientType = CLPublicKey | CLAccountHash | CLByteArray;
 
 /**
  * Convert a publickey into a CLKey
@@ -11,10 +14,10 @@ import {
  * @param recipient public key of recipient
  * @returns a CLKey encoding the public key
  */
- export function createRecipientAddress(recipient: CLKeyParameters | CLPublicKey): CLKey {
-  if (recipient instanceof CLPublicKey) {
-    return new CLKey(new CLAccountHash(recipient.toAccountHash()))
+ export const createRecipientAddress = (recipient: RecipientType): CLKey => {
+  if (recipient.clType().toString() === PUBLIC_KEY_ID) {
+    return new CLKey(new CLAccountHash((recipient as CLPublicKey).toAccountHash()));
   } else {
     return new CLKey(recipient);
   }
-}
+};

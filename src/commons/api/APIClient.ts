@@ -39,7 +39,7 @@ export const enum ERC20Keys {
 
 export const enum ERC20Dictionaries {
   BALANCES = 'balances',
-  ALLOWANCES = 'allowance'
+  ALLOWANCES = 'allowances'
 }
 
 export const enum PairKeys {
@@ -269,8 +269,9 @@ export class APIClient {
 
       return result.toString()
     } catch (e) {
-      console.log('get erc20 gett dictionary error', e)
-      return '0'
+      console.log(contractHash, dictionaryKey, itemKey, srh)
+      console.log('get erc20 get dictionary error', e)
+      throw e
     }
   }
 
@@ -294,7 +295,12 @@ export class APIClient {
     const itemKey = Buffer.from(keyBytes).toString("base64");
     
     try {
-      return this.getDictionaryItem(contractHash, ERC20Dictionaries.BALANCES, itemKey, stateRootHash)
+      return this.getDictionaryItem(
+        contractHash, 
+        ERC20Dictionaries.BALANCES, 
+        itemKey, 
+        stateRootHash
+      )
     } catch (e) {
       console.log('get erc20 balance error', e)
       return '0'
