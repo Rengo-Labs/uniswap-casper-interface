@@ -212,22 +212,31 @@ export class DijkstraCalculator {
   }
 }
 
+/**
+ * Calculate a path through pairs
+ * 
+ * @param token0Symbol token symbol to start (WCSPR, WETCH etc)
+ * @param token1Symbol token symbol to end (WCSPR, WETCH etc)
+ * @param tokenList optional list of tokens, uses default list
+ * @param pairList optional pair list, uses default pair list
+ * @returns the path through all edges or empty if not possible
+ */
 export const getPath = (
   token0Symbol: string, 
   token1Symbol: string, 
   tokenList = Object.values(initialTokenState.tokens),
-  pathList = Object.values(initialPairsState),
+  pairList = Object.values(initialPairsState),
 ): PathItem[] => {
 
   const graph = new DijkstraCalculator();
 
-  // Add every contract hashes that we have
+  // Add every token as a vertex
   tokenList.forEach(v => {
     graph.addVertex(v.symbol)
   })
 
-  // Aave all pairs symbol and contracthash matched
-  pathList.forEach(v => {
+  // Add every pair as a edge
+  pairList.forEach(v => {
     graph.addEdge(v.token0Symbol, v.token1Symbol, 1, `hash-${v.id}`)
   })
 
