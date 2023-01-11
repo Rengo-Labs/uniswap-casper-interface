@@ -1,6 +1,6 @@
 import csprIcon from "../../assets/swapIcons/casperIcon.png"
 import wcsprIcon from "../../assets/swapIcons/wrappedCasperIcon.png"
-import csxIcon from "../../assets/swapIcons/coinstoxIcon.png"
+import csxIcon from "../../assets/swapIcons/casperswap.png"
 import wethIcon from "../../assets/swapIcons/wethIcon.svg"
 
 import { Token } from '../../commons/api'
@@ -25,7 +25,7 @@ export const initialTokenState: TokenState = {
       allowance: "0.0000",
     },
     CSX: {
-      name: "Coinstox",
+      name: "CasperSwap",
       chainId: 1,
       symbol: "CSX",
       symbolPair: "CSX",
@@ -39,7 +39,7 @@ export const initialTokenState: TokenState = {
       allowance: "0.0000",
     },
     WETH: {
-      name: "Wrapper Ether",
+      name: "Wrapped Ether",
       chainId: 1,
       symbol: "WETH",
       symbolPair: "WETH",
@@ -53,7 +53,7 @@ export const initialTokenState: TokenState = {
       allowance: "0.0000",
     },
     WCSPR: {
-      name: "Wrapper Casper",
+      name: "Wrapped Casper",
       chainId: 1,
       symbol: "WCSPR",
       symbolPair: "WCSPR",
@@ -115,7 +115,10 @@ export function TokenReducer(state: TokenState, action: TokenAction) {
     case TokenActions.UPDATE_TOKENS:
       return {
         ...state,
-        tokens: { ...state.tokens, ...action.payload.tokens },
+        tokens: { 
+          ...state.tokens, 
+          ...action.payload.tokens 
+        },
       };
     case TokenActions.SELECT_FIRST_TOKEN:
       return { ...state, firstTokenSelected: action.payload };

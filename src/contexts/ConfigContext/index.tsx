@@ -130,15 +130,21 @@ export async function getStatus(wallet: Wallet): Promise<StatusResponseType> {
 /**
  * Convert Token array to Token Record
  *
- * @param listTokens an array of tokens
+ * @param tokens an array of tokens 
+ * @param listTokens an array of tokens to merge
  * @returns a Record of tokens indexed by symbol
  */
-function tokensToObject(listTokens: Token[]): Record<string, Token> {
+function tokensToObject(tokens: Record<string, Token>, listTokens: Token[]): Record<string, Token> {
   return listTokens.reduce((acc, token) => {
     return {
       ...acc,
       [token.symbol]: {
-        ...token,
+        chainId: token.chainId,
+        contractHash: token.contractHash,
+        decimals: token.decimals,
+        packageHash: token.packageHash,
+        name: tokens[token.symbol].name,
+        logoURI: tokens[token.symbol].logoURI,
         amount: '0.0000',
         symbolPair: token.symbol,
       },
@@ -443,7 +449,7 @@ export const ConfigContextWithReducer = ({
       await loadPairs();
       await getTVLandVolume();
       const data = await apiClient.getTokenList();
-      const tokens = tokensToObject(data.tokens);
+      const tokens = tokensToObject(tokenState.tokens, data.tokens);
       //console.log('TOKENS', tokens)
       tokenDispatch({
         type: TokenActions.UPDATE_TOKENS,
