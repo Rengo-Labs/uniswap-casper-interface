@@ -138,12 +138,11 @@ function tokensToObject(tokens: Record<string, Token>, listTokens: Token[]): Rec
     return {
       ...acc,
       [token.symbol]: {
+        ...tokens[token.symbol],
         chainId: token.chainId,
         contractHash: token.contractHash,
         decimals: token.decimals,
         packageHash: token.packageHash,
-        name: tokens[token.symbol].name,
-        logoURI: tokens[token.symbol].logoURI,
         amount: '0.0000',
         symbolPair: token.symbol,
       },
