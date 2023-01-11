@@ -6992,6 +6992,11 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
+dijkstra-calculator@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/dijkstra-calculator/-/dijkstra-calculator-1.0.8.tgz#5a570c402ef2a61b3e38cbfba309a69bd4d0d201"
+  integrity sha512-Szu3sB985R4bWsWK11Ce6phG1m6iNA64/Ce6jS8rn1RXGCiV8D9qfXCWpxWSU3VcNo7m0up7vzXrHUz8LEy/pg==
+
 dir-glob@^2.2.2:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/dir-glob/-/dir-glob-2.2.2.tgz#fa09f0694153c8918b18ba0deafae94769fc50c4"
