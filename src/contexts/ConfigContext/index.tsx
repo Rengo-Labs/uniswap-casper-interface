@@ -121,9 +121,8 @@ export type StatusResponseType = {
  * @returns the balance and make purse uref
  */
 export async function getStatus(wallet: Wallet): Promise<StatusResponseType> {
-  const balance = await casperClient.getBalance(wallet);
   const mainPurse = await casperClient.getMainPurse(wallet);
-
+  const balance = await casperClient.getBalance(wallet);
   return { balance, mainPurse };
 }
 
@@ -295,15 +294,23 @@ export const ConfigContextWithReducer = ({
         };
     }
 
-    const { balance, mainPurse } = await getStatus(w);
-    debounceConnect = false;
-    return {
-      wallet: w,
-      balance,
-      mainPurse,
-      walletAddress: w.accountHashString,
-      isConnected: w.isConnected,
-    };
+    try {
+      const { balance, mainPurse } = await getStatus(w);
+
+      debounceConnect = false;
+
+      return {
+        wallet: w,
+        balance,
+        mainPurse,
+        walletAddress: w.accountHashString,
+        isConnected: w.isConnected,
+      };
+    } catch (e) {
+
+      debounceConnect = false;
+      throw new Error('main purse does not exist')
+    }
   }
 
   async function updateBalances(
@@ -430,14 +437,26 @@ export const ConfigContextWithReducer = ({
     } catch (err) {
       log.error(`onConnectWallet error: ${err}`);
       dismissNotification();
-      if (!ignoreError) {
+      if (ignoreError) {
+        return
+      }
+
+      if (err.message === 'main purse does not exist') {
         updateNotification({
           type: NotificationType.Error,
-          title: 'Ooops we have an error',
+          title: 'Main purse does not exist, send CSPR to your wallet first',
           show: true,
           chargerBar: true
-        });
+        })
+        return
       }
+        
+      updateNotification({
+        type: NotificationType.Error,
+        title: 'Ooops we have an error',
+        show: true,
+        chargerBar: true
+      });
     }
   }
 
