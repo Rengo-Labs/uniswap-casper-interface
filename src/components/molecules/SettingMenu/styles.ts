@@ -52,6 +52,7 @@ export const StyleSettingValue = styled.div<ISettingValueProp>`
   gap: 4px;
   border: 1px solid ${(props) => props.theme.NewBlackColor};
   border-radius: 12px;
+  color: ${(props) => props.theme.NewPurpleColor};
 `;
 
 export const StyleSettingValueInputContainer = styled.div<ISettingValueProp>`
@@ -100,3 +101,7 @@ export const StyleSettingValueInputButtonText = styled.h4`
   letter-spacing: 0.02em;
   color: ${(props) => props.theme.NewPurpleColor};
 `;
+
+export const Text = styled.h4`
+  color: ${(props) => props.theme.NewPurpleColor};
+`

@@ -1,6 +1,6 @@
 import React, {useContext, useEffect} from 'react'
 import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
-import { THeadStyled, THeader6Styled, THeader3Styled, THeaderStyled, THeaderTitle } from './styles'
+import { THeadStyled, THeader6Styled, THeader3Styled, THeaderStyled, THeaderTitle, THeadArrowStyled } from './styles'
 import { v4 as uuidv4 } from 'uuid';
 import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
@@ -11,12 +11,12 @@ const Header = ({headerGroup, header } : any) => {
         <THeaderTitle>
             {header.Header}
         </THeaderTitle>
-        <div>
+        <THeadArrowStyled>
             {header.isSorted ? header.isSortedDesc
                     ? <TiArrowSortedDown /> : <TiArrowSortedUp />
                 : <TiArrowUnsorted />
             }
-        </div>
+        </THeadArrowStyled>
     </THeader3Styled>
 }
 
@@ -41,13 +41,13 @@ export const POCTHead = ({ headerGroups }) => {
                     <THeaderTitle>
                         {headerGroups[0].headers[0].Header}
                     </THeaderTitle>
-                    <div>
+                    <THeadArrowStyled>
                         {headerGroups[0].headers[0].isSorted
                             ? headerGroups[0].headers[0].isSortedDesc
                                 ? <TiArrowSortedDown />
                                 : <TiArrowSortedUp />
                             : <TiArrowUnsorted />}
-                    </div>
+                    </THeadArrowStyled>
                 </THeader6Styled>
             }
             <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[1]} />

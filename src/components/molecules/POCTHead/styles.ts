@@ -5,7 +5,12 @@ export const THeadStyled = styled.div`
     border-radius: 10px;
     border: 2px solid black;
     padding: 7px 0px;
-    color: ${props => props.theme.secondBackgroundColor};
+    color: ${props => props.theme.SecondBlackColor};
+    font-family: 'MyriadProSemiBold';
+`
+
+export const THeadArrowStyled = styled.div`
+    color: ${props => props.theme.NewPurpleColor};
 `
 
 export const THeader6Styled = styled.div`
@@ -34,4 +39,6 @@ export const THeaderStyled = styled.div`
 
 export const THeaderTitle = styled.div`
     margin-right: 10px;
+    color: ${props => props.theme.SecondBlackColor};
+    font-family: 'MyriadProSemiBold';
 `
