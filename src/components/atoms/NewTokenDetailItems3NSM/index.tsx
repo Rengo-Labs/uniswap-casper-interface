@@ -7,8 +7,9 @@ const NewTokenDetailItems3Styled = styled.section`
     cursor: pointer;
     font-family: 'MyriadPro';
     font-weight: 400;
-    font-size: 1rem;
+    font-size: 16px;
     letter-spacing: 0.02em;
+    line-height: 32px;
     color: ${(props) => props.theme.NewBlackColor};
 `
 

@@ -20,3 +20,9 @@ export const StyledIconContainer = styled.div`
   gap: 1rem;
   padding: 0.1rem 1.2rem;
 `;
+
+export const Text = styled.p`
+  color: ${(props) => props.theme.NewPurpleColor};
+  font-size: 16px;
+  font-family: 'MyriadPro';
+`

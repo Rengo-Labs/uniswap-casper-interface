@@ -13,6 +13,7 @@ const NavItemStyled = styled.nav<any>`
   -webkit-box-align: center;
   align-items: center;
   transition: all 100ms ease 0s;
+  font-size: 18px;
 
   & svg {
     stroke: white;

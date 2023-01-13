@@ -18,7 +18,6 @@ const FloatMenu = ({
     onClick, 
     excludedSymbols = [] 
 } : FloatMenuProps ) => {
-    console.log('excluded symbols', excludedSymbols)
     let _filteredTokens = Object.entries(tokens).map((v, k) => v[1])
     if (excludedSymbols.length > 0) {
         excludedSymbols.map((symbol) => {
@@ -52,24 +51,23 @@ const FloatMenu = ({
         }
 
         const filter = new RegExp(inputUser)
-        const filtered = filteredTokens.filter((token) => {
+        const filtered = _filteredTokens.filter((token) => {
             // symbol
             if (filter.test(token.symbol)) {
                 return token
             }
 
             // contract hash
-            if (filter.test(token.contractHash)) {
+            if (inputUser  === token.contractHash.toUpperCase()) {
                 return token
             }
 
             // package hash
-            if (filter.test(token.packageHash)) {
+            if (inputUser === token.packageHash.toUpperCase()) {
                 return token
             }
         })
         //filter added
-        console.log("filtered", filtered)
         setFilteredTokens(filtered)
     }
 
