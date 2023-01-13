@@ -48,6 +48,8 @@ export const StyleSettingValue = styled.div<ISettingValueProp>`
   display: flex;
   flex-direction: row;
   align-items: center;
+  font-size: 16px;
+  font-family: 'MyriadPro';
   padding: 16px 32px;
   gap: 4px;
   border: 1px solid ${(props) => props.theme.NewBlackColor};
@@ -69,7 +71,7 @@ export const StyleSettingValueInputContainer = styled.div<ISettingValueProp>`
 export const StyleSettingValueInput = styled.input`
   border: none;
   width: 100%;
-  padding: 16px;
+  padding: 15px 10px 15px 15px;
   border-radius: 12px;
   color: ${(props) => props.theme.NewPurpleColor};
   &:focus {
@@ -104,4 +106,6 @@ export const StyleSettingValueInputButtonText = styled.h4`
 
 export const Text = styled.h4`
   color: ${(props) => props.theme.NewPurpleColor};
+  font-size: 16px;
+  font-family: 'MyriadPro';
 `
