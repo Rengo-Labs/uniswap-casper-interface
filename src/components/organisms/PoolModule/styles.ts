@@ -1,29 +1,27 @@
 import styled from 'styled-components'
-import {device} from "../../../contexts/ThemeContext/themes";
+import {device, deviceMax} from "../../../contexts/ThemeContext/themes";
 
 export const PoolModulesStyled = styled.section`
     margin: 0;
-    padding:20px 30px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items:center;
 
   @media ${device.mobileS} {
-    padding: 2px;
+    padding: 32px;
+    gap: 8px;
   }
   
 `
 
 export const MenuStyled = styled.div`
     display: flex;
-    width: 98%;
-    padding: .6rem .7rem
+    width: 100%;
 `
 
 export const MenuToggleStyled = styled.div`
-    flex: 1;
-    align-self: center;
+    
 `
 
 export const MenuTitleStyled = styled.div`
@@ -31,8 +29,26 @@ export const MenuTitleStyled = styled.div`
     align-self: center;
     color: black;
     margin-left: 1%;
-    font-family: 'Epilogue'; 
-    font-size: 1em;
+    letter-spacing: 0.02em;
+    
+    font-family: 'MyriadPro';
+    font-size: 18px;
+    line-height: 26px;
+    
+    @media ${deviceMax.laptopL} {
+        font-size: 16px;
+        line-height: 22px;
+    }
+`
+
+export const PoolMenu = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0;
+    flex: 2;
+    gap: 16px;
 `
 
 export const WrapToggle = styled.div`

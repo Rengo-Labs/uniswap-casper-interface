@@ -2,7 +2,7 @@ import React from 'react'
 import { useTable, useSortBy, useGlobalFilter, TableState, UseTableInstanceProps, UseGlobalFiltersInstanceProps, UseGlobalFiltersState } from 'react-table'
 
 import {
-    PoolModulesStyled, MenuTitleStyled, MenuToggleStyled, MenuStyled
+    PoolModulesStyled, MenuTitleStyled, MenuToggleStyled, MenuStyled, PoolMenu
 } from './styles'
 import { POCSearch, ToggleBox } from '../../molecules'
 import { POCTable } from '..'
@@ -32,12 +32,15 @@ export const PoolModule = ({columns, data}: PoolModuleProps) => {
         <PoolModulesStyled>
             <MenuStyled>
                 <MenuTitleStyled>Earn yield trading by providing liquidity</MenuTitleStyled>
-                <MenuToggleStyled>
-                    <ToggleBox setStaked={setStaked}/>
-                </MenuToggleStyled>
-                <ItemSelector options={options}/>
-                <POCSearch preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter}
-                           setGlobalFilter={setGlobalFilter}/>
+                <PoolMenu>
+
+                    <MenuToggleStyled>
+                        <ToggleBox setStaked={setStaked}/>
+                    </MenuToggleStyled>
+                    <ItemSelector options={options}/>
+                    <POCSearch preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter}
+                               setGlobalFilter={setGlobalFilter}/>
+                </PoolMenu>
             </MenuStyled>
             <POCTable {...tableInstance} />
         </PoolModulesStyled>

@@ -2,10 +2,14 @@ import styled from 'styled-components';
 
 export const THeadStyled = styled.div`
     display: flex;
-    border-radius: 10px;
-    border: 2px solid black;
-    padding: 7px 0px;
-    color: ${props => props.theme.secondBackgroundColor};
+    border-radius: 16px;
+    border: 1px solid black;
+    padding: .84rem 2rem;
+    font-family: 'MyriadProSemiBold';
+    color: ${props => props.theme.NewBlackColor};
+    font-size: 16px;
+    line-height: 32px;
+    letter-spacing: 0.02em;
 `
 
 export const THeader6Styled = styled.div`
@@ -14,6 +18,7 @@ export const THeader6Styled = styled.div`
     justify-content: center;
     place-items: center;
     background-color: transparent;
+    gap: 16px;
 `
 
 export const THeader3Styled = styled.div`
@@ -22,6 +27,7 @@ export const THeader3Styled = styled.div`
     display: flex;
     place-items: center;
     background-color: transparent;
+    gap: 16px;
 `
 
 export const THeaderStyled = styled.div`
@@ -33,5 +39,5 @@ export const THeaderStyled = styled.div`
 `
 
 export const THeaderTitle = styled.div`
-    margin-right: 10px;
+    /*margin-right: 20px;*/
 `

@@ -1,11 +1,18 @@
 import React from 'react'
 
-import {Button, CardContainer} from '../../atoms'
+import {CardContainer} from '../../atoms'
 import { PoolModule } from '../../organisms'
 
 import {useNavigate} from "react-router-dom";
 import NewLayout from "../../../layout/NewLayout";
-import {WrappedPool, WrappedPoolTitle, TitleBox, Column6, Column1} from "./styles";
+import {
+    WrappedPool,
+    WrappedPoolTitle,
+    TitleBox,
+    CreatePoolButton,
+    WrappedHeaderPool,
+    HeaderPool
+} from "./styles";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 
 export const Pools = () => {
@@ -19,15 +26,15 @@ export const Pools = () => {
     return (
         <NewLayout title="CASPERSWAP">
             <WrappedPool>
-                <WrappedPoolTitle>
-                    <Column1/>
-                    <TitleBox>TVL: $ {gralData.tvl}</TitleBox>
-                    <TitleBox>VOLUME: $ {gralData.totalVolume}</TitleBox>
-                    {/* TODO: remove inline css*/}
-                    <Button style={{flex: "1", height: "2.8rem"}} content="Create pool" handler={() => {navigate("/liquidity")}} />
-                    <Column6/>
-                </WrappedPoolTitle>
-                <CardContainer gridRow="3" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
+                <WrappedHeaderPool>
+                    <HeaderPool>Liquidity Pools</HeaderPool>
+                    <WrappedPoolTitle>
+                        <TitleBox>TVL: $ {gralData.tvl}</TitleBox>
+                        <TitleBox>VOLUME: $ {gralData.totalVolume}</TitleBox>
+                        <CreatePoolButton enabled={true} onClick={() => {navigate("/liquidity")}} >Create pool</CreatePoolButton>
+                    </WrappedPoolTitle>
+                </WrappedHeaderPool>
+                <CardContainer gridRow="2" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
                     <PoolModule columns={poolColumns} data={getPoolList()} />
                 </CardContainer >
             </WrappedPool>

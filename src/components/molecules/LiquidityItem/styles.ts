@@ -71,6 +71,12 @@ export const CircleButton = styled.button`
 export const SwapIconImageStyled = styled.img`
     border-radius: 50%;
 `
+export const SwapIconTwoImageStyled = styled.img`
+    position: relative;
+    border-radius: 50%;
+    left: -16px;
+`
+
 export const SwapIconImageStyledRelative = styled.img`
     border-radius: 50%;
     position: relative; 

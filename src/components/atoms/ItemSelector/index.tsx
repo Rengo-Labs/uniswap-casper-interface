@@ -6,7 +6,8 @@ import {
     DropDownListContainer,
     ListItem
 } from "./styles";
-import {TiArrowSortedDown} from "react-icons/ti";
+
+import {FiChevronDown} from "react-icons/fi";
 
 interface ItemProperties {
   options: string[];
@@ -25,11 +26,11 @@ export const ItemSelector: React.FC<ItemProperties> = ({options}: any) => {
     return (
         <DropDownContainer>
             {/* TODO: remove inline css*/}
-            <DropDownHeader style={{display: "flex", alignItems: "center", height: "5vh", paddingLeft: "0.4em"}} onClick={toggling}>
+            <DropDownHeader onClick={toggling}>
                 {/* TODO: remove inline css*/}
-                <div style={{flex: "3", fontFamily: 'EpilogueLight', fontSize: "1em"}}>{selectedOption || options[0]}</div>
+                <div style={{flex: "3", textAlign: "center"}}>{selectedOption || options[0]}</div>
                 {/* TODO: remove inline css*/}
-                <div style={{flex: "1", textAlign: "end", alignSelf: "center", display: "flex"}}><TiArrowSortedDown /></div>
+                <div style={{flex: "1", textAlign: "end", alignSelf: "center", display: "flex"}}><FiChevronDown /></div>
             </DropDownHeader>
             {isOpen && (
                 <DropDownListContainer>

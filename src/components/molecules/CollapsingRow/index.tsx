@@ -13,17 +13,24 @@ import {
     TColumn1,
     TRow,
     TWrapRow,
-    WrappedRow
+    WrappedRow,
+    IconColumn1,
+    TColumn2andHalf,
+    PairTitleColumn,
+    TitleBodyRow,
+    AddLiquidityButton,
+    TBodyColumn3,
+    TButtonColumn3, TBodyColumn6, NormalBodyRow
 } from "../POCTBody/styles";
-import {TiArrowSortedDown, TiArrowSortedUp} from "react-icons/ti";
 import {TbTrash} from "react-icons/tb";
-import {SwapIconImageStyled} from "../LiquidityItem/styles";
+import {SwapIconImageStyled, SwapIconTwoImageStyled} from "../LiquidityItem/styles";
 import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
 import {convertNumber} from "../../../contexts/ConfigContext";
 import { Row } from 'react-table';
 import { PairData } from '../../../reducers/PairsReducer';
 import BigNumber from 'bignumber.js';
+import {FiChevronDown, FiChevronUp} from "react-icons/fi";
 
 export interface CollapsingRowProps {
     row: Row<PairData>,
@@ -55,101 +62,75 @@ export const CollapsingRow = ({
     return (
         <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>
-                {/* TODO: remove inline css*/}
                 <TColumn6 style={{display: "flex"}}>
                     {/* TODO: remove inline css*/}
-                    <TColumn1 style={{alignSelf: "center"}}><AiFillStar style={{color: lightTheme.secondBackgroundColor}}/></TColumn1>
-                    {/* TODO: remove inline css*/}
-                    <TColumn1 style={{display: "flex"}}>
-                        <SwapIconImageStyled src={row.original.token0Icon} width="30" height="30" />
-                        {/* TODO: remove inline css*/}
-                        <SwapIconImageStyled style={{position: "relative", left: "-12px"}} src={row.original.token1Icon} width="30" height="30" />
-                    </TColumn1>
-                    {/* TODO: remove inline css*/}
-                    <div style={{flex: "3", alignSelf: "center", textAlign: "left"}}>{row.original.name}</div>
+                    <IconColumn1><AiFillStar style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/></IconColumn1>
+                    <IconColumn1>
+                        <SwapIconImageStyled src={row.original.token0Icon} width="45" height="45" />
+                        <SwapIconTwoImageStyled src={row.original.token1Icon} width="45" height="45" />
+                    </IconColumn1>
+                    <PairTitleColumn>{row.original.token0Symbol} - {row.original.token1Symbol}</PairTitleColumn>
+                    <TColumn2andHalf/>
                 </TColumn6>
-                {/* TODO: remove inline css*/}
-                <TColumn3 style={{display: "flex"}}>
-                    <TColumn1 />
-                    {/* TODO: remove inline css*/}
-                    <TColumn3 style={{textAlign: "left"}}>
-                        $ {convertNumber(parseFloat(row.original.totalSupply))}
-                    </TColumn3>
-                </TColumn3>
+                <PairTitleColumn>
+                    $ {convertNumber(parseFloat(row.original.totalSupply))}
+                </PairTitleColumn>
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
                 <TColumn3>$ {row.original.fees24h}</TColumn3>
                 <TColumn3>{row.original.oneYFees} %</TColumn3>
-                <TColumn1>{isExpanded ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</TColumn1>
+                <TColumn1>{isExpanded ? <FiChevronUp /> : <FiChevronDown />}</TColumn1>
             </TRow>
             <TBodyExpanded {...getCollapseProps()}>
                 <WrappedRow>
-                    <TColumn3>
-                        {/* TODO: remove inline css*/}
+                    <TBodyColumn6>
                         <TRow style={{color: lightTheme.secondBackgroundColor}}>
-                            <TColumn1 />
-                            {/* TODO: remove inline css*/}
-                            <TColumn3 style={{textAlign: "left"}}>Assets Pooled</TColumn3>
+                            <TColumn3 />
+                            <TitleBodyRow>Assets Pooled</TitleBodyRow>
+                            <TColumn2andHalf/>
                         </TRow>
                         <TRow>
-                            <TColumn1 />
-                            {/* TODO: remove inline css*/}
-                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(parseFloat(row.original.reserve0))} {row.original.token0Symbol}</TColumn3>
+                            <TColumn3/>
+                            <NormalBodyRow>{convertNumber(parseFloat(row.original.reserve0))} {row.original.token0Symbol}</NormalBodyRow>
+                            <TColumn2andHalf/>
                         </TRow>
                         <TRow>
-                            <TColumn1 />
-                            {/* TODO: remove inline css*/}
-                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(parseFloat(row.original.reserve1))} {row.original.token1Symbol}</TColumn3>
+                            <TColumn3 />
+                            <NormalBodyRow>{convertNumber(parseFloat(row.original.reserve1))} {row.original.token1Symbol}</NormalBodyRow>
+                            <TColumn2andHalf/>
                         </TRow>
-                    </TColumn3>
-                    <TColumn6>
-                        {/* TODO: remove inline css*/}
+                    </TBodyColumn6>
+                    <TBodyColumn3>
                         <TRow style={{color: lightTheme.secondBackgroundColor}}>
-                            <TColumn1 />
-                            <TColumn1 />
-                            {/* TODO: remove inline css*/}
-                            <TColumn3 style={{textAlign: "left"}}>Your Liquidity</TColumn3>
+                            <TitleBodyRow>Your Liquidity</TitleBodyRow>
                         </TRow>
                         <TRow>
-                            <TColumn1 />
-                            <TColumn1 />
-                            {/* TODO: remove inline css*/}
-                            <TColumn3 style={{textAlign: "left"}}>$ {convertNumber(parseFloat(row.original.totalLiquidityUSD))}</TColumn3>
+                            <NormalBodyRow>$ {convertNumber(parseFloat(row.original.totalLiquidityUSD))}</NormalBodyRow>
                         </TRow>
                         <TRow>
-                            <TColumn1 />
-                            <TColumn1 />
-                            {/* TODO: remove inline css*/}
-                            <TColumn3 style={{textAlign: "left"}}>{convertNumber(parseFloat(row.original.balance))} LP</TColumn3>
+                            <NormalBodyRow>{convertNumber(parseFloat(row.original.balance))} LP</NormalBodyRow>
                         </TRow>
-                    </TColumn6>
-                    <TColumn3>
-                        {/* TODO: remove inline css*/}
+                    </TBodyColumn3>
+                    <TBodyColumn3>
                         <TRow style={{color: lightTheme.secondBackgroundColor}}>
-                            <TColumn1 />
-                            {/* TODO: remove inline css*/}
-                            <TColumn3 style={{textAlign: "left"}}>
-                                Your Share
-                            </TColumn3>
+                            <TitleBodyRow>Your Share</TitleBodyRow>
                         </TRow>
                         <TRow>
-                            <TColumn1 />
-                            {/* TODO: remove inline css*/}
-                            <TColumn3 style={{textAlign: "left"}}>
+                            <NormalBodyRow>
                                 {
                                     row.original.balance ?
                                     new BigNumber(row.original.balance).div(row.original.totalSupply).times(100).toFixed(2) : 0
                                 } %
-                            </TColumn3>
+                            </NormalBodyRow>
                         </TRow>
-                    </TColumn3>
-                    <TColumn3>
+                    </TBodyColumn3>
+                    <TButtonColumn3>
                         <TRow>
-                            <Button style={{borderRadius: "10px", width: "10vw", height: "4.6vh"}} content={'Add Liquidity'} handler={() => {
+                            <AddLiquidityButton enabled={true} onClick={() => {
                                 goTo("/liquidity")
-                            }}/>
+                            }}>Add Liquidity</AddLiquidityButton>
                         </TRow>
-                    </TColumn3>
-                    <TColumn3>
+                    </TButtonColumn3>
+                    <TBodyColumn3>
                         <TRow>
                             <CircleButton onClick={() => {goTo("/swap")}}>
                                 {/* TODO: remove inline css*/}
@@ -165,7 +146,7 @@ export const CollapsingRow = ({
                                 </CircleButton>
                             }
                         </TRow>
-                    </TColumn3>
+                    </TBodyColumn3>
                     <TColumn1 />
                 </WrappedRow>
             </TBodyExpanded>

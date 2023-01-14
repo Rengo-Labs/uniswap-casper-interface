@@ -1,15 +1,23 @@
 import styled from "styled-components";
 
 export const DropDownContainer = styled("div")`
-    margin-right: 1vw;
+    /*margin-right: 1vw;*/
 `
 
 export const DropDownHeader = styled("div")`
+    display: flex;  
+    align-items: center;
+    padding-Left: 0.4rem;
     border-radius: 8px;
-    width: 8vw;
-    font-weight: 500;
-    font-size: 0.8vw;
+    width: 11.625rem;
+    height: 58px;
     color: white;
+    
+    font-size: 18px; 
+    line-height: 26px;
+  
+    letter-spacing: 0.02em;
+    font-family: 'MyriadProLight';
     background: ${props => props.theme.secondBackgroundColor};
     &:hover{
         cursor: pointer;
@@ -18,7 +26,7 @@ export const DropDownHeader = styled("div")`
 
 export const DropDownListContainer = styled("div")`
     position: absolute;
-    width: 8.5vw;
+    width: 11.625rem;
 `
 
 export const DropDownList = styled("ul")`
@@ -28,8 +36,7 @@ export const DropDownList = styled("ul")`
   border: 2px solid #e5e5e5;
   box-sizing: border-box;
   color: white;
-  font-size: 0.8vw;
-  font-weight: 500;
+  
   &:hover{
         cursor: pointer;
   }
@@ -41,6 +48,11 @@ export const DropDownList = styled("ul")`
 export const ListItem = styled("li")`
   list-style: none;
   margin-bottom: 0.8em;
-  font-family: 'EpilogueLight';
-  font-size: 1em;
+  font-size: 18px; 
+  line-height: 26px;
+  
+  letter-spacing: 0.02em;
+  font-family: 'MyriadProLight';
+  
+  text-align: center;
 `

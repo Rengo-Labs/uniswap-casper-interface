@@ -1,10 +1,12 @@
 import React, {useContext, useEffect} from 'react'
-import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
+
+import {FiChevronDown, FiChevronUp} from "react-icons/fi";
 import { THeadStyled, THeader6Styled, THeader3Styled, THeaderStyled, THeaderTitle } from './styles'
 import { v4 as uuidv4 } from 'uuid';
 import {UpdatableCircle} from "../../atoms/UpdatableCircle";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
+import {BsChevronExpand} from "react-icons/bs";
 
 const Header = ({headerGroup, header } : any) => {
     return <THeader3Styled {...headerGroup.getHeaderGroupProps()} {...header.getHeaderProps(header.getSortByToggleProps())} key={uuidv4()}>
@@ -13,8 +15,8 @@ const Header = ({headerGroup, header } : any) => {
         </THeaderTitle>
         <div>
             {header.isSorted ? header.isSortedDesc
-                    ? <TiArrowSortedDown /> : <TiArrowSortedUp />
-                : <TiArrowUnsorted />
+                    ? <FiChevronDown /> : <FiChevronUp />
+                : <BsChevronExpand />
             }
         </div>
     </THeader3Styled>
@@ -44,9 +46,9 @@ export const POCTHead = ({ headerGroups }) => {
                     <div>
                         {headerGroups[0].headers[0].isSorted
                             ? headerGroups[0].headers[0].isSortedDesc
-                                ? <TiArrowSortedDown />
-                                : <TiArrowSortedUp />
-                            : <TiArrowUnsorted />}
+                                ? <FiChevronDown />
+                                : <FiChevronUp />
+                            : <BsChevronExpand />}
                     </div>
                 </THeader6Styled>
             }

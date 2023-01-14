@@ -2,12 +2,15 @@ import styled from "styled-components";
 
 export const WrapToggle = styled.div`
     display: flex;
+    gap: 16px;
 `
 
 export const ToggleTitle = styled.div`
-    flex: 1;
     align-self: center;
-    color: black;
-    font-family: 'EpilogueLight';
-    font-size: 1em;
+    text-align: left;
+    color: #715FF5;
+    font-family: 'MyriadProLight';
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 0.02em;
 `
