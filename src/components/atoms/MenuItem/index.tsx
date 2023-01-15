@@ -1,5 +1,5 @@
 import { NewIcons } from '../NewIcons';
-import { StyledIconContainer, StyledMenuItem } from './styles';
+import { StyledIconContainer, StyledMenuItem, Text } from './styles';
 
 export const MenuItem = ({
   icon,
@@ -14,13 +14,14 @@ export const MenuItem = ({
     <StyledMenuItem onClick={onClickHandler}>
       <StyledIconContainer>
         <a
-          href='https://www.discord.com'
-          target='_blank'
+          href='#'
           style={{ display: 'grid', placeItems: 'center' }}
         >
           <NewIcons Icon={icon} size={20} style={{ fill: '#715ff5' }} />
         </a>
+        <Text>
         {text}
+        </Text>
       </StyledIconContainer>
     </StyledMenuItem>
   );

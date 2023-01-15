@@ -12,6 +12,10 @@ export const THeadStyled = styled.div`
     letter-spacing: 0.02em;
 `
 
+export const THeadArrowStyled = styled.div`
+    color: ${props => props.theme.NewPurpleColor};
+`
+
 export const THeader6Styled = styled.div`
     flex: 6;
     display: flex;
@@ -39,5 +43,11 @@ export const THeaderStyled = styled.div`
 `
 
 export const THeaderTitle = styled.div`
+<<<<<<< HEAD
     /*margin-right: 20px;*/
+=======
+    margin-right: 10px;
+    color: ${props => props.theme.SecondBlackColor};
+    font-family: 'MyriadProSemiBold';
+>>>>>>> develop
 `

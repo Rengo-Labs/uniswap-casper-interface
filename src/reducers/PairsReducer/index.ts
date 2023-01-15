@@ -1,5 +1,5 @@
 import wcsprIcon from "../../assets/swapIcons/wrappedCasperIcon.png"
-import csxIcon from "../../assets/swapIcons/coinstoxIcon.png"
+import csxIcon from "../../assets/swapIcons/casperswap.png"
 import wethIcon from "../../assets/swapIcons/wethIcon.svg"
 
 export type PairData = {
@@ -47,8 +47,8 @@ export const initialPairsState: PairState = {
     token1Icon: csxIcon,
     token0Symbol: 'WETH',
     token1Symbol: 'CSX',
-    token0Name: 'Wrapper Ether',
-    token1Name: 'Coinstox'
+    token0Name: 'Wrapped Ether',
+    token1Name: 'CasperSwap'
   },
   "WCSPR-CSX": {
     name: "WCSPR-CSX",
@@ -63,8 +63,8 @@ export const initialPairsState: PairState = {
     token1Icon: csxIcon,
     token0Symbol: 'WCSPR',
     token1Symbol: 'CSX',
-    token0Name: 'Wrapper Casper',
-    token1Name: 'Coinstox'
+    token0Name: 'Wrapped Casper',
+    token1Name: 'CasperSwap'
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
@@ -79,8 +79,8 @@ export const initialPairsState: PairState = {
     token1Icon: wethIcon,
     token0Symbol: 'WETH',
     token1Symbol: 'WCSPR',
-    token0Name: 'Wrapper Ether',
-    token1Name: 'Wrapper Casper'
+    token0Name: 'Wrapped Ether',
+    token1Name: 'Wrapped Casper'
   },
 }
 

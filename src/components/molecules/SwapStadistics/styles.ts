@@ -10,6 +10,7 @@ export const Main = styled.main`
   display: grid;
   grid-template-columns: auto auto;
   padding: 10px;
+  z-index: 0;
 `
 
 export const Wrapper = styled.section`

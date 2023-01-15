@@ -11,6 +11,7 @@ export const ButtonStyleMobile = styled.div<any>`
     width: 36px;
     height: 36px;
     border:none;
+    border-radius: 6px;
     overflow:hidden; 
     white-space:nowrap; 
     text-overflow: ellipsis;

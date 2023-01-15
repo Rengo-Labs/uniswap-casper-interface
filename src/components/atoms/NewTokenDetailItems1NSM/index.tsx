@@ -7,7 +7,7 @@ const NewTokenDetailItems1Styled = styled.section`
     cursor: pointer;
     font-family: 'MyriadPro';
     font-weight: 400;
-    font-size: 1rem;
+    font-size: 16px;
     letter-spacing: 0.02em;
     align-self: center;
 `

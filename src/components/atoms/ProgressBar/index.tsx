@@ -1,21 +1,21 @@
 import { ProgressBarFiller } from './styles';
 
 interface IProgressBar {
-  progress: number;
+  time: number;
   height?: number;
   color: string;
   borderRadius?: any;
 }
 
 export const ProgressBar = ({
-  progress,
+  time,
   height,
   color,
   borderRadius,
 }: IProgressBar) => {
   return (
     <ProgressBarFiller
-      progress={progress}
+      time={time}
       height={height}
       color={color}
       borderRadius={borderRadius}

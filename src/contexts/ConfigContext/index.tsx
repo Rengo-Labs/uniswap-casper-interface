@@ -121,24 +121,28 @@ export type StatusResponseType = {
  * @returns the balance and make purse uref
  */
 export async function getStatus(wallet: Wallet): Promise<StatusResponseType> {
-  const balance = await casperClient.getBalance(wallet);
   const mainPurse = await casperClient.getMainPurse(wallet);
-
+  const balance = await casperClient.getBalance(wallet);
   return { balance, mainPurse };
 }
 
 /**
  * Convert Token array to Token Record
  *
- * @param listTokens an array of tokens
+ * @param tokens an array of tokens 
+ * @param listTokens an array of tokens to merge
  * @returns a Record of tokens indexed by symbol
  */
-function tokensToObject(listTokens: Token[]): Record<string, Token> {
+function tokensToObject(tokens: Record<string, Token>, listTokens: Token[]): Record<string, Token> {
   return listTokens.reduce((acc, token) => {
     return {
       ...acc,
       [token.symbol]: {
-        ...token,
+        ...tokens[token.symbol],
+        chainId: token.chainId,
+        contractHash: token.contractHash,
+        decimals: token.decimals,
+        packageHash: token.packageHash,
         amount: '0.0000',
         symbolPair: token.symbol,
       },
@@ -289,15 +293,23 @@ export const ConfigContextWithReducer = ({
         };
     }
 
-    const { balance, mainPurse } = await getStatus(w);
-    debounceConnect = false;
-    return {
-      wallet: w,
-      balance,
-      mainPurse,
-      walletAddress: w.accountHashString,
-      isConnected: w.isConnected,
-    };
+    try {
+      const { balance, mainPurse } = await getStatus(w);
+
+      debounceConnect = false;
+
+      return {
+        wallet: w,
+        balance,
+        mainPurse,
+        walletAddress: w.accountHashString,
+        isConnected: w.isConnected,
+      };
+    } catch (e) {
+
+      debounceConnect = false;
+      throw new Error('main purse does not exist')
+    }
   }
 
   async function updateBalances(
@@ -424,14 +436,26 @@ export const ConfigContextWithReducer = ({
     } catch (err) {
       log.error(`onConnectWallet error: ${err}`);
       dismissNotification();
-      if (!ignoreError) {
+      if (ignoreError) {
+        return
+      }
+
+      if (err.message === 'main purse does not exist') {
         updateNotification({
           type: NotificationType.Error,
-          title: 'Ooops we have an error',
+          title: 'Main purse does not exist, send CSPR to your wallet first',
           show: true,
           chargerBar: true
-        });
+        })
+        return
       }
+        
+      updateNotification({
+        type: NotificationType.Error,
+        title: 'Ooops we have an error',
+        show: true,
+        chargerBar: true
+      });
     }
   }
 
@@ -443,7 +467,7 @@ export const ConfigContextWithReducer = ({
       await loadPairs();
       await getTVLandVolume();
       const data = await apiClient.getTokenList();
-      const tokens = tokensToObject(data.tokens);
+      const tokens = tokensToObject(tokenState.tokens, data.tokens);
       //console.log('TOKENS', tokens)
       tokenDispatch({
         type: TokenActions.UPDATE_TOKENS,

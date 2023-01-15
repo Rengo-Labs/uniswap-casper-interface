@@ -7,10 +7,13 @@ const NavItemStyled = styled.nav<any>`
   padding: 10px 1.2em;
   cursor: pointer;
   display: flex;
-  gap: ${(props) => (props.collapse ? '0' : '40px')};
+  gap: 40px;
+  -webkit-box-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
   align-items: center;
-  transition: all 100ms ease;
+  transition: all 100ms ease 0s;
+  font-size: 18px;
 
   & svg {
     stroke: white;
@@ -19,12 +22,12 @@ const NavItemStyled = styled.nav<any>`
   }
 
   &:hover {
-    background-color: white;
-    color: ${(props) => props.theme.NewPurpleColor};
+    //background-color: white;
+    color: ${(props) => props.theme.NewAquamarineColor};
 
     svg {
-      stroke: ${(props) => props.theme.NewPurpleColor};
-      fill: ${(props) => props.theme.NewPurpleColor};
+      stroke: ${(props) => props.theme.NewAquamarineColor};
+      fill: ${(props) => props.theme.NewAquamarineColor};
     }
   }
 `;
