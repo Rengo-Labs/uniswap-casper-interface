@@ -7,7 +7,7 @@ export const StyledMenu = styled.nav.attrs((props: { open?: boolean }) => props)
   justify-content: center;
   background: ${props => props.theme.NewPurpleColor};
   transform: ${props => props.open ? 'translateX(0)' : 'translateX(-100%)'};
-  height: 97vh;
+  height: 100vh;
   text-align: left;
   padding: 1rem;
   position: absolute;

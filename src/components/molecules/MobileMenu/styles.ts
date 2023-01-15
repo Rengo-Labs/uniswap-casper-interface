@@ -20,3 +20,8 @@ export const NavBarMobileMenuStyled = styled.nav`
     fill: white
   }
 `
+
+export const Container = styled.div`
+    background-color: red;
+    height: 100%;
+    `

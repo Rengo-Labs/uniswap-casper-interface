@@ -47,6 +47,7 @@ export const lightTheme = {
   NewGreyColor: "#CCCCCC",
   NewGreenColor: "#1DC90A",
   NewBlackColor: "#080808",
+  NewWhiteColor: "#f7fcfe",
   SecondBlackColor: "#545454",
   OPEN_WIDTH: "280px",
   CLOSED_WIDTH: "108px",

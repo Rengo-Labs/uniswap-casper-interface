@@ -27,7 +27,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from '../contexts/ConfigContext'
 import { WalletName } from '../commons'
-import { SettingMenu, MobileMenu} from '../components/molecules'
+import { SettingMenu, MobileMenu, SettingMobile, CommunityMenuMobile} from '../components/molecules'
 import { CommunityMenu, MenuOption } from '../components/molecules/CommunityMenu'
 import { INotification } from '../components/molecules/NotificationList'
 import isMobileScreen from "../hooks/isMobileScreen";
@@ -49,12 +49,6 @@ const IconTexts = [
   /*{ icon: FarmIcon, text: "Farms", path: "/farms" },
   { icon: StakingIcon, text: "Staking", path: "/staking" },
   { icon: NftIcon, text: "NFT", path: "/nft" },*/
-]
-
-const IconTextsTwo = [
-  { icon: ConfigIcon, text: "Settings", component: <SettingMenu/> },
-  { icon: CommunityIcon, text: "Community", component: <CommunityMenu communityOptions={settingMenuOptions} />},
-  { icon: CasperIcon, text: "CasperSwap", component: null},
 ]
 
 const notificationList: INotification[] = [
@@ -90,6 +84,12 @@ const NewLayout = ({
   const [showNotifications, setShowNotifications] = useState<boolean>(false)
   const [notifications, setNotifications] = useState<INotification[]>(notificationList)
   const isMobile = isMobileScreen();
+
+  const IconTextsTwo = [
+    { icon: ConfigIcon, text: "Settings", component: isMobile ? <SettingMobile/> : <SettingMenu /> },
+    { icon: CommunityIcon, text: "Community", component: isMobile ? <CommunityMenuMobile communityOptions={settingMenuOptions}/> : <CommunityMenu communityOptions={settingMenuOptions} />},
+    { icon: CasperIcon, text: "CasperSwap", component: null},
+  ]
 
   const {
     onConnectWallet,
@@ -179,9 +179,7 @@ const NewLayout = ({
                                                   {IconTextsTwo.map(x => {
                                                     return (
                                                         <NavItemCC key={x.text}
-                                                                   redirect={() => {
-                                                                       setCollapse(!collapse)
-                                                                   }}
+                                                                   redirect={() => {}}
                                                                    collapse={!collapse}
                                                                    onMouseEnter={() => handleMouseEnter(x.text)}
                                                                    onMouseLeave={() => handleMouseLeave()}

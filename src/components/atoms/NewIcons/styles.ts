@@ -5,9 +5,9 @@ export const IconContainerStyle = styled.div.attrs(
   (props: { size: any; width?: number; height?: number }) => props
 )`
   display: flex;
-  alignitems: 'center';
-  alignself: 'center';
-  justifycontent: 'center';
+  align-items: 'center';
+  align-self: 'center';
+  justify-content: 'center';
   height: ${(props) => props.height || props.size}px;
   width: ${(props) => props.width || props.size}px;
 
@@ -32,8 +32,8 @@ export const IconContainerStyle = styled.div.attrs(
   }
 
   & > * {
-    height: ${(props) => props.height || props.size}px;
-    width: ${(props) => props.width || props.size}px;
+    height: ${(props) => props.height || props.size | 20}px;
+    width: ${(props) => props.width || props.size || 20}px;
 
     @media ${device.mobileS} {
       width: 32px;
@@ -41,8 +41,8 @@ export const IconContainerStyle = styled.div.attrs(
     }
 
     @media ${device.mobileM} {
-      width: 32px;
-      height: 32px;
+      width: 20px;
+      height: 20px;
     }
 
     @media ${device.tablet} {

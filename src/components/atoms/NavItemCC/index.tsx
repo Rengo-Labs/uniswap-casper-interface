@@ -7,11 +7,11 @@ const NavItemStyled = styled.nav<any>`
   padding: 10px 1.2em;
   cursor: pointer;
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 40px;
   -webkit-box-pack: center;
-  justify-content: center;
   -webkit-box-align: center;
-  align-items: center;
   transition: all 100ms ease 0s;
   font-size: 18px;
 
@@ -22,7 +22,6 @@ const NavItemStyled = styled.nav<any>`
   }
 
   &:hover {
-    //background-color: white;
     color: ${(props) => props.theme.NewAquamarineColor};
 
     svg {
