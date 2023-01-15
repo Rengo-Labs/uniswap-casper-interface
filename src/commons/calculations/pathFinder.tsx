@@ -95,6 +95,12 @@ export interface PathItem {
   label: string
 }
 
+export interface RouterPathItem {
+  symbol0: string
+  symbol1: string
+  hash: string
+}
+
 export class DijkstraCalculator {
   adjacencyList: { 
     [key: NodeId]: { 
@@ -241,4 +247,23 @@ export const getPath = (
   })
 
   return graph.calculateShortestPath(token0Symbol, token1Symbol)
+}
+
+export const getListPath = (
+  token0Symbol: string,
+  token1Symbol: string,
+  tokenList = Object.values(initialTokenState.tokens),
+  pairList = Object.values(initialPairsState),
+): RouterPathItem[] => {
+
+  const pairs = getPath(token0Symbol, token1Symbol, tokenList, pairList)
+
+  const nodes = []
+  for (let i = 0; i < pairs.length - 1; i++) {
+    const n0 = pairs[i];
+    const n1 = pairs[i+1]
+    nodes.push({symbol0: n0.id, symbol1: n1.id, hash: n1.label})
+  }
+
+  return nodes
 }
