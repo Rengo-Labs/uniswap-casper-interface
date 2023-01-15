@@ -31,6 +31,8 @@ import { NODE_ADDRESS } from '../../constant'
 import { ROUTER_PACKAGE_HASH } from '../../constant';
 import {Wallet} from "../wallet";
 
+import { getPath } from '../calculations'
+
 const { Contract } = Contracts
 
 export const enum ERC20Keys {
@@ -123,12 +125,19 @@ export class APIClient {
    * @returns the path for swapping
    */
   async getPath(tokenASymbol: string, tokenBSymbol: string): Promise<PathResponse> {
-    const response = await axios.post(`${this._baseURL}/getpath`, {
-      tokenASymbol: tokenASymbol === 'CSPR' ? 'WCSPR': tokenASymbol,
-      tokenBSymbol: tokenBSymbol === 'CSPR' ? 'WCSPR': tokenBSymbol,
-    })
+    const token0 = tokenASymbol === 'CSPR' ? 'WCSPR': tokenASymbol
+    const token1 = tokenBSymbol === 'CSPR' ? 'WCSPR': tokenBSymbol
 
-    return response.data
+    const path = getPath(token0, token1).slice(1).map(x => x.label)
+
+    console.log('path', )
+
+    return {
+      message: '',
+      path,
+      pathwithcontractHash: path,
+      success: true,
+    }
   }
   /**
    * Get the latest deploy wasm data
