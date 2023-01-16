@@ -5,7 +5,7 @@ import { Wrapper } from './styles'
 
 
 
-export const SwapStadistics = () => {
+export const SwapStatistics = () => {
   const {
     firstTokenSelected,
     secondTokenSelected,

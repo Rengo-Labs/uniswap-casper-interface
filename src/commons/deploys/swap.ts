@@ -103,7 +103,7 @@ export const signAndDeploySwap = async (
     const entryPoint = selectSwapEntryPoint(tokenA.symbol, tokenB.symbol)
     
     const response = await apiClient.getPath(tokenA.symbolPair, tokenB.symbolPair)
-    const path = response.pathwithcontractHash.map((x) => new CLString("hash-".concat(x)))
+    const path = response.pathwithcontractHash.map((x) => new CLString(x))
 
     log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountOut)
 

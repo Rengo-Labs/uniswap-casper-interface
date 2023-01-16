@@ -26,6 +26,8 @@ export interface SwapContext {
   getSwapDetails: (
     tokenA: Token,
     tokenB: Token,
+    reserve0: BigNumber.Value,
+    reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
     slippage: number,
@@ -108,6 +110,8 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
    * it returns tokensToTransfer, priceImpact, minTokenBToTransfer, exchangeRateA and exchangeRateB that belong to the swap detail
    * @param tokenA first token
    * @param tokenB second token
+   * @param reserve0 first token reserve in pair
+   * @param reserve1 second token reserve in pair
    * @param inputValue input tokens
    * @param token input token types matching one of tokenA or tokenB
    * @param slippage decimal slippage
@@ -118,6 +122,8 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
   async function getSwapDetails(
     tokenA: Token,
     tokenB: Token,
+    reserve0: BigNumber.Value,
+    reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
     slippage = 0.005,
@@ -127,6 +133,8 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       apiClient,
       tokenA,
       tokenB,
+      reserve0,
+      reserve1,
       inputValue,
       token,
       slippage,

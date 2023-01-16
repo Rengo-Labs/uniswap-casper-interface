@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { 
   CasperServiceByJsonRPC,
-  CLValueParsers, 
+  CLByteArray,
   Contracts,
 } from 'casper-js-sdk'
 
@@ -32,6 +32,9 @@ import { ROUTER_PACKAGE_HASH } from '../../constant';
 import {Wallet} from "../wallet";
 
 import { getPath } from '../calculations'
+import { initialTokenState } from '../../reducers/TokenReducers'
+
+import { ERC20Client } from 'casper-erc20-js-client'
 
 const { Contract } = Contracts
 
@@ -128,9 +131,9 @@ export class APIClient {
     const token0 = tokenASymbol === 'CSPR' ? 'WCSPR': tokenASymbol
     const token1 = tokenBSymbol === 'CSPR' ? 'WCSPR': tokenBSymbol
 
-    const path = getPath(token0, token1).slice(1).map(x => x.label)
+    const path = getPath(token0, token1).map(x => initialTokenState.tokens[x.id].packageHash)
 
-    console.log('path', )
+    console.log('path', path)
 
     return {
       message: '',
@@ -148,104 +151,7 @@ export class APIClient {
     const response = await axios.get(`${this._baseURL}/getWasmData`);
 
     return response.data
-  }
-
-  /**
-   * Get the allowance for the router contract for a CEP-18 allowed by a user
-   * 
-   * @param ownerAccountHashHex owner's account hash string  
-   * @param contractHash CEP-18 contract hash
-   * 
-   * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
-   */
-  async getAllowanceAgainstOwnerAndSpender(ownerAccountHashHex: string, contractHash: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
-
-    const allowanceParam = {
-      contractHash: contractHash.slice(5),
-      owner: ownerAccountHashHex.slice(13),
-      spender: ROUTER_PACKAGE_HASH,
-    };
-
-    const response = await axios.post(`${this._baseURL}/allowanceagainstownerandspender`, allowanceParam)
-
-    return response.data
-  }
-  
-  /**
-   * Get the allowance for the router contract for a CEP-18 Pair allowed by a user
-   * 
-   * @param accountHashHex user account hash
-   * @param pairPackageHash pair package hash
-   * 
-   * @returns the allowance that the account hash has allowed the router contract for a specific CEP-18 contract
-   */
-  async getAllowanceAgainstOwnerAndSpenderPairContract(accountHashHex: string, pairPackageHash: string): Promise<AllowanceAgainstOwnerAndSpenderResponse> {
-    console.log('a', accountHashHex, 'p', pairPackageHash)
-    const allowanceParam = {
-      contractHash: pairPackageHash.slice(5),
-      owner: accountHashHex.slice(13),
-      spender: ROUTER_PACKAGE_HASH,
-    };
-
-    const response = await axios.post(`${this._baseURL}/allowanceagainstownerandspenderpaircontract`, allowanceParam)
-
-    return response.data
-  }
-  
-  /**
-   * Get the user's liquidity for a specific pair
-   * 
-   * @param accountHashHex user account hash
-   * @param pairPackageHash pair package hash
-   * 
-   * @returns the liquidity for a pair contract
-   */
-  async getLiquidityAgainstUserAndPair(accountHashHex: string, pairPackageHash: string): Promise<LiquidityAgainstUserAndPairResponse>{
-    const liquidityParam = {
-      to: accountHashHex.slice(13),
-      pairid: pairPackageHash.slice(5),
-    };
-
-    const response = await axios.post(`${this._baseURL}/liquidityagainstuserandpair`, liquidityParam)
-
-    return response.data
-  }
-
-  /**
-   * Get the user's balance for a contract hash
-   * 
-   * @param accountHashHex user account hash
-   * @param contractHash pair package hash
-   * @returns the balance for a contract
-   */
-  async getBalanceAgainstUser(accountHashHex: string, contractHash: string): Promise<BalanceAgainstUserResponse>{
-    const balanceParam = {
-      user: accountHashHex.slice(13),
-      contractHash: contractHash.slice(5),
-    };
-
-    const response = await axios.post(`${this._baseURL}/balanceagainstuser`, balanceParam)
-
-    return response.data
-  }
-
-  /**
-   * Get the user's pair balances
-   * 
-   * @param accountHashHex user account hash
-   * @returns the pair balances for a user
-   */
-  async getPairAgainstUser(accountHashHex: string): Promise<PairAgainstUserResponse>{
-    const pairParam = {
-      user: accountHashHex.slice(13),
-    };
-
-    const response = await axios.post(`${this._baseURL}/getpairagainstuser`, pairParam)
-
-    return response.data.success ? response.data : []
-  }
-
-  
+  }  
 
   /**
    * Get the user's balances
@@ -259,6 +165,8 @@ export class APIClient {
    * @returns the dictionary item
    */
    async getDictionaryItem(contractHash: string, dictionaryKey: string, itemKey: string, stateRootHash?: string): Promise<string> {
+    
+
     // set up the contract client
     const contractClient = new Contract(this._client.casperClient)
     contractClient.setContractHash(contractHash)
@@ -294,26 +202,14 @@ export class APIClient {
    * @returns the balance as a string
    */
   async getERC20Balance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
-    // set up the contract client
-    const contractClient = new Contract(this._client.casperClient)
-    contractClient.setContractHash(contractHash)
+    const erc20 = new ERC20Client(
+      this._client.node,
+      this._client.network,
+    );
 
-    const ownerKey = createRecipientAddress(wallet.publicKey)
+    await erc20.setContractHash(contractHash)
 
-    const keyBytes = CLValueParsers.toBytes(ownerKey).unwrap();
-    const itemKey = Buffer.from(keyBytes).toString("base64");
-    
-    try {
-      return this.getDictionaryItem(
-        contractHash, 
-        ERC20Dictionaries.BALANCES, 
-        itemKey, 
-        stateRootHash
-      )
-    } catch (e) {
-      console.log('get erc20 balance error', e)
-      return '0'
-    }
+    return erc20.balanceOf(wallet.publicKey)
   }
 
   /**
@@ -326,21 +222,19 @@ export class APIClient {
    * @returns the allowance as a string
    */
   async getERC20Allowance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
-    // set up the contract client
-    const contractClient = new Contract(this._client.casperClient)
-    contractClient.setContractHash(contractHash)
+    const erc20 = new ERC20Client(
+      this._client.node,
+      this._client.network,
+    );
 
-    const ownerKey = createRecipientAddress(wallet.publicKey)
+    await erc20.setContractHash(contractHash)
 
-    const keyBytes = CLValueParsers.toBytes(ownerKey).unwrap();
-    const itemKey = Buffer.from(keyBytes).toString("base64");
-    
-    try {
-      return this.getDictionaryItem(contractHash, ERC20Dictionaries.ALLOWANCES, itemKey, stateRootHash)
-    } catch (e) {
-      console.log('get erc20 balance error', e)
-      return '0'
-    }
+    const spender = ROUTER_PACKAGE_HASH;
+    const spenderByteArray = new CLByteArray(
+        Uint8Array.from(Buffer.from(spender, "hex"))
+    )
+
+    return erc20.allowances(wallet.publicKey, spenderByteArray)
   }
 
   /**
@@ -352,7 +246,7 @@ export class APIClient {
    * 
    * @returns the a PairDataResponse
    */
-   async getPairData(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<PairDataResponse> {
+   async getPairData(contractHash: string, stateRootHash?: string): Promise<PairDataResponse> {
     // set up the service
     const casperService = new CasperServiceByJsonRPC(NODE_ADDRESS)
     
@@ -382,9 +276,9 @@ export class APIClient {
       ])
 
       return {
-        reserve0: reserve0?.CLValue?.isCLValue ? reserve0?.CLValue?.value() : '0',
-        reserve1: reserve1?.CLValue?.isCLValue ? reserve0?.CLValue?.value() : '0',
-        totalSupply: totalSupply?.CLValue?.isCLValue ? totalSupply?.CLValue?.value() : '0'
+        reserve0: reserve0?.CLValue?.isCLValue ? reserve0?.CLValue?.value().toString() : '0',
+        reserve1: reserve1?.CLValue?.isCLValue ? reserve1?.CLValue?.value().toString() : '0',
+        totalSupply: totalSupply?.CLValue?.isCLValue ? totalSupply?.CLValue?.value().toString() : '0'
       }
     } catch (e) {
       console.log('get pair data error', e)
@@ -415,8 +309,8 @@ export class APIClient {
     
     try {
       const [allowance, balance]: any[] = await Promise.all([
-        this.getERC20Balance(wallet, contractHash, srh),
-        this.getERC20Allowance(wallet, contractHash, srh),        
+        this.getERC20Allowance(wallet, contractHash, srh).catch(e => '0'),  
+        this.getERC20Balance(wallet, contractHash, srh),      
       ])
 
       return {
@@ -424,7 +318,7 @@ export class APIClient {
         balance,
       }
     } catch (e) {
-      console.log('get pair data error', e)
+      console.log('get pair user data error', e)
 
       return {
         allowance: '0',

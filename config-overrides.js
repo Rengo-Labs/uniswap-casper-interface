@@ -12,6 +12,7 @@ module.exports = function override(config) {
     os: require.resolve("os-browserify"),
     path: require.resolve("path-browserify"),
     url: require.resolve("url"),
+    fs: false,
   });
   config.module.rules.unshift({
     test: /\.m?js$/,

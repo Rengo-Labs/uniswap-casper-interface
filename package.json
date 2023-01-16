@@ -29,6 +29,7 @@
     "@types/styled-components": "^5.1.26",
     "axios": "^1.2.2",
     "bignumber.js": "^9.1.1",
+    "casper-erc20-js-client": "^0.2.0",
     "casper-js-sdk": "^2.10.1",
     "decimal.js": "^10.4.3",
     "env-cmd": "^10.1.0",

@@ -10,7 +10,7 @@ export interface SwapDetails {
   // how many tokens to transfer
   tokensToTransfer: string,
   // estimated price impact
-  priceImpact: string,
+  priceImpact: number | string,
   // effective exchange rate from A to B
   exchangeRateA: number,
   // effective exchange rate from B to A
@@ -23,6 +23,8 @@ export interface SwapDetails {
  * @param apiClient API client
  * @param tokenA first token
  * @param tokenB second token
+ * @param reserve0 first token reserve in pair
+ * @param reserve1 second token reserve in pair
  * @param inputValue input tokens
  * @param token input token types matching one of tokenA or tokenB
  * @param slippage decimal slippage
@@ -34,18 +36,18 @@ export const calculateSwapDetails = async (
     apiClient: APIClient, 
     tokenA: Token, 
     tokenB: Token, 
+    reserve0: BigNumber.Value,
+    reserve1: BigNumber.Value,
     inputValueRaw: BigNumber.Value, 
     token: Token, 
     slippage = 0.005, 
     fee = 0.003
 ): Promise<SwapDetails> => {
-  try {
-      const data = await apiClient.getPathReserves(tokenA.symbol, tokenB.symbol)
-      
+  try {     
       const isA2B = token.symbol == tokenA.symbol
 
-      const liquidityA = new BigNumber(data.reserve0)
-      const liquidityB = new BigNumber(data.reserve1)
+      const liquidityA = new BigNumber(reserve0)
+      const liquidityB = new BigNumber(reserve1)
       const inputValue = new BigNumber(inputValueRaw).times(10 ** 9)
       const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
 

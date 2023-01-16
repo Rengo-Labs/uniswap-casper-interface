@@ -11,7 +11,7 @@ export type NodeId = string;
 export interface Node {
   id: NodeId
   priority: number
-  label: string
+  label: any
 }
 class PriorityQueue {
   values: Node[];
@@ -20,7 +20,7 @@ class PriorityQueue {
     this.values = [];
   }
 
-  enqueue(id: NodeId, priority: number, label: string) {
+  enqueue(id: NodeId, priority: number, label: any) {
     const newNode: Node = { id, priority, label };
     this.values.push(newNode);
     this.bubbleUp();
@@ -87,12 +87,12 @@ class PriorityQueue {
 export interface LinkedListItem {
   source: NodeId
   target: NodeId
-  label: string
+  label: any
 }
 
 export interface PathItem {
   id: string
-  label: string
+  label: any
 }
 
 export interface RouterPathItem {
@@ -106,7 +106,7 @@ export class DijkstraCalculator {
     [key: NodeId]: { 
       id: NodeId
       weight: number
-      label: string
+      label: any
     }[] 
   };
 
@@ -118,7 +118,7 @@ export class DijkstraCalculator {
     if (!this.adjacencyList[vertex]) this.adjacencyList[vertex] = [];
   }
 
-  addEdge(vertex1: NodeId, vertex2: NodeId, weight = 1, label = '') {
+  addEdge(vertex1: NodeId, vertex2: NodeId, weight = 1, label = {}) {
     this.adjacencyList[vertex1].push({ id: vertex2, weight, label });
     this.adjacencyList[vertex2].push({ id: vertex1, weight, label });
   }
@@ -243,7 +243,7 @@ export const getPath = (
 
   // Add every pair as a edge
   pairList.forEach(v => {
-    graph.addEdge(v.token0Symbol, v.token1Symbol, 1, `hash-${v.id}`)
+    graph.addEdge(v.token0Symbol, v.token1Symbol, 1, v)
   })
 
   return graph.calculateShortestPath(token0Symbol, token1Symbol)
@@ -262,7 +262,7 @@ export const getListPath = (
   for (let i = 0; i < pairs.length - 1; i++) {
     const n0 = pairs[i];
     const n1 = pairs[i+1]
-    nodes.push({symbol0: n0.id, symbol1: n1.id, hash: n1.label})
+    nodes.push({symbol0: n0.id, symbol1: n1.id, hash: n1.label.id})
   }
 
   return nodes
