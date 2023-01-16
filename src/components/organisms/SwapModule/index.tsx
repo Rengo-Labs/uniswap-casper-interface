@@ -87,6 +87,8 @@ const SwapNewModule = () => {
   const [valueBUSD, setValueBUSD] = useState('0.00');
 
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
+  const [priceA, setPriceA] = useState("0.00")
+  const [priceB, setPriceB] = useState("0.00")
 
   useEffect(() => {
     const t0 = searchParams.get('token0');
@@ -289,6 +291,8 @@ const SwapNewModule = () => {
     );
     setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA);
     setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB);
+    setPriceA((parseFloat(usdA)*exchangeRateA).toFixed(2))
+    setPriceB((parseFloat(usdB)*exchangeRateB).toFixed(2))
   };
 
   return (
@@ -534,7 +538,7 @@ const SwapNewModule = () => {
           </ButtonSpaceNSM>
         </ContainerSwapActionsNSM>
       </ContainerInnerNSM>
-      <SwapStadistics />
+      <SwapStadistics token0Price={priceA} token1Price={priceB} token0Per={0} token1Per={0} />
     </Wrapper>
   );
 };
