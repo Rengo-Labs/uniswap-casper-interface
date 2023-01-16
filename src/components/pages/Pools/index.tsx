@@ -14,6 +14,7 @@ import {
     HeaderPool
 } from "./styles";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
+import {POCSearch3} from "../../POCSearch3";
 
 export const Pools = () => {
     const navigate = useNavigate()
@@ -29,13 +30,16 @@ export const Pools = () => {
                 <WrappedHeaderPool>
                     <HeaderPool>Liquidity Pools</HeaderPool>
                     <WrappedPoolTitle>
+                        <POCSearch3 columns={poolColumns} data={getPoolList()}/>
                         <TitleBox>TVL: $ {gralData.tvl}</TitleBox>
                         <TitleBox>VOLUME: $ {gralData.totalVolume}</TitleBox>
                         <CreatePoolButton enabled={true} onClick={() => {navigate("/liquidity")}} >Create pool</CreatePoolButton>
                     </WrappedPoolTitle>
                 </WrappedHeaderPool>
                 <CardContainer gridRow="2" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
-                    <PoolModule columns={poolColumns} data={getPoolList()} />
+                    <PoolModule columns={poolColumns}
+                                data={getPoolList()}
+                    />
                 </CardContainer >
             </WrappedPool>
         </NewLayout>

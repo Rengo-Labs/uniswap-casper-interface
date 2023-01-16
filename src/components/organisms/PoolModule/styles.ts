@@ -27,7 +27,7 @@ export const MenuToggleStyled = styled.div`
 `
 
 export const MenuTitleStyled = styled.div`
-    flex: 3;
+    flex: 1;
     align-self: center;
     color: black;
     margin-left: 1%;

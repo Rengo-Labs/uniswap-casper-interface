@@ -1,8 +1,17 @@
 import styled from "styled-components";
+import {device} from "../../../contexts/ThemeContext/themes";
 
 export const WrapToggle = styled.div`
     display: flex;
     gap: 16px;
+    
+    @media ${device.mobileS} {
+        flex-direction: column;
+    }
+    
+    @media ${device.laptopL} {
+        flex-direction: row;
+    }
 `
 
 export const ToggleTitle = styled.div`

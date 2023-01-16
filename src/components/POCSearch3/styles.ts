@@ -1,6 +1,5 @@
 import styled from 'styled-components'
-import {device} from "../../../contexts/ThemeContext/themes";
-import {AiOutlineSearch} from "react-icons/ai";
+import {device} from "../../contexts/ThemeContext/themes";
 
 
 export const PoolSeachButtonStyled = styled.section`
@@ -8,6 +7,7 @@ export const PoolSeachButtonStyled = styled.section`
     height: 58px;
     box-sizing: border-box;
     background-color: white;
+    width: 23.7rem;
     padding:.55em 1em;
     border-radius: 10px;
     border: 1px solid black;
@@ -23,23 +23,10 @@ export const PoolSeachButtonStyled = styled.section`
   }
   
   @media ${device.mobileS} {
-      display: none;
-  }
-  
-  @media ${device.laptop} {
       display: flex;
   }
   
-  @media ${device.laptopL} {
-      width: 23.7rem;
+  @media ${device.laptop} {
+      display: none;
   }
-`
-
-export const AiOutLineSearchStyled = styled(AiOutlineSearch)`
-  background-color: white 
-  color: rgb(120,100,244); 
-  border-radius: 45%; 
-  padding: 0.2em; 
-  height: 1em; 
-  width: 1.2em;
 `

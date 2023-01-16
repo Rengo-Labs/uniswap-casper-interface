@@ -13,12 +13,17 @@ export const WrappedHeaderPool = styled.div`
     padding: 0;
     align-self: end;
     grid-row: 1;
-    grid-column: 2/11;
     font-family: 'MyriadPro';
+    flex: none;
     
-    @media ${deviceMax.tablet} {
+    @media ${deviceMax.laptop} {
         grid-column: 1/11;
         width: 100%;
+        padding: 0 .5rem;
+    }
+    
+    @media ${device.laptop} {
+        grid-column: 2/11;
     }
 `
 
@@ -32,6 +37,11 @@ export const HeaderPool = styled.div`
     line-height: 30px;
     letter-spacing: 0.02em;
     gap: 8px;
+    
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    
     color: ${props => props.theme.secondBackgroundColor};
 `
 
@@ -45,7 +55,10 @@ export const WrappedPoolTitle = styled.div`
     gap: 16px;
     border-radius: 8px;
     
-    @media ${deviceMax.tablet} {
+    flex: none;
+    order: 1;
+    
+    @media ${deviceMax.laptop} {
         flex-direction: column;
         width: 100%;
     }
@@ -54,29 +67,22 @@ export const WrappedPoolTitle = styled.div`
 export const TitleBox = styled.div`
     padding: 1rem 1.56rem;
     background-color: ${props => props.theme.secondBackgroundColor};
-    height: 3.625 rem; 
+    height: 1.625rem; 
     display: flex; 
     align-items: center;
-    font-size: 18px;
-    line-height: 26px;
     border-radius: 8px;
     letter-spacing: 0.02em;
     
-    @media ${deviceMax.mobileL} {
+    @media ${device.mobileM} {
         font-size: 14px;
         line-height: 18px;
         width: 100%;
     }
     
-    @media ${deviceMax.laptop} {
-        font-size: 16px;
-        line-height: 22px;
-        width: 100%;
-    }
-    
-    @media ${device.laptopL} {
+    @media ${device.laptop} {
         font-size: 18px;
         line-height: 26px;
+        width: auto;
     }
 `
 export const Column6 = styled.div`
