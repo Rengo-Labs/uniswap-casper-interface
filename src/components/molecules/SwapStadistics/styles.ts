@@ -4,7 +4,6 @@ import {device} from "../../../contexts/ThemeContext/themes";
 export const Main = styled.main`
   box-sizing: border-box;
   justify-self: center;
-  box-sizing: border-box;
   width: 100%;
   color: black;
   display: grid;
@@ -27,7 +26,7 @@ export const Wrapper = styled.section`
   z-index: 2;
 
   @media ${device.mobileS} {
-    width: auto;
+    width: 100%;
     padding: 0;
     border: none;
   }

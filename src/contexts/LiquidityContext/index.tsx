@@ -78,6 +78,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     updateNotification({
       type: NotificationType.Loading,
       title: 'Adding liquidity.',
+      subtitle: '',
       show: true,
       chargerBar: false,
     });
@@ -108,6 +109,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Success,
         title: 'Success.',
+        subtitle: '',
         show: true,
         chargerBar: true,
       });
@@ -121,6 +123,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
         show: true,
         chargerBar: true,
       });
@@ -139,6 +142,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     updateNotification({
       type: NotificationType.Loading,
       title: 'Removing liquidity',
+      subtitle: '',
       show: true,
       chargerBar: false,
     });
@@ -169,6 +173,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Success,
         title: 'Success.',
+        subtitle: '',
         show: true,
         chargerBar: true,
       });
@@ -182,6 +187,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
         show: true,
         chargerBar: true,
       });

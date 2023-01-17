@@ -1,9 +1,10 @@
 import styled from 'styled-components'
 export const NavBarMobileContainerStyled = styled.nav`
+    background-color: ${props => props.theme.NewPurpleColor};
     position: relative;
     height: 70px;
     width: 100%;
-    background-color: ${props => props.theme.NewPurpleColor};
+    z-index: 10;
 `
 
 export const NavBarMobileMenuStyled = styled.nav`
@@ -20,3 +21,8 @@ export const NavBarMobileMenuStyled = styled.nav`
     fill: white
   }
 `
+
+export const Container = styled.div`
+    background-color: red;
+    height: 100%;
+    `

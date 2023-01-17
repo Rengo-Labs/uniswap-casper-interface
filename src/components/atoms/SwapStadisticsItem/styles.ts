@@ -16,9 +16,10 @@ export const Wrapper = styled.div`
 
   @media ${device.mobileS} {
     flex-wrap: wrap;
+    width: 100%;
     justify-content: space-evenly;
-    gap: 2.1rem;
     padding: 16px;
+    gap: 1.2rem;
   }
 
   @media ${device.tablet} {
@@ -26,7 +27,14 @@ export const Wrapper = styled.div`
     justify-content: center;
     gap: 1.5rem;
     padding: 0 1rem;
+    width: auto;
   }
+`;
+
+export const TokenContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `;
 
 export const PriceContainer = styled.div`
@@ -68,20 +76,20 @@ export const GraphicContainer = styled.div`
   align-items: center;
 
   @media ${device.mobileS} {
-    flex: 100%;
+    flex: 1;
 
     & > div {
-      width: 100%;
+      flex: 1;
       height: 100%;
     }
 
     & > div > svg {
       width: 100%;
-      height: 21px;
+      height: 25px;
     }
-  }
+  } 
 
   @media ${device.tablet} {
     flex: none;
-  }
+  } 
 `;

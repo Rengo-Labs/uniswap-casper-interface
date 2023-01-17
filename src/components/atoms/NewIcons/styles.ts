@@ -5,15 +5,15 @@ export const IconContainerStyle = styled.div.attrs(
   (props: { size: any; width?: number; height?: number }) => props
 )`
   display: flex;
-  alignitems: 'center';
-  alignself: 'center';
-  justifycontent: 'center';
+  align-items: 'center';
+  align-self: 'center';
+  justify-content: 'center';
   height: ${(props) => props.height || props.size}px;
   width: ${(props) => props.width || props.size}px;
 
   @media ${device.mobileS} {
-    width: 25px;
-    height: 25px;
+    width: ${(props) => props.height || props.size}px;
+    height: ${(props) => props.width || props.size}px;
   }
 
   @media ${device.mobileM} {
@@ -32,17 +32,17 @@ export const IconContainerStyle = styled.div.attrs(
   }
 
   & > * {
-    height: ${(props) => props.height || props.size}px;
-    width: ${(props) => props.width || props.size}px;
+    height: ${(props) => props.height || props.size | 20}px;
+    width: ${(props) => props.width || props.size || 20}px;
 
     @media ${device.mobileS} {
-      width: 32px;
-      height: 32px;
+      width: width;
+      height: height;
     }
 
     @media ${device.mobileM} {
-      width: 32px;
-      height: 32px;
+      width: width;
+      height: height;
     }
 
     @media ${device.tablet} {

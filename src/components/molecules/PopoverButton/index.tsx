@@ -41,6 +41,7 @@ export const PopoverButton = ({
         updateNotification({
             type: NotificationType.Info,
             title: 'Copied.',
+            subtitle: '',
             show: true,
             chargerBar: true,
             timeToClose: 5
@@ -51,6 +52,7 @@ export const PopoverButton = ({
         updateNotification({
             type: NotificationType.Info,
             title: 'Nothing now',
+            subtitle: '',
             show: true,
             chargerBar: true
           });
