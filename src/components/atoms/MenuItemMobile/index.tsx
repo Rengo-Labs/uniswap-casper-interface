@@ -17,7 +17,7 @@ export const MenuItemMobile = ({
           href='#'
           style={{ display: 'grid', placeItems: 'center' }}
         >
-          <NewIcons Icon={icon} size={32} style={{ fill: '#715ff5' }} />
+          <NewIcons Icon={icon} size={20} style={{ fill: '#715ff5' }} />
         </a>
         <Text>
         {text}

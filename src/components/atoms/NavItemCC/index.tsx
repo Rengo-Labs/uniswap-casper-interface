@@ -14,6 +14,7 @@ const NavItemStyled = styled.nav<any>`
   -webkit-box-align: center;
   transition: all 100ms ease 0s;
   font-size: 18px;
+  margin-bottom: 10px;
 
   & svg {
     stroke: white;
@@ -22,11 +23,11 @@ const NavItemStyled = styled.nav<any>`
   }
 
   &:hover {
-    color: ${(props) => props.theme.NewAquamarineColor};
+    color: ${(props) => !props.isTitle && props.theme.NewAquamarineColor};
 
     svg {
-      stroke: ${(props) => props.theme.NewAquamarineColor};
-      fill: ${(props) => props.theme.NewAquamarineColor};
+      stroke: ${(props) => !props.isTitle && props.theme.NewAquamarineColor};
+      fill: ${(props) =>!props.isTitle && props.theme.NewAquamarineColor};
     }
   }
 `;
@@ -35,12 +36,14 @@ export const NavItemCC = ({
   children,
   redirect,
   collapse,
+  isTitle,
   onMouseEnter,
   onMouseLeave,
 }: {
   children: any;
   redirect: () => void;
   collapse: boolean;
+  isTitle?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }) => {
@@ -50,6 +53,7 @@ export const NavItemCC = ({
       collapse={collapse}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      isTitle={isTitle}
     >
       {children}
     </NavItemStyled>

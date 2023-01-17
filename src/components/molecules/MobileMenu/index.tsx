@@ -24,6 +24,8 @@ export const MobileMenu = ({
   open,
   setOpen,
   menuIcons,
+  option,
+  setOption,
 }) => {
   return (
     <NavBarMobileContainerStyled>
@@ -37,7 +39,7 @@ export const MobileMenu = ({
         onDisconnect={onDisconnect}
         accountHashString={accountHashString}
       />
-      <NavMenuMobile open={open}>{menuIcons}</NavMenuMobile>
+      <NavMenuMobile open={open} option={option} setOption={setOption}>{menuIcons}</NavMenuMobile>
     </NavBarMobileContainerStyled>
   );
 };

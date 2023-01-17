@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
+  Close,
+  HeaderContainer,
   StyledSettingMenu,
   StyleSettingValue,
   StyleSettingValueContainer,
@@ -12,7 +14,7 @@ import {
 } from './styles';
 import { globalStore } from '../../../store/store';
 
-export const SettingMobile = () => {
+export const SettingMobile = ({setOption}) => {
   const { updateSlippageTolerance, slippageTolerance } = globalStore();
 
   const [slippageToleranceValue, setSlippageToleranceValue] = useState<number>(
@@ -31,11 +33,16 @@ export const SettingMobile = () => {
 
   return (
     <StyledSettingMenu>
+      <HeaderContainer>
       <StyleTitle>Slippage Tolerance</StyleTitle>
+      <Close onClick={setOption}>x</Close>
+      </HeaderContainer>
       <StyleSettingValueContainer>
         <StyleSettingValue
           customColor={slippageToleranceValue == 0.1}
-          onClick={() => handleSlippageTolerance(0.1)}
+          onClick={(e) => {
+            e.preventDefault();
+            handleSlippageTolerance(0.1)}}
         >
           0.1%
         </StyleSettingValue>

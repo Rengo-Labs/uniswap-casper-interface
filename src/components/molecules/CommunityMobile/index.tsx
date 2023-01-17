@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { MenuItem, MenuItemMobile } from '../../atoms';
-import { StyledCommunityMenu, Title } from './styles';
+import { MenuItemMobile } from '../../atoms';
+import { Close, HeaderContainer, StyledCommunityMenu, Title } from './styles';
 
 export interface MenuOption {
   icon?: any;
@@ -10,9 +10,10 @@ export interface MenuOption {
 
 interface CommunityMenuProps {
   communityOptions: MenuOption[];
+  setOption?: (option: string) => void;
 }
 
-export const CommunityMenuMobile = ({ communityOptions }: CommunityMenuProps) => {
+export const CommunityMenuMobile = ({ communityOptions, setOption }: CommunityMenuProps) => {
   const [selectedOption, selectedOptionSet] = useState(0);
 
   function onOptionClickHandler(navegateTo: string) {
@@ -21,7 +22,10 @@ export const CommunityMenuMobile = ({ communityOptions }: CommunityMenuProps) =>
 
   return (
     <StyledCommunityMenu>
+      <HeaderContainer>
       <Title>Community</Title>
+      <Close onClick={() => setOption && setOption('')} >x</Close>
+      </HeaderContainer>
       {communityOptions.map((option, index) => (
         <MenuItemMobile
           key={index}

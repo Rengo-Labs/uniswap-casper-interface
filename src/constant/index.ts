@@ -28,3 +28,8 @@ export enum NotificationType {
   Info = 'info',
   Loading = 'loading'
 }
+
+export enum MenuMobileOptions {
+  Settings = 'Settings',
+  Community = 'Community',
+}

@@ -6,7 +6,7 @@ interface ISettingValueProp {
 
 const progress = keyframes`
   100% {
-    transform: translateX(0);
+    transform: translateY(0);
   }
 `;
 
@@ -16,20 +16,27 @@ export const StyledSettingMenu = styled.ul`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 16px;
+  padding: 16px 16px 50px 16px;
   gap: 16px;
-  background: #f7fcfe;
+  background: ${(props) => props.theme.NewWhiteColor};
   border: 1px solid #080808;
-  border-bottom: none;
   border-radius: 16px 16px 0px 0px;
-  width: 100%;
-  height: 286px;
-  margin-right: auto;
-  margin-bottom: 55px;
+  width: 100vw;
+  height: 300px;
+  margin-right: 32px;
+  align-self: flex-end;
   position: absolute;
-  transform: translateX(-100%);
+  transform: translateY(100%);
   animation: ${progress} 0.3s linear forwards;
 `;
+
+export const HeaderContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  `;
 
 export const StyleTitle = styled.h5`
   font-family: 'MyriadPro';
@@ -41,12 +48,26 @@ export const StyleTitle = styled.h5`
   color: ${(props) => props.theme.NewPurpleColor};
 `;
 
+export const Close = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  border-radius: 12px;
+  font-family: 'MyriadPro';
+  font-size: 24px;
+  margin-top: -25px;
+  cursor: pointer;
+  color: ${(props) => props.theme.NewPurpleColor};
+`;
+
 export const StyleSettingValueContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  width: 100%;
 `;
 
 export const StyleSettingValue = styled.div<ISettingValueProp>`
@@ -57,11 +78,11 @@ export const StyleSettingValue = styled.div<ISettingValueProp>`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 16px;
+  padding: 16px 24px;
+  font-size: 18px;
+  font-family: "MyriadPro";
   gap: 4px;
-  width: 70px;
   height: 50px;
-  border: 1px solid #080808;
   border-radius: 12px;
   border: 1px solid ${(props) => props.theme.NewBlackColor};
   color: ${(props) => props.theme.NewPurpleColor};
@@ -71,7 +92,7 @@ export const StyleSettingValueInputContainer = styled.div<ISettingValueProp>`
   background-color: ${(props) =>
     props.customColor && props.theme.thirdBackgroundColor};
   display: flex;
-  width: 210px;
+  width: 90%;
   height: 50px;
   flex-direction: row;
   align-items: center;
@@ -86,11 +107,14 @@ export const StyleSettingValueInput = styled.input`
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  padding: 16px 32px;
+  padding: 12px 32px;
   gap: 4px;
   border: none;
   border-radius: 12px;
+  font-size: 18px;
+  font-family: "MyriadPro";
   color: ${(props) => props.theme.NewPurpleColor};
+  flex:1;
   &:focus {
     outline: none;
   }
@@ -103,7 +127,7 @@ export const StyleSettingValueInputButton = styled.button`
   align-items: center;
   padding: 16px 25px;
   gap: 4px;
-  width: 240px;
+  width: 100%;
   height: 64px;
   border-radius: 8px;
   background: ${(props) =>
