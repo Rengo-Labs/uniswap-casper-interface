@@ -60,12 +60,12 @@ const LiquidityNewModule = () => {
     firstTokenSelected,
     secondTokenSelected,
     isConnected,
-    slippageToleranceSelected,
     onIncreaseAllow,
     getPoolList,
     gasPriceSelectedForLiquidity,
     refreshAll,
-    calculateUSDtokens
+    calculateUSDtokens,
+    findReservesBySymbols,
   } = useContext(ConfigProviderContext)
 
   const {
@@ -110,14 +110,17 @@ const LiquidityNewModule = () => {
       setRemovingPopup(false)
     }
 
-    updateLiquidityDetail(firstTokenSelected, secondTokenSelected, amountSwapTokenA, firstTokenSelected).then()
-  }, [isConnected])
+    updateLiquidityDetail(
+      firstTokenSelected, 
+      secondTokenSelected,
+      amountSwapTokenA,
+      lastChanged == 'A' ? firstTokenSelected : secondTokenSelected,
+    );
+  }, [isConnected, pairState]);
 
   useEffect(() => {
-    progressBar(async () => {
-      await changeTokenA(amountSwapTokenA)
-    })
-  }, [amountSwapTokenA])
+    progressBar(async () => lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB))
+  }, [amountSwapTokenA, amountSwapTokenB]);
 
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
@@ -162,9 +165,16 @@ const LiquidityNewModule = () => {
   }
 
   async function updateLiquidityDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
+    const {
+      reserve0, 
+      reserve1,
+    } = findReservesBySymbols(tokenA.symbol, tokenB.symbol)
+
     const getLiquidityDetailP = getLiquidityDetails(
       tokenA,
       tokenB,
+      reserve0,
+      reserve1,
       value,
       token,
       slippageTolerance,

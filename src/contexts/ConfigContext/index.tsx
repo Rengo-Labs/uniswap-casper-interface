@@ -558,10 +558,10 @@ export const ConfigContextWithReducer = ({
             name: `${pl.token0Symbol}-${pl.token1Symbol}`,
             token0Symbol: pl.token0Symbol,
             token1Symbol: pl.token1Symbol,
-            totalLiquidityUSD: new BigNumber(reserve0)
+            totalLiquidityUSD: '0', /*new BigNumber(reserve0)
               .times(pl.token0Price)
               .plus(new BigNumber(reserve1).times(pl.token1Price))
-              .toString(),
+              .toString(),*/
             volume7d: new BigNumber(
               convertBigNumberToUIString(new BigNumber(0), 9)
             ).toFixed(2),

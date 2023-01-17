@@ -63,7 +63,6 @@ const SwapNewModule = () => {
     secondTokenSelected,
     isConnected,
     onIncreaseAllow,
-    slippageToleranceSelected,
     pairState,
     gasPriceSelectedForSwapping,
     refreshAll,
@@ -102,20 +101,17 @@ const SwapNewModule = () => {
       firstTokenSelected,
       secondTokenSelected,
       amountSwapTokenA,
-      firstTokenSelected
+      lastChanged == 'A' ? firstTokenSelected : secondTokenSelected,
     );
-  }, [isConnected]);
+  }, [isConnected, pairState]);
 
   useEffect(() => {
-    progressBar(async () => {
-      await changeTokenA(amountSwapTokenA)
-    })
-  }, [amountSwapTokenA]);
+    progressBar(async () => lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB))
+  }, [amountSwapTokenA, amountSwapTokenB]);
 
   async function onConnect() {
     onConnectWallet();
   }
-
 
   function onSwitchTokensHandler() {
     onSwitchTokens();

@@ -22,10 +22,6 @@ import {
   Client as CasperClient,
 } from '../wallet'
 
-import {
-  createRecipientAddress,
-} from '../utils'
-
 import { NODE_ADDRESS } from '../../constant'
 
 import { ROUTER_PACKAGE_HASH } from '../../constant';

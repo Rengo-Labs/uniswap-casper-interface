@@ -34,18 +34,18 @@ export const calculateLiquidityDetails = async (
   apiClient: APIClient, 
   tokenA: Token, 
   tokenB: Token, 
+  reserve0: BigNumber.Value,
+  reserve1: BigNumber.Value,
   inputValueRaw: BigNumber.Value, 
   token: Token, 
   slippage = 0.005, 
   fee = 0.003
 ): Promise<LiquidityDetails> => {
   try {
-      const data = await apiClient.getPathReserves(tokenA.symbol, tokenB.symbol)
-      
       const isA2B = token.symbol == tokenA.symbol
 
-      const liquidityA = new BigNumber(data.reserve0)
-      const liquidityB = new BigNumber(data.reserve1)
+      const liquidityA = new BigNumber(reserve0)
+      const liquidityB = new BigNumber(reserve1)
       const inputValue = new BigNumber(inputValueRaw).times(Math.pow(10,9))
       
       const inputLiquidity = isA2B ? liquidityA : liquidityB

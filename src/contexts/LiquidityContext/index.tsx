@@ -41,6 +41,8 @@ export interface LiquidityContext {
   getLiquidityDetails: (
     tokenA: Token,
     tokenB: Token,
+    reserve0: BigNumber.Value,
+    reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
     slippage: number,
@@ -189,6 +191,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
   async function getLiquidityDetails(
     tokenA: Token,
     tokenB: Token,
+    reserve0: BigNumber.Value,
+    reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
     slippage = 0.005,
@@ -198,6 +202,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       apiClient,
       tokenA,
       tokenB,
+      reserve0,
+      reserve1,
       inputValue,
       token,
       slippage,

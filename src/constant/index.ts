@@ -20,7 +20,6 @@ export const DISCORD_URL = process.env.REACT_APP_DISCORD_URL;
 export const TELEGRAM_URL = process.env.REACT_APP_TELEGRAM_URL;
 export const GITBOOK_URL = process.env.REACT_APP_GITBOOK_URL;
 
-
 export enum NotificationType {
   Success = 'success',
   Error = 'error',
