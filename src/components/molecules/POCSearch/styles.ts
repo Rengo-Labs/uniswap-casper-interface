@@ -36,8 +36,8 @@ export const PoolSeachButtonStyled = styled.section`
 `
 
 export const AiOutLineSearchStyled = styled(AiOutlineSearch)`
-  background-color: white 
-  color: rgb(120,100,244); 
+  background-color: #D9D9D9; 
+  color: #999999; 
   border-radius: 45%; 
   padding: 0.2em; 
   height: 1em; 

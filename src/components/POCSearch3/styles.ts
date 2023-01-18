@@ -7,7 +7,7 @@ export const PoolSeachButtonStyled = styled.section`
     height: 58px;
     box-sizing: border-box;
     background-color: white;
-    width: 23.7rem;
+    
     padding:.55em 1em;
     border-radius: 10px;
     border: 1px solid black;
@@ -24,6 +24,7 @@ export const PoolSeachButtonStyled = styled.section`
   
   @media ${device.mobileS} {
       display: flex;
+      width: 100%;
   }
   
   @media ${device.laptop} {

@@ -4,8 +4,13 @@ import {device} from "../../../contexts/ThemeContext/themes";
 export const WrapToggle = styled.div`
     display: flex;
     gap: 16px;
+    align-items: center;
     
     @media ${device.mobileS} {
+        flex-direction: row;
+    }
+    
+    @media ${device.laptop} {
         flex-direction: column;
     }
     

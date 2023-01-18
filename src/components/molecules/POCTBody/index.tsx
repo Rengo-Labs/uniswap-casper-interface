@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import { TBody} from './styles'
 import {CollapsingRow} from '../'
 import { v4 as uuidv4 } from 'uuid'
@@ -21,17 +21,30 @@ export const POCTBody = ({
     const { isStaked, filter } = React.useContext(ConfigProviderContext)
     const {setRemovingPopup} = useContext(LiquidityProviderContext)
 
+    const [isMobile, setIsMobile] = useState(false)
+
+    const handleResize = () => {
+        if (window.innerWidth < 1024) {
+            setIsMobile(true)
+        } else {
+            setIsMobile(false)
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener("resize", handleResize)
+    })
+
     return (
         <TBody {...getTableBodyProps()}>
             {// Loop over the table rows
                 rows.map((row: Row<PairData>) => {
                     // Prepare the row for display
                     prepareRow(row)
-                    return (
-                        // Apply the row props
-                        (!isStaked || filter(isStaked, row)) &&
-                        <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} onRemovingPopupListener={setRemovingPopup} />
-                    )
+
+                    const r = !isStaked || (filter(isStaked, row));
+
+                    return r && <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} onRemovingPopupListener={setRemovingPopup} isMobile={isMobile} />
                 })
             }
         </TBody>

@@ -11,16 +11,13 @@ import {
     TColumn6,
     TColumn3,
     TColumn1,
-    TRow,
-    TWrapRow,
-    WrappedRow,
     IconColumn1,
     TColumn2andHalf,
     PairTitleColumn,
     TitleBodyRow,
-    AddLiquidityButton,
     TBodyColumn3,
-    TButtonColumn3, TBodyColumn6, NormalBodyRow
+    TButtonColumn3,
+    TBodyColumn6
 } from "../POCTBody/styles";
 import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled, SwapIconTwoImageStyled} from "../LiquidityItem/styles";
@@ -31,16 +28,32 @@ import { Row } from 'react-table';
 import { PairData } from '../../../reducers/PairsReducer';
 import BigNumber from 'bignumber.js';
 import {FiChevronDown, FiChevronUp} from "react-icons/fi";
+import {
+    TRow,
+    TWrapRow,
+    TFirstRow,
+    TitleStyled,
+    TLeftRow,
+    TSecondRow,
+    TThirdRow,
+    TWrapCardRow,
+    WrappedRow,
+    ValueStyled,
+    AddLiquidityButton,
+    NormalBodyRow
+} from "./styles";
 
 export interface CollapsingRowProps {
     row: Row<PairData>,
     fullExpanded?: boolean,
+    isMobile?: boolean,
     onRemovingPopupListener: any
 }
 
 export const CollapsingRow = ({
     row, 
     fullExpanded = false,
+    isMobile = false,
     onRemovingPopupListener
 }: CollapsingRowProps)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
@@ -59,8 +72,7 @@ export const CollapsingRow = ({
         navigate({pathname: path, search: `token0=${row.original.token0Symbol.replace('WCSPR', 'CSPR')}&token1=${row.original.token1Symbol.replace('WCSPR', 'CSPR')}`})
     }
 
-    return (
-        <TWrapRow className="collapsible" {...row.getRowProps()} >
+    return ( !isMobile ? <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>
                 <TColumn6 style={{display: "flex"}}>
                     {/* TODO: remove inline css*/}
@@ -150,6 +162,79 @@ export const CollapsingRow = ({
                     <TColumn1 />
                 </WrappedRow>
             </TBodyExpanded>
-        </TWrapRow>
-    );
+        </TWrapRow> :
+        <TWrapCardRow className="collapsible" {...row.getRowProps()} >
+            <TFirstRow {...getToggleProps({onClick: handleOnClick}) }>
+                <TColumn6 style={{display: "flex"}}>
+                    {/* TODO: remove inline css*/}
+                    <IconColumn1><AiFillStar style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/></IconColumn1>
+                    <IconColumn1>
+                        <SwapIconImageStyled src={row.original.token0Icon} width="45" height="45" />
+                        <SwapIconTwoImageStyled src={row.original.token1Icon} width="45" height="45" />
+                    </IconColumn1>
+                    <PairTitleColumn>{row.original.token0Symbol} - {row.original.token1Symbol}</PairTitleColumn>
+                    <TColumn2andHalf/>
+                </TColumn6>
+                <TColumn1>{isExpanded ? <FiChevronUp style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/> : <FiChevronDown style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}} />}</TColumn1>
+            </TFirstRow>
+            <TSecondRow {...getCollapseProps()}>
+                <WrappedRow>
+                    <TRow>
+                        <TitleBodyRow>Assets Pooled</TitleBodyRow>
+                        <NormalBodyRow>{convertNumber(parseFloat(row.original.reserve0))} {row.original.token0Symbol} | {convertNumber(parseFloat(row.original.reserve1))} {row.original.token1Symbol}</NormalBodyRow>
+                    </TRow>
+                    <TRow>
+                        <TitleBodyRow>Your Liquidity</TitleBodyRow>
+                        <NormalBodyRow>$ {convertNumber(parseFloat(row.original.totalLiquidityUSD))} | {convertNumber(parseFloat(row.original.balance))} LP</NormalBodyRow>
+                    </TRow>
+                    <TRow>
+                        <TitleBodyRow>Your Share</TitleBodyRow>
+                        <NormalBodyRow>
+                            {
+                                row.original.balance ? new BigNumber(row.original.balance).div(row.original.totalSupply).times(100).toFixed(2) : 0
+                            } %
+                        </NormalBodyRow>
+                    </TRow>
+                    <TLeftRow>
+                        <AddLiquidityButton enabled={true} onClick={() => {
+                            goTo("/liquidity")
+                        }}>Add Liquidity</AddLiquidityButton>
+                    </TLeftRow>
+                    <TLeftRow>
+                        <CircleButton onClick={() => {goTo("/swap")}}>
+                            {/* TODO: remove inline css*/}
+                            <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
+                        </CircleButton>
+                        <CircleButton disabled={parseFloat(row.original.balance) <= 0} onClick={() => {goTo("/liquidity", true)}}>
+                            <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
+                        </CircleButton>
+                        {false &&
+                          <CircleButton onClick={() => {goTo("/farms")}}>
+                              {/* TODO: remove inline css*/}
+                              <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
+                          </CircleButton>
+                        }
+                    </TLeftRow>
+                </WrappedRow>
+            </TSecondRow>
+            <TThirdRow>
+                <TLeftRow>
+                    <TitleStyled>Liquidity </TitleStyled>
+                    <ValueStyled>$ {convertNumber(parseFloat(row.original.totalSupply))}</ValueStyled>
+                </TLeftRow>
+                <TLeftRow>
+                    <TitleStyled>Volume 7D</TitleStyled>
+                    <ValueStyled>$ {row.original.volume7d}</ValueStyled>
+                </TLeftRow>
+                <TLeftRow>
+                    <TitleStyled>Fees 7D</TitleStyled>
+                    <ValueStyled>$ {row.original.fees24h}</ValueStyled>
+                </TLeftRow>
+                <TLeftRow>
+                    <TitleStyled>APR 7D</TitleStyled>
+                    <ValueStyled>{row.original.oneYFees} %</ValueStyled>
+                </TLeftRow>
+            </TThirdRow>
+        </TWrapCardRow>
+    )
 }

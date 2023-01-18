@@ -10,16 +10,15 @@ import {PoolInputFilter} from "../atoms";
 import {PairData} from "../../reducers/PairsReducer";
 import {TableInstance} from "../organisms/PoolModule";
 
-export const POCSearch3 = ({ columns, data }) => {
+export const POCSearch3 = ({ tableInstance }) => {
 
-    const tableInstance = useTable<PairData>({columns: columns, data: data}, useGlobalFilter, useSortBy)
     const {
       preGlobalFilteredRows,
       setGlobalFilter,
       globalFilter,
     } = tableInstance as any as TableInstance<PairData>
 
-    const count = preGlobalFilteredRows.length;
+    const count = preGlobalFilteredRows ? preGlobalFilteredRows.length : 0;
     const [value, setValue] = React.useState(globalFilter)
     const onChange = useAsyncDebounce(value => {
         setGlobalFilter(value || "")
@@ -28,7 +27,7 @@ export const POCSearch3 = ({ columns, data }) => {
     return (
         <PoolSeachButtonStyled>
             {/* TODO: remove inline css*/}
-            <AiOutlineSearch style={{ backgroundColor: "white", color: "rgb(120,100,244)", borderRadius: "45%", padding: "0.2em", height: "1em", width: "1.2em"}} />
+            <AiOutlineSearch style={{ backgroundColor: "#D9D9D9", color: "#999999", borderRadius: "45%", padding: "0.2em", height: "1em", width: "1.2em"}} />
             <PoolInputFilter value={value} setValue={setValue} count={count} onChange={onChange} />
         </PoolSeachButtonStyled>
     )

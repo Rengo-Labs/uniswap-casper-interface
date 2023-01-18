@@ -48,7 +48,7 @@ import {
 
 import { signAndDeployAllowance } from '../../commons/deploys';
 import { ConfigState } from '../../reducers/ConfigReducers';
-import { Row } from 'react-table';
+import {Row, useGlobalFilter, useSortBy, useTable} from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
 import {ERROR_BLOCKCHAIN} from "../../constant/erros";
@@ -76,6 +76,7 @@ export interface ConfigContext {
 
   // To Delete
   poolColumns?: any[];
+  columns?: any[];
   getPoolList?: () => PairData[];
   getTVLandVolume?: () => Promise<void>;
   gralData?: Record<string, string>;
@@ -90,6 +91,8 @@ export interface ConfigContext {
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
   calculateUSDtokens: (t0, t1, amount0, amount1) => any[];
+  tableInstance?: any,
+  setTableInstance?: (t) => void;
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any);
@@ -200,6 +203,7 @@ export const ConfigContextWithReducer = ({
   const [isStaked, setStaked] = useState(false);
   const [linkExplorer, setLinkExplorer] = useState('');
   const { updateNotification, dismissNotification } = notificationStore();
+  const [tableInstance, setTableInstance] = useState<any>({})
 
   const [showConnectionPopup, setShowConnectionPopup] = useState(false);
 
@@ -468,7 +472,7 @@ export const ConfigContextWithReducer = ({
       await getTVLandVolume();
       const data = await apiClient.getTokenList();
       const tokens = tokensToObject(tokenState.tokens, data.tokens);
-      //console.log('TOKENS', tokens)
+
       tokenDispatch({
         type: TokenActions.UPDATE_TOKENS,
         payload: { tokens } as any,
@@ -910,6 +914,7 @@ export const ConfigContextWithReducer = ({
         onIncreaseAllow,
         pairState,
         poolColumns,
+        columns,
         getPoolList,
         getTVLandVolume,
         gralData,
@@ -924,6 +929,8 @@ export const ConfigContextWithReducer = ({
         setProgressModal,
         setConfirmModal,
         calculateUSDtokens,
+        tableInstance,
+        setTableInstance
       }}
     >
       {children}

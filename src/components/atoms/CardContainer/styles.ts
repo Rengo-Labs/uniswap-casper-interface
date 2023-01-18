@@ -11,29 +11,27 @@ export const CardStyled = styled.section<CardStyledInterface>`
     grid-row: ${props => props.gridRow};
     grid-column: ${props => props.gridColumn};
     width: ${props => props.width};
-    margin: .5em auto 4vh auto;
-    border: 2px solid black;
+    
     border-radius: 20px;
     background-color: ${props => props.theme.mainBackgroundColor};
     display: grid;
     grid-template-rows: auto 1fr;
 
   @media ${device.mobileS} {
-    width: 100%;
+    border: 0;
+    width: auto;
     display: grid;
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
     grid-template-rows: auto 1fr;
-  }
-
-  @media ${device.mobileL} {
-    width: 100%;
-    grid-column: 2/11;
+    padding: 1rem;
   }
   
-  @media ${device.tablet} {
+  @media ${device.laptop} {
+    margin: .5em auto 4vh auto;
     width: ${props => props.width};
     grid-column: ${props => props.gridColumn};
+    border: 2px solid black;
   }
 `
 export const CardHeaderStyled = styled.section`

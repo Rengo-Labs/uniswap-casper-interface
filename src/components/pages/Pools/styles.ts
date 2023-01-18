@@ -2,28 +2,39 @@ import styled from 'styled-components'
 import {device, deviceMax} from "../../../contexts/ThemeContext/themes";
 
 export const WrappedPool = styled.div`
-    display: grid; 
-    grid-template-columns: repeat(11, 1fr)
+    @media ${device.mobileS} {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    @media ${device.laptop} {
+        display: grid; 
+        grid-template-columns: repeat(11, 1fr)
+    }
 `
 
 export const WrappedHeaderPool = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 0;
-    align-self: end;
+    
     grid-row: 1;
     font-family: 'MyriadPro';
     flex: none;
     
-    @media ${deviceMax.laptop} {
-        grid-column: 1/11;
-        width: 100%;
-        padding: 0 .5rem;
+    @media ${device.mobileS} {
+        width: auto;
+        padding: 0 1rem;
     }
     
     @media ${device.laptop} {
+        grid-column: 2/10;
+    }
+    
+    @media ${device.laptopL} {
         grid-column: 2/11;
+        align-self: end;
+        padding: 0;
     }
 `
 
@@ -49,7 +60,6 @@ export const WrappedPoolTitle = styled.div`
     align-items: end;
     
     display: flex;
-    flex-direction: row;
     align-items: flex-start;
     padding: 0px;
     gap: 16px;
@@ -58,9 +68,24 @@ export const WrappedPoolTitle = styled.div`
     flex: none;
     order: 1;
     
-    @media ${deviceMax.laptop} {
+    @media ${device.mobileS} {
         flex-direction: column;
         width: 100%;
+    }
+    
+    @media ${device.laptopL} {
+        flex-direction: row;
+        width: auto;
+    }
+`
+
+export const TitleBoxWrapper = styled.div`
+    @media ${device.mobileS} {
+        width: 100%;
+    }
+    
+    @media ${device.laptopL} {
+        width: auto;
     }
 `
 
@@ -73,10 +98,9 @@ export const TitleBox = styled.div`
     border-radius: 8px;
     letter-spacing: 0.02em;
     
-    @media ${device.mobileM} {
+    @media ${device.mobileS} {
         font-size: 14px;
         line-height: 18px;
-        width: 100%;
     }
     
     @media ${device.laptop} {

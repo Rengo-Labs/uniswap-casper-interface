@@ -10,36 +10,7 @@ export const TBody = styled.div`
     gap: 8px;
 `
 
-export const TWrapRow = styled.div`
-    border-radius: 16px;
-    border: 1px solid black;
-    padding: 1rem 2rem;
-    background-color: white;
-    font-size: 14px;
-    line-height: 18px;
-    letter-spacing: 0.02em;
-    
-    @media ${deviceMax.tablet} {
-      border: 0;
-      text-align: left;
-    }
-`
 
-export const WrappedRow = styled.div`
-    display: flex;
-    width: 100%;
-    padding: .5rem 0 0;
-    
-    @media ${deviceMax.tablet} {
-      flex-direction: column;
-    }
-`
-
-export const TRow = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`
 
 export const TColumn6 = styled.div`
     flex: 6;
@@ -75,31 +46,21 @@ export const IconColumn1 = styled.div`
 `
 
 export const TitleBodyRow = styled.div`
-  font-size: 16px; 
-  line-height: 32px; 
+  
   font-family: "MyriadProSemiBold";
   color: ${props => props.theme.secondBackgroundColor}
   
-  @media ${device.mobileS} {
-    text-align: left;
-    flex: 2;
-  }
-  
-  @media ${device.laptopL} {
+  @media ${device.laptop} {
+    font-size: 12px; 
+    line-height: 14px; 
+    
     text-align: center;
     flex: 3;
   }
-`
-
-export const NormalBodyRow = styled.div`
-  flex: 3;
-  text-align: center; 
-  font-size: 16px; 
-  line-height: 32px; 
-  font-family: "MyriadPro";
   
-  @media ${deviceMax.tablet} {
-    text-align: left;
+  @media ${device.laptopL} {
+    font-size: 16px; 
+    line-height: 32px; 
   }
 `
 
@@ -115,8 +76,6 @@ export const TBodyColumn3 = styled.div`
 
 export const TBodyExpanded = styled.div`
     display: flex;
-    
-    
 `
 
 export const CircleButton = styled.button`
@@ -130,37 +89,4 @@ export const CircleButton = styled.button`
     margin: 5px;
     height: 4.5vh;
     width: 4.5vh;
-`
-
-export const AddLiquidityButton = styled.button<any>`
-    color: ${props => props.enabled ? props.theme.secondBackgroundColor : props.theme.NewGrayColor};
-    background-color: ${props => props.enabled ? props.theme.thirdBackgroundColor : props.theme.NewGreyColor};
-    border:none;
-    align-items: center;
-    
-    letter-spacing: 0.02em;
-    font-family: 'MyriadPro';
-    display: flex; 
-    border-radius: 8px; 
-    padding: 0.25rem 1.375rem; 
-    height: 2.5rem; 
-    justify-content: center; 
-    
-    &:hover{
-        cursor: pointer;
-    }
-    &:active{
-        color: ${props => props.enabled ? props.theme.thirdBackgroundColor : props.theme.NewGrayColor};
-        background-color: ${props => props.enabled ? props.theme.secondBackgroundColor : props.theme.NewGreyColor};
-    }
-    
-    @media ${device.mobileS} {
-        font-size: 14px;
-        line-height: 18px;
-    }
-    
-    @media ${device.laptopL} {
-        font-size: 16px;
-        line-height: 32px;
-    }
 `

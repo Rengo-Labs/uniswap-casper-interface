@@ -1,7 +1,7 @@
 import styled from 'styled-components';
+import {device} from "../../../contexts/ThemeContext/themes";
 
 export const THeadStyled = styled.div`
-    display: flex;
     border-radius: 16px;
     border: 1px solid black;
     padding: .84rem 2rem;
@@ -10,6 +10,14 @@ export const THeadStyled = styled.div`
     font-size: 16px;
     line-height: 32px;
     letter-spacing: 0.02em;
+    
+    @media ${device.mobileS} {
+        display: none;
+    }
+    
+    @media ${device.laptop} {
+        display: flex;
+    }
 `
 
 export const THeadArrowStyled = styled.div`
@@ -27,11 +35,22 @@ export const THeader6Styled = styled.div`
 
 export const THeader3Styled = styled.div`
     flex: 3;
-    justify-content: center;
     display: flex;
     place-items: center;
     background-color: transparent;
     gap: 16px;
+    
+    @media ${device.mobileS} {
+        justify-content: right;
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+    }
+    
+    @media ${device.laptop} {
+        justify-content: center;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 `
 
 export const THeaderStyled = styled.div`
@@ -43,7 +62,6 @@ export const THeaderStyled = styled.div`
 `
 
 export const THeaderTitle = styled.div`
-    margin-right: 10px;
     color: ${props => props.theme.SecondBlackColor};
     font-family: 'MyriadProSemiBold';
 `

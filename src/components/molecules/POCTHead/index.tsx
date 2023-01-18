@@ -8,7 +8,7 @@ import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 import {BsChevronExpand} from "react-icons/bs";
 
-const Header = ({headerGroup, header } : any) => {
+export const Header = ({headerGroup, header } : any) => {
     return <THeader3Styled {...headerGroup.getHeaderGroupProps()} {...header.getHeaderProps(header.getSortByToggleProps())} key={uuidv4()}>
         <THeaderTitle>
             {header.Header}
