@@ -555,7 +555,7 @@ export const ConfigContextWithReducer = ({
         pairDispatch({
           type: PairActions.LOAD_PAIR,
           payload: {
-            name: `${pl.token0Symbol}-${pl.token1Symbol}`,
+            name: pl.name,
             token0Symbol: pl.token0Symbol,
             token1Symbol: pl.token1Symbol,
             totalLiquidityUSD: '0', /*new BigNumber(reserve0)

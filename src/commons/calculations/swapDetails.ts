@@ -88,8 +88,8 @@ export const calculateSwapDetails = async (
       console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
 
       
-      const exchangeRateA = isA2B ? outputExchangeRate : inputExchangeRate
-      const exchangeRateB = isA2B ? inputExchangeRate : outputExchangeRate
+      const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
+      const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
 
       console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 

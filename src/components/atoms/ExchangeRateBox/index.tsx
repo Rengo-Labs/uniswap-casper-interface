@@ -32,10 +32,10 @@ export const ExchangeRateBox = ({
         {
           switchRate ?
             <ExchangeRateColumnLeft data-testid="id_rate">
-              {exchangeRateB ? (exchangeRateA).toFixed(6): '???'} {tokenASymbol} ≈ 1 {tokenBSymbol}
+              {exchangeRateB ? (exchangeRateB).toFixed(6): '???'} {tokenASymbol} ≈ 1 {tokenBSymbol}
             </ExchangeRateColumnLeft>
             : <ExchangeRateColumnLeft data-testid="id_rate">
-              {exchangeRateA ? (exchangeRateB).toFixed(6): '???'} {tokenBSymbol} ≈ 1 {tokenASymbol}
+              {exchangeRateA ? (exchangeRateA).toFixed(6): '???'} {tokenBSymbol} ≈ 1 {tokenASymbol}
             </ExchangeRateColumnLeft>
         }
       </ExchangeRateRow>
