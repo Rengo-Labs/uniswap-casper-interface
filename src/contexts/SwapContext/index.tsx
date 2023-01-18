@@ -57,6 +57,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     updateNotification({
       type: NotificationType.Loading,
       title: 'Swapping.',
+      subtitle: '',
       show: true,
       chargerBar: false
     });
@@ -85,6 +86,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Success,
         title: 'Success.',
+        subtitle: '',
         show: true,
         chargerBar: true
       });
@@ -96,6 +98,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
         show: true,
         chargerBar: true
       });

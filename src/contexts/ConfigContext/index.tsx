@@ -416,6 +416,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Loading,
         title: 'Connecting to your wallet...',
+        subtitle: '',
         show: true,
         chargerBar: false
       });
@@ -433,6 +434,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Success,
         title: 'Connected',
+        subtitle: '',
         show: true,
         timeToClose: 10,
         chargerBar: true
@@ -448,6 +450,7 @@ export const ConfigContextWithReducer = ({
         updateNotification({
           type: NotificationType.Error,
           title: 'Main purse does not exist, send CSPR to your wallet first',
+          subtitle: '',
           show: true,
           chargerBar: true
         })
@@ -457,6 +460,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Error,
         title: 'Ooops we have an error',
+        subtitle: '',
         show: true,
         chargerBar: true
       });
@@ -805,6 +809,7 @@ export const ConfigContextWithReducer = ({
     updateNotification({
       type: NotificationType.Loading,
       title: 'Increasing allowance.',
+      subtitle: '',
       show: true,
       chargerBar: false
     });
@@ -826,6 +831,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Success,
         title: 'Success',
+        subtitle: '',
         show: true,
         chargerBar: true
       });
@@ -837,6 +843,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
         show: true,
         chargerBar: true
       });
@@ -854,6 +861,7 @@ export const ConfigContextWithReducer = ({
           updateNotification({
             type: NotificationType.Success,
             title: 'Your wallet is disconnected',
+            subtitle: '',
             show: true,
             timeToClose: 5,
             chargerBar: true
@@ -863,6 +871,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Error,
         title: 'Error disconnecting wallet',
+        subtitle: '',
         show: true,
         timeToClose: 10,
         chargerBar: true
