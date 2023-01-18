@@ -8,19 +8,22 @@ const ContainerSwapActions = styled.section`
     width: 462px;
     border:1px solid black;
     border-radius: 20px;
-    display:grid;
+    display: grid;
     flex-direction: column;
     justify-content:center;
     align-items: center;
     gap:10px;
     padding: 20px 25px;
-    z-index: 2;
 
   @media ${device.mobileS} {
     width: auto;
+    padding: 0;
+    border: none;
   }
   @media ${device.tablet}{
     width: 462px;
+    border: 1px solid black;
+    padding: 20px 25px;
   }
 `
 export const ContainerSwapActionsNSM = ({children}) => {

@@ -15,6 +15,7 @@ import {
 } from '../ConfigContext';
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
+import {ERROR_BLOCKCHAIN} from "../../constant/erros";
 
 export interface SwapContext {
   onConfirmSwapConfig: (
@@ -58,6 +59,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     updateNotification({
       type: NotificationType.Loading,
       title: 'Swapping.',
+      subtitle: '',
       show: true,
       chargerBar: false
     });
@@ -86,6 +88,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Success,
         title: 'Success.',
+        subtitle: '',
         show: true,
         chargerBar: true
       });
@@ -96,12 +99,11 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       console.log('onConfirmSwapConfig');
       updateNotification({
         type: NotificationType.Error,
-        title: 'Error',
-        subtitle: `${err}`,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
         show: true,
         chargerBar: true
       });
-      await refreshAll();
       return false;
     }
   }

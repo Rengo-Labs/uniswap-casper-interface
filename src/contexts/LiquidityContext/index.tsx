@@ -22,6 +22,7 @@ import {
 } from '../ConfigContext';
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
+import {ERROR_BLOCKCHAIN} from "../../constant/erros";
 
 export interface LiquidityContext {
   onAddLiquidity: (
@@ -80,6 +81,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     updateNotification({
       type: NotificationType.Loading,
       title: 'Adding liquidity.',
+      subtitle: '',
       show: true,
       chargerBar: false,
     });
@@ -110,6 +112,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Success,
         title: 'Success.',
+        subtitle: '',
         show: true,
         chargerBar: true,
       });
@@ -121,7 +124,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       console.log('onAddLiquidity');
       updateNotification({
         type: NotificationType.Error,
-        title: `${err}`,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
         show: true,
         chargerBar: true,
       });
@@ -141,6 +145,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     updateNotification({
       type: NotificationType.Loading,
       title: 'Removing liquidity',
+      subtitle: '',
       show: true,
       chargerBar: false,
     });
@@ -172,6 +177,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       updateNotification({
         type: NotificationType.Success,
         title: 'Success.',
+        subtitle: '',
         show: true,
         chargerBar: true,
       });
@@ -183,11 +189,12 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       console.log('onRemoveLiquidity');
       updateNotification({
         type: NotificationType.Error,
-        title: `${err}`,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
         show: true,
         chargerBar: true,
       });
-      return false;
+      return false
     }
   }
 

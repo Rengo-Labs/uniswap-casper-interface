@@ -6,13 +6,15 @@ export const ButtonStyle = styled.button<any>`
     background-color: ${props => props.enabled ? props.theme.thirdBackgroundColor : props.theme.NewGreyColor};
     padding: 1.7vh 1.7em;
     border:none;
-    width: 8vw;
-    height: 5.6vh;
+    width: 233.5px;
+    height: 64px;
     font-family: 'EpilogueLight';
     font-size: .8rem;
     display: grid;
     place-items: center;
-    &:hover{
+    border-radius: 8px;
+
+  &:hover{
         cursor: pointer;
     }
     &:active{
@@ -21,15 +23,15 @@ export const ButtonStyle = styled.button<any>`
     }
 
     @media ${device.mobileS} {
-      width: auto;
+      width: 220px;
     }
-    @media ${device.mobileM} {
-      width: auto;
+  
+    @media ${device.tablet} {
+      width: 233.5px;
+      height: 64px;
     }
-    @media ${device.mobileL} {
-      width: auto;
-    }
-    @media ${device.tablet} and ${device.laptop} and ${device.laptopL} {
-      width: 8vw;
+    @media ${device.laptop} {
+      width: 233.5px;
+      height: 64px;
     }
 `

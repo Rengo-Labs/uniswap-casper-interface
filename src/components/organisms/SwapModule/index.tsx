@@ -113,6 +113,7 @@ const SwapNewModule = () => {
     onConnectWallet();
   }
 
+
   function onSwitchTokensHandler() {
     onSwitchTokens();
 
@@ -147,7 +148,7 @@ const SwapNewModule = () => {
     token = firstTokenSelected
   ) {
     const {
-      reserve0, 
+      reserve0,
       reserve1,
     } = findReservesBySymbols(tokenA.symbol, tokenB.symbol)
 

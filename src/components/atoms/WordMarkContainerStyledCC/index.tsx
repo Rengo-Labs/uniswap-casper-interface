@@ -7,9 +7,10 @@ const WordMarkContainerStyled = styled.nav`
     top: 0%;
     transform: translate(-50%, 10px);
 
-    & svg {
+    & svg > path{
         fill: ${props => props.theme.NewPurpleColor};
     }
+    
 `
 export const WordMarkContainerStyledCC = ({children}) => {
   return (

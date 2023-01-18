@@ -101,7 +101,7 @@ export enum RemoveLiquidityEntryPoint {
         const amountCSPRDesired = tokenA.symbol === 'CSPR' ? amountADesired : amountBDesired
         const amountTokenDesired = tokenA.symbol !== 'CSPR' ? amountADesired : amountBDesired
 
-        console.log('qqq', new CLKey(token), tokenA, tokenB)
+        // console.log('qqq', new CLKey(token), tokenA, tokenB)
         
         return await casperClient.signAndDeployWasm(
           wallet,

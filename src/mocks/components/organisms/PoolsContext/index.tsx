@@ -1,5 +1,6 @@
 import React, {createContext, ReactNode, useState} from 'react'
 import casprIcon from '../../../../assets/swapIcons/casperIcon.png'
+import csxIcon from "../../../../assets/swapIcons/casperswap.png"
 import wethIcon from '../../../../assets/swapIcons/wethIcon.svg'
 import {initialConfigState} from "../../../../reducers";
 import {PairData} from "../../../../reducers/PairsReducer";
@@ -34,7 +35,7 @@ export const getPoolList = async () => {
       token0Price:"0.093368384501801957",
       token0Symbol:"WETH",
       token1Icon: casprIcon,
-      token1Name:"Coinstox",
+      token1Name:"CasperSwap",
       token1Price:"10.710263493749327645",
       token1Symbol:"CSX",
       totalLiquidityUSD:"64422376981.990388499425767247908444526",
@@ -202,8 +203,8 @@ export const loadPoolDetailByUser = async (hash) => {
       token0Name:"Wrapper Ether",
       token0Price:"0.093368384501801957",
       token0Symbol:"WETH",
-      token1Icon:"/static/media/coinstoxIcon.e5486854efb250ddcbd6.png",
-      token1Name:"Coinstox",
+      token1Icon: csxIcon,
+      token1Name:"CasperSwap",
       token1Price:"10.710263493749327645",
       token1Symbol:"CSX",
       totalLiquidityUSD:"64422376981.990388499425767247908444526",

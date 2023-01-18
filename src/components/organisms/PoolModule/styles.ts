@@ -18,7 +18,7 @@ export const PoolModulesStyled = styled.section`
 export const MenuStyled = styled.div`
     display: flex;
     width: 98%;
-    padding: .6rem .7rem
+    padding: .6rem .7rem;
 `
 
 export const MenuToggleStyled = styled.div`

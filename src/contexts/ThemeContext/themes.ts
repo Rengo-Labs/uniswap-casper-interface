@@ -47,6 +47,8 @@ export const lightTheme = {
   NewGreyColor: "#CCCCCC",
   NewGreenColor: "#1DC90A",
   NewBlackColor: "#080808",
+  NewWhiteColor: "#f7fcfe",
+  SecondBlackColor: "#545454",
   OPEN_WIDTH: "280px",
   CLOSED_WIDTH: "108px",
   NewNavigationCCBG:"rgb(120,100,244)"
@@ -141,6 +143,6 @@ table {
         margin: 0;
         box-sizing: border-box;
         color:${(props) => props.theme.PrimaryColor};
-        background-image: ${(props) => props.theme.backgroundColor} ;
+        background-color: #F7FCFE;
     }
 `;

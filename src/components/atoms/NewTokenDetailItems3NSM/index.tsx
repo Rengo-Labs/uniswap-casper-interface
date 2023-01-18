@@ -5,10 +5,11 @@ const NewTokenDetailItems3Styled = styled.section`
     grid-row: 3/4;
     justify-self: center;
     cursor: pointer;
-    font-family: 'MyriadProLight';
+    font-family: 'MyriadPro';
     font-weight: 400;
-    font-size: 1rem;
+    font-size: 16px;
     letter-spacing: 0.02em;
+    line-height: 32px;
     color: ${(props) => props.theme.NewBlackColor};
 `
 

@@ -1,5 +1,5 @@
 import wcsprIcon from "../../assets/swapIcons/wrappedCasperIcon.png"
-import csxIcon from "../../assets/swapIcons/coinstoxIcon.png"
+import csxIcon from "../../assets/swapIcons/casperswap.png"
 import wethIcon from "../../assets/swapIcons/wethIcon.svg"
 import { convertBigNumberToUIString, convertUIStringToBigNumber } from "../../commons"
 

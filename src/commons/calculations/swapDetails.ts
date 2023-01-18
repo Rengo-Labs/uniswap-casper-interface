@@ -55,7 +55,7 @@ export const calculateSwapDetails = async (
       const outputLiquidity = isA2B ? liquidityB : liquidityA
 
       const constantProduct = liquidityA.times(liquidityB)
-      console.log("liquidityA", liquidityA.toNumber(), "liquidityB", liquidityB.toNumber(), "constant_product", constantProduct.toNumber(), "tokenToTrade", inputValueMinusFee.toNumber())
+      // console.log("liquidityA", liquidityA.toNumber(), "liquidityB", liquidityB.toNumber(), "constant_product", constantProduct.toNumber(), "tokenToTrade", inputValueMinusFee.toNumber())
 
       let newLiquidityAPool = liquidityA
       let newLiquidityBPool = liquidityB
@@ -71,10 +71,10 @@ export const calculateSwapDetails = async (
       const newLiquidityInputPool = isA2B ? newLiquidityAPool : newLiquidityBPool
       const newLiquidityOutputPool = isA2B ? newLiquidityBPool : newLiquidityAPool
 
-      console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
+      // console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
 
       const tokensToTransfer = (outputLiquidity.minus(newLiquidityOutputPool))
-      console.log("tokensToTransfer", tokensToTransfer)
+      // console.log("tokensToTransfer", tokensToTransfer)
 
       let inputExchangeRate = tokensToTransfer.div(inputValue)
       let outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
@@ -85,16 +85,15 @@ export const calculateSwapDetails = async (
         outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
       }
       
-      console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
-
+      // console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
       
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
 
-      console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
+      // console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
       const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
-      console.log("priceImpact", priceImpact)
+      // console.log("priceImpact", priceImpact)
 
       return {
           tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** 9).toNumber().toFixed(9),

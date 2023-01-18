@@ -54,21 +54,20 @@ export const Notification = ({
   chargerBar = false,
   timeToClose,
 }: INotification) => {
-  const [value, setValue] = useState(1);
+  const [borderRadius, setBorderRadius] = useState('0 0 0 .2rem');
   const timeRef = useRef(1);
   const { notification } = notificationStore();
 
   useEffect(() => {
     if (chargerBar) {
-
       const interval = setInterval(() => {
         if (timeRef.current === timeToClose) {
+          setBorderRadius('0 0 .2rem .2rem');
           onClose();
         }
-        const value = (timeRef.current * 342) / timeToClose;
-        setValue(value);
         timeRef.current += 1;
       }, 1000);
+
 
       return () => clearInterval(interval);
     }
@@ -96,11 +95,11 @@ export const Notification = ({
           />
         </CloseIcon>
       </Content>
-      {chargerBar && timeRef.current > 1 && (
+      {chargerBar && (
         <ProgressBar
           color={notificationType[type].color}
-          progress={value}
-          borderRadius='0 0 0 .2rem'
+          time={timeToClose}
+          borderRadius={borderRadius}
         />
       )}
     </Wrapper>

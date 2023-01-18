@@ -51,6 +51,7 @@ import { ConfigState } from '../../reducers/ConfigReducers';
 import { Row } from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
+import {ERROR_BLOCKCHAIN} from "../../constant/erros";
 
 type MaybeWallet = Wallet | undefined;
 
@@ -356,6 +357,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Loading,
         title: 'Connecting to your wallet...',
+        subtitle: '',
         show: true,
         chargerBar: false
       });
@@ -373,6 +375,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Success,
         title: 'Connected',
+        subtitle: '',
         show: true,
         timeToClose: 10,
         chargerBar: true
@@ -380,14 +383,28 @@ export const ConfigContextWithReducer = ({
     } catch (err) {
       log.error(`onConnectWallet error: ${err}`);
       dismissNotification();
-      if (!ignoreError) {
+      if (ignoreError) {
+        return
+      }
+
+      if (err.message === 'main purse does not exist') {
         updateNotification({
           type: NotificationType.Error,
-          title: 'Ooops we have an error',
+          title: 'Main purse does not exist, send CSPR to your wallet first',
+          subtitle: '',
           show: true,
           chargerBar: true
-        });
+        })
+        return
       }
+        
+      updateNotification({
+        type: NotificationType.Error,
+        title: 'Ooops we have an error',
+        subtitle: '',
+        show: true,
+        chargerBar: true
+      });
     }
   }
 
@@ -659,6 +676,7 @@ export const ConfigContextWithReducer = ({
     updateNotification({
       type: NotificationType.Loading,
       title: 'Increasing allowance.',
+      subtitle: '',
       show: true,
       chargerBar: false
     });
@@ -680,6 +698,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Success,
         title: 'Success',
+        subtitle: '',
         show: true,
         chargerBar: true
       });
@@ -690,7 +709,8 @@ export const ConfigContextWithReducer = ({
       console.log('onIncreaseAllow');
       updateNotification({
         type: NotificationType.Error,
-        title: `${err}`,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
         show: true,
         chargerBar: true
       });
@@ -708,6 +728,7 @@ export const ConfigContextWithReducer = ({
           updateNotification({
             type: NotificationType.Success,
             title: 'Your wallet is disconnected',
+            subtitle: '',
             show: true,
             timeToClose: 5,
             chargerBar: true
@@ -717,6 +738,7 @@ export const ConfigContextWithReducer = ({
       updateNotification({
         type: NotificationType.Error,
         title: 'Error disconnecting wallet',
+        subtitle: '',
         show: true,
         timeToClose: 10,
         chargerBar: true
@@ -776,7 +798,6 @@ export const ConfigContextWithReducer = ({
     // do a simple look up
     let pairData = pairState[lookUp]
 
-    console.log('what', lookUp, pairState, pairData)
     if (pairData) {
       return {
         reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
@@ -788,7 +809,6 @@ export const ConfigContextWithReducer = ({
     lookUp = `${tB}-${tA}`
     pairData = pairState[lookUp]
 
-    console.log('what2', lookUp, pairState, pairData)
     if (pairData) {
       return {
         reserve0: convertUIStringToBigNumber(pairData.totalReserve0),

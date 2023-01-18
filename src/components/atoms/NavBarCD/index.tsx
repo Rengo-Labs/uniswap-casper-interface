@@ -1,4 +1,3 @@
-import { isConnected } from 'casper-js-sdk/dist/lib/Signer';
 import React from 'react';
 import { ButtonConnectionOver } from '../../organisms';
 import { ConnectButtonContainerCC } from '../ConnectButtonContainerCC';
@@ -48,8 +47,6 @@ export const NavBarCD = ({
           {
             notifications.some(noti => !noti.isRead) ? <NewIcons Icon={Notification} size={32} /> : <NewIcons Icon={NotificationR} size={32} />
           }
-          
-          
         </IconButton>
         <ButtonConnectionOver
           isConnected={isConnected}
