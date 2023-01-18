@@ -110,19 +110,26 @@ export const IconColumn1 = styled.div`
 `
 
 export const TitleBodyRow = styled.div`
-  font-size: 16px; 
-  line-height: 32px; 
+  
   font-family: "MyriadProSemiBold";
-  color: ${props => props.theme.secondBackgroundColor};
+  color: ${props => props.theme.secondBackgroundColor}
   
   @media ${device.mobileS} {
     text-align: left;
   }
   
-  @media ${device.laptopL} {
+  @media ${device.laptop} {
+    font-size: 12px; 
+    line-height: 14px; 
+    
     text-align: center;
+    flex: 3;
   }
   
+  @media ${device.laptopL} {
+    font-size: 16px; 
+    line-height: 32px; 
+  }
 `
 
 export const NormalBodyRow = styled.div`

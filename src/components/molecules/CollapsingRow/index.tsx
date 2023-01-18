@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import useCollapse from 'react-collapsed';
 
 import {AiFillStar, AiOutlineSwap} from "react-icons/ai";
-import {Button, NewIcons} from '../../atoms'
+import {NewIcons} from '../../atoms'
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -12,9 +12,6 @@ import {
     TColumn3,
     TColumn1,
     IconColumn1,
-    TColumn2andHalf,
-    PairTitleColumn,
-    TitleBodyRow,
     TBodyColumn3,
     TButtonColumn3,
     TBodyColumn6
@@ -40,7 +37,10 @@ import {
     WrappedRow,
     ValueStyled,
     AddLiquidityButton,
-    NormalBodyRow
+    NormalBodyRow,
+    TColumn2andHalf,
+    PairTitleColumn,
+    TitleBodyRow
 } from "./styles";
 
 export interface CollapsingRowProps {
