@@ -31,7 +31,7 @@ export const TestComponent = () => {
     expect(result).toBe(true)
   }
   const checkRemoveLiquidity = async () => {
-    const result = await onRemoveLiquidity(100, {symbol: "TK1"} as any, {symbol: "TK2"} as any, 100, 200, 0.5)
+    const result = await onRemoveLiquidity(100, {symbol: "TK1"} as any, {symbol: "TK2"} as any, 100, 200, 0.5, 80)
 
     expect(result).toBe(true)
   }

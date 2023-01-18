@@ -5,7 +5,8 @@ import { convertBigNumberToUIString, convertUIStringToBigNumber } from "../../co
 
 export type PairData = {
   name: string
-  id: string
+  contractHash: string
+  packageHash: string
   balance: string,
   reserve0: string,
   reserve1: string,
@@ -37,7 +38,8 @@ export type PairState = Record<string, PairData>
 export const initialPairsState: PairState = {
   "CSX-WETH": {
     name: "CSX-WETH",
-    id: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
+    contractHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
+    packageHash: "hash-95f1253782197e05e3d260e713a5828ada1ec98856e3908536263890d27163f0",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
@@ -65,7 +67,8 @@ export const initialPairsState: PairState = {
   },
   "CSX-WCSPR": {
     name: "CSX-WCSPR",
-    id: "hash-9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
+    contractHash: "hash-9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
+    packageHash: "hash-e6b4a934630aee279665c99dc2bf4219872b7178990cd7fee7634a0f1362b591",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
@@ -93,7 +96,8 @@ export const initialPairsState: PairState = {
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
-    id: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
+    contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
+    packageHash: "hash-a3f3a7c26a0723f56ad74dcb4d9a86642d1d53c6d1add00c237df5199a3025e6",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
@@ -139,7 +143,6 @@ export type PairActionAllowancePayload = {
 }
 
 export type PairActionLoadPairPayLoad = {
-  id: string,
   name: string,
   token0Symbol: string,
   token1Symbol: string,
@@ -245,7 +248,6 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             contract1: action.payload.contract1,
             token0Name: action.payload.token0Name,
             token1Name: action.payload.token1Name,
-            id: action.payload.id,
           },
         }
       }

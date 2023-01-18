@@ -81,7 +81,6 @@ export interface ConfigContext {
   isStaked?: boolean;
   setStaked?: (v: boolean) => void;
   filter?: (onlyStaked: boolean, row: Row<PairData>) => any;
-  getContractHashAgainstPackageHash?;
   gasPriceSelectedForSwapping?: number;
   gasPriceSelectedForLiquidity?: number;
   refreshAll?: () => Promise<void>;
@@ -510,19 +509,6 @@ export const ConfigContextWithReducer = ({
     });
   };
 
-  const getContractHashAgainstPackageHash = async (pairId) => {
-    const result = await axios.post(
-      `${BASE_URL}/getContractHashAgainstPackageHash`,
-      { packageHash: pairId }
-    );
-
-    if (result.data.success) {
-      return result.data['Data'].contractHash;
-    } else {
-      return null;
-    }
-  };
-
   const filter = (onlyStaked: boolean, row: Row<PairData>): any => {
     if (onlyStaked) {
       return parseFloat(row.original.balance) > 0;
@@ -538,7 +524,7 @@ export const ConfigContextWithReducer = ({
       for (const k of keys) {
         const pl = initialPairsState[k]
 
-        const pairDataResponse = await apiClient.getPairData(pl.id)
+        const pairDataResponse = await apiClient.getPairData(pl.contractHash)
         console.log('pairDataResponse', pairDataResponse)
 
         const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
@@ -575,11 +561,10 @@ export const ConfigContextWithReducer = ({
             ),
             token0Price: pl.token0Price,
             token1Price: pl.token1Price,
-            contract0: tokenState.tokens[pl.token0Symbol].contractHash,
-            contract1: tokenState.tokens[pl.token1Symbol].contractHash,
+            contract0: tokenState.tokens[pl.token0Symbol].packageHash,
+            contract1: tokenState.tokens[pl.token1Symbol].packageHash,
             token0Name: tokenState.tokens[pl.token0Symbol].name,
             token1Name: tokenState.tokens[pl.token1Symbol].name,
-            id: pl.id,
           },
         });
       }
@@ -601,7 +586,7 @@ export const ConfigContextWithReducer = ({
           apiClient
             .getERC20Allowance(
               wallet,
-              pair.id
+              pair.contractHash,
             )
             .then((response) => {
               console.log('allowance', pair.name, response)
@@ -618,7 +603,7 @@ export const ConfigContextWithReducer = ({
           apiClient
             .getERC20Balance(
               wallet,
-              pair.id
+              pair.contractHash,
             )
             .then((response) => {
               console.log('balance', pair.name, response)
@@ -839,7 +824,6 @@ export const ConfigContextWithReducer = ({
         isStaked,
         setStaked,
         filter,
-        getContractHashAgainstPackageHash,
         gasPriceSelectedForSwapping: state.gasPriceSelectedForSwapping,
         gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity,
         refreshAll,

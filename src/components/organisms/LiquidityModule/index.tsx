@@ -477,7 +477,8 @@ const LiquidityNewModule = () => {
                     secondSymbol={row.token1Symbol}
                     secondLiquidity={row.reserve1}
                     secondPrice={row.token1Price}
-                    liquidityId={row.id}
+                    contractHash={row.contractHash}
+                    packageHash={row.packageHash}
                     liquidity={row.balance}
                     allowance={row.allowance}
                     firstIcon={row.token0Icon}

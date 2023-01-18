@@ -36,7 +36,8 @@ export interface LiquidityContext {
     tokenB: Token,
     amountA: number | string,
     amountB: number | string,
-    slippage: number
+    slippage: number,
+    gasFee: number,
   ) => Promise<boolean>;
   getLiquidityDetails: (
     tokenA: Token,
@@ -134,7 +135,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     tokenB: Token,
     amountA: number | string,
     amountB: number | string,
-    slippage: number
+    slippage: number,
+    gasFee: number,
   ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
@@ -154,7 +156,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         convertUIStringToBigNumber(amountB),
         tokenA,
         tokenB,
-        slippage / 100
+        slippage / 100,
+        gasFee,
       );
 
       setProgressModal(true);
