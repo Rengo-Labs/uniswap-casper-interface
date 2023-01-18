@@ -21,7 +21,7 @@ export const SwapStadistics = () => {
       id: 2,
       token: secondTokenSelected,
       price: 0.0251,
-      percent: 4.14,
+      percent: 4.12,
       grafic: 'grafic',
     }
   ]
