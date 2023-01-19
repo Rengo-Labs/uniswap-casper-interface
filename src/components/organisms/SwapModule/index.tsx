@@ -346,7 +346,8 @@ const SwapNewModule = () => {
                   Balance:{' '}
                   {firstTokenSelected.amount
                     ? convertAllFormatsToUIFixedString(
-                      firstTokenSelected.amount
+                      firstTokenSelected.amount,
+                      firstTokenSelected.decimals,
                     )
                     : '--'}
                 </NewBalanceSpaceNSM>
@@ -444,7 +445,8 @@ const SwapNewModule = () => {
                   Balance:{' '}
                   {secondTokenSelected.amount
                     ? convertAllFormatsToUIFixedString(
-                      secondTokenSelected.amount
+                      secondTokenSelected.amount,
+                      firstTokenSelected.decimals,
                     )
                     : '--'}
                 </NewBalanceSpaceNSM>

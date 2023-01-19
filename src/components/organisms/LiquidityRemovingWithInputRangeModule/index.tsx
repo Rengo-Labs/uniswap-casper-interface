@@ -28,6 +28,7 @@ import { LiquidityCancelButton, LiquidityEnableButton, LiquidityRemoveButton } f
 import { ConfigProviderContext } from "../../../contexts/ConfigContext"
 import { InputRange } from "../../atoms/InputRange"
 import { LiquidityProviderContext } from "../../../contexts/LiquidityContext"
+import BigNumber from "bignumber.js";
 
 export interface LiquidityRemovingWithInputRangeProps {
   isConnected: boolean,
@@ -48,6 +49,7 @@ export interface LiquidityRemovingWithInputRangeProps {
   allowance: string,
   firstIcon: any,
   secondIcon: any,
+  decimals: number,
   children?: React.ReactNode,
 }
 
@@ -70,6 +72,7 @@ export const LiquidityRemovingWithInputRangeModule = ({
   allowance,
   firstIcon,
   secondIcon,
+  decimals,
   children,
 }: LiquidityRemovingWithInputRangeProps) => {
 
@@ -113,11 +116,27 @@ export const LiquidityRemovingWithInputRangeModule = ({
     closeHandler()
   }
 
-  const setInputValue = (inputValue) => {
+  const setInputValue = (inputValue: number) => {
+    const inputPercent = new BigNumber(inputValue / 100)
     setValue(inputValue)
-    setLPValue((inputValue * parseFloat(liquidity) / 100))
-    setFirstValue(inputValue * parseFloat(firstLiquidity) / 100)
-    setSecondValue(inputValue * parseFloat(secondLiquidity) / 100)
+    setLPValue(
+      parseFloat(inputPercent
+        .times(liquidity)
+        .toFixed(decimals)
+      )
+    )
+    setFirstValue(
+      parseFloat(inputPercent
+        .times(firstLiquidity)
+        .toFixed(decimals)
+      )
+    )
+    setSecondValue(
+      parseFloat(inputPercent
+        .times(secondLiquidity)
+        .toFixed(decimals)
+      )
+    )
   }
 
   const enableButton = (value) => {
@@ -209,11 +228,11 @@ export const LiquidityRemovingWithInputRangeModule = ({
                 {
                   freeAllowanceLiq < 0 ?
                     <RemoveButtonContainer>
-                      <LiquidityEnableButton testid="liq_enable" enabled={enableButton(lpValue)} handler={onEnable} content={`Approve ${-freeAllowanceLiq} ${firstSymbol}-${secondSymbol}`} />
+                      <LiquidityEnableButton testid="liq_enable" enabled={enableButton(lpValue.toFixed(decimals))} handler={onEnable} content={`Approve ${-freeAllowanceLiq.toFixed(decimals)} ${firstSymbol}-${secondSymbol}`} />
                     </RemoveButtonContainer>
                     :
                     <RemoveButtonContainer>
-                      <LiquidityRemoveButton testid="liq_remove" enabled={enableButton(lpValue)} handler={removeLiquidity} content="Remove Liquidity" />
+                      <LiquidityRemoveButton testid="liq_remove" enabled={enableButton(lpValue.toFixed(decimals))} handler={removeLiquidity} content="Remove Liquidity" />
                     </RemoveButtonContainer>
                 }
               </PopupContent>

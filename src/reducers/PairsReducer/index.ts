@@ -31,6 +31,7 @@ export type PairData = {
   contract1?: string,
   token0Name?: string,
   token1Name?: string,
+  decimals: number,
 }
 
 export type PairState = Record<string, PairData>
@@ -64,6 +65,7 @@ export const initialPairsState: PairState = {
     totalLiquidityUSD: '0',
     contract0: '',
     contract1: '',
+    decimals: 9,
   },
   "CSX-WCSPR": {
     name: "CSX-WCSPR",
@@ -93,6 +95,7 @@ export const initialPairsState: PairState = {
     totalLiquidityUSD: '0',
     contract0: '',
     contract1: '',
+    decimals: 9,
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
@@ -122,6 +125,7 @@ export const initialPairsState: PairState = {
     totalLiquidityUSD: '0',
     contract0: '',
     contract1: '',
+    decimals: 9,
   },
 }
 

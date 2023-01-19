@@ -14,15 +14,12 @@ import {
 
 import {
   log,
+  createRecipientAddress,
 } from '../utils'
 
 import {
   ROUTER_PACKAGE_HASH,
 } from "../../constant"
-
-import {
-  createRecipientAddress
-} from '../utils'
 
 /**
  * All allowance smart contract endpoints

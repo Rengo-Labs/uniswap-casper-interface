@@ -20,6 +20,7 @@ import {
 
 import {
   log,
+  createRecipientAddress,
 } from '../utils'
 
 import {
@@ -27,9 +28,6 @@ import {
   ROUTER_PACKAGE_HASH,
 } from "../../constant";
 
-import {
-  createRecipientAddress
-} from '../utils'
 
 /**
  * All remove liquidity smart contract endpoints

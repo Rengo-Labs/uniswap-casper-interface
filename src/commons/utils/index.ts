@@ -15,6 +15,8 @@ export const convertAllFormatsToUIFixedString = (amount: BigNumber.Value, fixed 
  * @param ms 
  * @returns 
  */
-export const sleep = async (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+export const sleep = async (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 export * from './keys'

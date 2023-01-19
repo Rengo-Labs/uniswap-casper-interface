@@ -14,7 +14,8 @@ describe('Liquidity removing popup', () => {
     const component = render(
       <TestContext>
         <LiquidityContext>
-          <LiquidityRemovingWithInputRangeModule isConnected={true}
+          <LiquidityRemovingWithInputRangeModule 
+            isConnected={true}
             openedPopup={false}
             firstSymbol="WETH"
             firstName="Ether"
@@ -32,6 +33,7 @@ describe('Liquidity removing popup', () => {
             packageHash="hash-pairId"
             liquidity={'100'}
             allowance={'10'}
+            decimals={9}
           />
         </LiquidityContext>
       </TestContext>
@@ -74,6 +76,7 @@ describe('Liquidity removing popup', () => {
             packageHash="hash-pairId"
             liquidity={'10'}
             allowance={'10'}
+            decimals={9}
           />
         </LiquidityContext>
       </TestContext>

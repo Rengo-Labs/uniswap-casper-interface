@@ -72,7 +72,7 @@ const LiquidityNewModule = () => {
     isRemovingPopupOpen,
     setRemovingPopup,
     onAddLiquidity,
-    getLiquidityDetails
+    getLiquidityDetails,
   } = useContext(LiquidityProviderContext)
   const { progressBar } = useContext(ProgressBarProviderContext)
 
@@ -148,13 +148,13 @@ const LiquidityNewModule = () => {
   const calculateTotalLP = (token0, token1) => {
     const filter = getPoolList().filter(r => r.token0Symbol === token0 && r.token1Symbol === token1)
     if (filter.length > 0) {
-      const userLP = new BigNumber(filter[0].totalSupply).toNumber().toFixed(9)
+      const userLP = new BigNumber(filter[0].totalSupply).toFixed(filter[0].decimals)
       return userLP
     }
 
     const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
     if (filter2.length > 0) {
-      const userLP = new BigNumber(filter2[0].totalSupply).toNumber().toFixed(9)
+      const userLP = new BigNumber(filter2[0].totalSupply).toNumber().toFixed(filter[0].decimals)
       return userLP
     }
   }
@@ -331,7 +331,7 @@ const LiquidityNewModule = () => {
           </TokenSelectNSM>
           <TokenSelectionNSM>
             <NewTokenDetailActionsNSM>
-              <NewBalanceSpaceNSM>Balance: {firstTokenSelected.amount ? convertAllFormatsToUIFixedString(firstTokenSelected.amount) : '--'}</NewBalanceSpaceNSM>
+              <NewBalanceSpaceNSM>Balance: {firstTokenSelected.amount ? convertAllFormatsToUIFixedString(firstTokenSelected.amount, firstTokenSelected.decimals) : '--'}</NewBalanceSpaceNSM>
               <ActionContainerNSM>
                 <ButtonHalfMaxContainer>
                   <ButtonHalfMax onClick={() => { makeHalf(firstTokenSelected.amount, changeTokenA) }}>Half</ButtonHalfMax>
@@ -386,7 +386,7 @@ const LiquidityNewModule = () => {
           </TokenSelectNSM>
           <TokenSelectionNSM>
             <NewTokenDetailActionsNSM>
-              <NewBalanceSpaceNSM>Balance: {firstTokenSelected.amount ? convertAllFormatsToUIFixedString(secondTokenSelected.amount) : '--'}</NewBalanceSpaceNSM>
+              <NewBalanceSpaceNSM>Balance: {firstTokenSelected.amount ? convertAllFormatsToUIFixedString(secondTokenSelected.amount, firstTokenSelected.decimals) : '--'}</NewBalanceSpaceNSM>
               <ActionContainerNSM>
                 <ButtonHalfMaxContainer>
                   <ButtonHalfMax onClick={() => { makeHalf(secondTokenSelected.amount, changeTokenB) }}>Half</ButtonHalfMax>
@@ -450,6 +450,8 @@ const LiquidityNewModule = () => {
             userPairDataNonZero.map(row => {
               const openPopup = isOpenedRemoving && row.token0Symbol === firstTokenSelected.symbolPair && row.token1Symbol === secondTokenSelected.symbolPair
 
+              console.log('zzzzzz', new BigNumber(row.reserve0).toFixed(row.decimals))
+
               return (
                 // Apply the row props
                 <LiquidityItem
@@ -457,12 +459,12 @@ const LiquidityNewModule = () => {
                   fullExpanded={openPopup}
                   firstIcon={row.token0Icon}
                   firstSymbol={row.token0Symbol}
-                  firstLiquidity={row.reserve0}
+                  firstLiquidity={new BigNumber(row.reserve0).toFixed(row.decimals)}
                   secondIcon={row.token1Icon}
                   secondSymbol={row.token1Symbol}
-                  secondLiquidity={row.reserve1}
+                  secondLiquidity={new BigNumber(row.reserve1).toFixed(row.decimals)}
                   liquidity={row.balance}
-                  perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)}
+                  perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(row.decimals)}
                 >
                   <LiquidityRemovingWithInputRangeModule
                     isConnected={true}
@@ -483,6 +485,7 @@ const LiquidityNewModule = () => {
                     allowance={row.allowance}
                     firstIcon={row.token0Icon}
                     secondIcon={row.token1Icon}
+                    decimals={row.decimals}
                   >
                     <CircleButton>
                       <TrashIcon />

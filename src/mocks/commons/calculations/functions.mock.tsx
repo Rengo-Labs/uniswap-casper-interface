@@ -17,7 +17,8 @@ export const initialPairsStateMock1: PairState = {
     token0Symbol: 'CSX',
     token1Symbol: 'WETH',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Coinstox'
+    token1Name: 'Coinstox',
+    decimals: 9,
   },
   "CSX-WCSPR": {
     name: "CSX-WCSPR",
@@ -34,7 +35,8 @@ export const initialPairsStateMock1: PairState = {
     token0Symbol: 'CSX',
     token1Symbol: 'WCSPR',
     token0Name: 'Wrapper Casper',
-    token1Name: 'Coinstox'
+    token1Name: 'Coinstox',
+    decimals: 9,
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
@@ -51,7 +53,8 @@ export const initialPairsStateMock1: PairState = {
     token0Symbol: 'WETH',
     token1Symbol: 'WCSPR',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
 }
 
@@ -132,7 +135,8 @@ export const initialPairsStateMock2: PairState = {
     token0Symbol: 'USDC',
     token1Symbol: 'WCSPR',
     token0Name: 'WUSDC',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
   "DAI-WCSPR": {
     name: "DAI-WCSPR",
@@ -149,7 +153,8 @@ export const initialPairsStateMock2: PairState = {
     token0Symbol: 'DAI',
     token1Symbol: 'WCSPR',
     token0Name: 'DAI',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
   "USDT-WCSPR": {
     name: "USDT-WCSPR",
@@ -166,7 +171,8 @@ export const initialPairsStateMock2: PairState = {
     token0Symbol: 'USDT',
     token1Symbol: 'WCSPR',
     token0Name: 'TETHER',
-    token1Name: 'WRAPPER CASPER'
+    token1Name: 'WRAPPER CASPER',
+    decimals: 9,
   },
   "CSX-WETH": {
     name: "CSX-WETH",
@@ -183,7 +189,8 @@ export const initialPairsStateMock2: PairState = {
     token0Symbol: 'CSX',
     token1Symbol: 'WETH',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Coinstox'
+    token1Name: 'Coinstox',
+    decimals: 9,
   },
   "CSX-WCSPR": {
     name: "CSX-WCSPR",
@@ -200,7 +207,8 @@ export const initialPairsStateMock2: PairState = {
     token0Symbol: 'CSX',
     token1Symbol: 'WCSPR',
     token0Name: 'Wrapper Casper',
-    token1Name: 'Coinstox'
+    token1Name: 'Coinstox',
+    decimals: 9,
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
@@ -217,7 +225,8 @@ export const initialPairsStateMock2: PairState = {
     token0Symbol: 'WETH',
     token1Symbol: 'WCSPR',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
 }
 
@@ -336,7 +345,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'USDC',
     token1Symbol: 'WCSPR',
     token0Name: 'USDC',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
   "DAI-WCSPR": {
     name: "DAI-WCSPR",
@@ -353,7 +363,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'DAI',
     token1Symbol: 'WCSPR',
     token0Name: 'DAI',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
   "USDT-WCSPR": {
     name: "USDT-WCSPR",
@@ -370,7 +381,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'USDT',
     token1Symbol: 'WCSPR',
     token0Name: 'TETHER',
-    token1Name: 'WRAPPER CASPER'
+    token1Name: 'WRAPPER CASPER',
+    decimals: 9,
   },
   "CSX-WETH": {
     name: "CSX-WETH",
@@ -387,7 +399,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'CSX',
     token1Symbol: 'WETH',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Coinstox'
+    token1Name: 'Coinstox',
+    decimals: 9,
   },
   "CSX-WCSPR": {
     name: "CSX-WCSPR",
@@ -404,7 +417,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'CSX',
     token1Symbol: 'WCSPR',
     token0Name: 'Wrapper Casper',
-    token1Name: 'Coinstox'
+    token1Name: 'Coinstox',
+    decimals: 9,
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
@@ -421,7 +435,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'WETH',
     token1Symbol: 'WCSPR',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
   "WETH-SOL": {
     name: "WETH-SOL",
@@ -438,7 +453,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'WETH',
     token1Symbol: 'SOL',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
   "DAI-SOL": {
     name: "DAI-SOL",
@@ -455,7 +471,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'DAI',
     token1Symbol: 'SOL',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
   "DOT-SOL": {
     name: "DOT-SOL",
@@ -472,7 +489,8 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'DOT',
     token1Symbol: 'SOL',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
   "DOT-BNB": {
     name: "DOT-BNB",
@@ -489,10 +507,10 @@ export const initialPairsStateMock3: PairState = {
     token0Symbol: 'DOT',
     token1Symbol: 'BNB',
     token0Name: 'Wrapper Ether',
-    token1Name: 'Wrapper Casper'
+    token1Name: 'Wrapper Casper',
+    decimals: 9,
   },
 }
-
 
 export const initialTokenStateMock3: TokenState = {
   tokens: {

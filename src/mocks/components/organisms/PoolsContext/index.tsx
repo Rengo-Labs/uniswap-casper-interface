@@ -43,7 +43,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -70,7 +71,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -97,7 +99,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -124,7 +127,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -151,7 +155,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     }
   ]
   return pairData
@@ -184,7 +189,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"355.961767477",
@@ -212,7 +218,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -239,7 +246,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -266,7 +274,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -293,7 +302,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     }
   ]
   return pairData
