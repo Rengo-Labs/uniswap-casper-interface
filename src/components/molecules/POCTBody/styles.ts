@@ -26,12 +26,6 @@ export const TColumn1 = styled.div`
     flex: 1;
 `
 
-export const IconColumn1 = styled.div`
-  align-self: center; 
-  display: flex;
-  flex: 1;
-`
-
 export const TButtonColumn3 = styled.div`
   flex: 3;
   padding: 0.25rem 0 0;

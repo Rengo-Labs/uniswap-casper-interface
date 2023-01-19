@@ -11,7 +11,6 @@ import {
     TColumn6,
     TColumn3,
     TColumn1,
-    IconColumn1,
     TBodyColumn3,
     TButtonColumn3,
     TBodyColumn6
@@ -40,7 +39,8 @@ import {
     NormalBodyRow,
     TColumn2andHalf,
     PairTitleColumn,
-    TitleBodyRow
+    TitleBodyRow,
+    IconColumn1
 } from "./styles";
 
 export interface CollapsingRowProps {
