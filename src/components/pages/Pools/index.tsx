@@ -38,7 +38,9 @@ export const Pools = () => {
 
                         <TitleBoxWrapper><TitleBox>TVL: $ {gralData.tvl}</TitleBox></TitleBoxWrapper>
                         <TitleBoxWrapper><TitleBox>VOLUME: $ {gralData.totalVolume}</TitleBox></TitleBoxWrapper>
-                        <CreatePoolButton enabled={true} onClick={() => {navigate("/liquidity")}} >Create pool</CreatePoolButton>
+                        <div>
+                            <CreatePoolButton enabled={true} onClick={() => {navigate("/liquidity")}} >Create pool</CreatePoolButton>
+                        </div>
                     </WrappedPoolTitle>
                 </WrappedHeaderPool>
                 <CardContainer gridRow="2" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">

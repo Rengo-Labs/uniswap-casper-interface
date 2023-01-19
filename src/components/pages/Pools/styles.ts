@@ -27,11 +27,8 @@ export const WrappedHeaderPool = styled.div`
         padding: 0 1rem;
     }
     
-    @media ${device.laptop} {
-        grid-column: 2/10;
-    }
     
-    @media ${device.laptopL} {
+    @media ${device.laptop} {
         grid-column: 2/11;
         align-self: end;
         padding: 0;
@@ -73,7 +70,7 @@ export const WrappedPoolTitle = styled.div`
         width: 100%;
     }
     
-    @media ${device.laptopL} {
+    @media ${device.laptop} {
         flex-direction: row;
         width: auto;
     }
@@ -84,7 +81,7 @@ export const TitleBoxWrapper = styled.div`
         width: 100%;
     }
     
-    @media ${device.laptopL} {
+    @media ${device.laptop} {
         width: auto;
     }
 `

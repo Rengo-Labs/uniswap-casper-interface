@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import {NewIcons} from "../../atoms";
 
 export const PopoverContainer = styled("div")`
     position: absolute;
@@ -67,14 +68,14 @@ export const ButtonStyle = styled.button<any>`
     align-items: center;
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
-    padding:0px;
-    width: 230px;
-    height: 46px;
-    border-radius: 10px;
+    padding: .875rem 2rem;
+    border-radius: 8px;
     border:none;
     overflow:hidden; 
     white-space:nowrap; 
     text-overflow: ellipsis;
+    font-family: 'MyriadPro';
+    gap: 4px;
     &:hover{
         cursor: pointer;
     }

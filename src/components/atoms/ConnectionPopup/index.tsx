@@ -11,7 +11,7 @@ import {
   DisclaimerContent,
   PopoverButtonStyled,
   WalletSelectionImageStyled,
-  ButtonText
+  ButtonText, TFlex1
 } from "./styles";
 import { WalletSelectionDiv } from "../WalletSelectionDiv";
 import casperWallet from "../../../assets/walletIcons/casper.png";
@@ -51,20 +51,17 @@ export const ConnectionPopup = ({
           }
           <OverlayPopup isOpened={isOpened}>
             <PopupContainer>
-              {/* TODO: remove inline css*/}
-              <PopupTitle><div style={{ flex: "1" }}>{title}</div><PopupClose onClick={closeHandler}>&times;</PopupClose></PopupTitle>
+              <PopupTitle><TFlex1>{title}</TFlex1><PopupClose onClick={closeHandler}>&times;</PopupClose></PopupTitle>
               <PopupContent>
                 <DisclaimerContent>
                   By connecting your wallet, you acknowledge that you have read, understand and accept the terms in the Disclaimer
                 </DisclaimerContent>
                 <WalletContainer>
-                  {/* TODO: remove inline css*/}
-                  <WalletSelectionDiv style={{ backgroundColor: "lightgray" }} isSelected={false} onClick={() => onConnect(WalletName.CASPER_SIGNER)}>
+                  <WalletSelectionDiv isSelected={false} onClick={() => onConnect(WalletName.CASPER_SIGNER)}>
                     <WalletSelectionImageStyled src={casperWallet} alt="" />
                     <ButtonText>Signer Wallet</ButtonText>
                   </WalletSelectionDiv>
-                  {/* TODO: remove inline css*/}
-                  <WalletSelectionDiv style={{ backgroundColor: "lightgray" }} isSelected={false} onClick={() => onConnect(WalletName.TORUS)}>
+                  <WalletSelectionDiv isSelected={false} onClick={() => onConnect(WalletName.TORUS)}>
                     <WalletSelectionImageStyled src={torusWallet} alt="" />
                     <ButtonText>Torus Wallet</ButtonText>
                   </WalletSelectionDiv>

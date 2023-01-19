@@ -7,7 +7,7 @@ export const WalletSelectionStyled = styled.div<any>`
     align-items: center;
     padding: .3rem .5rem;
     gap: 10px;
-    background-color: ${props => props.theme.StrongColor5};
+    background-color: lightgray;
     border-radius: 10px;
     width: 258px;
     height: 42px;

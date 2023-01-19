@@ -127,14 +127,12 @@ export const HRefLink = styled.button`
 export const PopoverButtonStyled= styled.div`
     display: flex;
     align-items: center; 
-    height: 5vh; 
     border-radius: 8px;
-    width: 8vw;
-    font-weight: 500;
-    font-size: 0.8vw;
+    font-family: 'MyriadProd';
     justify-content: center;
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
+    gap: 4px;
     &:hover{
         cursor: pointer;
     }
@@ -143,14 +141,15 @@ export const PopoverButtonStyled= styled.div`
         color: ${props => props.theme.thirdBackgroundColor};
     }
 
-  @media ${device.mobileS} {
-    width: 100px;
-    font-size: 12px;
-  }
-  @media ${device.tablet} {
-    width: 8vw;
-    font-size: 0.8vw;
-  }
+    @media ${device.mobileS} {
+        width: 100px;
+        font-size: 12px;
+    }
+    @media ${device.tablet} {
+        font-size: 16px;
+        line-height: 32px;
+        padding: .875rem 2rem;
+    }
 `
 
 export const DisclaimerContent = styled.div`
@@ -180,4 +179,8 @@ export const WalletSelectionImageStyled = styled.img`
 
 export const ButtonText = styled.h2`
   font-family: 'EpilogueLight';
+`
+
+export const TFlex1 = styled.div`
+    flex: 1;
 `

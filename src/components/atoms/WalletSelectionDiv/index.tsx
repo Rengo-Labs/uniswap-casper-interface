@@ -5,14 +5,14 @@ interface WalletSelectionDivInterfaceProps {
     isSelected: boolean,
     children: ReactNode,
     onClick:any,
-    style:any
+    style?:any
 }
 
 export const WalletSelectionDiv = ({ 
     isSelected, 
     children, 
     onClick,
-    style
+    style = {}
 }: WalletSelectionDivInterfaceProps) => {
     return (
         <WalletSelectionStyled isSelected={isSelected} onClick={onClick} style={style}>

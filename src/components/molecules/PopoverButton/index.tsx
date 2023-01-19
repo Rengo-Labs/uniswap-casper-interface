@@ -60,10 +60,9 @@ export const PopoverButton = ({
 
     return (
         <>
-            {/* TODO: remove inline css*/}
             {
                 isConnected &&
-                <ButtonStyle isSelected={isConnected} onClick={onToggle}><NewIcons Icon={walletConnected} style={{ alignSelf: "center", padding: "0", display: "flex" }} size="40px" /> {wallet}</ButtonStyle>
+                <ButtonStyle isSelected={isConnected} onClick={onToggle}><NewIcons Icon={walletConnected} size="40px" width={26} height={26} /> {wallet}</ButtonStyle>
             }
             {
                 isConnected && isOpened &&
@@ -76,15 +75,15 @@ export const PopoverButton = ({
                             {/* TODO: remove inline css*/}
                             <div style={{ flex: "3" }}>{walletLabel}</div>
                             {/* TODO: remove inline css*/}
-                            <ItemColumn position="center" flex="1"><NewIcons Icon={copyIcon} style={{ alignSelf: "center", display: "flex", color: '#4D4D4D'}} size="40px" /></ItemColumn>
+                            <ItemColumn position="center" flex="1"><NewIcons Icon={copyIcon} style={{ alignSelf: "center", display: "flex", color: '#4D4D4D'}} width={40} height={40} size="40px" /></ItemColumn>
                         </ItemMenu>
                         <ItemMenu onClick={redirectToTransactionsList}>
-                            <ItemColumn position="center" flex="1" padding="0 0 0 1em"><NewIcons Icon={recentTransactionIcon} size="40px" /></ItemColumn>
+                            <ItemColumn position="center" flex="1" padding="0 0 0 1em"><NewIcons Icon={recentTransactionIcon} size="40px" width={40} height={40} /></ItemColumn>
                             <ItemColumn position="left" flex="3">Recent Transactions</ItemColumn>
                         </ItemMenu>
                         {/* TODO: remove inline css*/}
                         <ItemMenu style={{ color: "red" }} onClick={onDisconnect}>
-                            <ItemColumn position="center" flex="1" padding="0 0 0 1em"><NewIcons Icon={disconnectWallet} size="40px" /></ItemColumn>
+                            <ItemColumn position="center" flex="1" padding="0 0 0 1em"><NewIcons Icon={disconnectWallet} size="40px" width={40} height={40} /></ItemColumn>
                             <ItemColumn position="left" flex="3">Disconnect Wallet</ItemColumn>
                         </ItemMenu>
                     </ContainerList>
