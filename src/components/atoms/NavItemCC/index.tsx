@@ -9,7 +9,7 @@ const NavItemStyled = styled.nav<any>`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: ${(props) => !props.collapse && '40px'};
   -webkit-box-pack: center;
   -webkit-box-align: center;
   transition: all 100ms ease 0s;
