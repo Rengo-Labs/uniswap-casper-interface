@@ -11,6 +11,11 @@ export const StyledMenuItem = styled.li`
   &:hover {
     background-color: ${(props) => props.theme.NewGreyColor};
   }
+  svg {
+      stroke: ${(props) => props.theme.NewPurpleColor} !important;
+      fill: ${(props) => props.theme.NewPurpleColor} !important;
+      
+    }
 `;
 
 export const StyledIconContainer = styled.div`

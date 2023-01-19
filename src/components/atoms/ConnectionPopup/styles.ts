@@ -3,10 +3,10 @@ import {device} from "../../../contexts/ThemeContext/themes";
 
 export const WalletContainer = styled.div`
     display: flex;
-    padding: 0;
     margin: 0;
+    padding: 0;
     color: black;
-    font-size: 0.8vw;
+    font-size: 16px;
     z-index: 10;
     font-weight: 500;
     justify-content: center;
@@ -128,7 +128,7 @@ export const PopoverButtonStyled= styled.div`
     display: flex;
     align-items: center; 
     border-radius: 8px;
-    font-family: 'MyriadProd';
+    font-family: 'MyriadPro';
     justify-content: center;
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
@@ -140,12 +140,13 @@ export const PopoverButtonStyled= styled.div`
         background-color: ${props => props.theme.secondBackgroundColor};
         color: ${props => props.theme.thirdBackgroundColor};
     }
-
+    
     @media ${device.mobileS} {
         width: 100px;
         font-size: 12px;
     }
     @media ${device.tablet} {
+        width: auto;
         font-size: 16px;
         line-height: 32px;
         padding: .875rem 2rem;

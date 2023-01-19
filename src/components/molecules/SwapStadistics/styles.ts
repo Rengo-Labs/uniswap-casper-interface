@@ -6,8 +6,8 @@ export const Main = styled.main`
   justify-self: center;
   width: 100%;
   color: black;
-  display: grid;
-  grid-template-columns: auto auto;
+  display: flex;
+  justify-content: center;
   padding: 10px;
   z-index: 0;
 `

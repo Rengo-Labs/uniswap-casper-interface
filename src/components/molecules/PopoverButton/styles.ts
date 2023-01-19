@@ -22,6 +22,7 @@ export const ContainerList = styled("ul")`
   font-size: 0.8vw;
   z-index: 10;
   font-weight: 500;
+  font-family: 'MyriadPro'
   &:first-child {
     padding-top: 0.2em;
     padding-bottom: 0em;
@@ -54,7 +55,7 @@ export const WalletItemList = styled(ItemList)`
     padding-right: 1em;
     border-top: 0px; 
     color: #39B54A;
-    font-family: Epilogue;
+    font-family: 'MyriadPro';
 `
 
 export const ItemColumn = styled.div<any>`
