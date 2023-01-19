@@ -30,8 +30,6 @@ import { WalletName } from '../commons';
 import {
   SettingMenu,
   MobileMenu,
-  SettingMobile,
-  CommunityMenuMobile,
 } from '../components/molecules';
 import {
   CommunityMenu,
@@ -39,13 +37,12 @@ import {
 } from '../components/molecules/CommunityMenu';
 import { INotification } from '../components/molecules/NotificationList';
 import isMobileScreen from '../hooks/isMobileScreen';
-import { NotificationSystem } from '../components/organisms';
 import { MenuMobileOptions } from '../constant';
 
 const size = 20;
 
 const settingMenuOptions: MenuOption[] = [
-  { text: 'Twitter', navegateTo: 'https://www.twitter.com', icon: Twitter },
+  { text: 'Twitter', navegateTo: 'https://twitter.com/casperswap', icon: Twitter },
   { text: 'Discord', navegateTo: 'https://www.discord.com', icon: Discord },
   {
     text: 'Instagram',

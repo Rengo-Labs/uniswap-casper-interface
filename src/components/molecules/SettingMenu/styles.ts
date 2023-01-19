@@ -90,6 +90,7 @@ export const StyleSettingValueInputButton = styled.button`
   height: 64px;
   background: ${(props) => props.disabled ? props.theme.NewGreyColor: props.theme.thirdBackgroundColor};
   border-radius: 8px;
+  border: none;
   cursor: pointer;
 `;
 

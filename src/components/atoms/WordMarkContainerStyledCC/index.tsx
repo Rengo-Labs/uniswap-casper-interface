@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { device } from '../../../contexts/ThemeContext/themes'
 const WordMarkContainerStyled = styled.nav`
     position: absolute;
     display: block;
@@ -9,6 +10,10 @@ const WordMarkContainerStyled = styled.nav`
 
     & svg > path{
         fill: ${props => props.theme.NewPurpleColor};
+    }
+
+    @media ${device.mobileS} {
+      position: relative;
     }
     
 `

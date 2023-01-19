@@ -7,7 +7,7 @@ import { MenuOption } from '../../molecules/CommunityMobile';
 import { MenuMobileOptions } from '../../../constant';
 
 const settingMenuOptions: MenuOption[] = [
-    { text: 'Twitter', navegateTo: 'https://www.twitter.com', icon: Twitter },
+    { text: 'Twitter', navegateTo: 'https://twitter.com/casperswap', icon: Twitter },
     { text: 'Discord', navegateTo: 'https://www.discord.com', icon: Discord },
     {
       text: 'Instagram',

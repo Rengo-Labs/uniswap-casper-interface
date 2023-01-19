@@ -7,19 +7,29 @@ interface IPriceValue {
 
 export const Wrapper = styled.div`
   display: flex;
+  flex-direction: column;
+  border: 1px solid ${(props) => props.theme.NewBlackColor};
+  align-items: center;
+  border-radius: 25px;
+  background-color: white;
+
+  @media ${device.tablet} {
+    flex-direction: row;
+  }
+`;
+
+export const Content = styled.div`
+  display: flex;
   gap: 1.5rem;
   align-items: center;
-  border: 1px solid ${(props) => props.theme.NewBlackColor};
-  border-radius: 25px;
-  padding: 0 1rem;
-  background-color: white;
+  padding: 0 16px;
+  width: 100%;
 
   @media ${device.mobileS} {
     flex-wrap: wrap;
-    width: 100%;
     justify-content: space-evenly;
+    gap: 2.1rem;
     padding: 16px;
-    gap: 1.2rem;
   }
 
   @media ${device.tablet} {
@@ -27,7 +37,6 @@ export const Wrapper = styled.div`
     justify-content: center;
     gap: 1.5rem;
     padding: 0 1rem;
-    width: auto;
   }
 `;
 
@@ -42,31 +51,26 @@ export const PriceContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 6px 0;
+  gap: 0.7rem;
 `;
 
 export const Divider = styled.div`
   width: 1px;
-  height: 50px;
+  height: 40px;
   background-color: ${(props) => props.theme.NewGreyColor};
 `;
 
 export const PriceTitle = styled.div`
-  font-family: 'Myriad Pro';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
-  color: ${(props) => props.theme.SecondBlackColor};
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #000;
+  font-family: 'Epilogue';
 `;
 export const PriceValue = styled.div<IPriceValue>`
-  font-family: 'Myriad Pro';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 32px;
-  letter-spacing: 0.02em;
-  color: ${(props) => props.theme.NewGrayColor};
+  font-size: 0.9rem;
+  color: ${(props) =>
+    props.percent ? props.theme.NewGreenColor : props.theme.NewGrayColor};
+  font-family: 'Epilogue';
 `;
 
 export const GraphicContainer = styled.div`
@@ -74,22 +78,24 @@ export const GraphicContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  padding: 0 10px;
 
   @media ${device.mobileS} {
     flex: 1;
+    padding-bottom: 10px;
 
     & > div {
-      flex: 1;
+      width: 100%;
       height: 100%;
     }
 
     & > div > svg {
       width: 100%;
-      height: 25px;
+      height: 34px;
     }
-  } 
+  }
 
   @media ${device.tablet} {
     flex: none;
-  } 
+  }
 `;

@@ -3,10 +3,10 @@ import {device} from "../../../contexts/ThemeContext/themes";
 
 export const WalletContainer = styled.div`
     display: flex;
-    padding: 0;
     margin: 0;
+    padding: 0;
     color: black;
-    font-size: 0.8vw;
+    font-size: 16px;
     z-index: 10;
     font-weight: 500;
     justify-content: center;
@@ -127,11 +127,11 @@ export const HRefLink = styled.button`
 export const PopoverButtonStyled= styled.div`
     display: flex;
     align-items: center; 
-    height: 5vh; 
     border-radius: 8px;
-    width: 8vw;
     font-weight: 500;
-    font-size: 0.8vw;
+    width: fit-content;
+    font-size: 16px;
+    padding: 16px;
     justify-content: center;
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
@@ -142,15 +142,6 @@ export const PopoverButtonStyled= styled.div`
         background-color: ${props => props.theme.secondBackgroundColor};
         color: ${props => props.theme.thirdBackgroundColor};
     }
-
-  @media ${device.mobileS} {
-    width: 100px;
-    font-size: 12px;
-  }
-  @media ${device.tablet} {
-    width: 8vw;
-    font-size: 0.8vw;
-  }
 `
 
 export const DisclaimerContent = styled.div`

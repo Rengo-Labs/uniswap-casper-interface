@@ -14,7 +14,6 @@ interface CommunityMenuProps {
 }
 
 export const CommunityMenuMobile = ({ communityOptions, setOption }: CommunityMenuProps) => {
-  const [selectedOption, selectedOptionSet] = useState(0);
 
   function onOptionClickHandler(navegateTo: string) {
     window.open(navegateTo, '_blank');
