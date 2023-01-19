@@ -6,14 +6,7 @@ import {NewIcons} from '../../atoms'
 import { useNavigate } from 'react-router-dom';
 
 import {
-    CircleButton,
-    TBodyExpanded,
-    TColumn6,
-    TColumn3,
-    TColumn1,
-    TBodyColumn3,
-    TButtonColumn3,
-    TBodyColumn6
+    CircleButton
 } from "../POCTBody/styles";
 import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled, SwapIconTwoImageStyled} from "../LiquidityItem/styles";
@@ -40,7 +33,14 @@ import {
     TColumn2andHalf,
     PairTitleColumn,
     TitleBodyRow,
-    IconColumn1
+    IconColumn1,
+    TColumn6,
+    TColumn3,
+    TColumn1,
+    TBodyExpanded,
+    TBodyColumn3,
+    TButtonColumn3,
+    TBodyColumn6
 } from "./styles";
 
 export interface CollapsingRowProps {

@@ -89,6 +89,10 @@ export const TColumn6 = styled.div`
     flex: 6;
 `
 
+export const TColumn3 = styled.div`
+    flex: 3;
+`
+
 export const TColumn1 = styled.div`
     flex: 1;
 `
@@ -210,4 +214,23 @@ export const AddLiquidityButton = styled.button<any>`
         font-size: 16px;
         line-height: 32px;
     }
+`
+
+export const TBodyColumn6 = styled.div`
+    flex: 6;
+    padding: 0.3rem 0 0;
+`
+
+export const TButtonColumn3 = styled.div`
+  flex: 3;
+  padding: 0.25rem 0 0;
+`
+
+export const TBodyColumn3 = styled.div`
+  flex: 3;
+  padding: 0.3rem 0 0;
+`
+
+export const TBodyExpanded = styled.div`
+    display: flex;
 `
