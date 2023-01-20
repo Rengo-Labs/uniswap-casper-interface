@@ -104,7 +104,8 @@ export const HomeTemplate = ({
         </HeroHeaderDD>
         <HeroFooterDD>
           <SquareButton content={content} handler={handler} />
-          <SquareButton content={'Testnet Coming Soon'}  handler={'#'} />
+          {/* TODO: Implement onClick event handler */}
+          <SquareButton content={'Testnet Coming Soon'}  handler={() => console.log('Not implemented yet!')} />
         </HeroFooterDD>
       </Hero>
       <HomeFooterDD>
