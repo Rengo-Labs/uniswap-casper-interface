@@ -16,7 +16,7 @@ export const StyledSettingMenu = styled.ul`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 16px 16px 50px 16px;
+  padding: 16px 32px 50px;
   gap: 16px;
   background: ${(props) => props.theme.NewWhiteColor};
   border: 1px solid #080808;
@@ -57,7 +57,6 @@ export const Close = styled.div`
   border-radius: 12px;
   font-family: 'MyriadPro';
   font-size: 24px;
-  margin-top: -25px;
   cursor: pointer;
   color: ${(props) => props.theme.NewPurpleColor};
 `;
@@ -130,6 +129,7 @@ export const StyleSettingValueInputButton = styled.button`
   width: 100%;
   height: 64px;
   border-radius: 8px;
+  border: none;
   background: ${(props) =>
     props.disabled
       ? props.theme.NewGreyColor

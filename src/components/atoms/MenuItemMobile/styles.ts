@@ -6,7 +6,6 @@ export const StyledMenuItem = styled.li`
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding: 0.6rem 0;
   cursor: pointer;
   color: ${(props) => props.theme.NewPurpleColor};
   @media ${device.tablet} {

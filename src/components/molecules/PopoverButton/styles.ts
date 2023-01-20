@@ -65,9 +65,10 @@ export const ItemColumn = styled.div<any>`
 export const ButtonStyle = styled.button<any>`
     display: flex;
     align-items: center;
+    gap: 5px;
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
-    padding:0px;
+    padding:0px 8px;
     width: 230px;
     height: 46px;
     border-radius: 10px;
