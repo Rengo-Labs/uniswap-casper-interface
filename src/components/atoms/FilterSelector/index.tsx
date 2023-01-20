@@ -1,14 +1,17 @@
-import React, {useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {
-    DropDownContainer,
-    DropDownHeader,
-    DropDownList,
-    DropDownListContainer,
-    ListItem
+  ColumRight,
+  DropDownContainer,
+  DropDownHeader,
+  DropDownList,
+  DropDownListContainer
 } from "./styles";
 import {BsFilter} from "react-icons/bs";
 import {Header} from "../../molecules/POCTHead";
 import {TableInstance} from "react-table";
+import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
+import {ConfigProviderContext} from "../../../contexts/ConfigContext";
+import {UpdatableCircle} from "../UpdatableCircle";
 
 export const FilterSelector = ({
                                getTableProps,
@@ -19,6 +22,15 @@ export const FilterSelector = ({
                            }: TableInstance<any>) => {
     const [isOpen, setIsOpen] = useState(false);
     const toggling = () => setIsOpen(!isOpen);
+
+    const {refreshAll} = useContext(ConfigProviderContext)
+    const {progressBar} = useContext(ProgressBarProviderContext)
+
+    useEffect(() => {
+      progressBar(async () => {
+        await refreshAll()
+      })
+    }, [])
 
     return (
         <DropDownContainer>
@@ -34,6 +46,7 @@ export const FilterSelector = ({
                         <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[2]} />
                         <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[3]} />
                         <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[4]} />
+                        <ColumRight><UpdatableCircle strokeWidth={12} handler={async () => {await refreshAll()}} /></ColumRight>
                     </DropDownList>
                 </DropDownListContainer>
             )}

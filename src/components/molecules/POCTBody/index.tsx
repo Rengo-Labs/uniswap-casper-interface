@@ -18,22 +18,8 @@ export const POCTBody = ({
     rows, 
     prepareRow 
 }: POCTBodyProps) => {
-    const { isStaked, filter } = React.useContext(ConfigProviderContext)
+    const { isStaked, filter, isMobile } = React.useContext(ConfigProviderContext)
     const {setRemovingPopup} = useContext(LiquidityProviderContext)
-
-    const [isMobile, setIsMobile] = useState(false)
-
-    const handleResize = () => {
-        if (window.innerWidth < 1024) {
-            setIsMobile(true)
-        } else {
-            setIsMobile(false)
-        }
-    }
-
-    useEffect(() => {
-        window.addEventListener("resize", handleResize)
-    })
 
     return (
         <TBody {...getTableBodyProps()}>

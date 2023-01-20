@@ -6,7 +6,8 @@ export interface ProgressBarContext {
   progressBar: (callback: any, seconds?: number) => any,
   clearProgress: () => void,
   setProgress: (v: number) => void,
-  getProgress: number
+  getProgress: number,
+  stopProgress: () => void
 }
 
 export const ProgressBarProviderContext = createContext<ProgressBarContext>({} as any)
@@ -48,12 +49,17 @@ export const ProgressBarContextWithReducer = ({ children }: { children: ReactNod
     progressTimer.reset()
   }
 
+  const stopProgressBar = () => {
+    progressTimer?.stop()
+  }
+
   return (
     <ProgressBarProviderContext.Provider value={{
       progressBar: progressBarExec,
       clearProgress: clearProgressBar,
       setProgress: setProgress,
-      getProgress: progress
+      getProgress: progress,
+      stopProgress: stopProgressBar
     }}>
       {children}
     </ProgressBarProviderContext.Provider>

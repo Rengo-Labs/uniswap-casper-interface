@@ -79,3 +79,8 @@ export const ListItem = styled("li")`
   
   text-align: center;
 `
+
+export const ColumRight = styled.div`
+  display: flex;
+  justify-content: right;
+`

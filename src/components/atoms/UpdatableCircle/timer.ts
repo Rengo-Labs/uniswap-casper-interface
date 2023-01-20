@@ -35,7 +35,7 @@ export class Timer {
 
     stop () {
         if (!this.isRunning) {
-            return console.error('Timer is already stopped');
+            return ;
         }
 
         this.isRunning = false

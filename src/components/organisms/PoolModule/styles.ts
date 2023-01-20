@@ -13,7 +13,7 @@ export const PoolModulesStyled = styled.section`
       gap: 8px;
     }
   
-    @media ${device.laptop} {
+    @media ${device.laptopL} {
       padding: 32px;
     }
 `

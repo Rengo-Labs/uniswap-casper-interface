@@ -93,6 +93,7 @@ export interface ConfigContext {
   calculateUSDtokens: (t0, t1, amount0, amount1) => any[];
   tableInstance?: any,
   setTableInstance?: (t) => void;
+  isMobile?: boolean;
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any);
@@ -208,6 +209,8 @@ export const ConfigContextWithReducer = ({
   const [showConnectionPopup, setShowConnectionPopup] = useState(false);
 
   const [requestConnectWallet, setRequestConnectWallet] = useState(0);
+
+  const [isMobile, setIsMobile] = useState(false)
 
   let debounceConnect = false;
 
@@ -469,6 +472,18 @@ export const ConfigContextWithReducer = ({
 
   const { isConnected, walletSelected, slippageToleranceSelected, mainPurse } =
     state;
+
+  const handleResize = () => {
+    if (window.innerWidth < 1024) {
+      setIsMobile(true)
+    } else {
+      setIsMobile(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize)
+  })
 
   useEffect(() => {
     const fn = async () => {
@@ -939,7 +954,8 @@ export const ConfigContextWithReducer = ({
         setConfirmModal,
         calculateUSDtokens,
         tableInstance,
-        setTableInstance
+        setTableInstance,
+        isMobile
       }}
     >
       {children}
