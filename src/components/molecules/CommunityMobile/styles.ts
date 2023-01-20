@@ -10,9 +10,9 @@ export const StyledCommunityMenu = styled.ul`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
-  padding: 16px 16px 50px 16px;
+  padding: 16px 32px 50px;
   gap: 12px;
   background: ${(props) => props.theme.NewWhiteColor};
   border: 1px solid #080808;
@@ -58,7 +58,6 @@ export const Close = styled.div`
   border-radius: 12px;
   font-family: 'MyriadPro';
   font-size: 24px;
-  margin-top: -45px;
   cursor: pointer;
   color: ${(props) => props.theme.NewPurpleColor};
 `;
