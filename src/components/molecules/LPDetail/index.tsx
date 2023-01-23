@@ -68,7 +68,7 @@ export const LPDetail = ({
         <CollapsingRow>
           <CollapsingColumnLeft>Max Amount</CollapsingColumnLeft>
           <CollapsingColumnRight>
-            {(secondTokenAmount * (1 - slippage / 100)).toFixed(9)}{' '}
+            {(secondTokenAmount * (1 + slippage / 100)).toFixed(9)}{' '}
             {secondSymbolToken}
           </CollapsingColumnRight>
         </CollapsingRow>
