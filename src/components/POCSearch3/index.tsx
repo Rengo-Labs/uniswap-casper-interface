@@ -1,11 +1,9 @@
 import React from 'react'
 import 'regenerator-runtime/runtime';
 
-import { PoolSeachButtonStyled } from './styles'
+import {IconStyled, PoolSeachButtonStyled} from './styles'
 
-
-import { AiOutlineSearch } from "react-icons/ai";
-import {useAsyncDebounce, useGlobalFilter, useSortBy, useTable} from 'react-table'
+import {useAsyncDebounce} from 'react-table'
 import {PoolInputFilter} from "../atoms";
 import {PairData} from "../../reducers/PairsReducer";
 import {TableInstance} from "../organisms/PoolModule";
@@ -26,8 +24,7 @@ export const POCSearch3 = ({ tableInstance }) => {
 
     return (
         <PoolSeachButtonStyled>
-            {/* TODO: remove inline css*/}
-            <AiOutlineSearch style={{ backgroundColor: "#D9D9D9", color: "#999999", borderRadius: "45%", padding: "0.2em", height: "1em", width: "1.2em"}} />
+            <IconStyled />
             <PoolInputFilter value={value} setValue={setValue} count={count} onChange={onChange} />
         </PoolSeachButtonStyled>
     )

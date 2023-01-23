@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import {device} from "../../contexts/ThemeContext/themes";
-
+import { AiOutlineSearch } from "react-icons/ai";
 
 export const PoolSeachButtonStyled = styled.section`
     flex: 0.8;
@@ -30,4 +30,13 @@ export const PoolSeachButtonStyled = styled.section`
   @media ${device.laptop} {
       display: none;
   }
+`
+
+export const IconStyled = styled(AiOutlineSearch) `
+  background-color: #D9D9D9; 
+  color: #999999; 
+  border-radius: 50%; 
+  padding: 0.2em; 
+  height: 1em; 
+  width: 1em;
 `

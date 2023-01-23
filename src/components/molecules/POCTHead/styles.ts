@@ -47,6 +47,12 @@ export const THeader3Styled = styled.div`
     }
     
     @media ${device.laptop} {
+        justify-content: right;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    
+    @media ${device.laptopL} {
         justify-content: center;
         padding-top: 0;
         padding-bottom: 0;

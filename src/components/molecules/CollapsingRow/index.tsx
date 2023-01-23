@@ -1,14 +1,13 @@
 import React, {useState} from 'react';
 import useCollapse from 'react-collapsed';
 
-import {AiFillStar, AiOutlineSwap} from "react-icons/ai";
+import {AiFillStar} from "react-icons/ai";
 import {NewIcons} from '../../atoms'
 import { useNavigate } from 'react-router-dom';
 
 import {
-    CircleButton
+    CircleButton, CircleSwapIcon, CircleTrashIcon
 } from "../POCTBody/styles";
-import {TbTrash} from "react-icons/tb";
 import {SwapIconImageStyled, SwapIconTwoImageStyled} from "../LiquidityItem/styles";
 import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
 import {lightTheme} from "../../../contexts/ThemeContext/themes";
@@ -145,11 +144,10 @@ export const CollapsingRow = ({
                     <TBodyColumn3>
                         <TRow>
                             <CircleButton onClick={() => {goTo("/swap")}}>
-                                {/* TODO: remove inline css*/}
-                                <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
+                                <CircleSwapIcon size="1.3rem" />
                             </CircleButton>
                             <CircleButton disabled={parseFloat(row.original.balance) <= 0} onClick={() => {goTo("/liquidity", true)}}>
-                                <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
+                                <CircleTrashIcon size="1.3rem"/>
                             </CircleButton>
                             {false &&
                                 <CircleButton onClick={() => {goTo("/farms")}}>
@@ -202,11 +200,10 @@ export const CollapsingRow = ({
                     </TLeftRow>
                     <TLeftRow>
                         <CircleButton onClick={() => {goTo("/swap")}}>
-                            {/* TODO: remove inline css*/}
-                            <AiOutlineSwap style={{alignSelf: "center", transform: "rotate(90deg)", color: lightTheme.thirdBackgroundColor}} size="1.3rem" />
+                            <CircleSwapIcon size="1.3rem" />
                         </CircleButton>
                         <CircleButton disabled={parseFloat(row.original.balance) <= 0} onClick={() => {goTo("/liquidity", true)}}>
-                            <TbTrash style={{alignSelf: "center", color: lightTheme.thirdBackgroundColor}} size="1.3rem"/>
+                            <CircleTrashIcon size="1.3rem"/>
                         </CircleButton>
                         {false &&
                           <CircleButton onClick={() => {goTo("/farms")}}>

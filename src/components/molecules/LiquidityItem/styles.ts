@@ -62,7 +62,7 @@ export const CircleButton = styled.button`
     border: 0;
     cursor: pointer;
     justify-content: center;
-    border-radius: 45%;
+    border-radius: 50%;
     margin: 5px;
     height: 4.5vh;
     width: 4.5vh;

@@ -1,4 +1,6 @@
 import styled from 'styled-components'
+import {AiOutlineSwap} from "react-icons/ai";
+import {TbTrash} from "react-icons/tb";
 
 export const TBody = styled.div`
     display: flex;
@@ -16,8 +18,19 @@ export const CircleButton = styled.button`
     border: 0;
     cursor: ${props => props.disabled ? "auto" : "pointer"};
     justify-content: center;
-    border-radius: 45%;
+    border-radius: 50%;
     margin: 5px;
     height: 4.5vh;
     width: 4.5vh;
+`
+
+export const CircleSwapIcon = styled(AiOutlineSwap)`
+    align-self: center;
+    transform: rotate(90deg); 
+    color: ${props => props.theme.thirdBackgroundColor};
+`
+
+export const CircleTrashIcon = styled(TbTrash)`
+    align-self: center;
+    color: ${props => props.theme.thirdBackgroundColor};
 `

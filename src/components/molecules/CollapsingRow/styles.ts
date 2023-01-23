@@ -98,7 +98,13 @@ export const TColumn1 = styled.div`
 `
 
 export const TColumn2andHalf = styled.div`
-    flex: 2.5;
+    @media ${device.tablet} {
+      flex: 0;
+    }
+    
+    @media ${device.laptopL} {
+      flex: 2.5;
+    }
 `
 
 export const PairTitleColumn = styled.div`
@@ -164,19 +170,6 @@ export const TSecondRow = styled.div`
     justify-items: left;
 `
 
-export const CircleButton = styled.button`
-    background-color: ${props => props.disabled ? "grey" : props.theme.secondBackgroundColor};
-    display: flex;
-    padding: 0;
-    border: 0;
-    cursor: ${props => props.disabled ? "auto" : "pointer"};
-    justify-content: center;
-    border-radius: 45%;
-    margin: 5px;
-    height: 4.5vh;
-    width: 4.5vh;
-`
-
 export const AddLiquidityButton = styled.button<any>`
     color: ${props => props.enabled ? props.theme.secondBackgroundColor : props.theme.NewGrayColor};
     background-color: ${props => props.enabled ? props.theme.thirdBackgroundColor : props.theme.NewGreyColor};
@@ -213,6 +206,7 @@ export const AddLiquidityButton = styled.button<any>`
     @media ${device.laptopL} {
         font-size: 16px;
         line-height: 32px;
+        padding: 1rem 2rem; 
     }
 `
 
