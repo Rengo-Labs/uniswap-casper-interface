@@ -38,7 +38,7 @@ import { LiquidityItem } from "../../molecules/LiquidityItem";
 import { CircleButton } from "../../molecules/POCTBody/styles";
 
 import {
-  convertAllFormatsToUIFixedString,
+  convertAllFormatsToUIFixedString, Token,
 } from '../../../commons'
 import { BalanceInput } from '../../atoms/BalanceInputNSM'
 import { ContainerLiquidityNSM } from '../../atoms/ContainerLiquidityNSM'
@@ -51,6 +51,7 @@ import { globalStore } from '../../../store/store'
 
 const LiquidityNewModule = () => {
   const {
+    tokenState,
     pairState,
     onConnectWallet,
     onSelectFirstToken,
@@ -80,6 +81,8 @@ const LiquidityNewModule = () => {
 
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
+  const [excludedA, setExcludedA] = useState<string[]>([secondTokenSelected.symbolPair])
+  const [excludedB, setExcludedB] = useState<string[]>([firstTokenSelected.symbolPair])
   const [feeToPay, feeToPaySetter] = useState<any>(0.03)
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0)
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0)
@@ -238,23 +241,85 @@ const LiquidityNewModule = () => {
     setTotalLiquidity(totalLP)
   }
 
-  const [searchModalA, searchModalASetter] = useState(false)
-  async function selectAndCloseTokenA(token) {
+  const [searchModalA, searchModalASetter] = useState(false);
+  async function selectAndCloseTokenA(token: Token): Promise<void> {
     if (token.symbol === secondTokenSelected.symbol) {
       return;
     }
+
+    const includes: Record<string, boolean> = {}
+    const pairs = Object.values(pairState)
+    for (const pair of pairs) {
+      if (pair.token0Symbol === token.symbol || pair.token0Symbol === token.symbolPair) {
+        includes[pair.token1Symbol] = true
+      }
+      if (pair.token1Symbol === token.symbol || pair.token1Symbol === token.symbolPair) {
+        includes[pair.token0Symbol] = true
+      }
+    }
+
+    if (includes['WCSPR']) {
+      includes['CSPR'] = true
+    }
+
+
+    const tokens = Object.values(tokenState.tokens)
+    const excludes = tokens.reduce((
+      acc: string[], 
+      v: Token
+    ): string[] => {
+      if (!includes[v.symbol]) {
+        acc.push(v.symbol)
+      }
+      return acc
+    }, [])
+
+    console.log('excludes', includes, excludes)
+
     onSelectFirstToken(token)
+    setExcludedB(excludes)
     searchModalASetter(false)
 
     const minTokenToReceive = await updateLiquidityDetail(token, secondTokenSelected, amountSwapTokenA, token)
     amountSwapTokenBSetter(minTokenToReceive)
   }
-  const [searchModalB, searchModalBSetter] = useState(false)
-  async function selectAndCloseTokenB(token) {
+
+  const [searchModalB, searchModalBSetter] = useState(false);
+  async function selectAndCloseTokenB(token: Token): Promise<void> {
     if (token.symbol === firstTokenSelected.symbol) {
       return;
     }
+
+    const includes: Record<string, boolean> = {}
+    const pairs = Object.values(pairState)
+    for (const pair of pairs) {
+      if (pair.token0Symbol === token.symbol || pair.token0Symbol === token.symbolPair) {
+        includes[pair.token1Symbol] = true
+      }
+      if (pair.token1Symbol === token.symbol || pair.token1Symbol === token.symbolPair) {
+        includes[pair.token0Symbol] = true
+      }
+    }
+
+    if (includes['WCSPR']) {
+      includes['CSPR'] = true
+    }
+
+    const tokens = Object.values(tokenState.tokens)
+    const excludes = tokens.reduce((
+      acc: string[], 
+      v: Token
+    ): string[] => {
+      if (!includes[v.symbol]) {
+        acc.push(v.symbol)
+      }
+      return acc
+    }, [])
+
+    console.log('excludes', includes, excludes)
+
     onSelectSecondToken(token)
+    setExcludedA(excludes)
     searchModalBSetter(false)
 
     const minTokenToReceive = await updateLiquidityDetail(firstTokenSelected, token, amountSwapTokenB, token)
@@ -320,7 +385,7 @@ const LiquidityNewModule = () => {
                 <ArrowContainerNSM>
                   <FlechaIcon onClick={() => { searchModalASetter(true) }} />
                   {searchModalA && <FloatMenu
-                    excludedSymbols={[secondTokenSelected.symbol]}
+                    excludedSymbols={excludedA}
                     tokens={tokens}
                     onSelectToken={selectAndCloseTokenA}
                     onClick={() => { searchModalASetter(false) }}
@@ -375,7 +440,7 @@ const LiquidityNewModule = () => {
                 <ArrowContainerNSM>
                   <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                   {searchModalB && <FloatMenu
-                    excludedSymbols={[firstTokenSelected.symbol]}
+                    excludedSymbols={excludedB}
                     tokens={tokens}
                     onSelectToken={selectAndCloseTokenB}
                     onClick={() => { searchModalBSetter(false) }}
