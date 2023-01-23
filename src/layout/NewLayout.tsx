@@ -152,7 +152,6 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
     setSelectedOption('');
   }
   function updateNotificationReadState(id: string) {
-    console.log('updateNotificationReadState', id);
     setNotifications((prev) =>
       prev.map((x) => {
         if (x.id === id) {
@@ -174,10 +173,6 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
               onDisconnect={onDisconnect}
               accountHashString={walletAddress}
               icon={<CasperIcons Icon={CasperIcon} width={36} height={44} />}
-              notifications={notifications}
-              showNotifications={showNotifications}
-              setShowNotifications={setShowNotifications}
-              updateNotificationReadState={updateNotificationReadState}
               open={collapse}
               option={selectedOption}
               setOption={setSelectedOption}
@@ -291,12 +286,7 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
                 onDisconnect={onDisconnect}
                 accountHashString={walletAddress}
                 WordMarkIcon={<WordMarkIcon />}
-                notifications={notifications}
-                showNotifications={showNotifications}
-                setShowNotifications={setShowNotifications}
-                updateNotificationReadState={updateNotificationReadState}
               />
-              {/* <NotificationSystem /> */}
               {children}
             </MainSpaceCC>
           </LayoutStyledCC>

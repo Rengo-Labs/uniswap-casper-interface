@@ -18,7 +18,6 @@ const settingMenuOptions: MenuOption[] = [
 
 export const NavMenuMobile = ({children, open, option = 'null', setOption}) => {
     let subMenuComponent = null;
-console.log('option', option)
     
     switch (option) {
         case MenuMobileOptions.Community:

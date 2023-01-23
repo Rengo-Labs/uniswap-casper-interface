@@ -32,7 +32,9 @@ export const Input = styled.input`
   background: transparent;
   color: black;
   width: 30%;
-  border: solid 0.5px black;
+  border: solid 0.5px ${(props) => props.theme.NewPurpleColor};
+  padding: 3px;
+  border-radius: 2px;
 `;
 export const Span = styled.span`
   position: absolute;

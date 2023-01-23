@@ -19,4 +19,4 @@ export const sleep = async (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export * from './keys'
+export { createRecipientAddress } from './keys'
