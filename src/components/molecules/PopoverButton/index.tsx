@@ -62,7 +62,7 @@ export const PopoverButton = ({
         <>
             {
                 isConnected &&
-                <ButtonStyle isSelected={isConnected} onClick={onToggle}><NewIcons Icon={walletConnected} size="40px" width={26} height={26} /> {wallet}</ButtonStyle>
+                <ButtonStyle isSelected={isConnected} onClick={onToggle}><NewIcons Icon={walletConnected} size={30} /> {wallet}</ButtonStyle>
             }
             {
                 isConnected && isOpened &&

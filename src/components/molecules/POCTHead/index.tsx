@@ -29,7 +29,7 @@ const HeaderIcon = () => {
   useEffect(() => {
     progressBar(async () => {
       await refreshAll()
-    }, 180)
+    })
   }, [])
 
   const refreshPrices = async () => {

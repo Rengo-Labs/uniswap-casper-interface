@@ -4,7 +4,7 @@ import {
     SlippageColumnLeft,
     SlippageColumnRight,
     Input,
-    Span
+    Span,
 } from './styles'
 
 export const GasFeeBox = ({ onGasFeeChange, gasFee, gasFeeEnabled = false, className }:any) => {

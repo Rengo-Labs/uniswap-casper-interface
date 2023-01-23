@@ -17,10 +17,6 @@ export interface NavBarCDProps {
   onDisconnect: () => void;
   accountHashString: string;
   WordMarkIcon: React.ReactElement;
-  notifications: INotification[];
-  showNotifications: boolean;
-  setShowNotifications: (value: boolean) => void;
-  updateNotificationReadState: (id: string) => void;
 }
 
 export const NavBarCD = ({
@@ -29,10 +25,6 @@ export const NavBarCD = ({
   onDisconnect,
   accountHashString,
   WordMarkIcon,
-  notifications,
-  showNotifications,
-  setShowNotifications,
-  updateNotificationReadState
 }: NavBarCDProps) => (
   <NavBarCC>
     <WordMarkContainerStyledCC>
@@ -40,14 +32,6 @@ export const NavBarCD = ({
     </WordMarkContainerStyledCC>
     <ConnectButtonContainerCC>
       <GroupIconButtons>
-        <IconButton
-          onClick={() => setShowNotifications(!showNotifications)}
-          disabled={false}
-        >
-          {
-            notifications.some(noti => !noti.isRead) ? <NewIcons Icon={Notification} size={32} /> : <NewIcons Icon={NotificationR} size={32} />
-          }
-        </IconButton>
         <ButtonConnectionOver
           isConnected={isConnected}
           onConnect={onConnect}
@@ -55,7 +39,6 @@ export const NavBarCD = ({
           accountHashString={accountHashString}
         />
       </GroupIconButtons>
-      {showNotifications && <NotificationList notifications={notifications} updateNotificationReadState={updateNotificationReadState}/>}
     </ConnectButtonContainerCC>
   </NavBarCC>
 );

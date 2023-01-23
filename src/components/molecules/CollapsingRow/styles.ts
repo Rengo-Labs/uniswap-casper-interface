@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import {device, deviceMax} from "../../../contexts/ThemeContext/themes";
+import {device} from "../../../contexts/ThemeContext/themes";
 
 export const TWrapCardRow = styled.div`
     background-color: #FFFFFF;
@@ -46,8 +46,12 @@ export const WrappedRow = styled.div`
     width: 100%;
     padding: .5rem 0 0;
     
-    @media ${deviceMax.laptop} {
+    @media ${device.mobileS} {
       flex-direction: column;
+    }
+    
+    @media ${device.laptop} {
+      flex-direction: row;
     }
 `
 
@@ -206,7 +210,7 @@ export const AddLiquidityButton = styled.button<any>`
     @media ${device.laptopL} {
         font-size: 16px;
         line-height: 32px;
-        padding: 1rem 2rem; 
+        padding: 1rem 1.54rem; 
     }
 `
 
