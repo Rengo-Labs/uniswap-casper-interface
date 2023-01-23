@@ -1,7 +1,5 @@
-import wcsprIcon from "../../assets/swapIcons/wrappedCasperIcon.png"
-import csxIcon from "../../assets/swapIcons/casperswap.png"
-import wethIcon from "../../assets/swapIcons/wethIcon.svg"
 import { convertBigNumberToUIString, convertUIStringToBigNumber } from "../../commons"
+import { TOKENS } from '../TokenReducers'
 
 export type PairData = {
   name: string
@@ -15,8 +13,8 @@ export type PairData = {
   allowance: string,
   token0Symbol: string,
   token1Symbol: string,
-  token0Icon: string,
-  token1Icon: string,
+  token0Icon?: string,
+  token1Icon?: string,
   liquidity?: string,
   volume7d?: string,
   fees24h?: string,
@@ -36,23 +34,19 @@ export type PairData = {
 
 export type PairState = Record<string, PairData>
 
-export const initialPairsState: PairState = {
-  "CSX-WETH": {
-    name: "CSX-WETH",
-    contractHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
-    packageHash: "hash-95f1253782197e05e3d260e713a5828ada1ec98856e3908536263890d27163f0",
+const RAW_PAIRS: PairState = {
+  "CST-WETH": {
+    name: "CST-WETH",
+    contractHash: "hash-c4350dd69eea06fe6d579919c91d3aaa1d7dcdec9ba533ddc05658cef5875cc0",
+    packageHash: "hash-dc13b188563da4a1afa67b441e77d045db8a71dba678b832dfb40b420d85bcd2",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
     totalReserve1: '0',
     balance: '0',
     allowance: '0',
-    token0Icon: csxIcon,
-    token1Icon: wethIcon,
-    token0Symbol: 'CSX',
+    token0Symbol: 'CST',
     token1Symbol: 'WETH',
-    token0Name: 'Wrapper Ether',
-    token1Name: 'Coinstox',
     liquidity: '0',
     volume7d: '0',
     fees24h: '0',
@@ -63,12 +57,10 @@ export const initialPairsState: PairState = {
     token1Price: '0',
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
-    contract0: '',
-    contract1: '',
     decimals: 9,
   },
-  "CSX-WCSPR": {
-    name: "CSX-WCSPR",
+  "CST-WCSPR": {
+    name: "CST-WCSPR",
     contractHash: "hash-9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
     packageHash: "hash-e6b4a934630aee279665c99dc2bf4219872b7178990cd7fee7634a0f1362b591",
     reserve0: '0',
@@ -77,12 +69,8 @@ export const initialPairsState: PairState = {
     totalReserve1: '0',
     balance: '0',
     allowance: '0',
-    token0Icon: csxIcon,
-    token1Icon: wcsprIcon,
-    token0Symbol: 'CSX',
+    token0Symbol: 'CST',
     token1Symbol: 'WCSPR',
-    token0Name: 'Wrapper Casper',
-    token1Name: 'Coinstox',
     liquidity: '0',
     volume7d: '0',
     fees24h: '0',
@@ -93,8 +81,30 @@ export const initialPairsState: PairState = {
     token1Price: '0',
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
-    contract0: '',
-    contract1: '',
+    decimals: 9,
+  },
+  "WBTC-WCSPR": {
+    name: "WBTC-WCSPR",
+    contractHash: "hash-40edc05caa0cafa9eb0e954188a4b08b22334eaea36635bece2e99b88437c2d1",
+    packageHash: "hash-a5a9a804a383f3b0e131c85d471542af2c6d4ec57bab39182ba93dd7bd86f46c",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
+    token0Symbol: 'WCSPR',
+    token1Symbol: 'WBTC',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
     decimals: 9,
   },
   "WETH-WCSPR": {
@@ -107,12 +117,8 @@ export const initialPairsState: PairState = {
     totalReserve1: '0',
     balance: '0',
     allowance: '0',
-    token0Icon: wethIcon,
-    token1Icon: wcsprIcon,
     token0Symbol: 'WCSPR',
     token1Symbol: 'WETH',
-    token0Name: 'Wrapper Casper',
-    token1Name: 'Wrapper Ether',
     liquidity: '0',
     volume7d: '0',
     fees24h: '0',
@@ -123,11 +129,65 @@ export const initialPairsState: PairState = {
     token1Price: '0',
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
-    contract0: '',
-    contract1: '',
+    decimals: 9,
+  },
+  "USDT-WCSPR": {
+    name: "USDT-WCSPR",
+    contractHash: "hash-17277427f5bc536313f1e8b536d9bb6ab87ff13583402679b582d9b6b1774aaf",
+    packageHash: "hash-800dee0fb5abf6d3525f520a4b052d8d36edb985a748a671209745c80836c2af",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
+    token0Symbol: 'WCSPR',
+    token1Symbol: 'USDT',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
     decimals: 9,
   },
 }
+
+export const PAIRS: PairState = {}
+
+Object.values(RAW_PAIRS).map((p) => {
+  const pair = Object.assign({}, p)
+
+  pair.token0Name = TOKENS[p.token0Symbol].name
+  pair.token1Name = TOKENS[p.token1Symbol].name
+  pair.token0Icon = TOKENS[p.token0Symbol].logoURI
+  pair.token1Icon = TOKENS[p.token1Symbol].logoURI
+  pair.contract0 = TOKENS[p.token0Symbol].packageHash
+  pair.contract1 = TOKENS[p.token1Symbol].packageHash
+
+  // sort pair by alphanumeric order
+  if (pair.contract0.localeCompare(pair.contract1) > 0) {
+    const nameTemp = pair.token0Name 
+    pair.token0Name = pair.token1Name
+    pair.token1Name = nameTemp
+    
+    const iconTemp = pair.token0Icon
+    pair.token0Icon = pair.token1Icon
+    pair.token1Icon = iconTemp
+
+    const contractTemp = pair.contract0
+    pair.contract0 = pair.contract1
+    pair.contract1 = contractTemp
+  }
+
+  PAIRS[p.name] = pair
+})
+
+export const initialPairsState: PairState = PAIRS
 
 export enum PairActions {
   ADD_BALANCE_TO_PAIR = 'ADD_BALANCE_TO_PAIR',
@@ -160,10 +220,6 @@ export type PairActionLoadPairPayLoad = {
   totalSupply: string,
   token0Price: string,
   token1Price: string,
-  contract0: string,
-  contract1: string,
-  token0Name?: string,
-  token1Name?: string
 }
 
 export type PairActionLoadUserPairPayLoad = {
@@ -248,10 +304,6 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             totalSupply: convertBigNumberToUIString(totalSupply),
             token0Price: action.payload.token0Price,
             token1Price: action.payload.token1Price,
-            contract0: action.payload.contract0,
-            contract1: action.payload.contract1,
-            token0Name: action.payload.token0Name,
-            token1Name: action.payload.token1Name,
           },
         }
       }

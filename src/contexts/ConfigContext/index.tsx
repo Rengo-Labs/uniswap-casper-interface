@@ -51,7 +51,8 @@ import { ConfigState } from '../../reducers/ConfigReducers';
 import { Row } from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
-import {ERROR_BLOCKCHAIN} from "../../constant/erros";
+import { ERROR_BLOCKCHAIN } from "../../constant/erros";
+import { getPath } from '../../commons/calculations'
 
 type MaybeWallet = Wallet | undefined;
 
@@ -578,10 +579,6 @@ export const ConfigContextWithReducer = ({
             ),
             token0Price: pl.token0Price,
             token1Price: pl.token1Price,
-            contract0: tokenState.tokens[pl.token0Symbol].packageHash,
-            contract1: tokenState.tokens[pl.token1Symbol].packageHash,
-            token0Name: tokenState.tokens[pl.token0Symbol].name,
-            token1Name: tokenState.tokens[pl.token1Symbol].name,
           },
         });
       }
@@ -751,6 +748,7 @@ export const ConfigContextWithReducer = ({
   };
 
   const calculateUSDtokens = (token0, token1, amount0, amount1): any[] => {
+    return ['0.00', '0.00']
     const filter = getPoolList().filter(
       (r) => r.token0Symbol === token0 && r.token1Symbol === token1
     );
@@ -816,8 +814,51 @@ export const ConfigContextWithReducer = ({
       }
     }
 
-    // ignore pathfinding case for now    
-    return undefined
+    // use pathfinder for multi-pool
+    const path = getPath(
+      tA, 
+      tB, 
+      Object.values(tokenState.tokens), 
+      Object.values(pairState)
+    )
+
+    if (!path || !path.length) {
+      updateNotification({
+        type: NotificationType.Error,
+        title: 'Path between pools not found',
+        subtitle: '',
+        show: true,
+        timeToClose: 10,
+        chargerBar: true
+      })
+      throw new Error('path not found')
+    }
+    console.log('path', path)
+
+    let firstReserve0 = new BigNumber(1)
+    let reserve0 = new BigNumber(1)
+    let reserve1 = new BigNumber(1)
+    for (let i = 1; i < path.length; i++) {
+      const pair = path[i].label
+      if (path[i-1].id == tokenASymbol) {
+        reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1))
+        reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0))
+      } else {
+        reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve0))
+        reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve1))
+      }
+
+      if (i == 1) {
+        firstReserve0 = reserve0
+      }
+    }
+
+    const ratio = firstReserve0.div(reserve0)
+
+    return {
+      reserve0: reserve0,
+      reserve1: reserve1,
+    }
   }
 
   return (

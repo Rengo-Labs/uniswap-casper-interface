@@ -449,9 +449,6 @@ const LiquidityNewModule = () => {
             // Loop over the table rows
             userPairDataNonZero.map(row => {
               const openPopup = isOpenedRemoving && row.token0Symbol === firstTokenSelected.symbolPair && row.token1Symbol === secondTokenSelected.symbolPair
-
-              console.log('zzzzzz', new BigNumber(row.reserve0).toFixed(row.decimals))
-
               return (
                 // Apply the row props
                 <LiquidityItem
