@@ -123,7 +123,7 @@ const LiquidityNewModule = () => {
 
   useEffect(() => {
     progressBar(async () => lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB))
-  }, [amountSwapTokenA, amountSwapTokenB]);
+  }, [lastChanged, amountSwapTokenA, amountSwapTokenB]);
 
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
@@ -157,7 +157,7 @@ const LiquidityNewModule = () => {
 
     const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
     if (filter2.length > 0) {
-      const userLP = new BigNumber(filter2[0].totalSupply).toNumber().toFixed(filter[0].decimals)
+      const userLP = new BigNumber(filter2[0].totalSupply).toFixed(filter2[0].decimals)
       return userLP
     }
   }
@@ -217,6 +217,8 @@ const LiquidityNewModule = () => {
       filteredValue = Math.abs(filteredValue)
     }
 
+    setLastChanged('A')
+
     amountSwapTokenASetter(filteredValue)
     const minTokenToReceive = await updateLiquidityDetail(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected)
     amountSwapTokenBSetter(minTokenToReceive)
@@ -232,6 +234,8 @@ const LiquidityNewModule = () => {
     } else if (filteredValue < 0) {
       filteredValue = Math.abs(filteredValue)
     }
+
+    setLastChanged('B')
 
     amountSwapTokenBSetter(filteredValue)
     const minTokenToReceive = await updateLiquidityDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
