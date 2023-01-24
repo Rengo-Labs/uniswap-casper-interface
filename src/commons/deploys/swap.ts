@@ -101,7 +101,7 @@ export const signAndDeploySwap = async (
     const response = await apiClient.getPath(tokenA.symbolPair, tokenB.symbolPair)
     const path = response.pathwithcontractHash.map((x) => new CLString(x))
 
-    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountOut)
+    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountIn, amountOut)
 
     switch (entryPoint) {
       case SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS:
@@ -124,7 +124,7 @@ export const signAndDeploySwap = async (
               )
             ),
           }),
-          new BigNumber(gasFee * 10 ** 9),
+          new BigNumber(gasFee * 10 ** 9).times(1.1),
         )
       case SwapEntryPoint.SWAP_TOKENS_FOR_EXACT_CSPR:
         // When swapping token for exact casper
