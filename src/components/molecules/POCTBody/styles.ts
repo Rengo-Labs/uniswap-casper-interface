@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import {AiOutlineSwap} from "react-icons/ai";
+import {AiFillStar, AiOutlineSwap} from "react-icons/ai";
 import {TbTrash} from "react-icons/tb";
 
 export const TBody = styled.div`
@@ -33,4 +33,9 @@ export const CircleSwapIcon = styled(AiOutlineSwap)`
 export const CircleTrashIcon = styled(TbTrash)`
     align-self: center;
     color: ${props => props.theme.thirdBackgroundColor};
+`
+
+export const CircleStarIcon = styled(AiFillStar)`
+    font-size: 22px;
+    color: ${props => props.theme.secondBackgroundColor};
 `

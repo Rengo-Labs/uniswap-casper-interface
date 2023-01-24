@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 
 import {CardContainer} from '../../atoms'
 import { PoolModule } from '../../organisms'
@@ -11,7 +11,8 @@ import {
     TitleBox,
     CreatePoolButton,
     WrappedHeaderPool,
-    HeaderPool, TitleBoxWrapper
+    HeaderPool,
+    TitleBoxWrapper
 } from "./styles";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {POCSearch3} from "../../POCSearch3";

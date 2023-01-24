@@ -15,7 +15,7 @@ export const PoolSeachButtonStyled = styled.section`
     align-items: center;
     gap:.5rem;
 
-  &::hover {
+  &:hover {
     border: 1px solid ${props => props.theme.secondBackgroundColor};
   }
   &:placeholder {

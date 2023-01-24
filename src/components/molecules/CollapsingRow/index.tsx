@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
 import useCollapse from 'react-collapsed';
 
-import {AiFillStar} from "react-icons/ai";
 import {NewIcons} from '../../atoms'
 import { useNavigate } from 'react-router-dom';
 
 import {
-    CircleButton, CircleSwapIcon, CircleTrashIcon
+    CircleButton, CircleStarIcon, CircleSwapIcon, CircleTrashIcon
 } from "../POCTBody/styles";
 import {SwapIconImageStyled, SwapIconTwoImageStyled} from "../LiquidityItem/styles";
 import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
@@ -74,8 +73,7 @@ export const CollapsingRow = ({
     return ( !isMobile ? <TWrapRow className="collapsible" {...row.getRowProps()} >
             <TRow {...getToggleProps({onClick: handleOnClick}) }>
                 <TColumn6 style={{display: "flex"}}>
-                    {/* TODO: remove inline css*/}
-                    <IconColumn1><AiFillStar style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/></IconColumn1>
+                    <IconColumn1><CircleStarIcon/></IconColumn1>
                     <IconColumn1>
                         <SwapIconImageStyled src={row.original.token0Icon} width="45" height="45" />
                         <SwapIconTwoImageStyled src={row.original.token1Icon} width="45" height="45" />
@@ -164,8 +162,7 @@ export const CollapsingRow = ({
         <TWrapCardRow className="collapsible" {...row.getRowProps()} >
             <TFirstRow {...getToggleProps({onClick: handleOnClick}) }>
                 <TColumn6 style={{display: "flex"}}>
-                    {/* TODO: remove inline css*/}
-                    <IconColumn1><AiFillStar style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/></IconColumn1>
+                    <IconColumn1><CircleStarIcon/></IconColumn1>
                     <IconColumn1>
                         <SwapIconImageStyled src={row.original.token0Icon} width="45" height="45" />
                         <SwapIconTwoImageStyled src={row.original.token1Icon} width="45" height="45" />

@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import {device, deviceMax} from "../../../contexts/ThemeContext/themes";
 
 export const WrappedPool = styled.div`
+    height: 5rem;
     @media ${device.mobileS} {
         display: flex;
         flex-direction: column;
