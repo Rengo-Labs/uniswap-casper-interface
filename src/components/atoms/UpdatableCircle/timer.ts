@@ -25,7 +25,7 @@ export class Timer {
 
     start () {
         if (this.isRunning) {
-            return console.error('Timer is already running');
+            return //console.error('Timer is already running');
         }
 
         this.isRunning = true

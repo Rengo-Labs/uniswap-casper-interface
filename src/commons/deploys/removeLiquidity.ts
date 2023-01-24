@@ -1,14 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { 
-  Some,
-} from 'ts-results'
-
 import {
-  AccessRights,
   CLByteArray,
   CLKey,
-  CLOption,
   CLValueBuilder,
   GetDeployResult,
   RuntimeArgs,
@@ -26,6 +20,7 @@ import {
 
 import {
   log,
+  createRecipientAddress,
 } from '../utils'
 
 import {
@@ -33,9 +28,6 @@ import {
   ROUTER_PACKAGE_HASH,
 } from "../../constant";
 
-import {
-  createRecipientAddress
-} from './utils'
 
 /**
  * All remove liquidity smart contract endpoints
@@ -74,6 +66,7 @@ export enum RemoveLiquidityEntryPoint {
  * @param tokenB tokenB
  * @param slippage amount of slippage to abort if exceeded
  * @param mainPurse uref of main purse to send/receive funds
+ * @param gas 
  * 
  * @returns an array containing the deploy hash and deploy result 
  */
@@ -88,6 +81,7 @@ export enum RemoveLiquidityEntryPoint {
   tokenA: Token,
   tokenB: Token,
   slippage: number,
+  gasFee: number,
 ): Promise<[string, GetDeployResult]> => {
   try {
     const publicKey = wallet.publicKey;
@@ -104,6 +98,8 @@ export enum RemoveLiquidityEntryPoint {
         
         const amountCSPRDesired = tokenA.symbol === 'CSPR' ? amountADesired : amountBDesired
         const amountTokenDesired = tokenA.symbol !== 'CSPR' ? amountADesired : amountBDesired
+
+        // console.log('qqq', new CLKey(token), tokenA, tokenB)
         
         return await casperClient.signAndDeployWasm(
           wallet,
@@ -125,7 +121,7 @@ export enum RemoveLiquidityEntryPoint {
               )
             ),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(gasFee * 10**9),
         )
       case RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_JS_CLIENT:
         // When adding token and token
@@ -150,7 +146,7 @@ export enum RemoveLiquidityEntryPoint {
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
           }),
-          new BigNumber(10000000000),
+          new BigNumber(gasFee * 10**9),
         )
       default: 
         throw new Error(`this shouldn't happen`)

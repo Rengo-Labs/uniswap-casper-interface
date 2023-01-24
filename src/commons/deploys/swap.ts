@@ -23,16 +23,13 @@ import {
 
 import {
   log,
+  createRecipientAddress,
 } from '../utils'
 
 import {
   ROUTER_CONTRACT_HASH,
   ROUTER_PACKAGE_HASH,
 } from "../../constant";
-
-import {
-  createRecipientAddress
-} from './utils'
 
 /**
  * All swap smart contract endpoints
@@ -94,7 +91,7 @@ export const signAndDeploySwap = async (
   tokenB: Token,
   slippage: number,
   mainPurse: string,
-  gasFee: number
+  gasFee: number,
 ): Promise<[string, GetDeployResult]> => {
   try {
     console.log('slippage', new BigNumber(amountIn).times(slippage + 1.04).toFixed(0))
@@ -103,7 +100,7 @@ export const signAndDeploySwap = async (
     const entryPoint = selectSwapEntryPoint(tokenA.symbol, tokenB.symbol)
     
     const response = await apiClient.getPath(tokenA.symbolPair, tokenB.symbolPair)
-    const path = response.pathwithcontractHash.map((x) => new CLString("hash-".concat(x)))
+    const path = response.pathwithcontractHash.map((x) => new CLString(x))
 
     log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountOut)
 

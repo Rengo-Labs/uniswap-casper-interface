@@ -26,16 +26,13 @@ import {
 
 import {
   log,
+  createRecipientAddress,
 } from '../utils'
 
 import {
   ROUTER_CONTRACT_HASH,
   ROUTER_PACKAGE_HASH,
 } from "../../constant";
-
-import {
-  createRecipientAddress
-} from './utils'
 
 /**
  * All add liquidity smart contract endpoints
@@ -112,8 +109,8 @@ export enum AddLiquidityEntryPoint {
             token: new CLKey(token),
             amount_cspr_desired: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
             amount_token_desired: CLValueBuilder.u256(new BigNumber(amountTokenDesired).toFixed(0)),
-            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(.96 - slippage).toFixed(0)),
-            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(.96 - slippage).toFixed(0)),
+            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(1 - slippage).toFixed(0)),
+            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0)),
             pair: new CLOption(Some(new CLKey(token) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
