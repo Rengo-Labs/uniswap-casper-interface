@@ -152,8 +152,8 @@ export const signAndDeploySwap = async (
 
             // Deploy wasm params
             amount: CLValueBuilder.u512(new BigNumber(amountIn).toFixed(0)),
-            destination_entrypoint: CLValueBuilder.string(SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS),
-            router_hash: new CLKey(
+            entrypoint: CLValueBuilder.string(SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS),
+            package_hash: new CLKey(
               new CLByteArray(
                 Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
               )

@@ -117,8 +117,8 @@ export enum AddLiquidityEntryPoint {
 
             // Deploy wasm params
             amount: CLValueBuilder.u512(new BigNumber(amountCSPRDesired).toFixed(0)),
-            destination_entrypoint: CLValueBuilder.string(entryPoint),
-            router_hash: new CLKey(
+            entrypoint: CLValueBuilder.string(entryPoint),
+            package_hash: new CLKey(
               new CLByteArray(
                 Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
               )
