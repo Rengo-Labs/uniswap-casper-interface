@@ -26,6 +26,7 @@ const RAW_TOKENS: Record<string, Token> = {
     logoURI: csprIcon,
     amount: "0.0000",
     allowance: "0.0000",
+    priceUSD: "0.00",
   },
   CST: {
     name: "CasperSwap",
@@ -40,7 +41,8 @@ const RAW_TOKENS: Record<string, Token> = {
     logoURI: cstIcon,
     amount: "0.0000",
     allowance: "0.0000",
-  }, 
+    priceUSD: "0.00",
+  },
   WBTC: {
     name: "Wrapped Bitcoin",
     chainId: 1,
@@ -54,6 +56,7 @@ const RAW_TOKENS: Record<string, Token> = {
     logoURI: wbtcIcon,
     amount: "0.0000",
     allowance: "0.0000",
+    priceUSD: "0.00",
   },
   WETH: {
     name: "Wrapped Ether",
@@ -68,6 +71,7 @@ const RAW_TOKENS: Record<string, Token> = {
     logoURI: wethIcon,
     amount: "0.0000",
     allowance: "0.0000",
+    priceUSD: "0.00",
   },
   WCSPR: {
     name: "Wrapped Casper",
@@ -82,6 +86,7 @@ const RAW_TOKENS: Record<string, Token> = {
     logoURI: wcsprIcon,
     amount: "0.0000",
     allowance: "0.0000",
+    priceUSD: "0.00",
   },
   USDT: {
     name: "Tether",
@@ -96,6 +101,7 @@ const RAW_TOKENS: Record<string, Token> = {
     logoURI: usdtIcon,
     amount: "0.0000",
     allowance: "0.0000",
+    priceUSD: "0.00",
   },
   USDC: {
     name: "USD Coin",
@@ -110,6 +116,7 @@ const RAW_TOKENS: Record<string, Token> = {
     logoURI: usdcIcon,
     amount: "0.0000",
     allowance: "0.0000",
+    priceUSD: "0.00",
   },
 }
 
@@ -132,6 +139,7 @@ export enum TokenActions {
   SELECT_SECOND_TOKEN = "SELECT_SECOND_TOKEN",
   LOAD_BALANCE = "LOAD_BALANCE",
   LOAD_ALLOWANCE = "LOAD_ALLOWANCE",
+  LOAD_PRICE_USD = "LOAD_PRICE_USD",
   SWITCH_TOKENS = "SWITCH_TOKENS",
 }
 
@@ -140,26 +148,32 @@ export type TokenAction = {
   payload: {
     tokens: Record<string, Token>,
   },
-} | { 
+} | {
   type: TokenActions.SELECT_FIRST_TOKEN,
   payload: string,
-} | { 
+} | {
   type: TokenActions.SELECT_SECOND_TOKEN,
   payload: string,
-} | { 
+} | {
   type: TokenActions.SELECT_SECOND_TOKEN,
   payload: string,
-} | { 
+} | {
   type: TokenActions.LOAD_BALANCE,
   payload: {
     name: string,
     amount: string,
   },
-} | { 
+} | {
   type: TokenActions.LOAD_ALLOWANCE,
   payload: {
     name: string,
     allowance: string,
+  },
+} | {
+  type: TokenActions.LOAD_PRICE_USD,
+  payload: {
+    name: string,
+    priceUSD: string,
   },
 } | {
   type: TokenActions.SWITCH_TOKENS,
@@ -170,9 +184,9 @@ export function TokenReducer(state: TokenState, action: TokenAction) {
     case TokenActions.UPDATE_TOKENS:
       return {
         ...state,
-        tokens: { 
-          ...state.tokens, 
-          ...action.payload.tokens 
+        tokens: {
+          ...state.tokens,
+          ...action.payload.tokens
         },
       };
     case TokenActions.SELECT_FIRST_TOKEN:
@@ -198,6 +212,17 @@ export function TokenReducer(state: TokenState, action: TokenAction) {
           [action.payload.name]: {
             ...state.tokens[action.payload.name],
             allowance: action.payload.allowance,
+          },
+        },
+      };
+    case TokenActions.LOAD_PRICE_USD:
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          [action.payload.name]: {
+            ...state.tokens[action.payload.name],
+            priceUSD: action.payload.priceUSD,
           },
         },
       };
