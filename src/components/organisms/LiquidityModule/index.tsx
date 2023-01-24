@@ -157,7 +157,7 @@ const LiquidityNewModule = () => {
 
     const filter2 = getPoolList().filter(r => r.token1Symbol === token0 && r.token0Symbol === token1)
     if (filter2.length > 0) {
-      const userLP = new BigNumber(filter2[0].totalSupply).toNumber().toFixed(filter[0].decimals)
+      const userLP = new BigNumber(filter2[0].totalSupply).toFixed(filter2[0].decimals)
       return userLP
     }
   }

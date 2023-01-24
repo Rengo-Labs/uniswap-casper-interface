@@ -333,7 +333,7 @@ export const ConfigContextWithReducer = ({
 
   async function refresh(wallet: Wallet) {
     await loadPairs();
-    await fillPairs(wallet, wallet?.isConnected);
+    await loadPairsUserData(wallet, wallet?.isConnected);
     await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
   }
 
@@ -535,15 +535,18 @@ export const ConfigContextWithReducer = ({
     return row;
   };
 
+  interface PairTotalReserves {
+    totalReserve0: BigNumber.Value,
+    totalReserve1: BigNumber.Value,
+  }
+
   async function loadPairs(): Promise<void> {
     try {
-      const keys = Object.keys(pairState)
+      const pairs = Object.values(pairState)
+      const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
-      for (const k of keys) {
-        const pl = initialPairsState[k]
-
+      for (const pl of pairs) {
         const pairDataResponse = await apiClient.getPairData(pl.contractHash)
-        console.log('pairDataResponse', pairDataResponse)
 
         const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
         const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
@@ -562,10 +565,6 @@ export const ConfigContextWithReducer = ({
             name: pl.name,
             token0Symbol: pl.token0Symbol,
             token1Symbol: pl.token1Symbol,
-            totalLiquidityUSD: '0', /*new BigNumber(reserve0)
-              .times(pl.token0Price)
-              .plus(new BigNumber(reserve1).times(pl.token1Price))
-              .toString(),*/
             volume7d: new BigNumber(
               convertBigNumberToUIString(new BigNumber(0), 9)
             ).toFixed(2),
@@ -577,17 +576,60 @@ export const ConfigContextWithReducer = ({
             totalSupply: convertBigNumberToUIString(
               new BigNumber(pairDataResponse.totalSupply)
             ),
-            token0Price: pl.token0Price,
-            token1Price: pl.token1Price,
           },
         });
+        pairTotalReserves[pl.name] = {
+          totalReserve0: reserve0,
+          totalReserve1: reserve1,
+        }
       }
+
+      await loadPairsUSD(pairTotalReserves)
     } catch (err) {
       log.error('loadPairs', err.message);
     }
   }
 
-  async function fillPairs(wallet: Wallet, isConnected = false): Promise<void> {
+  async function loadPairsUSD(pairTotalReserves: Record<string, PairTotalReserves>): Promise<void> {
+    try {
+      const tokens = Object.values(tokenState.tokens)
+      const tokenPrices: Record<string, string> = {}
+
+      for (const t of tokens) {
+        const priceUSD = findUSDRateBySymbol(t.symbolPair, pairTotalReserves).toFixed(2)
+
+        tokenDispatch({
+          type: TokenActions.LOAD_PRICE_USD,
+          payload: {
+            name: t.symbol, 
+            priceUSD,
+          },
+        })
+
+        tokenPrices[t.symbol] = priceUSD
+      }
+
+      console.log('tokenPrices', tokenPrices)
+
+      const pairs = Object.values(pairState)
+
+      for (const p of pairs) {
+        pairDispatch({
+          type: PairActions.LOAD_PAIR_USD,
+          payload: {
+            name: p.name, 
+            token0Price: tokenPrices[p.token0Symbol],
+            token1Price: tokenPrices[p.token1Symbol],
+          },
+        })
+      }
+      
+    } catch (err) {
+      log.error('loadPairsUSD', err.message);
+    }
+  }
+
+  async function loadPairsUserData(wallet: Wallet, isConnected = false): Promise<void> {
     if (!isConnected) {
       return;
     }
@@ -748,7 +790,6 @@ export const ConfigContextWithReducer = ({
   };
 
   const calculateUSDtokens = (token0, token1, amount0, amount1): any[] => {
-    return ['0.00', '0.00']
     const filter = getPoolList().filter(
       (r) => r.token0Symbol === token0 && r.token1Symbol === token1
     );
@@ -768,6 +809,8 @@ export const ConfigContextWithReducer = ({
         new BigNumber(amount1).times(filter2[0].token1Price).toFixed(2),
       ];
     }
+
+    return ['0.00', '0.00']
   };
 
   /**
@@ -781,6 +824,7 @@ export const ConfigContextWithReducer = ({
   const findReservesBySymbols = (
     tokenASymbol: string,
     tokenBSymbol: string,
+    overrideReserves: Record<string, PairTotalReserves> = {},
   ): PairReserves | undefined => {
     let tA = tokenASymbol
     let tB = tokenBSymbol
@@ -794,7 +838,7 @@ export const ConfigContextWithReducer = ({
     let lookUp = `${tA}-${tB}`
 
     // do a simple look up
-    let pairData = pairState[lookUp]
+    let pairData = overrideReserves[lookUp] ?? pairState[lookUp]
 
     if (pairData) {
       return {
@@ -805,7 +849,7 @@ export const ConfigContextWithReducer = ({
 
     // do different simple look up
     lookUp = `${tB}-${tA}`
-    pairData = pairState[lookUp]
+    pairData = overrideReserves[lookUp] ?? pairState[lookUp]
 
     if (pairData) {
       return {
@@ -825,7 +869,7 @@ export const ConfigContextWithReducer = ({
     if (!path || !path.length) {
       updateNotification({
         type: NotificationType.Error,
-        title: 'Path between pools not found',
+        title: `Path between ${tA}-${tB} not found`,
         subtitle: '',
         show: true,
         timeToClose: 10,
@@ -839,7 +883,8 @@ export const ConfigContextWithReducer = ({
     let reserve0 = new BigNumber(1)
     let reserve1 = new BigNumber(1)
     for (let i = 1; i < path.length; i++) {
-      const pair = path[i].label
+      const pair = overrideReserves[path[i].label.name] ?? path[i].label
+      console.log('pair', pair)
       if (path[i-1].id == tokenASymbol) {
         reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1))
         reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0))
@@ -859,6 +904,44 @@ export const ConfigContextWithReducer = ({
       reserve0: firstReserve0,
       reserve1: reserve1.times(ratio),
     }
+  }
+
+  /**
+   * findReservesBySymbols search for pair data by the symbol pair
+   * 
+   * @param tokenSymbol token symbol string
+   * 
+   * @returns usd conversion rate
+   */
+  const findUSDRateBySymbol = (
+    tokenSymbol: string,
+    pairTotalReserves: Record<string, PairTotalReserves>,
+  ): BigNumber => {
+    let t = tokenSymbol
+    if (t === 'CSPR') {
+      t = 'WCSPR'
+    }
+
+    console.log('t', tokenSymbol, t)
+
+    if (t === 'USDC') {
+      const ratesUSDC = findReservesBySymbols(t, 'USDT', pairTotalReserves)
+
+      return new BigNumber(ratesUSDC.reserve0).div(ratesUSDC.reserve1).plus(1).div(2)
+    }
+
+    if (t === 'USDT') {
+      const ratesUSDT = findReservesBySymbols(t, 'USDC', pairTotalReserves)
+
+      return new BigNumber(ratesUSDT.reserve0).div(ratesUSDT.reserve1).plus(1).div(2)
+    }
+
+    const ratesUSDC = findReservesBySymbols(t, 'USDC', pairTotalReserves)
+    const ratesUSDT = findReservesBySymbols(t, 'USDT', pairTotalReserves)
+
+    console.log('ratesUSDC/T', ratesUSDC.reserve0.toString(), ratesUSDT.reserve0.toString())
+
+    return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
   }
 
   return (
