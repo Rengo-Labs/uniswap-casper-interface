@@ -107,7 +107,6 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       setConfirmModal(true);
 
-      await sleep(15000);
       await refreshAll();
       updateNotification({
         type: NotificationType.Success,

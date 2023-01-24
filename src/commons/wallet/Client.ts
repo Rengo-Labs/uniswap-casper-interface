@@ -213,14 +213,14 @@ export class Client {
    */  
   async signAndDeployWasm(
     wallet: Wallet,
-    wasm: any, 
+    wasm: ArrayBuffer, 
     args: RuntimeArgs, 
     gas: BigNumber, 
   ): Promise<[string, GetDeployResult]> {
     try {
       // Create the deploy item using wasm + args
       const deployItem = DeployUtil.ExecutableDeployItem.newModuleBytes(
-        new Uint8Array(wasm.wasmData.data),
+        new Uint8Array(wasm),
         args,
       )
 
