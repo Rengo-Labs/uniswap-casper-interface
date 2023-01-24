@@ -13,7 +13,7 @@ import {
 import { ReactComponent as Grapich } from '../../../assets/newIcons/graphics.svg';
 import { NewIcons } from '../NewIcons';
 
-export interface ISwapStadistics {
+export interface ISwapStatistics {
   id: number;
   token: any;
   price: number;
@@ -21,11 +21,11 @@ export interface ISwapStadistics {
   grafic: string;
 }
 
-interface ISwapStadisticsItemProps {
-  stadistic: ISwapStadistics;
+interface ISwapStatisticsItemProps {
+  stadistic: ISwapStatistics;
 }
 
-export const SwapStadisticsItem = ({ stadistic }: ISwapStadisticsItemProps) => {
+export const SwapStatisticsItem = ({ stadistic }: ISwapStatisticsItemProps) => {
   const { token, price, percent } = stadistic;
   return (
     <Wrapper>

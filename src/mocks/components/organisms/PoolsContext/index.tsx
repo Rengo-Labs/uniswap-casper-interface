@@ -23,7 +23,8 @@ export const getPoolList = async () => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
+      packageHash:"hash-95f1253782197e05e3d260e713a5828ada1ec98856e3908536263890d27163f0",
       liquidityUSD:"29.20",
       name:"WETH-CSX",
       oneYFees:"0",
@@ -42,7 +43,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -50,7 +52,8 @@ export const getPoolList = async () => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       name:"WETH-WISER",
       oneYFees:"0",
       reserve0:"0",
@@ -68,7 +71,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -76,7 +80,8 @@ export const getPoolList = async () => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       name:"WETH-CSPR",
       oneYFees:"0",
       reserve0:"0",
@@ -94,7 +99,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -102,7 +108,8 @@ export const getPoolList = async () => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       name:"WETH-SOL",
       oneYFees:"0",
       reserve0:"0",
@@ -120,7 +127,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -128,7 +136,8 @@ export const getPoolList = async () => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       name:"CSPR-DOT",
       oneYFees:"0",
       reserve0:"0",
@@ -146,7 +155,8 @@ export const getPoolList = async () => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     }
   ]
   return pairData
@@ -160,7 +170,8 @@ export const loadPoolDetailByUser = async (hash) => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       name:"WETH-WISER",
       oneYFees:"0",
       reserve0:"0",
@@ -178,7 +189,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"355.961767477",
@@ -186,7 +198,8 @@ export const loadPoolDetailByUser = async (hash) => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       liquidityUSD:"29.20",
       name:"WETH-CSX",
       oneYFees:"0",
@@ -205,7 +218,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -213,7 +227,8 @@ export const loadPoolDetailByUser = async (hash) => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       name:"WETH-CSPR",
       oneYFees:"0",
       reserve0:"0",
@@ -231,7 +246,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -239,7 +255,8 @@ export const loadPoolDetailByUser = async (hash) => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       name:"WETH-SOL",
       oneYFees:"0",
       reserve0:"0",
@@ -257,7 +274,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     },
     {
       allowance:"0",
@@ -265,7 +283,8 @@ export const loadPoolDetailByUser = async (hash) => {
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
       contract1:"bdcd8c9844cd2f98c81b3f98ce806f20c5a625f954d7b29bf70626fef060ff1f",
       fees24h:"0",
-      id:"c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      contractHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
+      packageHash:"hash-c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
       name:"CSPR-DOT",
       oneYFees:"0",
       reserve0:"0",
@@ -283,7 +302,8 @@ export const loadPoolDetailByUser = async (hash) => {
       totalReserve1:"6010121305.993522629",
       totalSupply:"1836368558.571696503",
       volume:"954.53904798872139073242",
-      volume7d:"954.54"
+      volume7d:"954.54",
+      decimals: 9,
     }
   ]
   return pairData

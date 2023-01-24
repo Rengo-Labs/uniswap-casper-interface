@@ -11,7 +11,15 @@ export const TestComponent = () => {
       exchangeRateB,
       firstReserve,
       secondReserve
-    } = await getLiquidityDetails({symbol: "TK1"} as any, {symbol: "TK2"} as any, 100, {symbol: "TK1"} as any, 0.005, 0.003)
+    } = await getLiquidityDetails(
+      {symbol: "TK1"} as any, 
+      {symbol: "TK2"} as any,
+      1,
+      2,
+      100, 
+      {symbol: "TK1"} as any, 
+      0.005, 
+      0.003)
     expect(tokensToTransfer).toBe("200.000000000")
     expect(exchangeRateA).toBe(2)
     expect(exchangeRateB).toBe(0.5)
@@ -23,7 +31,7 @@ export const TestComponent = () => {
     expect(result).toBe(true)
   }
   const checkRemoveLiquidity = async () => {
-    const result = await onRemoveLiquidity(100, {symbol: "TK1"} as any, {symbol: "TK2"} as any, 100, 200, 0.5)
+    const result = await onRemoveLiquidity(100, {symbol: "TK1"} as any, {symbol: "TK2"} as any, 100, 200, 0.5, 80)
 
     expect(result).toBe(true)
   }

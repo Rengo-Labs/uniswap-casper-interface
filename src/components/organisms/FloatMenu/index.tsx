@@ -7,7 +7,7 @@ import { ContainerCenterFM, ContainerFM, FavoritesTokensFM, FooterFM, HeaderFM, 
 
 export interface FloatMenuProps{
     tokens: Record<string, Token>,
-    onSelectToken: (x: Token) => void,
+    onSelectToken: (x: Token) => Promise<void>,
     onClick: () => void,
     excludedSymbols?: string[],
 }
