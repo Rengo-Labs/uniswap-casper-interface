@@ -856,8 +856,8 @@ export const ConfigContextWithReducer = ({
     const ratio = firstReserve0.div(reserve0)
 
     return {
-      reserve0: reserve0,
-      reserve1: reserve1,
+      reserve0: firstReserve0,
+      reserve1: reserve1.times(ratio),
     }
   }
 
