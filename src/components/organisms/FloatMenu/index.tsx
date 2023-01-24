@@ -90,7 +90,7 @@ const FloatMenu = ({
             <PopularTokenFM>Popular Tokens</PopularTokenFM>
           </PopularContainerFM>
           <FavoritesTokensFM>
-            {filteredTokens.map((t) => {
+            {filteredTokens.slice(0,4).map((t) => {
               return (
                 <LeTokenFM key={t.symbol} onClick={() => { onSelectToken(t) }}>
                   <LeTokenImageFM src={t.logoURI} />
