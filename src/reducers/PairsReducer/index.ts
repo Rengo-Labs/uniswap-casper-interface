@@ -36,7 +36,7 @@ export type PairData = {
 export type PairState = Record<string, PairData>
 
 const RAW_PAIRS: PairState = {
-  "CST-WETH": {
+  /*"CST-WETH": {
     name: "CST-WETH",
     contractHash: "hash-c4350dd69eea06fe6d579919c91d3aaa1d7dcdec9ba533ddc05658cef5875cc0",
     packageHash: "hash-dc13b188563da4a1afa67b441e77d045db8a71dba678b832dfb40b420d85bcd2",
@@ -59,11 +59,11 @@ const RAW_PAIRS: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
-  },
+  },*/
   "CST-WCSPR": {
     name: "CST-WCSPR",
-    contractHash: "hash-9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
-    packageHash: "hash-e6b4a934630aee279665c99dc2bf4219872b7178990cd7fee7634a0f1362b591",
+    contractHash: "hash-c4350dd69eea06fe6d579919c91d3aaa1d7dcdec9ba533ddc05658cef5875cc0",
+    packageHash: "hash-dc13b188563da4a1afa67b441e77d045db8a71dba678b832dfb40b420d85bcd2",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',

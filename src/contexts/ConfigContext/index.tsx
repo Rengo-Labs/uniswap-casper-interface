@@ -584,6 +584,8 @@ export const ConfigContextWithReducer = ({
         }
       }
 
+      console.log('pairTotalReserves', pairTotalReserves)
+
       await loadPairsUSD(pairTotalReserves)
     } catch (err) {
       log.error('loadPairs', err.message);
@@ -596,7 +598,7 @@ export const ConfigContextWithReducer = ({
       const tokenPrices: Record<string, string> = {}
 
       for (const t of tokens) {
-        const priceUSD = findUSDRateBySymbol(t.symbolPair, pairTotalReserves).toFixed(2)
+        const priceUSD = findUSDRateBySymbol(t.symbolPair, pairTotalReserves).toString()
 
         tokenDispatch({
           type: TokenActions.LOAD_PRICE_USD,
@@ -608,8 +610,6 @@ export const ConfigContextWithReducer = ({
 
         tokenPrices[t.symbol] = priceUSD
       }
-
-      console.log('tokenPrices', tokenPrices)
 
       const pairs = Object.values(pairState)
 
@@ -645,7 +645,6 @@ export const ConfigContextWithReducer = ({
               pair.contractHash,
             )
             .then((response) => {
-              console.log('allowance', pair.name, response)
               pairDispatch({
                 type: PairActions.ADD_ALLOWANCE_TO_PAIR,
                 payload: {
@@ -662,7 +661,6 @@ export const ConfigContextWithReducer = ({
               pair.contractHash,
             )
             .then((response) => {
-              console.log('balance', pair.name, response)
               pairDispatch({
                 type: PairActions.ADD_BALANCE_TO_PAIR,
                 payload: {
@@ -745,7 +743,6 @@ export const ConfigContextWithReducer = ({
       return true;
     } catch (err) {
       setProgressModal(false);
-      console.log('onIncreaseAllow');
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
@@ -884,7 +881,7 @@ export const ConfigContextWithReducer = ({
     let reserve1 = new BigNumber(1)
     for (let i = 1; i < path.length; i++) {
       const pair = overrideReserves[path[i].label.name] ?? path[i].label
-      console.log('pair', pair)
+      //console.log('pair', pair)
       if (path[i-1].id == tokenASymbol) {
         reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1))
         reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0))
@@ -921,8 +918,6 @@ export const ConfigContextWithReducer = ({
     if (t === 'CSPR') {
       t = 'WCSPR'
     }
-
-    console.log('t', tokenSymbol, t)
 
     if (t === 'USDC') {
       const ratesUSDC = findReservesBySymbols(t, 'USDT', pairTotalReserves)
