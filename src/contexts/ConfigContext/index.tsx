@@ -282,7 +282,7 @@ export const ConfigContextWithReducer = ({
                 token.contractHash
               )
               .then((response) => {
-                console.log('allowance', token, response)
+                //console.log('allowance', token, response)
                 tokenDispatch({
                   type: TokenActions.LOAD_ALLOWANCE,
                   payload: {
@@ -299,7 +299,7 @@ export const ConfigContextWithReducer = ({
                 token.contractHash
               )
               .then((response) => {
-                console.log('balance', token, response)
+                //console.log('balance', token, response)
                 tokenDispatch({
                   type: TokenActions.LOAD_BALANCE,
                   payload: {
@@ -335,6 +335,7 @@ export const ConfigContextWithReducer = ({
     await loadPairs();
     await loadPairsUserData(wallet, wallet?.isConnected);
     await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+    await getTVLandVolume()
   }
 
   async function onConnectWallet(
@@ -426,7 +427,7 @@ export const ConfigContextWithReducer = ({
     };
 
     fn().catch((e) => log.error(`UPDATE_TOKENS error": ${e}`));
-  }, [state.wallet]);
+  }, []);
 
   useEffect(() => {
     window.addEventListener('signer:connected', (msg) => {
@@ -881,7 +882,6 @@ export const ConfigContextWithReducer = ({
     let reserve1 = new BigNumber(1)
     for (let i = 1; i < path.length; i++) {
       const pair = overrideReserves[path[i].label.name] ?? path[i].label
-      //console.log('pair', pair)
       if (path[i-1].id == tokenASymbol) {
         reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1))
         reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0))
@@ -934,7 +934,7 @@ export const ConfigContextWithReducer = ({
     const ratesUSDC = findReservesBySymbols(t, 'USDC', pairTotalReserves)
     const ratesUSDT = findReservesBySymbols(t, 'USDT', pairTotalReserves)
 
-    console.log('ratesUSDC/T', ratesUSDC.reserve0.toString(), ratesUSDT.reserve0.toString())
+    // console.log('ratesUSDC/T', ratesUSDC.reserve0.toString(), ratesUSDT.reserve0.toString())
 
     return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
   }

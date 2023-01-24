@@ -345,7 +345,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
               .plus(new BigNumber(convertUIStringToBigNumber(oldState.totalReserve1)).times(action.payload.token1Price))
               .toString()
 
-            console.log('action.payload', action.payload, oldState.totalReserve0, oldState.totalReserve1)
+            // console.log('action.payload', action.payload, oldState.totalReserve0, oldState.totalReserve1)
 
             return {
               ...state,
