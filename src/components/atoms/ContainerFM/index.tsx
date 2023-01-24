@@ -12,7 +12,7 @@ const Container = styled.div`
     backdrop-filter: blur(5px);
     background-color: rgba(0,0,0,0.7);
     opacity: 1;
-    z-index: 1;
+    z-index: 10;
 `
 export const ContainerFM = ({children}) => {
   return (
