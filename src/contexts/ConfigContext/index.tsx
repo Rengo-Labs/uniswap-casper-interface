@@ -247,15 +247,38 @@ export const ConfigContextWithReducer = ({
         };
     }
 
-    const { balance, mainPurse } = await getStatus(w);
-    debounceConnect = false;
-    return {
-      wallet: w,
-      balance,
-      mainPurse,
-      walletAddress: w.accountHashString,
-      isConnected: w.isConnected,
-    };
+    try {
+      const { balance, mainPurse } = await getStatus(w);
+      
+      debounceConnect = false;
+
+      return {
+        wallet: w,
+        balance,
+        mainPurse,
+        walletAddress: w.accountHashString,
+        isConnected: w.isConnected,
+      };
+    } catch {
+      updateNotification({
+        type: NotificationType.Error,
+        title: 'No main purse detected',
+        subtitle: 'Add CSPR to the wallet before proceeding.',
+        show: true,
+        chargerBar: false
+      });
+      
+      debounceConnect = false;
+
+      return {
+        wallet: w,
+        balance: new BigNumber(0),
+        mainPurse,
+        walletAddress: w.accountHashString,
+        isConnected: w.isConnected,
+      };
+    }
+    
   }
 
   async function updateBalances(

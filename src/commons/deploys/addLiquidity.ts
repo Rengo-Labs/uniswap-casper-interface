@@ -39,7 +39,7 @@ import {
  */
 export enum AddLiquidityEntryPoint {  
   ADD_LIQUIDITY_CSPR = "add_liquidity_cspr",
-  ADD_LIQUIDITY_JS_CLIENT = "add_liquidity_js_client",
+  ADD_LIQUIDITY = "add_liquidity",
 }
 
 /**
@@ -54,7 +54,7 @@ export enum AddLiquidityEntryPoint {
   if (tokenASymbol === 'CSPR' || tokenBSymbol === 'CSPR') {
     return AddLiquidityEntryPoint.ADD_LIQUIDITY_CSPR
   } else if (tokenASymbol !== 'CSPR' && tokenBSymbol !== 'CSPR') {
-    return AddLiquidityEntryPoint.ADD_LIQUIDITY_JS_CLIENT
+    return AddLiquidityEntryPoint.ADD_LIQUIDITY
   }
 }
 
@@ -107,10 +107,10 @@ export enum AddLiquidityEntryPoint {
           await apiClient.getDeployWasmData(),
           RuntimeArgs.fromMap({
             token: new CLKey(token),
-            amount_cspr_desired: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
-            amount_token_desired: CLValueBuilder.u256(new BigNumber(amountTokenDesired).toFixed(0)),
-            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(1 - slippage).toFixed(0)),
-            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0)),
+            amount_cspr_desired: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0, BigNumber.ROUND_UP)),
+            amount_token_desired: CLValueBuilder.u256(new BigNumber(amountTokenDesired).toFixed(0, BigNumber.ROUND_UP)),
+            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             pair: new CLOption(Some(new CLKey(token) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
@@ -123,14 +123,10 @@ export enum AddLiquidityEntryPoint {
                 Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
               )
             ),
-            purse: CLValueBuilder.uref(
-              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-              AccessRights.READ_ADD_WRITE
-            ),
           }),
           new BigNumber(gasFee * 10**9),
         )
-      case AddLiquidityEntryPoint.ADD_LIQUIDITY_JS_CLIENT:
+      case AddLiquidityEntryPoint.ADD_LIQUIDITY:
         // When adding token and token
         const tokenAContract = new CLByteArray(
           Uint8Array.from(Buffer.from(tokenA.packageHash.slice(5), "hex"))
@@ -140,20 +136,27 @@ export enum AddLiquidityEntryPoint {
           Uint8Array.from(Buffer.from(tokenB.packageHash.slice(5), "hex"))
         )
         
-        return await casperClient.signAndDeployContractCall(
+        return await casperClient.signAndDeployWasm(
           wallet,
-          ROUTER_CONTRACT_HASH, 
-          entryPoint,
+          await apiClient.getDeployWasmData(),
           RuntimeArgs.fromMap({
             token_a: new CLKey(tokenAContract),
             token_b: new CLKey(tokenBContract),
-            amount_a_desired: CLValueBuilder.u256(new BigNumber(amountADesired).toFixed(0)),
-            amount_b_desired: CLValueBuilder.u256(new BigNumber(amountBDesired).toFixed(0)),
-            amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(1 - slippage).toFixed(0)),
-            amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(1 - slippage).toFixed(0)),
+            amount_a_desired: CLValueBuilder.u256(new BigNumber(amountADesired).toFixed(0, BigNumber.ROUND_UP)),
+            amount_b_desired: CLValueBuilder.u256(new BigNumber(amountBDesired).toFixed(0, BigNumber.ROUND_UP)),
+            amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             pair: new CLOption(Some(new CLKey(tokenBContract) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
+            
+            // Deploy wasm params
+            entrypoint: CLValueBuilder.string(entryPoint),
+            package_hash: new CLKey(
+              new CLByteArray(
+                Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
+              )
+            ),
           }),
           new BigNumber(gasFee * 10**9),
         )
