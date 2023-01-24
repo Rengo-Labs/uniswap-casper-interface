@@ -122,8 +122,10 @@ const LiquidityNewModule = () => {
   }, [isConnected, pairState]);
 
   useEffect(() => {
-    progressBar(async () => lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB))
-  }, [lastChanged, amountSwapTokenA, amountSwapTokenB]);
+      progressBar(async () => {lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
+      await refreshAll()
+    })
+  }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
 
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)

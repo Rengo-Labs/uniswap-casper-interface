@@ -57,7 +57,7 @@ export const ProgressBarContextWithReducer = ({ children }: { children: ReactNod
   const clearProgressBar = () => {
     progressTimer.reset()
   }
-
+  
   return (
     <ProgressBarProviderContext.Provider value={{
       progressBar: progressBarExec,

@@ -354,10 +354,12 @@ export const ConfigContextWithReducer = ({
     }
   }
 
-  async function refresh(wallet: Wallet) {
+  async function refresh(wallet?: Wallet) {
     await loadPairs();
-    await loadPairsUserData(wallet, wallet?.isConnected);
-    await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+    if (wallet) {
+      await loadPairsUserData(wallet, wallet?.isConnected);
+      await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+    }
     await getTVLandVolume()
   }
 
@@ -438,8 +440,7 @@ export const ConfigContextWithReducer = ({
 
   useEffect(() => {
     const fn = async () => {
-      await loadPairs();
-      await getTVLandVolume();
+      refresh()
       /*const data = await apiClient.getTokenList();
       const tokens = tokensToObject(data.tokens);
       //console.log('TOKENS', tokens)
