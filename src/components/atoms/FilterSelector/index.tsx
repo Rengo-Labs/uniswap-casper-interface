@@ -8,7 +8,6 @@ import {
 } from "./styles";
 import {BsFilter} from "react-icons/bs";
 import {Header} from "../../molecules/POCTHead";
-import {TableInstance} from "react-table";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {UpdatableCircle} from "../UpdatableCircle";
@@ -19,18 +18,18 @@ export const FilterSelector = ({
                                getTableBodyProps,
                                rows,
                                prepareRow,
-                           }: TableInstance<any>) => {
+                           }: any) => {
     const [isOpen, setIsOpen] = useState(false);
     const toggling = () => setIsOpen(!isOpen);
 
-    const {refreshAll} = useContext(ConfigProviderContext)
+    const {refreshAll, currentQuery} = useContext(ConfigProviderContext)
     const {progressBar} = useContext(ProgressBarProviderContext)
 
     useEffect(() => {
       progressBar(async () => {
         await refreshAll()
       })
-    }, [])
+    }, [currentQuery])
 
     return (
         <DropDownContainer>

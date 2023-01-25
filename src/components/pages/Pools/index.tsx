@@ -23,7 +23,9 @@ export const Pools = () => {
         poolColumns,
         gralData, 
         getPoolList,
-        tableInstance
+        tableInstance,
+        setCurrentQuery,
+        currentQuery
     } = React.useContext(ConfigProviderContext)
 
     return (
@@ -34,7 +36,7 @@ export const Pools = () => {
                     <WrappedPoolTitle>
                         {
                             tableInstance &&
-                            <POCSearch3 tableInstance={tableInstance}/>
+                            <POCSearch3 tableInstance={tableInstance} setQuery={setCurrentQuery} />
                         }
 
                         <TitleBoxWrapper><TitleBox>TVL: $ {gralData.tvl}</TitleBox></TitleBoxWrapper>

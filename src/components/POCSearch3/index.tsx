@@ -8,7 +8,7 @@ import {PoolInputFilter} from "../atoms";
 import {PairData} from "../../reducers/PairsReducer";
 import {TableInstance} from "../organisms/PoolModule";
 
-export const POCSearch3 = ({ tableInstance }) => {
+export const POCSearch3 = ({ tableInstance, setQuery }) => {
 
     const {
       preGlobalFilteredRows,
@@ -20,12 +20,17 @@ export const POCSearch3 = ({ tableInstance }) => {
     const [value, setValue] = React.useState(globalFilter)
     const onChange = useAsyncDebounce(value => {
         setGlobalFilter(value || "")
-    }, 300)
+    }, 0)
+
+    const updateFilter = (v) => {
+        setQuery(v)
+        onChange(v)
+    }
 
     return (
         <PoolSeachButtonStyled>
             <IconStyled />
-            <PoolInputFilter value={value} setValue={setValue} count={count} onChange={onChange} />
+            <PoolInputFilter value={value} setValue={setValue} count={count} onChange={updateFilter} />
         </PoolSeachButtonStyled>
     )
 }

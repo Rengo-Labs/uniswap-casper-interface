@@ -1,5 +1,12 @@
 import React, {useEffect} from 'react'
-import { useTable, useSortBy, useGlobalFilter, UseTableInstanceProps, UseGlobalFiltersInstanceProps, UseGlobalFiltersState } from 'react-table'
+import {
+    useTable,
+    useSortBy,
+    useGlobalFilter,
+    UseTableInstanceProps,
+    UseGlobalFiltersInstanceProps,
+    UseGlobalFiltersState, useFilters
+} from 'react-table'
 
 import {
     PoolModulesStyled, MenuTitleStyled, MenuToggleStyled, MenuStyled, PoolMenu
@@ -20,9 +27,9 @@ export interface TableInstance<D extends object> extends UseTableInstanceProps<D
 
 export const PoolModule = ({columns, data}: PoolModuleProps) => {
     const options = ["Time basis: 1D", "Time basis: 3D", "Time basis: 7D"]
-    const { setStaked, setTableInstance} = React.useContext(ConfigProviderContext)
+    const { setStaked, setTableInstance, currentQuery, setCurrentQuery} = React.useContext(ConfigProviderContext)
 
-    const tableInstance = useTable<PairData>({columns, data}, useGlobalFilter, useSortBy)
+    const tableInstance = useTable<PairData>({columns, data}, useFilters, useGlobalFilter, useSortBy)
     const {
         preGlobalFilteredRows,
         setGlobalFilter,
@@ -42,9 +49,9 @@ export const PoolModule = ({columns, data}: PoolModuleProps) => {
                         <ToggleBox setStaked={setStaked}/>
                     </MenuToggleStyled>
                     <ItemSelector options={options}/>
-                    <FilterSelector {...tableInstance}/>
+                    <FilterSelector {...tableInstance} setGlobalFilter={setGlobalFilter}/>
                     <POCSearch preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter}
-                               setGlobalFilter={setGlobalFilter}/>
+                               setGlobalFilter={setGlobalFilter} setQuery={setCurrentQuery}/>
                 </PoolMenu>
             </MenuStyled>
             <POCTable {...tableInstance} />

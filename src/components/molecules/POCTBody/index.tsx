@@ -18,7 +18,7 @@ export const POCTBody = ({
     rows, 
     prepareRow 
 }: POCTBodyProps) => {
-    const { isStaked, filter, isMobile } = React.useContext(ConfigProviderContext)
+    const { isStaked, filter, isMobile, filterDataReload } = React.useContext(ConfigProviderContext)
     const {setRemovingPopup} = useContext(LiquidityProviderContext)
 
     return (
@@ -28,7 +28,8 @@ export const POCTBody = ({
                     // Prepare the row for display
                     prepareRow(row)
 
-                    const r = !isStaked || (filter(isStaked, row));
+                    //TODO Agregar filtro para filtas.
+                    const r = (!isStaked || (filter(isStaked, row))) && filterDataReload(row);
 
                     return r && <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} onRemovingPopupListener={setRemovingPopup} isMobile={isMobile} />
                 })

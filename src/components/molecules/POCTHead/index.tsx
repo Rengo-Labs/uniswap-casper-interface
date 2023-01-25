@@ -23,14 +23,14 @@ export const Header = ({headerGroup, header } : any) => {
 }
 
 const HeaderIcon = () => {
-  const {refreshAll} = useContext(ConfigProviderContext)
+  const {refreshAll, currentQuery} = useContext(ConfigProviderContext)
   const {progressBar} = useContext(ProgressBarProviderContext)
 
   useEffect(() => {
     progressBar(async () => {
       await refreshAll()
     })
-  }, [])
+  }, [currentQuery])
 
   const refreshPrices = async () => {
     await refreshAll()
