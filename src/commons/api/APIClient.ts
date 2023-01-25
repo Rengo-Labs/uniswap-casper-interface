@@ -93,13 +93,18 @@ export class APIClient {
       success: true,
     }
   }
+
   /**
    * Get the latest deploy wasm data
    *
    * @returns deploy wasm for special purse functions
    */
-  async getDeployWasmData(): Promise<DeployWasmDataResponse> {
-    const response = await axios.get(`${this._baseURL}/getWasmData`);
+  async getDeployWasmData(): Promise<ArrayBuffer> {
+    const response = await axios.get(`/session-code-router.wasm`, {
+      responseType: 'arraybuffer',
+    });
+
+    console.log('getDeployWasmData', response.data)
 
     return response.data
   }  

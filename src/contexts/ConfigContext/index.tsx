@@ -255,15 +255,38 @@ export const ConfigContextWithReducer = ({
         };
     }
 
-    const { balance, mainPurse } = await getStatus(w);
-    debounceConnect = false;
-    return {
-      wallet: w,
-      balance,
-      mainPurse,
-      walletAddress: w.accountHashString,
-      isConnected: w.isConnected,
-    };
+    try {
+      const { balance, mainPurse } = await getStatus(w);
+      
+      debounceConnect = false;
+
+      return {
+        wallet: w,
+        balance,
+        mainPurse,
+        walletAddress: w.accountHashString,
+        isConnected: w.isConnected,
+      };
+    } catch {
+      updateNotification({
+        type: NotificationType.Error,
+        title: 'No main purse detected',
+        subtitle: 'Add CSPR to the wallet before proceeding.',
+        show: true,
+        chargerBar: false
+      });
+      
+      debounceConnect = false;
+
+      return {
+        wallet: w,
+        balance: new BigNumber(0),
+        mainPurse,
+        walletAddress: w.accountHashString,
+        isConnected: w.isConnected,
+      };
+    }
+    
   }
 
   async function updateBalances(
@@ -339,10 +362,12 @@ export const ConfigContextWithReducer = ({
     }
   }
 
-  async function refresh(wallet: Wallet) {
+  async function refresh(wallet?: Wallet) {
     await loadPairs();
-    await loadPairsUserData(wallet, wallet?.isConnected);
-    await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+    if (wallet) {
+      await loadPairsUserData(wallet, wallet?.isConnected);
+      await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+    }
     await getTVLandVolume()
   }
 
@@ -435,8 +460,7 @@ export const ConfigContextWithReducer = ({
 
   useEffect(() => {
     const fn = async () => {
-      await loadPairs();
-      await getTVLandVolume();
+      refresh()
       /*const data = await apiClient.getTokenList();
       const tokens = tokensToObject(data.tokens);
       //console.log('TOKENS', tokens)

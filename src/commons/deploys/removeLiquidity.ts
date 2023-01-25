@@ -34,7 +34,7 @@ import {
  */
 export enum RemoveLiquidityEntryPoint {  
   REMOVE_LIQUIDITY_CSPR = "remove_liquidity_cspr",
-  REMOVE_LIQUIDITY_JS_CLIENT = "remove_liquidity_js_client",
+  REMOVE_LIQUIDITY = "remove_liquidity",
 }
 
 /**
@@ -49,7 +49,7 @@ export enum RemoveLiquidityEntryPoint {
   if (tokenASymbol === 'CSPR' || tokenBSymbol === 'CSPR') {
     return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_CSPR
   } else if (tokenASymbol !== 'CSPR' && tokenBSymbol !== 'CSPR') {
-    return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_JS_CLIENT
+    return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY
   }
 }
 
@@ -106,16 +106,16 @@ export enum RemoveLiquidityEntryPoint {
           await apiClient.getDeployWasmData(),
           RuntimeArgs.fromMap({
             token: new CLKey(token),
-            liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0)),            
-            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(.96 - slippage).toFixed(0)),
-            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(.96 - slippage).toFixed(0)),
+            liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0, BigNumber.ROUND_UP)),
+            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
 
             // Deploy wasm params
             //amount: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
-            destination_entrypoint: CLValueBuilder.string(entryPoint),
-            router_hash: new CLKey(
+            entrypoint: CLValueBuilder.string(entryPoint),
+            package_hash: new CLKey(
               new CLByteArray(
                 Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
               )
@@ -123,7 +123,7 @@ export enum RemoveLiquidityEntryPoint {
           }),
           new BigNumber(gasFee * 10**9),
         )
-      case RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_JS_CLIENT:
+      case RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY:
         // When adding token and token
         const tokenAContract = new CLByteArray(
           Uint8Array.from(Buffer.from(tokenA.packageHash.slice(5), "hex"))
@@ -133,18 +133,25 @@ export enum RemoveLiquidityEntryPoint {
           Uint8Array.from(Buffer.from(tokenB.packageHash.slice(5), "hex"))
         )
         
-        return await casperClient.signAndDeployContractCall(
+        return await casperClient.signAndDeployWasm(
           wallet,
-          ROUTER_CONTRACT_HASH, 
-          entryPoint,
+          await apiClient.getDeployWasmData(),
           RuntimeArgs.fromMap({
             token_a: new CLKey(tokenAContract),
             token_b: new CLKey(tokenBContract),
-            liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0)),
-            amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(.96 - slippage).toFixed(0)),
-            amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(.96 - slippage).toFixed(0)),
+            liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0, BigNumber.ROUND_UP)),
+            amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
+            
+            // Deploy wasm params
+            entrypoint: CLValueBuilder.string(entryPoint),
+            package_hash: new CLKey(
+              new CLByteArray(
+                Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
+              )
+            ),
           }),
           new BigNumber(gasFee * 10**9),
         )

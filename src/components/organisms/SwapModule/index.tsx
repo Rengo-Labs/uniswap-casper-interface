@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { ConfigProviderContext } from '../../../contexts/ConfigContext';
 import {
   ActionContainerNSM,
@@ -107,9 +107,12 @@ const SwapNewModule = () => {
     );
   }, [isConnected, pairState]);
 
-  useCallback((amountSwapTokenA, amountSwapTokenB) => {
-    progressBar(async () => lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB))
-  }, [amountSwapTokenA, amountSwapTokenB]);
+  useEffect(() => {
+    progressBar(async () => {
+      lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
+      await refreshAll()
+    })
+  }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
 
   async function onConnect() {
     onConnectWallet();

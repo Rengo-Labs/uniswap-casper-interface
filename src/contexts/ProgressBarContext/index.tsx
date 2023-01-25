@@ -58,7 +58,6 @@ export const ProgressBarContextWithReducer = ({ children }: { children: ReactNod
   const clearProgressBar = () => {
     progressTimer.reset()
   }
-
   const stopProgressBar = () => {
     progressTimer?.stop()
   }
