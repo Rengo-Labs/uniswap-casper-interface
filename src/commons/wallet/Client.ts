@@ -68,6 +68,17 @@ export class Client {
   }
 
   /**
+   * Async attempt to retrieve the state root hash
+   * 
+   * @returns the state root hash or throw error
+   */
+  async getStateRootHash(): Promise<string> {
+    const casperService = this.casperClient.nodeClient
+    
+    return casperService.getStateRootHash();
+  }
+
+  /**
    * Async attempt to retrieve main purse
    * 
    * @param wallet wallet whose public key is being used
@@ -78,7 +89,7 @@ export class Client {
     try {
       const casperService = this.casperClient.nodeClient
 
-      const stateRootHash = await casperService.getStateRootHash();
+      const stateRootHash = await this.getStateRootHash()
       const result = await casperService.getBlockState(
           stateRootHash,
           wallet.accountHashString,
@@ -202,14 +213,14 @@ export class Client {
    */  
   async signAndDeployWasm(
     wallet: Wallet,
-    wasm: any, 
+    wasm: ArrayBuffer, 
     args: RuntimeArgs, 
     gas: BigNumber, 
   ): Promise<[string, GetDeployResult]> {
     try {
       // Create the deploy item using wasm + args
       const deployItem = DeployUtil.ExecutableDeployItem.newModuleBytes(
-        new Uint8Array(wasm.wasmData.data),
+        new Uint8Array(wasm),
         args,
       )
 

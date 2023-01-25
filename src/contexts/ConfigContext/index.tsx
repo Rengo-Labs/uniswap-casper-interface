@@ -51,7 +51,8 @@ import { ConfigState } from '../../reducers/ConfigReducers';
 import { Row } from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
-import {ERROR_BLOCKCHAIN} from "../../constant/erros";
+import { ERROR_BLOCKCHAIN } from "../../constant/erros";
+import { getPath } from '../../commons/calculations'
 
 type MaybeWallet = Wallet | undefined;
 
@@ -82,7 +83,6 @@ export interface ConfigContext {
   isStaked?: boolean;
   setStaked?: (v: boolean) => void;
   filter?: (onlyStaked: boolean, row: Row<PairData>) => any;
-  getContractHashAgainstPackageHash?;
   gasPriceSelectedForSwapping?: number;
   gasPriceSelectedForLiquidity?: number;
   refreshAll?: () => Promise<void>;
@@ -90,13 +90,19 @@ export interface ConfigContext {
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
   calculateUSDtokens: (t0, t1, amount0, amount1) => any[];
+  findReservesBySymbols: (tokenASymbol: string, tokenBSymbol: string) => PairReserves | undefined;
+}
+
+export interface PairReserves {
+  reserve0: BigNumber.Value
+  reserve1: BigNumber.Value
 }
 
 export const ConfigProviderContext = createContext<ConfigContext>({} as any);
 
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
-export const apiClient = new APIClient(BASE_URL);
+export const apiClient = new APIClient(BASE_URL, casperClient);
 
 const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -121,63 +127,10 @@ export type StatusResponseType = {
  * @returns the balance and make purse uref
  */
 export async function getStatus(wallet: Wallet): Promise<StatusResponseType> {
-  const mainPurse = await casperClient.getMainPurse(wallet);
   const balance = await casperClient.getBalance(wallet);
+  const mainPurse = await casperClient.getMainPurse(wallet);
+
   return { balance, mainPurse };
-}
-
-/**
- * Convert Token array to Token Record
- *
- * @param tokens an array of tokens 
- * @param listTokens an array of tokens to merge
- * @returns a Record of tokens indexed by symbol
- */
-function tokensToObject(tokens: Record<string, Token>, listTokens: Token[]): Record<string, Token> {
-  return listTokens.reduce((acc, token) => {
-    return {
-      ...acc,
-      [token.symbol]: {
-        ...tokens[token.symbol],
-        chainId: token.chainId,
-        contractHash: token.contractHash,
-        decimals: token.decimals,
-        packageHash: token.packageHash,
-        amount: '0.0000',
-        symbolPair: token.symbol,
-      },
-    };
-  }, {});
-}
-
-async function allowanceAgainstOwnerAndSpenderPairContract(
-  accountHashStr: string,
-  pairId: string
-) {
-  try {
-    const res = await apiClient.getAllowanceAgainstOwnerAndSpenderPairContract(
-      accountHashStr,
-      `hash-${pairId}`
-    );
-    return res.allowance;
-  } catch (err) {
-    log.error(`allowanceAgainstOwnerAndSpenderPairContract error: ${err}`);
-  }
-}
-
-async function liquidityAgainstUserAndPair(
-  accountHashStr: string,
-  pairId: string
-) {
-  try {
-    const res = await apiClient.getLiquidityAgainstUserAndPair(
-      accountHashStr,
-      `hash-${pairId}`
-    );
-    return res.liquidity;
-  } catch (err) {
-    log.error(`liquidityAgainstUserAndPair error: ${err}`);
-  }
 }
 
 export const ConfigContextWithReducer = ({
@@ -190,8 +143,11 @@ export const ConfigContextWithReducer = ({
     TokenReducer,
     initialTokenState
   );
-  const [pairState, pairDispatch] = useReducer(PairsReducer, initialPairsState);
-  const { tokens, firstTokenSelected, secondTokenSelected } = tokenState;
+  const [pairState, pairDispatch] = useReducer(
+    PairsReducer,
+    initialPairsState
+  );
+  const { tokens } = tokenState;
   const [progressModal, setProgressModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
   const columns = getColumns();
@@ -200,9 +156,7 @@ export const ConfigContextWithReducer = ({
   const [isStaked, setStaked] = useState(false);
   const [linkExplorer, setLinkExplorer] = useState('');
   const { updateNotification, dismissNotification } = notificationStore();
-
   const [showConnectionPopup, setShowConnectionPopup] = useState(false);
-
   const [requestConnectWallet, setRequestConnectWallet] = useState(0);
 
   let debounceConnect = false;
@@ -295,7 +249,7 @@ export const ConfigContextWithReducer = ({
 
     try {
       const { balance, mainPurse } = await getStatus(w);
-
+      
       debounceConnect = false;
 
       return {
@@ -305,11 +259,26 @@ export const ConfigContextWithReducer = ({
         walletAddress: w.accountHashString,
         isConnected: w.isConnected,
       };
-    } catch (e) {
-
+    } catch {
+      updateNotification({
+        type: NotificationType.Error,
+        title: 'No main purse detected',
+        subtitle: 'Add CSPR to the wallet before proceeding.',
+        show: true,
+        chargerBar: false
+      });
+      
       debounceConnect = false;
-      throw new Error('main purse does not exist')
+
+      return {
+        wallet: w,
+        balance: new BigNumber(0),
+        mainPurse,
+        walletAddress: w.accountHashString,
+        isConnected: w.isConnected,
+      };
     }
+    
   }
 
   async function updateBalances(
@@ -331,35 +300,35 @@ export const ConfigContextWithReducer = ({
         if (tokens[x].contractHash) {
           return Promise.all([
             apiClient
-              .getAllowanceAgainstOwnerAndSpender(
-                wallet.accountHashString,
+              .getERC20Allowance(
+                wallet,
                 token.contractHash
               )
               .then((response) => {
-                //console.log('allowance', token, response.allowance)
+                //console.log('allowance', token, response)
                 tokenDispatch({
                   type: TokenActions.LOAD_ALLOWANCE,
                   payload: {
                     name: x,
                     allowance: convertBigNumberToUIString(
-                      new BigNumber(response.allowance)
+                      new BigNumber(response)
                     ),
                   },
                 });
               }),
             apiClient
-              .getBalanceAgainstUser(
-                wallet.accountHashString,
+              .getERC20Balance(
+                wallet,
                 token.contractHash
               )
               .then((response) => {
-                //console.log('balance', response.balance)
+                //console.log('balance', token, response)
                 tokenDispatch({
                   type: TokenActions.LOAD_BALANCE,
                   payload: {
                     name: x,
                     amount: convertBigNumberToUIString(
-                      new BigNumber(response.balance)
+                      new BigNumber(response)
                     ),
                   },
                 });
@@ -385,10 +354,13 @@ export const ConfigContextWithReducer = ({
     }
   }
 
-  async function refresh(wallet: Wallet) {
-    await fillPairs(wallet, wallet?.isConnected);
-    await fillPairDetail(wallet, wallet?.isConnected);
-    await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+  async function refresh(wallet?: Wallet) {
+    await loadPairs();
+    if (wallet) {
+      await loadPairsUserData(wallet, wallet?.isConnected);
+      await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+    }
+    await getTVLandVolume()
   }
 
   async function onConnectWallet(
@@ -468,15 +440,14 @@ export const ConfigContextWithReducer = ({
 
   useEffect(() => {
     const fn = async () => {
-      await loadPairs();
-      await getTVLandVolume();
-      const data = await apiClient.getTokenList();
-      const tokens = tokensToObject(tokenState.tokens, data.tokens);
+      refresh()
+      /*const data = await apiClient.getTokenList();
+      const tokens = tokensToObject(data.tokens);
       //console.log('TOKENS', tokens)
       tokenDispatch({
         type: TokenActions.UPDATE_TOKENS,
         payload: { tokens } as any,
-      });
+      });*/
     };
 
     fn().catch((e) => log.error(`UPDATE_TOKENS error": ${e}`));
@@ -581,19 +552,6 @@ export const ConfigContextWithReducer = ({
     });
   };
 
-  const getContractHashAgainstPackageHash = async (pairId) => {
-    const result = await axios.post(
-      `${BASE_URL}/getContractHashAgainstPackageHash`,
-      { packageHash: pairId }
-    );
-
-    if (result.data.success) {
-      return result.data['Data'].contractHash;
-    } else {
-      return null;
-    }
-  };
-
   const filter = (onlyStaked: boolean, row: Row<PairData>): any => {
     if (onlyStaked) {
       return parseFloat(row.original.balance) > 0;
@@ -602,70 +560,101 @@ export const ConfigContextWithReducer = ({
     return row;
   };
 
+  interface PairTotalReserves {
+    totalReserve0: BigNumber.Value,
+    totalReserve1: BigNumber.Value,
+  }
+
   async function loadPairs(): Promise<void> {
     try {
-      const pairListResponse = await apiClient.getPairList();
-      pairListResponse.pairList.map((pl) => {
-        const token0Decimals = tokenState.tokens[pl.token0.symbol].decimals;
-        const token1Decimals = tokenState.tokens[pl.token1.symbol].decimals;
+      const pairs = Object.values(pairState)
+      const pairTotalReserves: Record<string, PairTotalReserves> = {}
+
+      for (const pl of pairs) {
+        const pairDataResponse = await apiClient.getPairData(pl.contractHash)
+
+        const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
+        const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
         const reserve0 = convertBigNumberToUIString(
-          new BigNumber(pl.reserve0),
+          new BigNumber(pairDataResponse.reserve0),
           token0Decimals
         );
         const reserve1 = convertBigNumberToUIString(
-          new BigNumber(pl.reserve1),
+          new BigNumber(pairDataResponse.reserve1),
           token1Decimals
         );
 
         pairDispatch({
           type: PairActions.LOAD_PAIR,
           payload: {
-            name: `${pl.token0.symbol}-${pl.token1.symbol}`,
-            token0Symbol: pl.token0.symbol,
-            token1Symbol: pl.token1.symbol,
-            totalLiquidityUSD: new BigNumber(reserve0)
-              .times(pl.token0Price)
-              .plus(new BigNumber(reserve1).times(pl.token1Price))
-              .toString(),
+            name: pl.name,
+            token0Symbol: pl.token0Symbol,
+            token1Symbol: pl.token1Symbol,
             volume7d: new BigNumber(
-              convertBigNumberToUIString(new BigNumber(pl.volumeUSD), 9)
+              convertBigNumberToUIString(new BigNumber(0), 9)
             ).toFixed(2),
             fees24h: '0',
             oneYFees: '0',
-            volume: convertBigNumberToUIString(new BigNumber(pl.volumeUSD), 9),
+            volume: convertBigNumberToUIString(new BigNumber(0), 9),
             totalReserve0: reserve0,
             totalReserve1: reserve1,
             totalSupply: convertBigNumberToUIString(
-              new BigNumber(pl.totalSupply)
+              new BigNumber(pairDataResponse.totalSupply)
             ),
-            token0Price: pl.token0Price,
-            token1Price: pl.token1Price,
-            contract0: pl.token0.id,
-            contract1: pl.token1.id,
-            token0Name: pl.token0.name,
-            token1Name: pl.token1.name,
-            id: pl.id,
-          }
-        })
+          },
+        });
+        pairTotalReserves[pl.name] = {
+          totalReserve0: reserve0,
+          totalReserve1: reserve1,
+        }
+      }
 
-        pairDispatch({
-          type: PairActions.LOAD_USER_PAIR, payload: {
-            name: `${pl.token0.symbol}-${pl.token1.symbol}`,
-            reserve0: convertBigNumberToUIString(new BigNumber(0), token0Decimals),
-            reserve1: convertBigNumberToUIString(new BigNumber(0), token1Decimals),
-            liquidityUSD: new BigNumber(convertBigNumberToUIString(new BigNumber(0), token1Decimals)).toFixed(2),
-          }
-        })
-      })
+      console.log('pairTotalReserves', pairTotalReserves)
+
+      await loadPairsUSD(pairTotalReserves)
     } catch (err) {
       log.error('loadPairs', err.message);
     }
   }
 
-  async function fillPairs(wallet: Wallet, isConnected = false): Promise<void> {
-    //console.log('isConnected', isConnected)
-    await loadPairs();
+  async function loadPairsUSD(pairTotalReserves: Record<string, PairTotalReserves>): Promise<void> {
+    try {
+      const tokens = Object.values(tokenState.tokens)
+      const tokenPrices: Record<string, string> = {}
 
+      for (const t of tokens) {
+        const priceUSD = findUSDRateBySymbol(t.symbolPair, pairTotalReserves).toString()
+
+        tokenDispatch({
+          type: TokenActions.LOAD_PRICE_USD,
+          payload: {
+            name: t.symbol, 
+            priceUSD,
+          },
+        })
+
+        tokenPrices[t.symbol] = priceUSD
+      }
+
+      const pairs = Object.values(pairState)
+
+      for (const p of pairs) {
+        pairDispatch({
+          type: PairActions.LOAD_PAIR_USD,
+          payload: {
+            name: p.name, 
+            token0Price: tokenPrices[p.token0Symbol],
+            token1Price: tokenPrices[p.token1Symbol],
+          },
+        })
+      }
+      
+    } catch (err) {
+      log.error('loadPairsUSD', err.message);
+    }
+  }
+
+  async function loadPairsUserData(wallet: Wallet, isConnected = false): Promise<void> {
     if (!isConnected) {
       return;
     }
@@ -675,100 +664,44 @@ export const ConfigContextWithReducer = ({
       const pairList = Object.keys(pairState).map((x) => pairState[x]);
       for (const pair of pairList) {
         ps.push(
-          liquidityAgainstUserAndPair(wallet.accountHashString, pair.id).then(
-            (liquidity) =>
+          apiClient
+            .getERC20Allowance(
+              wallet,
+              pair.contractHash,
+            )
+            .then((response) => {
+              pairDispatch({
+                type: PairActions.ADD_ALLOWANCE_TO_PAIR,
+                payload: {
+                  name: pair.name,
+                  allowance: convertBigNumberToUIString(
+                    new BigNumber(response)
+                  ),
+                },
+              });
+            }),
+          apiClient
+            .getERC20Balance(
+              wallet,
+              pair.contractHash,
+            )
+            .then((response) => {
               pairDispatch({
                 type: PairActions.ADD_BALANCE_TO_PAIR,
                 payload: {
                   name: pair.name,
-                  balance: convertBigNumberToUIString(new BigNumber(liquidity)),
+                  balance: convertBigNumberToUIString(
+                    new BigNumber(response)
+                  ),
                 },
-              })
-          )
-        );
-        ps.push(
-          allowanceAgainstOwnerAndSpenderPairContract(
-            wallet.accountHashString,
-            pair.id
-          ).then((allowance) =>
-            pairDispatch({
-              type: PairActions.ADD_ALLOWANCE_TO_PAIR,
-              payload: {
-                name: pair.name,
-                allowance: convertBigNumberToUIString(new BigNumber(allowance)),
-              },
-            })
-          )
-        );
+              });
+            }),
+        )
       }
 
       await Promise.all(ps);
     } catch (err) {
       log.error('fillPairs', err.message);
-    }
-  }
-
-  async function fillPairDetail(wallet: Wallet, isConnected): Promise<void> {
-    if (!isConnected) {
-      return;
-    }
-
-    try {
-      let result = {
-        pairsdata: [],
-        userpairs: [],
-      };
-
-      try {
-        result = await apiClient.getPairAgainstUser(wallet.accountHashString);
-      } catch (err) {
-        console.error('Error - trying get pair against user', err.message);
-        return;
-      }
-
-      const pairList = result.pairsdata;
-      const userPairs = result.userpairs;
-
-      await Promise.all(
-        pairList.map(async (d) => {
-          const data = userPairs.filter((u) => u.pair === d.id);
-          //console.log('d', data)
-          if (data[0]) {
-            const token0Decimals = tokenState.tokens[d.token0.symbol].decimals;
-            const token1Decimals = tokenState.tokens[d.token1.symbol].decimals;
-
-            pairDispatch({
-              type: PairActions.LOAD_USER_PAIR,
-              payload: {
-                name: `${d.token0.symbol}-${d.token1.symbol}`,
-                reserve0: convertBigNumberToUIString(
-                  new BigNumber(data[0].reserve0),
-                  token0Decimals
-                ),
-                reserve1: convertBigNumberToUIString(
-                  new BigNumber(data[0].reserve1),
-                  token1Decimals
-                ),
-                liquidityUSD: new BigNumber(
-                  convertBigNumberToUIString(
-                    new BigNumber(data[0].reserve0).times(d.token0Price),
-                    token0Decimals
-                  )
-                )
-                  .plus(
-                    convertBigNumberToUIString(
-                      new BigNumber(data[0].reserve1).times(d.token1Price),
-                      token1Decimals
-                    )
-                  )
-                  .toFixed(2),
-              },
-            });
-          }
-        })
-      );
-    } catch (err) {
-      log.error('fillPairDetail', err.message);
     }
   }
 
@@ -835,7 +768,6 @@ export const ConfigContextWithReducer = ({
       return true;
     } catch (err) {
       setProgressModal(false);
-      console.log('onIncreaseAllow');
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
@@ -899,7 +831,137 @@ export const ConfigContextWithReducer = ({
         new BigNumber(amount1).times(filter2[0].token1Price).toFixed(2),
       ];
     }
+
+    return ['0.00', '0.00']
   };
+
+  /**
+   * findReservesBySymbols search for pair data by the symbol pair
+   * 
+   * @param tokenASymbol first token symbol string
+   * @param tokenBSymbol second token symbol string
+   * 
+   * @returns pair reserve data
+   */
+  const findReservesBySymbols = (
+    tokenASymbol: string,
+    tokenBSymbol: string,
+    overrideReserves: Record<string, PairTotalReserves> = {},
+  ): PairReserves | undefined => {
+    let tA = tokenASymbol
+    let tB = tokenBSymbol
+    if (tA === 'CSPR') {
+      tA = 'WCSPR'
+    }
+    if (tB === 'CSPR') {
+      tB = 'WCSPR'
+    }
+
+    let lookUp = `${tA}-${tB}`
+
+    // do a simple look up
+    let pairData = overrideReserves[lookUp] ?? pairState[lookUp]
+
+    if (pairData) {
+      return {
+        reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
+        reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
+      }
+    }
+
+    // do different simple look up
+    lookUp = `${tB}-${tA}`
+    pairData = overrideReserves[lookUp] ?? pairState[lookUp]
+
+    if (pairData) {
+      return {
+        reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
+        reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
+      }
+    }
+
+    // use pathfinder for multi-pool
+    const path = getPath(
+      tA, 
+      tB, 
+      Object.values(tokenState.tokens), 
+      Object.values(pairState)
+    )
+
+    if (!path || !path.length) {
+      updateNotification({
+        type: NotificationType.Error,
+        title: `Path between ${tA}-${tB} not found`,
+        subtitle: '',
+        show: true,
+        timeToClose: 10,
+        chargerBar: true
+      })
+      throw new Error('path not found')
+    }
+    console.log('path', path)
+
+    let firstReserve0 = new BigNumber(1)
+    let reserve0 = new BigNumber(1)
+    let reserve1 = new BigNumber(1)
+    for (let i = 1; i < path.length; i++) {
+      const pair = overrideReserves[path[i].label.name] ?? path[i].label
+      if (path[i-1].id == tokenASymbol) {
+        reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1))
+        reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0))
+      } else {
+        reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve0))
+        reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve1))
+      }
+
+      if (i == 1) {
+        firstReserve0 = reserve0
+      }
+    }
+
+    const ratio = firstReserve0.div(reserve0)
+
+    return {
+      reserve0: firstReserve0,
+      reserve1: reserve1.times(ratio),
+    }
+  }
+
+  /**
+   * findReservesBySymbols search for pair data by the symbol pair
+   * 
+   * @param tokenSymbol token symbol string
+   * 
+   * @returns usd conversion rate
+   */
+  const findUSDRateBySymbol = (
+    tokenSymbol: string,
+    pairTotalReserves: Record<string, PairTotalReserves>,
+  ): BigNumber => {
+    let t = tokenSymbol
+    if (t === 'CSPR') {
+      t = 'WCSPR'
+    }
+
+    if (t === 'USDC') {
+      const ratesUSDC = findReservesBySymbols(t, 'USDT', pairTotalReserves)
+
+      return new BigNumber(ratesUSDC.reserve0).div(ratesUSDC.reserve1).plus(1).div(2)
+    }
+
+    if (t === 'USDT') {
+      const ratesUSDT = findReservesBySymbols(t, 'USDC', pairTotalReserves)
+
+      return new BigNumber(ratesUSDT.reserve0).div(ratesUSDT.reserve1).plus(1).div(2)
+    }
+
+    const ratesUSDC = findReservesBySymbols(t, 'USDC', pairTotalReserves)
+    const ratesUSDT = findReservesBySymbols(t, 'USDT', pairTotalReserves)
+
+    // console.log('ratesUSDC/T', ratesUSDC.reserve0.toString(), ratesUSDT.reserve0.toString())
+
+    return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
+  }
 
   return (
     <ConfigProviderContext.Provider
@@ -925,7 +987,6 @@ export const ConfigContextWithReducer = ({
         isStaked,
         setStaked,
         filter,
-        getContractHashAgainstPackageHash,
         gasPriceSelectedForSwapping: state.gasPriceSelectedForSwapping,
         gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity,
         refreshAll,
@@ -933,6 +994,7 @@ export const ConfigContextWithReducer = ({
         setProgressModal,
         setConfirmModal,
         calculateUSDtokens,
+        findReservesBySymbols,
       }}
     >
       {children}

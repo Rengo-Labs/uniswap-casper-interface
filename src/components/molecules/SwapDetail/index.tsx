@@ -21,7 +21,7 @@ interface SwapDetailProps {
   firstTokenAmount?: number;
   secondSymbolToken?: string;
   secondTokenAmount?: number;
-  priceImpact?: number;
+  priceImpact?: number | string;
   priceImpactMessage?: string;
   gasFee?: number;
   gasFeeSetter?(any): void;

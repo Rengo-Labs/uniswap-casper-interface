@@ -31,7 +31,7 @@ import {
   TokenSelectNSM,
 } from '../../atoms';
 
-import { SwapDetail, SwapStadistics } from '../../molecules';
+import { SwapDetail, SwapStatistics } from '../../molecules';
 import FloatMenu from '../FloatMenu';
 import { useSearchParams } from 'react-router-dom';
 
@@ -40,7 +40,7 @@ import SwitchSwap from '../../atoms/SwitchSwap';
 import { UpdatableCircle } from '../../atoms/UpdatableCircle';
 import { ProgressBarProviderContext } from '../../../contexts/ProgressBarContext';
 import styled from 'styled-components';
-import {SwapProviderContext} from "../../../contexts/SwapContext";
+import { SwapProviderContext } from "../../../contexts/SwapContext";
 import { globalStore } from '../../../store/store';
 
 const Wrapper = styled.section`
@@ -63,23 +63,24 @@ const SwapNewModule = () => {
     secondTokenSelected,
     isConnected,
     onIncreaseAllow,
-    slippageToleranceSelected,
-    gasPriceSelectedForLiquidity,
+    pairState,
+    gasPriceSelectedForSwapping,
     refreshAll,
     calculateUSDtokens,
+    findReservesBySymbols,
   } = useContext(ConfigProviderContext);
-  const {onConfirmSwapConfig, getSwapDetails} = useContext(SwapProviderContext)
+  const { onConfirmSwapConfig, getSwapDetails } = useContext(SwapProviderContext)
   const { progressBar } = useContext(ProgressBarProviderContext);
 
-  const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity);
-  const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
-  const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
-  const [priceImpact, priceImpactSetter] = useState<any>(0);
-  const [feeToPay, feeToPaySetter] = useState<any>(0.03);
-  const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
-  const [exchangeRateB, exchangeRateBSetter] = useState<any>(0);
+  const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForSwapping);
+  const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0);
+  const [amountSwapTokenB, amountSwapTokenBSetter] = useState<number>(0);
+  const [priceImpact, priceImpactSetter] = useState<number | string>(0);
+  const [feeToPay, feeToPaySetter] = useState<number>(0.03);
+  const [exchangeRateA, exchangeRateASetter] = useState<number>(0);
+  const [exchangeRateB, exchangeRateBSetter] = useState<number>(0);
   const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] =
-    useState<any>('');
+    useState<string>('');
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [lastChanged, setLastChanged] = useState('');
@@ -100,20 +101,20 @@ const SwapNewModule = () => {
       firstTokenSelected,
       secondTokenSelected,
       amountSwapTokenA,
-      firstTokenSelected
+      lastChanged == 'A' ? firstTokenSelected : secondTokenSelected,
     );
-  }, [isConnected]);
+  }, [isConnected, pairState]);
 
   useEffect(() => {
     progressBar(async () => {
-      await changeTokenA(amountSwapTokenA)
+      lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
+      await refreshAll()
     })
-  }, [amountSwapTokenA]);
+  }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
 
   async function onConnect() {
     onConnectWallet();
   }
-
 
   function onSwitchTokensHandler() {
     onSwitchTokens();
@@ -143,32 +144,40 @@ const SwapNewModule = () => {
   }
 
   async function updateSwapDetail(
-    tokenA,
-    tokenB,
+    tokenA: Token,
+    tokenB: Token,
     value = amountSwapTokenA,
     token = firstTokenSelected
   ) {
-    const getSwapDetailP = getSwapDetails(
+    const {
+      reserve0,
+      reserve1,
+    } = findReservesBySymbols(tokenA.symbol, tokenB.symbol)
+
+    const getSwapDetailResponse = await getSwapDetails(
       tokenA,
       tokenB,
+      reserve0,
+      reserve1,
       value,
       token,
       slippageTolerance,
       feeToPay
     );
-    const ps = [getSwapDetailP];
 
-    const [getSwapDetailResponse] = await Promise.all(ps);
-
-    const { tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB } =
-      getSwapDetailResponse;
+    const {
+      tokensToTransfer,
+      priceImpact,
+      exchangeRateA,
+      exchangeRateB
+    } = getSwapDetailResponse;
 
     priceImpactSetter(priceImpact);
     exchangeRateASetter(exchangeRateA);
     exchangeRateBSetter(exchangeRateB);
 
     defaultPriceImpactLabelSetter(
-      parseFloat(priceImpact) > 1 ? 'Price Impact Warning' : 'Low Price Impact'
+      parseFloat(priceImpact as any) > 1 ? 'Price Impact Warning' : 'Low Price Impact'
     );
 
     calculateUSDValues(value, tokensToTransfer);
@@ -185,9 +194,9 @@ const SwapNewModule = () => {
       firstTokenSelected
     );
   }
-  
-  async function changeTokenA(value: string) {
-    let filteredValue = parseFloat(value);
+
+  async function changeTokenA(value: number | string) {
+    let filteredValue = parseFloat(value as any);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
     } else if (filteredValue < 0) {
@@ -207,13 +216,15 @@ const SwapNewModule = () => {
     amountSwapTokenBSetter(parseFloat(minTokenToReceive));
   }
 
-  async function changeTokenB(value: string) {
-    let filteredValue = parseFloat(value);
+  async function changeTokenB(value: number | string) {
+    let filteredValue = parseFloat(value as any);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
     } else if (filteredValue < 0) {
       filteredValue = Math.abs(filteredValue);
     }
+
+    setLastChanged('B');
 
     amountSwapTokenBSetter(filteredValue);
 
@@ -336,11 +347,12 @@ const SwapNewModule = () => {
             <TokenSelectionNSM>
               <NewTokenDetailActionsNSM>
                 <NewBalanceSpaceNSM>
-                  Balance:
+                  Balance:{' '}
                   {firstTokenSelected.amount
                     ? convertAllFormatsToUIFixedString(
-                        firstTokenSelected.amount
-                      )
+                      firstTokenSelected.amount,
+                      firstTokenSelected.decimals,
+                    )
                     : '--'}
                 </NewBalanceSpaceNSM>
                 <ActionContainerNSM>
@@ -437,8 +449,9 @@ const SwapNewModule = () => {
                   Balance:{' '}
                   {secondTokenSelected.amount
                     ? convertAllFormatsToUIFixedString(
-                        secondTokenSelected.amount
-                      )
+                      secondTokenSelected.amount,
+                      firstTokenSelected.decimals,
+                    )
                     : '--'}
                 </NewBalanceSpaceNSM>
                 <ActionContainerNSM>
@@ -507,9 +520,8 @@ const SwapNewModule = () => {
             )}
             {!isApproved && isConnected && (
               <NewSwapButtonWidth100
-                content={`Approve ${-freeAllowance} ${
-                  firstTokenSelected.symbol
-                }`}
+                content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol
+                  }`}
                 handler={async () => {
                   await requestIncreaseAllowance(
                     -freeAllowance,
@@ -534,7 +546,7 @@ const SwapNewModule = () => {
           </ButtonSpaceNSM>
         </ContainerSwapActionsNSM>
       </ContainerInnerNSM>
-      <SwapStadistics />
+      <SwapStatistics />
     </Wrapper>
   );
 };

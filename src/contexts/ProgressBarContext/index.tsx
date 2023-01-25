@@ -9,6 +9,16 @@ export interface ProgressBarContext {
   getProgress: number
 }
 
+const timer = new Timer()
+
+interface HandlerPointer {
+  handler?: any
+}
+
+const handler: HandlerPointer = {
+  handler: undefined
+} 
+
 export const ProgressBarProviderContext = createContext<ProgressBarContext>({} as any)
 
 export const ProgressBarContextWithReducer = ({ children }: { children: ReactNode }) => {
@@ -16,12 +26,13 @@ export const ProgressBarContextWithReducer = ({ children }: { children: ReactNod
   const [progress, setProgress] = useState(1)
   const [progressTimer, setProgressTimer] = useState<any>()
   const [interval, setInt] = useState<any>()
-  const timer = new Timer()
 
   const progressBarExec = (handle, sec= 30) => {
+    handler.handler = handle
     if (progressTimer) {
-      clearInterval(interval)
-      progressTimer.stop()
+      return
+    } else {
+      setProgressTimer(timer)
     }
 
     if (timer.isRunning) return;
@@ -32,22 +43,21 @@ export const ProgressBarContextWithReducer = ({ children }: { children: ReactNod
       const timeInSeconds = Math.min((timer.getTime() / 1000) * (100/sec), 100);
       if (timeInSeconds >= 99) {
 
-        new Promise(handle).then()
+        new Promise(handler.handler).then()
         timer.reset()
         setProgress(1)
       } else {
         setProgress(timeInSeconds)
       }
-    }, 500)
+    }, 200)
 
     setInt(inter)
-    setProgressTimer(timer)
   }
 
   const clearProgressBar = () => {
     progressTimer.reset()
   }
-
+  
   return (
     <ProgressBarProviderContext.Provider value={{
       progressBar: progressBarExec,

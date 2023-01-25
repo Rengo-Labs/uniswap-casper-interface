@@ -20,8 +20,8 @@ export interface PopoverButtonInterface {
   isConnected: boolean;
   isOpened: boolean;
   onToggle: () => void;
-  onMouseLeave?: () => void;
   onDisconnect: () => void;
+  onMouseLeave?: () => void;
   accountHashString: string;
 }
 
@@ -30,8 +30,8 @@ export const PopoverButton = ({
   isOpened,
   onToggle,
   onDisconnect,
-  accountHashString = '',
   onMouseLeave,
+  accountHashString = '',
 }: PopoverButtonInterface) => {
   const end = accountHashString.length;
   const start = accountHashString.length - 3;
@@ -69,7 +69,6 @@ export const PopoverButton = ({
 
   return (
     <>
-      {/* TODO: remove inline css*/}
       {isConnected && (
         <ButtonStyle isSelected={isConnected} onClick={onToggle}>
           <NewIcons Icon={walletConnected} size={30} /> {wallet}
@@ -80,7 +79,10 @@ export const PopoverButton = ({
           <ContainerList>
             <WalletItemList>Wallet Connected</WalletItemList>
             {/* TODO: remove inline css*/}
-            <ItemMenu onClick={copyAccount}>
+            <ItemMenu
+              style={{ justifyContent: 'center', borderTop: '1px solid black' }}
+              onClick={copyAccount}
+            >
               <ItemColumn position='center' flex='1' padding='0 0 0 1em'>
                 <NewIcons Icon={copyIcon} size='30' />
               </ItemColumn>

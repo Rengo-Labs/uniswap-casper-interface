@@ -37,11 +37,14 @@ export interface LiquidityContext {
     tokenB: Token,
     amountA: number | string,
     amountB: number | string,
-    slippage: number
+    slippage: number,
+    gasFee: number,
   ) => Promise<boolean>;
   getLiquidityDetails: (
     tokenA: Token,
     tokenB: Token,
+    reserve0: BigNumber.Value,
+    reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
     slippage: number,
@@ -104,7 +107,6 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       setConfirmModal(true);
 
-      await sleep(15000);
       await refreshAll();
       updateNotification({
         type: NotificationType.Success,
@@ -115,7 +117,6 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       });
       return true;
     } catch (err) {
-
       setProgressModal(false);
       dismissNotification();
       await refreshAll();
@@ -137,7 +138,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     tokenB: Token,
     amountA: number | string,
     amountB: number | string,
-    slippage: number
+    slippage: number,
+    gasFee: number,
   ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
@@ -158,7 +160,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         convertUIStringToBigNumber(amountB),
         tokenA,
         tokenB,
-        slippage / 100
+        slippage / 100,
+        gasFee,
       );
 
       setProgressModal(true);
@@ -179,7 +182,6 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       });
       return true;
     } catch (err) {
-
       setProgressModal(false);
       dismissNotification();
       await refreshAll();
@@ -198,6 +200,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
   async function getLiquidityDetails(
     tokenA: Token,
     tokenB: Token,
+    reserve0: BigNumber.Value,
+    reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
     slippage = 0.005,
@@ -207,6 +211,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       apiClient,
       tokenA,
       tokenB,
+      reserve0,
+      reserve1,
       inputValue,
       token,
       slippage,

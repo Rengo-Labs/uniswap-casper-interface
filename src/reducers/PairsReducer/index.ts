@@ -1,10 +1,11 @@
-import wcsprIcon from "../../assets/swapIcons/wrappedCasperIcon.png"
-import csxIcon from "../../assets/swapIcons/casperswap.png"
-import wethIcon from "../../assets/swapIcons/wethIcon.svg"
+import BigNumber from "bignumber.js"
+import { convertBigNumberToUIString, convertUIStringToBigNumber } from "../../commons"
+import { TOKENS } from '../TokenReducers'
 
 export type PairData = {
   name: string
-  id: string
+  contractHash: string
+  packageHash: string
   balance: string,
   reserve0: string,
   reserve1: string,
@@ -13,8 +14,8 @@ export type PairData = {
   allowance: string,
   token0Symbol: string,
   token1Symbol: string,
-  token0Icon: string,
-  token1Icon: string,
+  token0Icon?: string,
+  token1Icon?: string,
   liquidity?: string,
   volume7d?: string,
   fees24h?: string,
@@ -29,66 +30,220 @@ export type PairData = {
   contract1?: string,
   token0Name?: string,
   token1Name?: string,
+  decimals: number,
 }
 
 export type PairState = Record<string, PairData>
 
-export const initialPairsState: PairState = {
-  "WETH-CSX": {
-    name: "WETH-CSX",
-    id: "c956ddec09b725a217ac5480fc9cef2411c73b6aaac2e6215ca7255d20f77485",
-    reserve0: '0',
-    reserve1: '0',
-    totalReserve0: '0',
-    totalReserve1: '0',
-    balance: '0',
-    allowance: '0',  
-    token0Icon: wethIcon,
-    token1Icon: csxIcon,
-    token0Symbol: 'WETH',
-    token1Symbol: 'CSX',
-    token0Name: 'Wrapped Ether',
-    token1Name: 'CasperSwap'
-  },
-  "WCSPR-CSX": {
-    name: "WCSPR-CSX",
-    id: "a84382872d1402a5ec8d8453f516586166100d8252f997b0bcdeed8c4737588d",
+const RAW_PAIRS: PairState = {
+  /*"CST-WETH": {
+    name: "CST-WETH",
+    contractHash: "hash-c4350dd69eea06fe6d579919c91d3aaa1d7dcdec9ba533ddc05658cef5875cc0",
+    packageHash: "hash-dc13b188563da4a1afa67b441e77d045db8a71dba678b832dfb40b420d85bcd2",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
     totalReserve1: '0',
     balance: '0',
     allowance: '0',
-    token0Icon: wcsprIcon,
-    token1Icon: csxIcon,
+    token0Symbol: 'CST',
+    token1Symbol: 'WETH',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
+  },*/
+  "CST-WCSPR": {
+    name: "CST-WCSPR",
+    contractHash: "hash-c4350dd69eea06fe6d579919c91d3aaa1d7dcdec9ba533ddc05658cef5875cc0",
+    packageHash: "hash-dc13b188563da4a1afa67b441e77d045db8a71dba678b832dfb40b420d85bcd2",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
+    token0Symbol: 'CST',
+    token1Symbol: 'WCSPR',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
+  },
+  "WBTC-WCSPR": {
+    name: "WBTC-WCSPR",
+    contractHash: "hash-40edc05caa0cafa9eb0e954188a4b08b22334eaea36635bece2e99b88437c2d1",
+    packageHash: "hash-a5a9a804a383f3b0e131c85d471542af2c6d4ec57bab39182ba93dd7bd86f46c",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
     token0Symbol: 'WCSPR',
-    token1Symbol: 'CSX',
-    token0Name: 'Wrapped Casper',
-    token1Name: 'CasperSwap'
+    token1Symbol: 'WBTC',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
   },
   "WETH-WCSPR": {
     name: "WETH-WCSPR",
-    id: "cb0f9f291ae73928b739c90c03eca70cd610d945304ea606fe4adced3fa07060",
+    contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
+    packageHash: "hash-a3f3a7c26a0723f56ad74dcb4d9a86642d1d53c6d1add00c237df5199a3025e6",
     reserve0: '0',
     reserve1: '0',
     totalReserve0: '0',
     totalReserve1: '0',
     balance: '0',
     allowance: '0',
-    token0Icon: wcsprIcon,
-    token1Icon: wethIcon,
-    token0Symbol: 'WETH',
-    token1Symbol: 'WCSPR',
-    token0Name: 'Wrapped Ether',
-    token1Name: 'Wrapped Casper'
+    token0Symbol: 'WCSPR',
+    token1Symbol: 'WETH',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
+  },
+  "USDT-WCSPR": {
+    name: "USDT-WCSPR",
+    contractHash: "hash-17277427f5bc536313f1e8b536d9bb6ab87ff13583402679b582d9b6b1774aaf",
+    packageHash: "hash-800dee0fb5abf6d3525f520a4b052d8d36edb985a748a671209745c80836c2af",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
+    token0Symbol: 'WCSPR',
+    token1Symbol: 'USDT',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
+  },
+  "USDC-WCSPR": {
+    name: "USDC-WCSPR",
+    contractHash: "hash-b080106ba9a0838173c4a41b29220deae768d0614bfbebfe653ca8a52a0bc23d",
+    packageHash: "hash-cf56e334481fe2bf0530e0c03a586d2672da8bfe1d1d259ea91457a3bd8971e0",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
+    token0Symbol: 'WCSPR',
+    token1Symbol: 'USDC',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
+  },
+  "USDT-USDC": {
+    name: "USDT-USDC",
+    contractHash: "hash-ffed0f843fe60f120da664a9a8522544c97a762fe37422d2f0476adc871b7da9",
+    packageHash: "hash-6de9a63441e43d75e8774675407ed3d6775b0e5f3fa35382c744980733030902",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
+    token0Symbol: 'USDT',
+    token1Symbol: 'USDC',
+    liquidity: '0',
+    volume7d: '0',
+    fees24h: '0',
+    oneYFees: '0',
+    volume: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
   },
 }
+
+export const PAIRS: PairState = {}
+
+Object.values(RAW_PAIRS).map((p) => {
+  const pair = Object.assign({}, p)
+
+  pair.token0Name = TOKENS[p.token0Symbol].name
+  pair.token1Name = TOKENS[p.token1Symbol].name
+  pair.token0Icon = TOKENS[p.token0Symbol].logoURI
+  pair.token1Icon = TOKENS[p.token1Symbol].logoURI
+  pair.contract0 = TOKENS[p.token0Symbol].packageHash
+  pair.contract1 = TOKENS[p.token1Symbol].packageHash
+
+  // sort pair by alphanumeric order
+  if (pair.contract0.localeCompare(pair.contract1) > 0) {
+    const nameTemp = pair.token0Name 
+    pair.token0Name = pair.token1Name
+    pair.token1Name = nameTemp
+    
+    const iconTemp = pair.token0Icon
+    pair.token0Icon = pair.token1Icon
+    pair.token1Icon = iconTemp
+
+    const contractTemp = pair.contract0
+    pair.contract0 = pair.contract1
+    pair.contract1 = contractTemp
+  }
+
+  PAIRS[p.name] = pair
+})
+
+export const initialPairsState: PairState = PAIRS
 
 export enum PairActions {
   ADD_BALANCE_TO_PAIR = 'ADD_BALANCE_TO_PAIR',
   ADD_ALLOWANCE_TO_PAIR = 'ADD_ALLOWANCE_TO_PAIR',
   LOAD_PAIR = 'LOAD_PAIR',
-  LOAD_USER_PAIR = 'LOAD_USER_PAIR',
+  LOAD_PAIR_USD = 'LOAD_PAIR_USD',
+  //LOAD_USER_PAIR = 'LOAD_USER_PAIR',
 }
 
 export type PairActionBalancePayload = {
@@ -102,11 +257,9 @@ export type PairActionAllowancePayload = {
 }
 
 export type PairActionLoadPairPayLoad = {
-  id: string,
   name: string,
   token0Symbol: string,
   token1Symbol: string,
-  totalLiquidityUSD: string,
   volume7d: string,
   fees24h: string,
   oneYFees: string,
@@ -114,12 +267,12 @@ export type PairActionLoadPairPayLoad = {
   totalReserve0: string,
   totalReserve1: string,
   totalSupply: string,
+}
+
+export type PairActionLoadPairUSDPayLoad = {
+  name: string,
   token0Price: string,
   token1Price: string,
-  contract0: string,
-  contract1: string,
-  token0Name?: string,
-  token1Name?: string
 }
 
 export type PairActionLoadUserPairPayLoad = {
@@ -138,61 +291,106 @@ export type PairAction = {
 } | {
   type: PairActions.LOAD_PAIR,
   payload: PairActionLoadPairPayLoad,
-}  | {
+} | {
+  type: PairActions.LOAD_PAIR_USD,
+  payload: PairActionLoadPairUSDPayLoad,
+}/* | {
   type: PairActions.LOAD_USER_PAIR,
   payload: PairActionLoadUserPairPayLoad,
-} 
+}*/
 
-export function PairsReducer(state: PairState, action: PairAction) {
+export function PairsReducer(state: PairState, action: PairAction): PairState {
   switch (action.type) {
     case PairActions.ADD_BALANCE_TO_PAIR:
+      {
+        const oldState = state[`${action.payload.name}`]
+        if (!oldState) {
+          throw new Error(`pair ${action.payload.name} does not exist`)
+        }
+
+        const balance = convertUIStringToBigNumber(action.payload.balance)
+        const totalSupply = convertUIStringToBigNumber(oldState.totalSupply)
+        const totalReserve0 = convertUIStringToBigNumber(oldState.totalReserve0)
+        const totalReserve1 = convertUIStringToBigNumber(oldState.totalReserve1)
+        const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
+        const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
+
+        return {
+          ...state,
+          [`${action.payload.name}`]: {
+            ...oldState,
+            balance: convertBigNumberToUIString(balance),
+            reserve0,
+            reserve1,
+          },
+        }
+      }
+    case PairActions.ADD_ALLOWANCE_TO_PAIR:
       return {
         ...state,
         [`${action.payload.name}`]: {
-          ...state[`${action.payload.name}`],  
-          balance: action.payload.balance,   
+          ...state[`${action.payload.name}`],
+          allowance: action.payload.allowance,
         },
       }
-      case PairActions.ADD_ALLOWANCE_TO_PAIR:
-        return {
-          ...state,
-          [`${action.payload.name}`]: {
-            ...state[`${action.payload.name}`],
-            allowance: action.payload.allowance,
-          },
-        }
       case PairActions.LOAD_PAIR:
-        return {
-          ...state,
-          [`${action.payload.name}`]: {
-            ...state[`${action.payload.name}`],   
-            totalLiquidityUSD: action.payload.totalLiquidityUSD,
-            volume7d: action.payload.volume7d,
-            fees24h: action.payload.fees24h,
-            oneYFees: action.payload.oneYFees,
-            volume: action.payload.volume,
-            totalReserve0: action.payload.totalReserve0,
-            totalReserve1: action.payload.totalReserve1,
-            totalSupply: action.payload.totalSupply,
-            token0Price: action.payload.token0Price,
-            token1Price: action.payload.token1Price,
-            contract0: action.payload.contract0,
-            contract1: action.payload.contract1,
-            token0Name: action.payload.token0Name,
-            token1Name: action.payload.token1Name,
-            id: action.payload.id,
-          },
+        {
+          const oldState = state[`${action.payload.name}`]
+  
+          const balance = convertUIStringToBigNumber(oldState.balance)
+          const totalSupply = convertUIStringToBigNumber(action.payload.totalSupply)
+          const totalReserve0 = convertUIStringToBigNumber(action.payload.totalReserve0)
+          const totalReserve1 = convertUIStringToBigNumber(action.payload.totalReserve1)
+          const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
+          const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
+  
+          return {
+            ...state,
+            [`${action.payload.name}`]: {
+              ...oldState,
+              volume7d: action.payload.volume7d,
+              fees24h: action.payload.fees24h,
+              oneYFees: action.payload.oneYFees,
+              volume: action.payload.volume,
+              reserve0,
+              reserve1,
+              totalReserve0: convertBigNumberToUIString(totalReserve0),
+              totalReserve1: convertBigNumberToUIString(totalReserve1),
+              totalSupply: convertBigNumberToUIString(totalSupply),
+            },
+          }
         }
-      case PairActions.LOAD_USER_PAIR: 
+        case PairActions.LOAD_PAIR_USD:
+          {
+            const oldState = state[`${action.payload.name}`]
+
+            const totalLiquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.totalReserve0))
+              .times(action.payload.token0Price)
+              .plus(new BigNumber(convertUIStringToBigNumber(oldState.totalReserve1)).times(action.payload.token1Price))
+              .toString()
+
+            // console.log('action.payload', action.payload, oldState.totalReserve0, oldState.totalReserve1)
+
+            return {
+              ...state,
+              [`${action.payload.name}`]: {
+                ...oldState,
+                totalLiquidityUSD,
+                token0Price: action.payload.token0Price,
+                token1Price: action.payload.token1Price,
+              },
+            }
+          }
+    /* case PairActions.LOAD_USER_PAIR:
       return {
         ...state,
         [`${action.payload.name}`]: {
-          ...state[`${action.payload.name}`],   
+          ...state[`${action.payload.name}`],
           reserve0: action.payload.reserve0,
           reserve1: action.payload.reserve1,
           liquidityUSD: action.payload.liquidityUSD,
         },
-      }
+      } */
     /*case "GET_PAIRS":
       return { ...state };*/
   }

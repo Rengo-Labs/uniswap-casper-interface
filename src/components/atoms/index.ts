@@ -88,8 +88,8 @@ export {LiquidityButton} from './LiquidityButton'
 export {IconOutlineSwap} from './IconOutlineSwap'
 export {LiquidityFarmIcon} from './LiquidityFarmIcon'
 export { MenuItem } from './MenuItem';
-export { MenuItemMobile } from './MenuItemMobile';
-export { SwapStadisticsItem } from './SwapStadisticsItem'
+export { MenuItemMobile } from './MenuItemMobile'
+export { SwapStatisticsItem } from './SwapStatisticsItem'
 export {CasperIcons} from './CasperIcon'
 export {ContainerMobile} from './ContainerMobile'
 export {BurgerButton} from './BurguerButton'
