@@ -38,13 +38,16 @@ export const ItemList = styled("li")`
     padding-top: 0em;
     padding-bottom: 0em;
     font-family: 'EpilogueLight';
-    font-size: 0.7vw;
+    font-size: 14px;
 `
 
 export const ItemMenu = styled(ItemList)`
     &:hover{
         cursor: pointer;
         background-color: rgb(232, 228, 228);
+        &:last-child{
+            border-radius: 0 0 10px 10px;
+        }
     }
 `
 

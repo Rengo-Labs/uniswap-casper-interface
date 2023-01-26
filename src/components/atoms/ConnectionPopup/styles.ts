@@ -3,17 +3,8 @@ import {device} from "../../../contexts/ThemeContext/themes";
 
 export const WalletContainer = styled.div`
     display: flex;
-    margin: 0;
-    padding: 0;
-    color: black;
-    font-size: 16px;
-    z-index: 10;
-    font-weight: 500;
-    justify-content: center;
-    &:first-child {
-        padding-top: 0.5em;
-        padding-bottom: 0.5em;
-    }
+    flex-direction: column;
+    row-gap: 16px;
   
     @media ${device.mobileS} {
       font-size: 12px;
@@ -49,74 +40,53 @@ export const OverlayPopup = styled.div<OverlayParam>`
 `
 
 export const PopupContainer = styled.div`
-    border: 1px solid black;
-    background: #fff;
-    border-radius: 20px;
-    width: 608px;
-    height: 232px;
+    border: 2px solid ${(props) => props.theme.SecondBlackColor};
+    background: ${(props) => props.theme.PrimaryColor};
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
     align-self: center;
-  
+    max-width: 400px;
+
     @media ${device.mobileS} {
-        width: 100%;
+        width: 90%;
     }
-    @media ${device.mobileM} {
-        width: 100%;
-    }
-    @media ${device.mobileL} {
-        width: 100%;
-    }
-    @media ${device.tablet} {
-      width: 608px;
-    }
-`
+`;
 
 export const PopupTitle = styled.div`
-    border-radius: 20px 20px 0 0;
     display: flex;
-    align-items: center;
-    height: 30px;
-    padding: 10px;
-    margin-top: 0;
-    background-color: ${props => props.theme.mainBackgroundColor};
-    color: ${props => props.theme.secondBackgroundColor};
-    font-family: 'EpilogueLight';
-    font-size: 19px;
-    border-bottom: .5px solid black;
-`
+    justify-content: space-between;
+    align-items: flex-start ;
+    padding: 12px 12px 12px 20px;
+    color: ${(props) => props.theme.NewPurpleColor};
+    font-family: "MyriadPro";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 32px;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid ${(props) => props.theme.SecondBlackColor};
+`;
 
 export const PopupBottom = styled.div`
-    background-color: ${props => props.theme.mainBackgroundColor};
-    height: 30px;
-    padding: 10px;
-    color: black;
     text-align: center;
+    padding: 12px;
+    font-family: "MyriadPro";
+    font-style: normal;
+    font-weight: 400;
     font-size: 16px;
-    font-family: 'EpilogueLight';
-    border-top: .5px solid black;
-    border-radius: 0 0 20px 20px;
-    display: flex;
-`
+    line-height: 32px;
+    letter-spacing: 0.02em;
+    border-top: 1px solid ${(props) => props.theme.SecondBlackColor};
+`;
 
 export const PopupClose = styled.span`
-    text-align: end;
-    flex: 0.5;
-    font-size: 30px;
-    font-weight: bold;
-    margin-right: 15px;
-    text-decoration: none;
-    color: ${props => props.theme.secondBackgroundColor};
     :hover {
         cursor: pointer;
     }
 `
-
 export const PopupContent = styled.div`
-    padding: 10px;
-    margin: 0;
-    border-radius: 0;
-    height: 132px;
+    padding: 16px;
 `
 
 export const HRefLink = styled.button`
@@ -154,33 +124,44 @@ export const PopoverButtonStyled= styled.div`
 `
 
 export const DisclaimerContent = styled.div`
-    color: black;
-    padding: 5px;
+    color: ${(props) => props.theme.SecondBlackColor};
+    margin: 8px 0;
+    padding: 0 16px 16px 16px;
     text-align: center;
-    font-family: 'EpilogueLight';
-    margin-bottom: 1.5vh;
-    font-size: 0.8vw;
-  
+    font-family: "MyriadPro";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 16px;
+    letter-spacing: 0.02em;
+
     @media ${device.mobileS} {
-      font-size: 12px;
+        font-size: 16px;
     }
     @media ${device.tablet} {
-      font-size: 12px;
+        font-size: 16px;
     }
     @media ${device.laptop} {
-      font-size: 0.8vw;
+        font-size: 16px;
     }
-`
+`;
 
 export const WalletSelectionImageStyled = styled.img`
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
 `
 
 export const ButtonText = styled.h2`
-  font-family: 'EpilogueLight';
-`
+    color: ${(props) => props.theme.SecondBlackColor};
+    font-family: "MyriadPro";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 32px;
+    letter-spacing: 0.02em;
+    margin-left: 8px;
+`;
 
 export const TFlex1 = styled.div`
     flex: 1;
