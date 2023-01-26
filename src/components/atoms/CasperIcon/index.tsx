@@ -1,17 +1,22 @@
-import React from 'react'
+import React, { FunctionComponent, SVGProps } from 'react'
+import { useTheme } from 'styled-components';
+import { LightThemeInterface } from '../../../contexts/ThemeContext/themes';
 import { CasperIconContainer } from './styles';
 
 interface IIconStyledProps {
-    Icon: any;
+    Icon: FunctionComponent<SVGProps<SVGSVGElement> & { title?: string }>;
     width?: number;
     height?: number;
-    style?: any;
+    style?: object;
 }
 
 const IconStyled = ({ Icon, width, height, style = {} }: IIconStyledProps) => {
+    const theme = useTheme() as LightThemeInterface;
+    const fill = "fill" in style && typeof style.fill === "string" ? style.fill : theme.PrimaryColor;
+
     return (
         <CasperIconContainer style={style} width={width} height={height}>
-            <Icon/>
+            <Icon fill={fill}/>
         </CasperIconContainer>
     );
 };

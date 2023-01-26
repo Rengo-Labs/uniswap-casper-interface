@@ -9,28 +9,28 @@ export const SwapStatistics = ({token0Price, token1Price, token0Per, token1Per})
     secondTokenSelected,
   } = useContext(ConfigProviderContext)
 
-  const stadistics = [
+  const statistics = [
     {
       id: 1,
       token: firstTokenSelected,
       price: token0Price,
       percent: token0Per,
-      grafic: 'grafic',
+      graphic: "graphic",
     },
     {
       id: 2,
       token: secondTokenSelected,
       price: token1Price,
       percent: token1Per,
-      grafic: 'grafic',
-    }
-  ]
+      graphic: "graphic",
+    },
+  ];
   return (
       <Main>
         <Wrapper>
           {
-            stadistics.map((stadistic) => (
-                <SwapStatisticsItem key={stadistic.id} stadistic={stadistic} />
+            statistics.map((statistic) => (
+                <SwapStatisticsItem key={statistic.id} statistic={statistic} />
             ))
           }
         </Wrapper>

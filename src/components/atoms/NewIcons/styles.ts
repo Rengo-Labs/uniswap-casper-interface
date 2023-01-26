@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { device } from '../../../contexts/ThemeContext/themes';
 
 export const IconContainerStyle = styled.div.attrs(
-  (props: { size: any; width?: number; height?: number }) => props
+  (props: { size: number; width?: number; height?: number }) => props
 )`
   display: flex;
   align-items: center;
