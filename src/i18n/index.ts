@@ -9,7 +9,7 @@ export const usUS = {
   liquidity: 'Liquidity',
   pools: 'Pools',
   tokens: 'Tokens',
-  analitycs: 'Analitycs',
+  analytics: 'Analytics',
   mainButton: 'Launch App',
   wallet: 'Connect to Wallet',
   listOfLinks: [

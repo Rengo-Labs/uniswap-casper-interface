@@ -16,7 +16,7 @@ import { ReactComponent as CasperIcon } from '../../../assets/logo.svg';
 import { ReactComponent as Twitter } from '../../../assets/newIcons/twitter.svg';
 import { ReactComponent as Discord } from '../../../assets/newIcons/discord.svg';
 import { ReactComponent as Telegram } from '../../../assets/newIcons/telegram.svg';
-import { ReactComponent as Gitbook } from '../../../assets/newIcons/gitbook.svg';
+import { ReactComponent as GitBook } from '../../../assets/newIcons/gitbook.svg';
 import { ReactComponent as Medium } from '../../../assets/newIcons/medium.svg';
 import { NewIcons, CasperIcons } from '../../../components/atoms';
 import {TWITTER_URL, DISCORD_URL, TELEGRAM_URL, GITBOOK_URL, MEDIUM_URL } from "../../../constant";
@@ -62,7 +62,7 @@ export const HomeTemplate = ({
               href={GITBOOK_URL}
               target='_blank'
           >
-            <NewIcons Icon={Gitbook} size={32} style={{ fill: theme.PrimaryColor }} />
+            <NewIcons Icon={GitBook} size={32} style={{ fill: theme.PrimaryColor }} />
           </a>
           <a
               href={MEDIUM_URL}
@@ -113,7 +113,7 @@ export const HomeTemplate = ({
                 target='_blank'
                 style={{ display: 'grid', placeItems: 'center' }}
             >
-              <NewIcons Icon={Gitbook} size={32} style={{ fill: theme.PrimaryColor }} />
+              <NewIcons Icon={GitBook} size={32} style={{ fill: theme.PrimaryColor }} />
             </a>
             <a
                 href={MEDIUM_URL}
