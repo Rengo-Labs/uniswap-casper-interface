@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import {AiFillStar, AiOutlineSwap} from "react-icons/ai";
 import {TbTrash} from "react-icons/tb";
+import {device} from "../../../contexts/ThemeContext/themes";
 
 export const TBody = styled.div`
     display: flex;
@@ -9,6 +10,11 @@ export const TBody = styled.div`
     color: black;
     font-family: 'MyriadPro';
     gap: 8px;
+    
+    @media ${device.laptop} {
+        overflow-y: scroll;
+        height: 32rem;
+    }
 `
 
 export const CircleButton = styled.button`
