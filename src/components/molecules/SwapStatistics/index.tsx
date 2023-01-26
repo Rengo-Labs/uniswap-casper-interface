@@ -3,7 +3,7 @@ import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { SwapStatisticsItem } from '../../atoms'
 import { Wrapper, Main } from './styles'
 
-export const SwapStatistics = () => {
+export const SwapStatistics = ({token0Price, token1Price, token0Per, token1Per}) => {
   const {
     firstTokenSelected,
     secondTokenSelected,
@@ -13,15 +13,15 @@ export const SwapStatistics = () => {
     {
       id: 1,
       token: firstTokenSelected,
-      price: 1.456,
-      percent: 12.05,
+      price: token0Price,
+      percent: token0Per,
       grafic: 'grafic',
     },
     {
       id: 2,
       token: secondTokenSelected,
-      price: 0.0251,
-      percent: 4.14,
+      price: token1Price,
+      percent: token1Per,
       grafic: 'grafic',
     }
   ]

@@ -1,33 +1,49 @@
 import React from 'react'
 
-import {Button, CardContainer} from '../../atoms'
+import {CardContainer} from '../../atoms'
 import { PoolModule } from '../../organisms'
 
 import {useNavigate} from "react-router-dom";
 import NewLayout from "../../../layout/NewLayout";
-import {WrappedPool, WrappedPoolTitle, TitleBox, Column6, Column1} from "./styles";
+import {
+    WrappedPool,
+    WrappedPoolTitle,
+    TitleBox,
+    CreatePoolButton,
+    WrappedHeaderPool,
+    HeaderPool,
+    TitleBoxWrapper
+} from "./styles";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
+import {POCSearch3} from "../../POCSearch3";
 
 export const Pools = () => {
     const navigate = useNavigate()
     const { 
-        poolColumns, 
+        poolColumns,
         gralData, 
-        getPoolList, 
+        getPoolList,
+        tableInstance,
+        setCurrentQuery,
+        currentQuery
     } = React.useContext(ConfigProviderContext)
 
     return (
         <NewLayout title="CASPERSWAP">
             <WrappedPool>
-                <WrappedPoolTitle>
-                    <Column1/>
-                    <TitleBox>TVL: $ {gralData.tvl}</TitleBox>
-                    <TitleBox>VOLUME: $ {gralData.totalVolume}</TitleBox>
-                    {/* TODO: remove inline css*/}
-                    <Button style={{flex: "1", height: "2.8rem"}} content="Create pool" handler={() => {navigate("/liquidity")}} />
-                    <Column6/>
-                </WrappedPoolTitle>
-                <CardContainer gridRow="3" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
+                <WrappedHeaderPool>
+                    <HeaderPool>Liquidity Pools</HeaderPool>
+                    <WrappedPoolTitle>
+                        {
+                            tableInstance &&
+                            <POCSearch3 tableInstance={tableInstance} setQuery={setCurrentQuery} />
+                        }
+
+                        <TitleBoxWrapper><TitleBox>TVL: $ {gralData.tvl}</TitleBox></TitleBoxWrapper>
+                        <TitleBoxWrapper><TitleBox>VOLUME: $ {gralData.totalVolume}</TitleBox></TitleBoxWrapper>
+                    </WrappedPoolTitle>
+                </WrappedHeaderPool>
+                <CardContainer gridRow="2" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
                     <PoolModule columns={poolColumns} data={getPoolList()} />
                 </CardContainer >
             </WrappedPool>

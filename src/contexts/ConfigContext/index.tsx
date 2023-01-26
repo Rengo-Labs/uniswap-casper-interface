@@ -48,11 +48,12 @@ import {
 
 import { signAndDeployAllowance } from '../../commons/deploys';
 import { ConfigState } from '../../reducers/ConfigReducers';
-import { Row } from 'react-table';
+import {Row, useAsyncDebounce, useGlobalFilter, useSortBy, useTable} from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/erros";
 import { getPath } from '../../commons/calculations'
+import {TableInstance} from "../../components/organisms/PoolModule";
 
 type MaybeWallet = Wallet | undefined;
 
@@ -77,6 +78,7 @@ export interface ConfigContext {
 
   // To Delete
   poolColumns?: any[];
+  columns?: any[];
   getPoolList?: () => PairData[];
   getTVLandVolume?: () => Promise<void>;
   gralData?: Record<string, string>;
@@ -90,7 +92,13 @@ export interface ConfigContext {
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
   calculateUSDtokens: (t0, t1, amount0, amount1) => any[];
-  findReservesBySymbols: (tokenASymbol: string, tokenBSymbol: string) => PairReserves | undefined;
+  tableInstance?: any,
+  setTableInstance?: (t) => void;
+  isMobile?: boolean;
+  findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string) => PairReserves | undefined;
+  currentQuery: any,
+  setCurrentQuery: (v) => void,
+  filterDataReload: (v) => any;
 }
 
 export interface PairReserves {
@@ -156,8 +164,13 @@ export const ConfigContextWithReducer = ({
   const [isStaked, setStaked] = useState(false);
   const [linkExplorer, setLinkExplorer] = useState('');
   const { updateNotification, dismissNotification } = notificationStore();
+  const [tableInstance, setTableInstance] = useState<any>({})
+  const [currentQuery, setCurrentQuery] = useState("")
+
   const [showConnectionPopup, setShowConnectionPopup] = useState(false);
   const [requestConnectWallet, setRequestConnectWallet] = useState(0);
+
+  const [isMobile, setIsMobile] = useState(false)
 
   let debounceConnect = false;
 
@@ -438,6 +451,18 @@ export const ConfigContextWithReducer = ({
   const { isConnected, walletSelected, slippageToleranceSelected, mainPurse } =
     state;
 
+  const handleResize = () => {
+    if (window.innerWidth < 1024) {
+      setIsMobile(true)
+    } else {
+      setIsMobile(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize)
+  })
+
   useEffect(() => {
     const fn = async () => {
       refresh()
@@ -505,7 +530,7 @@ export const ConfigContextWithReducer = ({
       {
         id: 1,
         Header: 'Pool',
-        accessor: 'tokeIcon',
+        accessor: 'name',
         Cell: (tableProps: any) => (
           <img
             src={tableProps.row.original.tokeIcon}
@@ -517,22 +542,22 @@ export const ConfigContextWithReducer = ({
       {
         id: 2,
         Header: 'Liquidity',
-        accessor: 'tokenLiquidity',
+        accessor: 'totalSupply',
       },
       {
         id: 3,
         Header: 'Volume 7D',
-        accessor: 'volume24h',
+        accessor: 'volume7d',
       },
       {
         id: 4,
         Header: 'Fees 7d',
-        accessor: 'volume7d',
+        accessor: 'fees24h',
       },
       {
         id: 5,
         Header: 'APR 7D',
-        accessor: 'fees24h',
+        accessor: 'oneYFees',
       },
     ];
   }
@@ -560,6 +585,19 @@ export const ConfigContextWithReducer = ({
     return row;
   };
 
+  const filterDataReload = (row: Row<PairData>): any => {
+    if (currentQuery.trim().length == 0) return true;
+
+    const data = row.original
+    const query = currentQuery.toUpperCase()
+
+    if (data.name.includes(query) || data.totalSupply.includes(query)
+      || data.volume7d.includes(query) || data.fees24h.includes(query) || data.oneYFees.includes(query)) {
+      return true
+    }
+    return false
+  }
+
   interface PairTotalReserves {
     totalReserve0: BigNumber.Value,
     totalReserve1: BigNumber.Value,
@@ -570,9 +608,8 @@ export const ConfigContextWithReducer = ({
       const pairs = Object.values(pairState)
       const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
-      for (const pl of pairs) {
+      const results = await Promise.all(pairs.map(async (pl) => {
         const pairDataResponse = await apiClient.getPairData(pl.contractHash)
-
         const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
         const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
         const reserve0 = convertBigNumberToUIString(
@@ -584,28 +621,44 @@ export const ConfigContextWithReducer = ({
           token1Decimals
         );
 
+        return {
+          name: pl.name,
+          totalReserve0: reserve0,
+          totalReserve1: reserve1,
+          token0Symbol: pl.token0Symbol,
+          token1Symbol: pl.token1Symbol,
+          volume7d: new BigNumber(
+            convertBigNumberToUIString(new BigNumber(0), 9)
+          ).toFixed(2),
+          fees24h: '0',
+          oneYFees: '0',
+          volume: convertBigNumberToUIString(new BigNumber(0), 9),
+          totalSupply: convertBigNumberToUIString(
+            new BigNumber(pairDataResponse.totalSupply)
+          )
+        }
+      }))
+      for (const pl of results) {
+
         pairDispatch({
           type: PairActions.LOAD_PAIR,
           payload: {
             name: pl.name,
             token0Symbol: pl.token0Symbol,
             token1Symbol: pl.token1Symbol,
-            volume7d: new BigNumber(
-              convertBigNumberToUIString(new BigNumber(0), 9)
-            ).toFixed(2),
-            fees24h: '0',
-            oneYFees: '0',
-            volume: convertBigNumberToUIString(new BigNumber(0), 9),
-            totalReserve0: reserve0,
-            totalReserve1: reserve1,
-            totalSupply: convertBigNumberToUIString(
-              new BigNumber(pairDataResponse.totalSupply)
-            ),
+            volume7d: pl.volume7d,
+            fees24h: pl.fees24h,
+            oneYFees: pl.oneYFees,
+            volume: pl.volume,
+            totalReserve0: pl.totalReserve0,
+            totalReserve1: pl.totalReserve1,
+            totalSupply: pl.totalSupply,
           },
-        });
+        })
+
         pairTotalReserves[pl.name] = {
-          totalReserve0: reserve0,
-          totalReserve1: reserve1,
+          totalReserve0: pl.totalReserve0,
+          totalReserve1: pl.totalReserve1,
         }
       }
 
@@ -807,8 +860,14 @@ export const ConfigContextWithReducer = ({
     }
   }
 
+  const {setGlobalFilter} = tableInstance as any as TableInstance<PairData>
+  const changeData = useAsyncDebounce(value => {
+      setGlobalFilter(value || "")
+  }, 100)
+
   const refreshAll = async (): Promise<void> => {
     await refresh(state.wallet);
+    changeData(currentQuery)
   };
 
   const calculateUSDtokens = (token0, token1, amount0, amount1): any[] => {
@@ -981,6 +1040,7 @@ export const ConfigContextWithReducer = ({
         onIncreaseAllow,
         pairState,
         poolColumns,
+        columns,
         getPoolList,
         getTVLandVolume,
         gralData,
@@ -994,7 +1054,13 @@ export const ConfigContextWithReducer = ({
         setProgressModal,
         setConfirmModal,
         calculateUSDtokens,
+        tableInstance,
+        setTableInstance,
+        isMobile,
         findReservesBySymbols,
+        currentQuery,
+        setCurrentQuery,
+        filterDataReload
       }}
     >
       {children}

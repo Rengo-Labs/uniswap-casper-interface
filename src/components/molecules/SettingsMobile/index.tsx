@@ -61,7 +61,7 @@ export const SettingMobile = ({setOption}) => {
       </StyleSettingValueContainer>
       <StyleSettingValueInputContainer>
         <StyleSettingValueInput
-          type='text'
+          type='number'
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             handleSlippageTolerance(e.target.value)
           }

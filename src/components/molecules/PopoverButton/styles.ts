@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import {NewIcons} from "../../atoms";
 
 export const PopoverContainer = styled("div")`
     position: absolute;
@@ -21,6 +22,7 @@ export const ContainerList = styled("ul")`
   font-size: 0.8vw;
   z-index: 10;
   font-weight: 500;
+  font-family: 'MyriadPro'
   &:first-child {
     padding-top: 0.2em;
     padding-bottom: 0em;
@@ -36,13 +38,16 @@ export const ItemList = styled("li")`
     padding-top: 0em;
     padding-bottom: 0em;
     font-family: 'EpilogueLight';
-    font-size: 0.7vw;
+    font-size: 14px;
 `
 
 export const ItemMenu = styled(ItemList)`
     &:hover{
         cursor: pointer;
         background-color: rgb(232, 228, 228);
+        &:last-child{
+            border-radius: 0 0 10px 10px;
+        }
     }
 `
 
@@ -53,7 +58,7 @@ export const WalletItemList = styled(ItemList)`
     padding-right: 1em;
     border-top: 0px; 
     color: #39B54A;
-    font-family: Epilogue;
+    font-family: 'MyriadPro';
 `
 
 export const ItemColumn = styled.div<any>`
@@ -68,14 +73,14 @@ export const ButtonStyle = styled.button<any>`
     gap: 5px;
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
-    padding:0px 8px;
-    width: 230px;
-    height: 46px;
-    border-radius: 10px;
+    padding: .875rem 2rem;
+    border-radius: 8px;
     border:none;
     overflow:hidden; 
     white-space:nowrap; 
     text-overflow: ellipsis;
+    font-family: 'MyriadPro';
+    gap: 4px;
     &:hover{
         cursor: pointer;
     }

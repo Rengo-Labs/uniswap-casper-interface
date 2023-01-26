@@ -8,7 +8,7 @@ export const ButtonStyle = styled.button<any>`
     border:none;
     width: 8vw;
     height: 5.6vh;
-    font-family: 'EpilogueLight';
+    font-family: 'MyriadProLight';
     font-size: .8vw;
     display: grid;
     place-items: center;

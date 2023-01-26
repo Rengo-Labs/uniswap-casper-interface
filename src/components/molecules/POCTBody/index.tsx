@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import { TBody} from './styles'
 import {CollapsingRow} from '../'
 import { v4 as uuidv4 } from 'uuid'
@@ -18,7 +18,7 @@ export const POCTBody = ({
     rows, 
     prepareRow 
 }: POCTBodyProps) => {
-    const { isStaked, filter } = React.useContext(ConfigProviderContext)
+    const { isStaked, filter, isMobile, filterDataReload } = React.useContext(ConfigProviderContext)
     const {setRemovingPopup} = useContext(LiquidityProviderContext)
 
     return (
@@ -27,11 +27,11 @@ export const POCTBody = ({
                 rows.map((row: Row<PairData>) => {
                     // Prepare the row for display
                     prepareRow(row)
-                    return (
-                        // Apply the row props
-                        (!isStaked || filter(isStaked, row)) &&
-                        <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} onRemovingPopupListener={setRemovingPopup} />
-                    )
+
+                    //TODO Agregar filtro para filtas.
+                    const r = (!isStaked || (filter(isStaked, row))) && filterDataReload(row);
+
+                    return r && <CollapsingRow key={uuidv4()} row={row} fullExpanded={false} onRemovingPopupListener={setRemovingPopup} isMobile={isMobile} />
                 })
             }
         </TBody>

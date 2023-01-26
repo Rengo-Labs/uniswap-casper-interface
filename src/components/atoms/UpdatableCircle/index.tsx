@@ -31,6 +31,7 @@ export const UpdatableCircle = ({ strokeWidth, handler }) => {
         viewBox="0 0 100 100"
         width={26}
         height={26}
+        style={{display: "flex"}}
         onClick={click}
       >
         <TrailCircular
