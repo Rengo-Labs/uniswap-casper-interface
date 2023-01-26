@@ -1,25 +1,23 @@
 import styled from "styled-components";
 
 export const WalletSelectionStyled = styled.div<any>`
-    margin-left: 0.5vw;
-    margin-right: 0.5vw;
     display: flex;
+    justify-content: center;
     align-items: center;
-    padding: .3rem .5rem;
-    gap: 10px;
-    background-color: ${props => props.theme.StrongColor5};
+    padding: 10px;
+    background-color: ${(props) => props.theme.NewGreyColor};
     border-radius: 10px;
-    width: 258px;
-    height: 42px;
-    &:hover{
+    &:hover {
         cursor: pointer;
     }
-    &:active{
-        background-color: ${props => props.theme.StrongColor3};
+    &:active {
+        background-color: ${(props) => props.theme.NewGreyColor};
     }
-    
-    ${props => props.isSelected && `
-    color: red;
-    background: white;
+
+    ${(props) =>
+        props.isSelected &&
+        `
+    color: ${props.theme.PrimaryColor};
+    background: ${props.theme.NewPurpleColor};
     `}
-`
+`;

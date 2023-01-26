@@ -13,12 +13,12 @@ import {
   WalletSelectionImageStyled,
   ButtonText
 } from "./styles";
+import { ReactComponent as Close } from "../../../assets/newIcons/x.svg";
 import { WalletSelectionDiv } from "../WalletSelectionDiv";
-import casperWallet from "../../../assets/walletIcons/casper.png";
-import torusWallet from "../../../assets/walletIcons/torus-icon-blue-3.svg";
 import casperWallet from "../../../assets/walletIcons/casper.svg";
 import torusWallet from "../../../assets/walletIcons/torus.svg";
 import { WalletName } from "../../../commons";
+import { NewIcons } from "../NewIcons";
 import { useTheme } from "styled-components";
 import { LightThemeInterface } from "../../../contexts/ThemeContext/themes";
 
@@ -42,46 +42,56 @@ export const ConnectionPopup = ({
   showButton,
 }: ConnectionPopup) => {
 
+  const theme = useTheme() as LightThemeInterface;
   const closeHandler = (e) => {
     onClose()
   };
 
   return (
-    <>
-      {
-        !isConnected && <>
-          {
-            showButton !== false && <PopoverButtonStyled onClick={onToggle}>Connect Wallet</PopoverButtonStyled>
-          }
-          <OverlayPopup isOpened={isOpened}>
-            <PopupContainer>
-              {/* TODO: remove inline css*/}
-              <PopupTitle><div style={{ flex: "1" }}>{title}</div><PopupClose onClick={closeHandler}>&times;</PopupClose></PopupTitle>
-              <PopupContent>
-                <DisclaimerContent>
-                  By connecting your wallet, you acknowledge that you have read, understand and accept the terms in the Disclaimer
-                </DisclaimerContent>
-                <WalletContainer>
-                  {/* TODO: remove inline css*/}
-                  <WalletSelectionDiv style={{ backgroundColor: "lightgray" }} isSelected={false} onClick={() => onConnect(WalletName.CASPER_SIGNER)}>
-                    <WalletSelectionImageStyled src={casperWallet} alt="" />
-                    <ButtonText>Signer Wallet</ButtonText>
-                  </WalletSelectionDiv>
-                  {/* TODO: remove inline css*/}
-                  <WalletSelectionDiv style={{ backgroundColor: "lightgray" }} isSelected={false} onClick={() => onConnect(WalletName.TORUS)}>
-                    <WalletSelectionImageStyled src={torusWallet} alt="" />
-                    <ButtonText>Torus Wallet</ButtonText>
-                  </WalletSelectionDiv>
-                </WalletContainer>
-                {
-                  //<CollapsingPopup>show uninstall wallets <HiChevronDown /></CollapsingPopup>
-                }
-              </PopupContent>
-              <PopupBottom><HRefLink>New Here? Get started on Casperswap</HRefLink></PopupBottom>
-            </PopupContainer>
-          </OverlayPopup>
-        </>
-      }
-    </>
-  )
+      <>
+          {!isConnected && (
+              <>
+                  {showButton !== false && <PopoverButtonStyled onClick={onToggle}>Connect Wallet</PopoverButtonStyled>}
+                  <OverlayPopup isOpened={isOpened}>
+                      <PopupContainer>
+                          <PopupTitle>
+                              {title}
+                              <PopupClose onClick={closeHandler}>
+                                  <NewIcons Icon={Close} size={24} style={{ fill: theme.NewPurpleColor }} />
+                              </PopupClose>
+                          </PopupTitle>
+                          <PopupContent>
+                              <DisclaimerContent>
+                                  By connecting your wallet, you acknowledge that you have read, understand and accept
+                                  the terms in the Disclaimer
+                              </DisclaimerContent>
+                              <WalletContainer>
+                                  <WalletSelectionDiv
+                                      isSelected={false}
+                                      onClick={() => onConnect(WalletName.CASPER_SIGNER)}
+                                  >
+                                      <WalletSelectionImageStyled src={casperWallet} alt="" />
+                                      <ButtonText>Signer Wallet</ButtonText>
+                                  </WalletSelectionDiv>
+                                  <WalletSelectionDiv
+                                      isSelected={false}
+                                      onClick={() => onConnect(WalletName.TORUS)}
+                                  >
+                                      <WalletSelectionImageStyled src={torusWallet} alt="" />
+                                      <ButtonText>Torus Wallet</ButtonText>
+                                  </WalletSelectionDiv>
+                              </WalletContainer>
+                              {
+                                  //<CollapsingPopup>show uninstall wallets <HiChevronDown /></CollapsingPopup>
+                              }
+                          </PopupContent>
+                          <PopupBottom>
+                              <HRefLink>New Here? Get started on Casperswap</HRefLink>
+                          </PopupBottom>
+                      </PopupContainer>
+                  </OverlayPopup>
+              </>
+          )}
+      </>
+  );
 }
