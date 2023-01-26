@@ -3,10 +3,9 @@ import {device} from "../../../contexts/ThemeContext/themes";
 
 export const SocialMediaStyles = styled.section`
     display: flex;
+    justify-content: flex-end;
     align-items: center;
     gap:.8rem;
-    float: right;
-    margin-left: auto;
 
   @media ${device.mobileS} {
     gap:.8rem;
