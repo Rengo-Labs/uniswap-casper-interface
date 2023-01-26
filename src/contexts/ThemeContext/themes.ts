@@ -1,7 +1,7 @@
 import { createGlobalStyle } from "styled-components";
 import "../../index.css";
 
-interface LightThemeInterface {
+export interface LightThemeInterface {
   PrimaryColor: string;
   PrimaryColor2: string;
   MainColor: string;
@@ -24,34 +24,33 @@ interface LightThemeInterface {
 }
 
 export const lightTheme = {
-  PrimaryColor: "rgba(255,255,255,1)",
-  PrimaryColor2: "rgba(255,255,255,.5)",
-  MainColor: "rgba(0,62,145,1)",
-  StrongColor: "rgba(3,46,121,1)",
-  StrongColor2: "rgba(3,70,166,1)",
-  StrongColor3: "rgba(3,52,138,1)",
-  StrongColor4: "rgba(3,52,138,.3)",
-  StrongColor5: "rgba(3,52,138,.8)",
-  SecondaryColor: "rgba(0,187,233,1)",
-  TertiaryColor: "rgba(255,204,0,1)",
-  TertiaryColor2: "rgba(255,204,0,.5)",
-  TertiaryColor3: "rgba(255,204,0,.8)",
-  backgroundColor:
-    "linear-gradient(to bottom, rgba(0,187,233,.8), rgba(0,62,145,1))",
-  mainBackgroundColor: "rgba(247,252,253,255)",
-  secondBackgroundColor: "rgba(120, 100, 244, 1)",
-  thirdBackgroundColor: "rgba(112, 236, 212, 1)",
-  NewAquamarineColor: "rgba(110, 235, 208, 1)",
-  NewPurpleColor: "rgba(113, 95, 245, 1)",
-  NewGrayColor: "#999999",
-  NewGreyColor: "#CCCCCC",
-  NewGreenColor: "#1DC90A",
-  NewBlackColor: "#080808",
-  NewWhiteColor: "#f7fcfe",
-  SecondBlackColor: "#545454",
-  OPEN_WIDTH: "280px",
-  CLOSED_WIDTH: "108px",
-  NewNavigationCCBG:"rgb(120,100,244)"
+    PrimaryColor: "rgba(255,255,255,1)",
+    PrimaryColor2: "rgba(255,255,255,.5)",
+    MainColor: "rgba(0,62,145,1)",
+    StrongColor: "rgba(3,46,121,1)",
+    StrongColor2: "rgba(3,70,166,1)",
+    StrongColor3: "rgba(3,52,138,1)",
+    StrongColor4: "rgba(3,52,138,.3)",
+    StrongColor5: "rgba(3,52,138,.8)",
+    SecondaryColor: "rgba(0,187,233,1)",
+    TertiaryColor: "rgba(255,204,0,1)",
+    TertiaryColor2: "rgba(255,204,0,.5)",
+    TertiaryColor3: "rgba(255,204,0,.8)",
+    backgroundColor: "linear-gradient(to bottom, rgba(0,187,233,.8), rgba(0,62,145,1))",
+    mainBackgroundColor: "rgba(247,252,253,255)",
+    secondBackgroundColor: "rgba(120, 100, 244, 1)",
+    thirdBackgroundColor: "rgba(112, 236, 212, 1)",
+    NewAquamarineColor: "rgba(110, 235, 208, 1)",
+    NewPurpleColor: "rgba(113, 95, 245, 1)",
+    NewGrayColor: "#999999",
+    NewGreyColor: "#CCCCCC",
+    NewGreenColor: "#1DC90A",
+    NewBlackColor: "#080808",
+    NewWhiteColor: "#f7fcfe",
+    SecondBlackColor: "#545454",
+    OPEN_WIDTH: "280px",
+    CLOSED_WIDTH: "108px",
+    NewNavigationCCBG: "rgb(120,100,244)",
 };
 
 export const darkTheme = {

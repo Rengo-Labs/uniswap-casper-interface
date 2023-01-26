@@ -13,10 +13,12 @@ import {
 } from "../ConnectionPopup/styles";
 import {WalletSelectionDiv} from "../WalletSelectionDiv";
 import {WalletName} from "../../../commons";
-import casperWallet from "../../../assets/walletIcons/casper.png";
-import torusWallet from "../../../assets/walletIcons/torus-icon-blue-3.svg";
+import casperWallet from "../../../assets/walletIcons/casper.svg";
+import torusWallet from "../../../assets/walletIcons/torus.svg";
 import {ButtonStyleMobile} from "./styles";
 import {CasperIcons} from "../CasperIcon";
+import { useTheme } from "styled-components";
+import { LightThemeInterface } from "../../../contexts/ThemeContext/themes";
 
 export interface ConnectionPopup {
     isConnected: boolean,
@@ -34,6 +36,7 @@ export const ConnectionPopupMobile = ({  isConnected,
                                           isOpened,
                                           onToggle,
                                           showButton} : ConnectionPopup) => {
+    const theme = useTheme() as LightThemeInterface;
     const closeHandler = (e) => {
         onClose()
     };

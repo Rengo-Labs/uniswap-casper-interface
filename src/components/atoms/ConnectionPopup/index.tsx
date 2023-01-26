@@ -16,7 +16,11 @@ import {
 import { WalletSelectionDiv } from "../WalletSelectionDiv";
 import casperWallet from "../../../assets/walletIcons/casper.png";
 import torusWallet from "../../../assets/walletIcons/torus-icon-blue-3.svg";
+import casperWallet from "../../../assets/walletIcons/casper.svg";
+import torusWallet from "../../../assets/walletIcons/torus.svg";
 import { WalletName } from "../../../commons";
+import { useTheme } from "styled-components";
+import { LightThemeInterface } from "../../../contexts/ThemeContext/themes";
 
 export interface ConnectionPopup {
   isConnected: boolean,
