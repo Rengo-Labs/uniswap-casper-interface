@@ -20,6 +20,8 @@ import { ReactComponent as Gitbook } from '../../../assets/newIcons/gitbook.svg'
 import { ReactComponent as Medium } from '../../../assets/newIcons/medium.svg';
 import { NewIcons, CasperIcons } from '../../../components/atoms';
 import {TWITTER_URL, DISCORD_URL, TELEGRAM_URL, GITBOOK_URL, MEDIUM_URL } from "../../../constant";
+import { useTheme } from 'styled-components';
+import { LightThemeInterface } from '../../../contexts/ThemeContext/themes';
 
 interface HomePropsInterface {
   title: any;
@@ -42,6 +44,7 @@ export const HomeTemplate = ({
   handler,
   heroImage,
 }: HomePropsInterface) => {
+  const theme = useTheme() as LightThemeInterface;
   const listOfLinks: any[] = [];
   const showTVL = false;
 
@@ -49,46 +52,41 @@ export const HomeTemplate = ({
     <ContainerDD>
       <GridNavbar>
         <a href='/'>
-          <WordMarkIcon style={{ fill: '#FFF' }} />
+          <WordMarkIcon style={{ fill: theme.PrimaryColor }} />
         </a>
         <a href='/'>
-          <CasperIcons Icon={CasperIcon} width={36} height={44} style={{ fill: '#FFF' }} />
+          <CasperIcons Icon={CasperIcon} width={36} height={44} style={{ fill: theme.PrimaryColor }} />
         </a>
         <GroupIconButtons>
           <a
               href={GITBOOK_URL}
               target='_blank'
-              style={{ display: 'grid', placeItems: 'center' }}
           >
-            <NewIcons Icon={Gitbook} size={32} style={{ fill: '#FFF' }} />
+            <NewIcons Icon={Gitbook} size={32} style={{ fill: theme.PrimaryColor }} />
           </a>
           <a
               href={MEDIUM_URL}
               target='_blank'
-              style={{ display: 'grid', placeItems: 'center' }}
           >
-            <NewIcons Icon={Medium} size={32} style={{ fill: '#FFF' }} />
+            <NewIcons Icon={Medium} size={32} style={{ fill: theme.PrimaryColor }} />
           </a>
           <a
               href={TELEGRAM_URL}
               target='_blank'
-              style={{ display: 'grid', placeItems: 'center' }}
           >
-            <NewIcons Icon={Telegram} size={32} style={{ fill: '#FFF' }} />
+            <NewIcons Icon={Telegram} size={32} style={{ fill: theme.PrimaryColor }} />
           </a>
           <a
               href={DISCORD_URL}
               target='_blank'
-              style={{ display: 'grid', placeItems: 'center' }}
           >
-            <NewIcons Icon={Discord} size={32} style={{ fill: '#FFF' }} />
+            <NewIcons Icon={Discord} size={32} style={{ fill: theme.PrimaryColor }} />
           </a>
           <a
             href={TWITTER_URL}
             target='_blank'
-            style={{ display: 'grid', placeItems: 'center' }}
           >
-            <NewIcons Icon={Twitter} size={32} style={{ fill: '#FFF' }} />
+            <NewIcons Icon={Twitter} size={32} style={{ fill: theme.PrimaryColor }} />
           </a>
         </GroupIconButtons>
       </GridNavbar>
@@ -107,7 +105,7 @@ export const HomeTemplate = ({
       <HomeFooterDD>
         <GridNavbarFooter>
           <a href='/'>
-            <WordMarkIcon style={{ fill: '#FFF' }} />
+            <WordMarkIcon style={{ fill: theme.PrimaryColor }} />
           </a>
           <GroupIconButtons>
             <a
@@ -115,35 +113,35 @@ export const HomeTemplate = ({
                 target='_blank'
                 style={{ display: 'grid', placeItems: 'center' }}
             >
-              <NewIcons Icon={Gitbook} size={32} style={{ fill: '#FFF' }} />
+              <NewIcons Icon={Gitbook} size={32} style={{ fill: theme.PrimaryColor }} />
             </a>
             <a
                 href={MEDIUM_URL}
                 target='_blank'
                 style={{ display: 'grid', placeItems: 'center' }}
             >
-              <NewIcons Icon={Medium} size={32} style={{ fill: '#FFF' }} />
+              <NewIcons Icon={Medium} size={32} style={{ fill: theme.PrimaryColor }} />
             </a>
             <a
                 href={TELEGRAM_URL}
                 target='_blank'
                 style={{ display: 'grid', placeItems: 'center' }}
             >
-              <NewIcons Icon={Telegram} size={32} style={{ fill: '#FFF' }} />
+              <NewIcons Icon={Telegram} size={32} style={{ fill: theme.PrimaryColor }} />
             </a>
             <a
                 href={DISCORD_URL}
                 target='_blank'
                 style={{ display: 'grid', placeItems: 'center' }}
             >
-              <NewIcons Icon={Discord} size={32} style={{ fill: '#FFF' }} />
+              <NewIcons Icon={Discord} size={32} style={{ fill: theme.PrimaryColor }} />
             </a>
             <a
                 href={TWITTER_URL}
                 target='_blank'
                 style={{ display: 'grid', placeItems: 'center' }}
             >
-              <NewIcons Icon={Twitter} size={32} style={{ fill: '#FFF' }} />
+              <NewIcons Icon={Twitter} size={32} style={{ fill: theme.PrimaryColor }} />
             </a>
           </GroupIconButtons>
         </GridNavbarFooter>
