@@ -4,9 +4,9 @@ import { HomeTemplate } from '../../templates/HomeTemplate'
 import { usUS } from '../../../i18n'
 export function Home() {
   const router = useNavigate()
-  const { brandName, brandIMG, mainButton, heroImage } = usUS
+  const { mainButton } = usUS
 
   return (
-    <HomeTemplate title={brandName} url={brandIMG} content={mainButton} handler={() => {router("/swap")}} heroImage={heroImage} />
+    <HomeTemplate content={mainButton} handler={() => {router("/swap")}} />
   )
 }

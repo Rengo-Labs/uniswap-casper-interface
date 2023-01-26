@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   HeroTitleDD,
   ContainerDD,
@@ -24,25 +24,13 @@ import { useTheme } from 'styled-components';
 import { LightThemeInterface } from '../../../contexts/ThemeContext/themes';
 
 interface HomePropsInterface {
-  title: any;
-  url: any;
-  content: any;
-  isAnchor?: any;
-  to?: any;
-  insideMessage?: any;
-  handler: any;
-  heroImage: any;
+  content: ReactNode;
+  handler: () => void;
 }
 
 export const HomeTemplate = ({
-  title,
-  url,
   content,
-  isAnchor = false,
-  to = '/',
-  insideMessage = 'Analytics',
   handler,
-  heroImage,
 }: HomePropsInterface) => {
   const theme = useTheme() as LightThemeInterface;
   const listOfLinks: any[] = [];
