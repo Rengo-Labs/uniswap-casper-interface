@@ -8,7 +8,7 @@ import {
   SquareGrayButton,
   HomeFooterDD,
 } from '../../atoms';
-import { ActionsBar, GroupIconButtons } from '../../molecules';
+import { GroupIconButtons } from '../../molecules';
 import { Hero, GridNavbar, GridNavbarFooter } from '../../organisms';
 
 import { ReactComponent as WordMarkIcon } from '../../../assets/newIcons/casperswap-wordmark.svg';
@@ -91,10 +91,6 @@ export const HomeTemplate = ({
             <NewIcons Icon={Twitter} size={32} style={{ fill: '#FFF' }} />
           </a>
         </GroupIconButtons>
-
-        <ActionsBar>
-          <></>
-        </ActionsBar>
       </GridNavbar>
       <Hero>
         <HeroHeaderDD>

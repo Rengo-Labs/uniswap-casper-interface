@@ -1,4 +1,3 @@
-export { ActionsBar } from './ActionsBar'
 export { NavigationBar } from './NavigationBar'
 export { SwapModal } from './SwapModal'
 export { POCTHead } from './POCTHead'
