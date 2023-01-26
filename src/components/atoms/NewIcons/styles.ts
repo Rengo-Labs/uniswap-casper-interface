@@ -5,9 +5,9 @@ export const IconContainerStyle = styled.div.attrs(
   (props: { size: any; width?: number; height?: number }) => props
 )`
   display: flex;
-  align-items: 'center';
-  align-self: 'center';
-  justify-content: 'center';
+  align-items: center;
+  align-self: center;
+  justify-content: center;
   height: ${(props) => props.height || props.size}px;
   width: ${(props) => props.width || props.size}px;
 

@@ -1,6 +1,5 @@
 import React from 'react'
 import { TableInstance } from 'react-table'
-import { PairData } from '../../../reducers/PairsReducer'
 
 import { POCTHead, POCTBody } from '../../molecules'
 import { POCTableStyled } from './styles'

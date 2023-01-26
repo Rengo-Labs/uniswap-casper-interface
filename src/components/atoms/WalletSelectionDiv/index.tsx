@@ -12,7 +12,7 @@ export const WalletSelectionDiv = ({
     isSelected, 
     children, 
     onClick,
-    style
+    style = {}
 }: WalletSelectionDivInterfaceProps) => {
     return (
         <WalletSelectionStyled isSelected={isSelected} onClick={onClick} style={style}>

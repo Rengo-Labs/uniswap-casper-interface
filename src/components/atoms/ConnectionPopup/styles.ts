@@ -98,19 +98,28 @@ export const PopoverButtonStyled= styled.div`
     display: flex;
     align-items: center; 
     border-radius: 8px;
-    font-weight: 500;
-    width: fit-content;
-    font-size: 16px;
-    padding: 16px;
+    font-family: 'MyriadPro';
     justify-content: center;
     color: ${props => props.theme.secondBackgroundColor};
     background: ${props => props.theme.thirdBackgroundColor};
+    gap: 4px;
     &:hover{
         cursor: pointer;
     }
     &:active{
         background-color: ${props => props.theme.secondBackgroundColor};
         color: ${props => props.theme.thirdBackgroundColor};
+    }
+    
+    @media ${device.mobileS} {
+        width: 100px;
+        font-size: 12px;
+    }
+    @media ${device.tablet} {
+        width: auto;
+        font-size: 16px;
+        line-height: 32px;
+        padding: .875rem 2rem;
     }
 `
 
@@ -153,3 +162,7 @@ export const ButtonText = styled.h2`
     letter-spacing: 0.02em;
     margin-left: 8px;
 `;
+
+export const TFlex1 = styled.div`
+    flex: 1;
+`

@@ -11,7 +11,7 @@ import {
   DisclaimerContent,
   PopoverButtonStyled,
   WalletSelectionImageStyled,
-  ButtonText
+  ButtonText, TFlex1
 } from "./styles";
 import { ReactComponent as Close } from "../../../assets/newIcons/x.svg";
 import { WalletSelectionDiv } from "../WalletSelectionDiv";
@@ -48,6 +48,7 @@ export const ConnectionPopup = ({
   };
 
   return (
+
       <>
           {!isConnected && (
               <>
@@ -94,4 +95,5 @@ export const ConnectionPopup = ({
           )}
       </>
   );
+
 }

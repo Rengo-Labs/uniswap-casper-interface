@@ -1,13 +1,13 @@
 import styled from 'styled-components'
-import {device} from "../../../contexts/ThemeContext/themes";
-import {AiOutlineSearch} from "react-icons/ai";
-
+import {device} from "../../contexts/ThemeContext/themes";
+import { AiOutlineSearch } from "react-icons/ai";
 
 export const PoolSeachButtonStyled = styled.section`
     flex: 0.8;
     height: 58px;
     box-sizing: border-box;
     background-color: white;
+    
     padding:.55em 1em;
     border-radius: 10px;
     border: 1px solid black;
@@ -23,23 +23,20 @@ export const PoolSeachButtonStyled = styled.section`
   }
   
   @media ${device.mobileS} {
-      display: none;
+      display: flex;
+      width: 100%;
   }
   
   @media ${device.laptop} {
-      display: flex;
-  }
-  
-  @media ${device.laptopL} {
-      width: 23.7rem;
+      display: none;
   }
 `
 
-export const AiOutLineSearchStyled = styled(AiOutlineSearch)`
+export const IconStyled = styled(AiOutlineSearch) `
   background-color: #D9D9D9; 
   color: #999999; 
   border-radius: 50%; 
   padding: 0.2em; 
   height: 1em; 
-  width: 1.2em;
+  width: 1em;
 `

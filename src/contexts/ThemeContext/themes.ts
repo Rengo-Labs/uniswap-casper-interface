@@ -78,6 +78,17 @@ export const device = {
   desktopL: `(min-width: ${sizeScreen.desktop})`
 };
 
+export const deviceMax = {
+  mobileS: `(max-width: ${sizeScreen.mobileS})`,
+  mobileM: `(max-width: ${sizeScreen.mobileM})`,
+  mobileL: `(max-width: ${sizeScreen.mobileL})`,
+  tablet: `(max-width: ${sizeScreen.tablet})`,
+  laptop: `(max-width: ${sizeScreen.laptop})`,
+  laptopL: `(max-width: ${sizeScreen.laptopL})`,
+  desktop: `(max-width: ${sizeScreen.desktop})`,
+  desktopL: `(max-width: ${sizeScreen.desktop})`
+};
+
 export const GlobalStyles = createGlobalStyle<{ theme: LightThemeInterface }>`
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
