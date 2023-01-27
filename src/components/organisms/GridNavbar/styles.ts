@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import {device} from "../../../contexts/ThemeContext/themes";
 
 export const NavBarStyle = styled.nav`
-  padding: 10px 40px;
+  padding: 32px 40px 10px 40px;
   grid-column: 1/2;
   box-sizing: border-box;
   display: grid;
@@ -22,7 +22,7 @@ export const NavBarStyle = styled.nav`
   }
 
   @media ${device.mobileS} {
-    padding: 10px 5px;
+    padding: 32px 5px 10px 5px;
     grid-template: 1fr / repeat(1,1fr) !important;
 
     & > *:nth-child(1) {
@@ -35,11 +35,11 @@ export const NavBarStyle = styled.nav`
   }
 
   @media ${device.mobileM} {
-    padding: 10px 10px;
+    padding: 32px 10px 10px 10px;
   }
 
   @media ${device.mobileL} {
-    padding: 10px 15px;
+    padding: 32px 15px 10px 15px;
     grid-template: 1fr / repeat(1,1fr) !important;
 
     & > *:nth-child(1) {
@@ -52,7 +52,7 @@ export const NavBarStyle = styled.nav`
   }
 
   @media ${device.tablet} {
-    padding: 10px 40px;
+    padding: 32px 40px 10px 40px;
 
     grid-template: 1fr / repeat(3,1fr) !important;
 

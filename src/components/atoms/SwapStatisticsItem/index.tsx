@@ -10,23 +10,27 @@ import {
   TokenContainer,
   Content,
 } from './styles';
-import { ReactComponent as Grapich } from '../../../assets/newIcons/graphics.svg';
+import { ReactComponent as Graphic } from '../../../assets/newIcons/graphics.svg';
 import { NewIcons } from '../NewIcons';
+import { useTheme } from 'styled-components';
+import { LightThemeInterface } from '../../../contexts/ThemeContext/themes';
 
 export interface ISwapStatistics {
   id: number;
-  token: any;
+  token: any; // FIXME: Set type
   price: number;
   percent: number;
-  grafic: string;
+  graphic: string;
 }
 
 interface ISwapStatisticsItemProps {
-  stadistic: ISwapStatistics;
+  statistic: ISwapStatistics;
 }
 
-export const SwapStatisticsItem = ({ stadistic }: ISwapStatisticsItemProps) => {
-  const { token, price, percent } = stadistic;
+export const SwapStatisticsItem = ({ statistic }: ISwapStatisticsItemProps) => {
+  const theme = useTheme() as LightThemeInterface;
+  const { token, price, percent } = statistic;
+
   return (
     <Wrapper>
       <Content>
@@ -46,10 +50,10 @@ export const SwapStatisticsItem = ({ stadistic }: ISwapStatisticsItemProps) => {
       </Content>
       <GraphicContainer>
         <NewIcons
-          Icon={Grapich}
+          Icon={Graphic}
           height={40}
           width={220}
-          style={{ fill: '#715ff5' }}
+          style={{ fill: theme.NewPurpleColor }}
         />
       </GraphicContainer>
     </Wrapper>
