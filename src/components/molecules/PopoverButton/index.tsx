@@ -84,7 +84,7 @@ export const PopoverButton = ({
               onClick={copyAccount}
             >
               <ItemColumn position='center' flex='1' padding='0 0 0 1em'>
-                <NewIcons Icon={copyIcon} size='30' />
+                <NewIcons Icon={copyIcon} size={30} />
               </ItemColumn>
               <ItemColumn position='left' flex='3'>
                 {walletLabel}
@@ -92,7 +92,7 @@ export const PopoverButton = ({
             </ItemMenu>
             <ItemMenu onClick={redirectToTransactionsList}>
               <ItemColumn position='center' flex='1' padding='0 0 0 1em'>
-                <NewIcons Icon={recentTransactionIcon} size='30' />
+                <NewIcons Icon={recentTransactionIcon} size={30} />
               </ItemColumn>
               <ItemColumn position='left' flex='3'>
                 Recent Transactions
@@ -101,7 +101,7 @@ export const PopoverButton = ({
             {/* TODO: remove inline css*/}
             <ItemMenu style={{ color: 'red' }} onClick={onDisconnect}>
               <ItemColumn position='center' flex='1' padding='0 0 0 1em'>
-                <NewIcons Icon={disconnectWallet} size='30' />
+                <NewIcons Icon={disconnectWallet} size={30} />
               </ItemColumn>
               <ItemColumn position='left' flex='3'>
                 Disconnect Wallet

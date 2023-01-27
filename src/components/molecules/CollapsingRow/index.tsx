@@ -45,8 +45,8 @@ export interface CollapsingRowProps {
     row: Row<PairData>,
     fullExpanded?: boolean,
     isMobile?: boolean,
-    onRemovingPopupListener: any,
-    onClick
+    onRemovingPopupListener: (remove: boolean) => void,
+    onClick,
 }
 
 export const CollapsingRow = ({
@@ -66,7 +66,7 @@ export const CollapsingRow = ({
         setExpanded(!isExpanded)
     }
 
-    const goTo = (path, removingPopup= false) => {
+    const goTo = (path: string, removingPopup= false) => {
         if (removingPopup) {
             onRemovingPopupListener(true)
         }
@@ -153,7 +153,7 @@ export const CollapsingRow = ({
                             {false &&
                                 <CircleButton onClick={() => {goTo("/farms")}}>
                                     {/* TODO: remove inline css*/}
-                                    <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
+                                    <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size={22} />
                                 </CircleButton>
                             }
                         </TRow>
@@ -208,7 +208,7 @@ export const CollapsingRow = ({
                         {false &&
                           <CircleButton onClick={() => {goTo("/farms")}}>
                               {/* TODO: remove inline css*/}
-                              <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size="22px" />
+                              <NewIcons Icon={FarmIcon} style={{alignSelf: "center"}} size={22} />
                           </CircleButton>
                         }
                     </TLeftRow>
