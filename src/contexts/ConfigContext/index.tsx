@@ -99,6 +99,8 @@ export interface ConfigContext {
   currentQuery: any,
   setCurrentQuery: (v) => void,
   filterDataReload: (v) => any;
+  mapExpandedRows: any[],
+  setMapExpandedRows: (l) => void
 }
 
 export interface PairReserves {
@@ -166,6 +168,7 @@ export const ConfigContextWithReducer = ({
   const { updateNotification, dismissNotification } = notificationStore();
   const [tableInstance, setTableInstance] = useState<any>({})
   const [currentQuery, setCurrentQuery] = useState("")
+  const [mapExpandedRows, setMapExpandedRows] = useState([])
 
   const [showConnectionPopup, setShowConnectionPopup] = useState(false);
   const [requestConnectWallet, setRequestConnectWallet] = useState(0);
@@ -1060,7 +1063,9 @@ export const ConfigContextWithReducer = ({
         findReservesBySymbols,
         currentQuery,
         setCurrentQuery,
-        filterDataReload
+        filterDataReload,
+        mapExpandedRows,
+        setMapExpandedRows,
       }}
     >
       {children}

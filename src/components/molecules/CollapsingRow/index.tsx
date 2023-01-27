@@ -45,14 +45,16 @@ export interface CollapsingRowProps {
     row: Row<PairData>,
     fullExpanded?: boolean,
     isMobile?: boolean,
-    onRemovingPopupListener: (remove: boolean) => void
+    onRemovingPopupListener: (remove: boolean) => void,
+    onClick,
 }
 
 export const CollapsingRow = ({
     row, 
     fullExpanded = false,
     isMobile = false,
-    onRemovingPopupListener
+    onRemovingPopupListener,
+    onClick
 }: CollapsingRowProps)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
     const navigate = useNavigate()
@@ -60,7 +62,8 @@ export const CollapsingRow = ({
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
     const handleOnClick = () => {
-        setExpanded(!isExpanded);
+        onClick(row.original.name, !isExpanded)
+        setExpanded(!isExpanded)
     }
 
     const goTo = (path: string, removingPopup= false) => {

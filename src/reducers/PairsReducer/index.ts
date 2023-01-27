@@ -30,7 +30,7 @@ export type PairData = {
   contract1?: string,
   token0Name?: string,
   token1Name?: string,
-  decimals: number,
+  decimals: number
 }
 
 export type PairState = Record<string, PairData>
@@ -367,6 +367,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             const totalLiquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.totalReserve0))
               .times(action.payload.token0Price)
               .plus(new BigNumber(convertUIStringToBigNumber(oldState.totalReserve1)).times(action.payload.token1Price))
+              .div(10**9)
               .toString()
 
             // console.log('action.payload', action.payload, oldState.totalReserve0, oldState.totalReserve1)
