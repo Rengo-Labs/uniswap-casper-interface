@@ -336,14 +336,14 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
       case PairActions.LOAD_PAIR:
         {
           const oldState = state[`${action.payload.name}`]
-  
+
           const balance = convertUIStringToBigNumber(oldState.balance)
           const totalSupply = convertUIStringToBigNumber(action.payload.totalSupply)
           const totalReserve0 = convertUIStringToBigNumber(action.payload.totalReserve0)
           const totalReserve1 = convertUIStringToBigNumber(action.payload.totalReserve1)
           const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
           const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
-  
+
           return {
             ...state,
             [`${action.payload.name}`]: {
@@ -364,9 +364,9 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           {
             const oldState = state[`${action.payload.name}`]
 
-            const totalLiquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.totalReserve0))
+            const totalLiquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.reserve0))
               .times(action.payload.token0Price)
-              .plus(new BigNumber(convertUIStringToBigNumber(oldState.totalReserve1)).times(action.payload.token1Price))
+              .plus(new BigNumber(convertUIStringToBigNumber(oldState.reserve0)).times(action.payload.token1Price))
               .div(10**9)
               .toString()
 
