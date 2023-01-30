@@ -1,7 +1,6 @@
-import React from 'react'
-import styled from 'styled-components'
-import {device} from "../../../contexts/ThemeContext/themes";
-
+import React from 'react';
+import styled from 'styled-components';
+import { device } from '../../../contexts/ThemeContext/themes';
 
 const ContainerLiquidityStyles = styled.main`
   box-sizing: border-box;
@@ -11,20 +10,16 @@ const ContainerLiquidityStyles = styled.main`
   padding: 10px;
   color: black;
   display: grid;
-  grid-template-columns: auto auto;
-  align-items: start;
-  
-  @media ${device.tablet} {
-    display: grid;
-    width: auto;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   @media ${device.laptop} {
     display: grid;
-    width: auto;
+    grid-template-columns: auto auto;
+    align-items: flex-start;
   }
-`
-export const ContainerLiquidityNSM = ({children}) => {
-    return (
-        <ContainerLiquidityStyles>{children}</ContainerLiquidityStyles>
-    )
-}
+`;
+export const ContainerLiquidityNSM = ({ children }) => {
+  return <ContainerLiquidityStyles>{children}</ContainerLiquidityStyles>;
+};
