@@ -371,11 +371,11 @@ export const ConfigContextWithReducer = ({
   }
 
   async function refresh(wallet?: Wallet) {
-    await loadPairs();
     if (wallet) {
-      await loadPairsUserData(wallet, wallet?.isConnected);
       await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+      await loadPairsUserData(wallet, wallet?.isConnected);
     }
+    await loadPairs();
     await getTVLandVolume()
   }
 
@@ -698,7 +698,7 @@ export const ConfigContextWithReducer = ({
         pairDispatch({
           type: PairActions.LOAD_PAIR_USD,
           payload: {
-            name: p.name, 
+            name: p.name,
             token0Price: tokenPrices[p.token0Symbol],
             token1Price: tokenPrices[p.token1Symbol],
           },
