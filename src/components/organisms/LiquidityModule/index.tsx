@@ -318,7 +318,7 @@ const LiquidityNewModule = () => {
       return acc
     }, [])
 
-    console.log('excludes', includes, excludes)
+    // console.log('excludes', includes, excludes)
 
     onSelectFirstToken(token)
     setExcludedB(excludes)
@@ -360,7 +360,7 @@ const LiquidityNewModule = () => {
       return acc
     }, [])
 
-    console.log('excludes', includes, excludes)
+    // console.log('excludes', includes, excludes)
 
     onSelectSecondToken(token)
     setExcludedA(excludes)
