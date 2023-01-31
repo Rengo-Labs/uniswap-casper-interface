@@ -13,7 +13,6 @@ interface CommunityMenuProps {
 }
 
 export const CommunityMenu = ({ communityOptions }: CommunityMenuProps) => {
-  const [selectedOption, selectedOptionSet] = useState(0);
 
   function onOptionClickHandler(navegateTo: string) {
     window.open(navegateTo, '_blank');

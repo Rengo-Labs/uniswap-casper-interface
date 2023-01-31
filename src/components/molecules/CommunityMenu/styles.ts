@@ -5,7 +5,7 @@ export const StyledCommunityMenu = styled.ul`
   background-color: white;
   box-sizing: border-box;
   justify-self: center;
-  height: 148px;
+  height: 320px;
   width: 180px;
   border: 1px solid ${(props) => props.theme.NewBlackColor};
   border-radius: 10px;
@@ -14,7 +14,7 @@ export const StyledCommunityMenu = styled.ul`
   gap: 10px;
   z-index: 50;
   margin-left: 470px;
-  margin-top: -100px;
+  margin-top: -300px;
   & > :first-child {
     border-radius: 10px 10px 0 0;
   }
