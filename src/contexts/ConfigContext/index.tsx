@@ -265,7 +265,7 @@ export const ConfigContextWithReducer = ({
 
     try {
       const { balance, mainPurse } = await getStatus(w);
-      
+
       debounceConnect = false;
 
       return {
@@ -283,7 +283,7 @@ export const ConfigContextWithReducer = ({
         show: true,
         chargerBar: false
       });
-      
+
       debounceConnect = false;
 
       return {
@@ -294,7 +294,7 @@ export const ConfigContextWithReducer = ({
         isConnected: w.isConnected,
       };
     }
-    
+
   }
 
   async function updateBalances(
@@ -451,7 +451,7 @@ export const ConfigContextWithReducer = ({
         })
         return
       }
-        
+
       updateNotification({
         type: NotificationType.Error,
         title: 'Ooops we have an error',
@@ -691,7 +691,7 @@ export const ConfigContextWithReducer = ({
         tokenDispatch({
           type: TokenActions.LOAD_PRICE_USD,
           payload: {
-            name: t.symbol, 
+            name: t.symbol,
             priceUSD,
           },
         })
@@ -711,7 +711,7 @@ export const ConfigContextWithReducer = ({
           },
         })
       }
-      
+
     } catch (err) {
       log.error('loadPairsUSD', err.message);
     }
@@ -872,7 +872,9 @@ export const ConfigContextWithReducer = ({
 
   const {setGlobalFilter} = tableInstance as any as TableInstance<PairData>
   const changeData = useAsyncDebounce(value => {
-      setGlobalFilter(value || "")
+      if(setGlobalFilter != undefined) {
+        setGlobalFilter(value || "")
+      }
   }, 100)
 
   const refreshAll = async (): Promise<void> => {
@@ -906,10 +908,10 @@ export const ConfigContextWithReducer = ({
 
   /**
    * findReservesBySymbols search for pair data by the symbol pair
-   * 
+   *
    * @param tokenASymbol first token symbol string
    * @param tokenBSymbol second token symbol string
-   * 
+   *
    * @returns pair reserve data
    */
   const findReservesBySymbols = (
@@ -951,9 +953,9 @@ export const ConfigContextWithReducer = ({
 
     // use pathfinder for multi-pool
     const path = getPath(
-      tA, 
-      tB, 
-      Object.values(tokenState.tokens), 
+      tA,
+      tB,
+      Object.values(tokenState.tokens),
       Object.values(pairState)
     )
 
@@ -998,9 +1000,9 @@ export const ConfigContextWithReducer = ({
 
   /**
    * findReservesBySymbols search for pair data by the symbol pair
-   * 
+   *
    * @param tokenSymbol token symbol string
-   * 
+   *
    * @returns usd conversion rate
    */
   const findUSDRateBySymbol = (
