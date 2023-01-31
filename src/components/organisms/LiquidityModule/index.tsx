@@ -532,7 +532,7 @@ const LiquidityNewModule = () => {
                   secondSymbol={row.token1Symbol}
                   secondLiquidity={new BigNumber(row.reserve1).toFixed(row.decimals)}
                   liquidity={row.balance}
-                  perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(row.decimals)}
+                  perLiquidity={new BigNumber(row.balance).div(row.totalSupply).times(100).toFixed(2)}
                 >
                   <LiquidityRemovingWithInputRangeModule
                     isConnected={true}
