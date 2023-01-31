@@ -430,6 +430,17 @@ export const ConfigContextWithReducer = ({
         return
       }
 
+      if(err.message.includes('make sure you have the Signer installed')) {
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'This wallet is not installed.',
+          subtitle: '',
+          show: true,
+          chargerBar: true
+        })
+        return;
+      }
+
       if (err.message === 'main purse does not exist') {
         updateNotification({
           type: NotificationType.Error,

@@ -7,8 +7,10 @@ import { ReactComponent as ConfigIcon } from '../assets/newIcons/configIcon.svg'
 import { ReactComponent as CommunityIcon } from '../assets/newIcons/communityIcon.svg';
 import { ReactComponent as WordMarkIcon } from '../assets/newIcons/casperswap-wordmark.svg';
 import { ReactComponent as Twitter } from '../assets/newIcons/twitter.svg';
-import { ReactComponent as Instagram } from '../assets/newIcons/instagram.svg';
+import { ReactComponent as Telegram } from '../assets/newIcons/telegram.svg';
 import { ReactComponent as Discord } from '..//assets/newIcons/discord.svg';
+import { ReactComponent as Linkedin } from '../assets/newIcons/linkedin.svg';
+import { ReactComponent as Medium } from '../assets/newIcons/medium.svg';
 import {
   CollapseButtonCC,
   ExpansionAreaCC,
@@ -41,13 +43,28 @@ import { MenuMobileOptions } from '../constant';
 
 const size = 20;
 
-const settingMenuOptions: MenuOption[] = [
+export const settingMenuOptions: MenuOption[] = [
   { text: 'Twitter', navegateTo: 'https://twitter.com/casperswap', icon: Twitter },
-  { text: 'Discord', navegateTo: 'https://www.discord.com', icon: Discord },
+  { text: 'Discord', navegateTo: 'https://discord.gg/uf2vfTNvEA', icon: Discord },
   {
-    text: 'Instagram',
-    navegateTo: 'https://www.instagram.com',
-    icon: Instagram,
+    text: 'Telegram',
+    navegateTo: 'https://t.me/casperswapofficial',
+    icon: Telegram,
+  },
+  {
+    text: 'Linkedin',
+    navegateTo: 'https://www.linkedin.com/company/casperswap/',
+    icon: Linkedin,
+  },
+  {
+    text: 'Medium',
+    navegateTo: 'https://medium.com/@casperswap',
+    icon: Medium,
+  },
+  {
+    text: 'Announcement Channel',
+    navegateTo: 'https://t.me/CasperSwapOfficialANN',
+    icon: Telegram,
   },
 ];
 
