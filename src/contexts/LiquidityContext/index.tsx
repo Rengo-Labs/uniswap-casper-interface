@@ -22,7 +22,7 @@ import {
 } from '../ConfigContext';
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
-import {ERROR_BLOCKCHAIN} from "../../constant/erros";
+import {ERROR_BLOCKCHAIN} from "../../constant/errors";
 
 export interface LiquidityContext {
   onAddLiquidity: (

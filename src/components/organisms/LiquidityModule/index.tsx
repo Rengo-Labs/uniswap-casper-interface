@@ -127,6 +127,45 @@ const LiquidityNewModule = () => {
     })
   }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
 
+  useEffect(() => {
+
+    const fn = async () => {
+      let tSymbol = ''
+      const includes: Record<string, boolean> = {}
+      const pairs = Object.values(pairState)
+      const tokens = tokenState.tokens
+      for (const pair of pairs) {
+        if (pair.token0Symbol === firstTokenSelected.symbol || pair.token0Symbol === firstTokenSelected.symbolPair) {
+          includes[pair.token1Symbol] = true
+          if (!tSymbol) {
+            tSymbol = pair.token1Symbol
+          }
+        }
+        if (pair.token1Symbol === firstTokenSelected.symbol || pair.token1Symbol === firstTokenSelected.symbolPair) {
+          includes[pair.token0Symbol] = true
+          if (!tSymbol) {
+            tSymbol = pair.token0Symbol
+          }
+        }
+      }
+
+      if (includes['WCSPR']) {
+        includes['CSPR'] = true
+      }
+
+      if (tSymbol && !includes[secondTokenSelected.symbol]) {
+        const symbol = tSymbol === 'WCSPR' ? 'CSPR' : tSymbol
+        selectAndCloseTokenA(firstTokenSelected)
+        selectAndCloseTokenB(tokens[symbol])
+      } else {
+        selectAndCloseTokenA(firstTokenSelected)
+        selectAndCloseTokenA(secondTokenSelected)
+      }
+    }
+
+    fn()
+  }, [])
+
   const calculateUSDValues = (amountA, amountB) => {
     const [usdA, usdB] = calculateUSDtokens(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, amountA, amountB)
 
@@ -267,7 +306,6 @@ const LiquidityNewModule = () => {
     if (includes['WCSPR']) {
       includes['CSPR'] = true
     }
-
 
     const tokens = Object.values(tokenState.tokens)
     const excludes = tokens.reduce((

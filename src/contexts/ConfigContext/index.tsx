@@ -51,7 +51,7 @@ import { ConfigState } from '../../reducers/ConfigReducers';
 import {Row, useAsyncDebounce, useGlobalFilter, useSortBy, useTable} from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
-import { ERROR_BLOCKCHAIN } from "../../constant/erros";
+import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import { getPath } from '../../commons/calculations'
 import {TableInstance} from "../../components/organisms/PoolModule";
 
