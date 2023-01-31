@@ -161,6 +161,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         tokenA,
         tokenB,
         slippage / 100,
+        configState.mainPurse,
         gasFee,
       );
 

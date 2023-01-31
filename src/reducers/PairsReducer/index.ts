@@ -231,8 +231,11 @@ Object.values(RAW_PAIRS).map((p) => {
     const contractTemp = pair.contract0
     pair.contract0 = pair.contract1
     pair.contract1 = contractTemp
+    
+    const symbolTemp = pair.token0Symbol
+    pair.token0Symbol = pair.token1Symbol
+    pair.token1Symbol = symbolTemp
   }
-
   PAIRS[p.name] = pair
 })
 
@@ -258,8 +261,6 @@ export type PairActionAllowancePayload = {
 
 export type PairActionLoadPairPayLoad = {
   name: string,
-  token0Symbol: string,
-  token1Symbol: string,
   volume7d: string,
   fees24h: string,
   oneYFees: string,

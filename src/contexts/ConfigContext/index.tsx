@@ -628,8 +628,6 @@ export const ConfigContextWithReducer = ({
           name: pl.name,
           totalReserve0: reserve0,
           totalReserve1: reserve1,
-          token0Symbol: pl.token0Symbol,
-          token1Symbol: pl.token1Symbol,
           volume7d: new BigNumber(
             convertBigNumberToUIString(new BigNumber(0), 9)
           ).toFixed(2),
@@ -647,8 +645,6 @@ export const ConfigContextWithReducer = ({
           type: PairActions.LOAD_PAIR,
           payload: {
             name: pl.name,
-            token0Symbol: pl.token0Symbol,
-            token1Symbol: pl.token1Symbol,
             volume7d: pl.volume7d,
             fees24h: pl.fees24h,
             oneYFees: pl.oneYFees,

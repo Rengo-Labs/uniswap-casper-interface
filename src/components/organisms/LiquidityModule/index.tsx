@@ -77,7 +77,7 @@ const LiquidityNewModule = () => {
   } = useContext(LiquidityProviderContext)
   const { progressBar } = useContext(ProgressBarProviderContext)
 
-  const userPairData = Object.entries(pairState).map(([k, v]) => v)
+  const userPairData = Object.values(pairState)
 
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
@@ -557,6 +557,7 @@ const LiquidityNewModule = () => {
           {
             // Loop over the table rows
             userPairDataNonZero.map(row => {
+              
               const openPopup = isOpenedRemoving && row.token0Symbol === firstTokenSelected.symbolPair && row.token1Symbol === secondTokenSelected.symbolPair
               return (
                 // Apply the row props
