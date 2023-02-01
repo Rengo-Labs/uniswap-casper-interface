@@ -30,7 +30,7 @@ export const TRow = styled.div`
     padding: 3px 25px
 `
 export const TColumn1 = styled.div`
-    flex: 1;
+    flex: .75;
     display: flex;
 `
 
