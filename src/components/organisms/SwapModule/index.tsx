@@ -550,7 +550,7 @@ const SwapNewModule = () => {
           </ButtonSpaceNSM>
         </ContainerSwapActionsNSM>
       </ContainerInnerNSM>
-      <SwapStatistics token0Price={priceA} token1Price={priceB} token0Per={0} token1Per={0} />
+      { /* <SwapStatistics token0Price={priceA} token1Price={priceB} token0Per={0} token1Per={0} /> */ }
 
     </Wrapper>
   );
