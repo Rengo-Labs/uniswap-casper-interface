@@ -235,6 +235,7 @@ const LiquidityNewModule = () => {
       firstReserve,
       secondReserve,
     } = getLiquidityDetailResponse
+    
     exchangeRateASetter(exchangeRateA)
     exchangeRateBSetter(exchangeRateB)
     setFirstReserve(firstReserve)
@@ -245,7 +246,6 @@ const LiquidityNewModule = () => {
   }
 
   async function requestIncreaseAllowance(amount, contractHash) {
-    console.log("requestIncreaseAllowance")
     await onIncreaseAllow(amount, contractHash)
     await updateLiquidityDetail(firstTokenSelected, secondTokenSelected)
   }
