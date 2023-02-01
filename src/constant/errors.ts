@@ -1,4 +1,7 @@
 export const ERROR_BLOCKCHAIN = {
+  "Mint error: 0": {
+    message: "Error: Insufficent CSPR for gas."
+  },
   "Error: Contract execution: User error: 55": {
     message: "Error: Tried to reserve reserve that does not exist." //Todo check this
   },

@@ -159,7 +159,7 @@ const LiquidityNewModule = () => {
         selectAndCloseTokenB(tokens[symbol])
       } else {
         selectAndCloseTokenA(firstTokenSelected)
-        selectAndCloseTokenA(secondTokenSelected)
+        selectAndCloseTokenB(secondTokenSelected)
       }
     }
 
