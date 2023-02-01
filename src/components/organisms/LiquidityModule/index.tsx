@@ -114,7 +114,7 @@ const LiquidityNewModule = () => {
     }
 
     updateLiquidityDetail(
-      firstTokenSelected, 
+      firstTokenSelected,
       secondTokenSelected,
       amountSwapTokenA,
       lastChanged == 'A' ? firstTokenSelected : secondTokenSelected,
@@ -122,6 +122,10 @@ const LiquidityNewModule = () => {
   }, [isConnected, pairState]);
 
   useEffect(() => {
+      if (!isConnected) {
+        // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
+        resetAll()
+      }
       progressBar(async () => {lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
       await refreshAll()
     })
@@ -210,7 +214,7 @@ const LiquidityNewModule = () => {
 
   async function updateLiquidityDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
     const {
-      reserve0, 
+      reserve0,
       reserve1,
     } = findReservesBySymbols(tokenA.symbol, tokenB.symbol)
 
@@ -309,7 +313,7 @@ const LiquidityNewModule = () => {
 
     const tokens = Object.values(tokenState.tokens)
     const excludes = tokens.reduce((
-      acc: string[], 
+      acc: string[],
       v: Token
     ): string[] => {
       if (!includes[v.symbol]) {
@@ -351,7 +355,7 @@ const LiquidityNewModule = () => {
 
     const tokens = Object.values(tokenState.tokens)
     const excludes = tokens.reduce((
-      acc: string[], 
+      acc: string[],
       v: Token
     ): string[] => {
       if (!includes[v.symbol]) {
@@ -557,7 +561,7 @@ const LiquidityNewModule = () => {
           {
             // Loop over the table rows
             userPairDataNonZero.map(row => {
-              
+
               const openPopup = isOpenedRemoving && row.token0Symbol === firstTokenSelected.symbolPair && row.token1Symbol === secondTokenSelected.symbolPair
               return (
                 // Apply the row props
