@@ -177,9 +177,13 @@ export const CollapsingRow = ({
             </TBodyExpanded>
         </TWrapRow> :
         <TWrapCardRow className="collapsible" {...row.getRowProps()} >
-            <TFirstRow {...getToggleProps({onClick: handleOnClick}) }>
+            <TFirstRow>
                 <TColumn6 style={{display: "flex"}}>
-                    <IconColumn1><CircleStarIcon/></IconColumn1>
+                    <IconColumn1 onClick={onChangePriority}>
+                        {
+                            hasPriority ? <CircleStarIcon/> :  <CircleStarDisabledIcon/>
+                        }
+                    </IconColumn1>
                     <IconColumn1>
                         <SwapIconImageStyled src={row.original.token0Icon} width="45" height="45" />
                         <SwapIconTwoImageStyled src={row.original.token1Icon} width="45" height="45" />
@@ -187,7 +191,7 @@ export const CollapsingRow = ({
                     <PairTitleColumn>{row.original.token0Symbol} - {row.original.token1Symbol}</PairTitleColumn>
                     <TColumn2andHalf/>
                 </TColumn6>
-                <TColumn1>{isExpanded ? <FiChevronUp style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/> : <FiChevronDown style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}} />}</TColumn1>
+                <TColumn1 {...getToggleProps({onClick: handleOnClick}) }>{isExpanded ? <FiChevronUp style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/> : <FiChevronDown style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}} />}</TColumn1>
             </TFirstRow>
             <TSecondRow {...getCollapseProps()}>
                 <WrappedRow>
