@@ -101,7 +101,8 @@ export interface ConfigContext {
   setCurrentQuery: (v) => void,
   filterDataReload: (v) => any;
   mapExpandedRows: any[],
-  setMapExpandedRows: (l) => void
+  setMapExpandedRows: (l) => void,
+  changeRowPriority: (r, p) => void
 }
 
 export interface PairReserves {
@@ -1041,6 +1042,16 @@ export const ConfigContextWithReducer = ({
     return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
   }
 
+  const changeRowPriority = (name, priority) => {
+    pairDispatch({
+      type: PairActions.CHANGE_PRIORITY,
+      payload: {
+        name: name,
+        checked: priority
+      }
+    });
+  }
+
   return (
     <ConfigProviderContext.Provider
       value={{
@@ -1082,6 +1093,7 @@ export const ConfigContextWithReducer = ({
         filterDataReload,
         mapExpandedRows,
         setMapExpandedRows,
+        changeRowPriority
       }}
     >
       {children}

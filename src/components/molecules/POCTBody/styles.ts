@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import {AiFillStar, AiOutlineSwap} from "react-icons/ai";
+import {AiFillStar, AiOutlineStar, AiOutlineSwap} from "react-icons/ai";
 import {TbTrash} from "react-icons/tb";
 import {device} from "../../../contexts/ThemeContext/themes";
 
@@ -42,6 +42,11 @@ export const CircleTrashIcon = styled(TbTrash)`
 `
 
 export const CircleStarIcon = styled(AiFillStar)`
+    font-size: 22px;
+    color: ${props => props.theme.secondBackgroundColor};
+`
+
+export const CircleStarDisabledIcon = styled(AiOutlineStar)`
     font-size: 22px;
     color: ${props => props.theme.secondBackgroundColor};
 `

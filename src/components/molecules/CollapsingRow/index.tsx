@@ -5,7 +5,7 @@ import {NewIcons} from '../../atoms'
 import { useNavigate } from 'react-router-dom';
 
 import {
-    CircleButton, CircleStarIcon, CircleSwapIcon, CircleTrashIcon
+    CircleButton, CircleStarDisabledIcon, CircleStarIcon, CircleSwapIcon, CircleTrashIcon
 } from "../POCTBody/styles";
 import {SwapIconImageStyled, SwapIconTwoImageStyled} from "../LiquidityItem/styles";
 import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
@@ -44,19 +44,24 @@ import {
 export interface CollapsingRowProps {
     row: Row<PairData>,
     fullExpanded?: boolean,
+    priority?: boolean,
     isMobile?: boolean,
     onRemovingPopupListener: (remove: boolean) => void,
     onClick,
+    onAssignPriority
 }
 
 export const CollapsingRow = ({
     row, 
     fullExpanded = false,
     isMobile = false,
+    priority = false,
     onRemovingPopupListener,
-    onClick
+    onClick,
+    onAssignPriority
 }: CollapsingRowProps)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
+    const [ hasPriority, setPriority] = useState(priority)
     const navigate = useNavigate()
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
@@ -64,6 +69,11 @@ export const CollapsingRow = ({
     const handleOnClick = () => {
         onClick(row.original.name, !isExpanded)
         setExpanded(!isExpanded)
+    }
+
+    const onChangePriority = () => {
+        onAssignPriority(row.original.name, ! hasPriority)
+        setPriority(! hasPriority)
     }
 
     const goTo = (path: string, removingPopup= false) => {
@@ -74,9 +84,13 @@ export const CollapsingRow = ({
     }
 
     return ( !isMobile ? <TWrapRow className="collapsible" {...row.getRowProps()} >
-            <TRow {...getToggleProps({onClick: handleOnClick}) }>
+            <TRow>
                 <TColumn6 style={{display: "flex"}}>
-                    <IconColumn1><CircleStarIcon/></IconColumn1>
+                    <IconColumn1 onClick={onChangePriority}>
+                        {
+                            hasPriority ? <CircleStarIcon/> :  <CircleStarDisabledIcon/>
+                        }
+                    </IconColumn1>
                     <IconColumn1>
                         <SwapIconImageStyled src={row.original.token0Icon} width="45" height="45" />
                         <SwapIconTwoImageStyled src={row.original.token1Icon} width="45" height="45" />
@@ -90,7 +104,7 @@ export const CollapsingRow = ({
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
                 <TColumn3>$ {row.original.fees24h}</TColumn3>
                 <TColumn3>{row.original.oneYFees} %</TColumn3>
-                <TColumn1>{isExpanded ? <FiChevronUp /> : <FiChevronDown />}</TColumn1>
+                <TColumn1  {...getToggleProps({onClick: handleOnClick}) }>{isExpanded ? <FiChevronUp /> : <FiChevronDown />}</TColumn1>
             </TRow>
             <TBodyExpanded {...getCollapseProps()}>
                 <WrappedRow>

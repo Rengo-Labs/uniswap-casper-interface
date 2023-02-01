@@ -18,6 +18,7 @@ export const getTVLandVolume = () => {
 export const getPoolList = async () => {
   const pairData: PairData[] = [
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -47,6 +48,7 @@ export const getPoolList = async () => {
       decimals: 9,
     },
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -75,6 +77,7 @@ export const getPoolList = async () => {
       decimals: 9,
     },
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -103,6 +106,7 @@ export const getPoolList = async () => {
       decimals: 9,
     },
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -131,6 +135,7 @@ export const getPoolList = async () => {
       decimals: 9,
     },
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -165,6 +170,7 @@ export const getPoolList = async () => {
 export const loadPoolDetailByUser = async (hash) => {
   const pairData: PairData[] = [
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -193,6 +199,7 @@ export const loadPoolDetailByUser = async (hash) => {
       decimals: 9,
     },
     {
+      checked: false,
       allowance:"355.961767477",
       balance:"336.101237135",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -222,6 +229,7 @@ export const loadPoolDetailByUser = async (hash) => {
       decimals: 9,
     },
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -250,6 +258,7 @@ export const loadPoolDetailByUser = async (hash) => {
       decimals: 9,
     },
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
@@ -278,6 +287,7 @@ export const loadPoolDetailByUser = async (hash) => {
       decimals: 9,
     },
     {
+      checked: false,
       allowance:"0",
       balance:"0",
       contract0:"03e3e09b28dc4d41a4507b38073e7a1641becc0b40e79beb72733d2fb022defa",
