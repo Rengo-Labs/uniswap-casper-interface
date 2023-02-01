@@ -59,7 +59,7 @@ export const selectSwapEntryPoint = (tokenASymbol: string, tokenBSymbol: string)
   if (tokenASymbol === 'CSPR' && tokenBSymbol !== 'CSPR') {
     return SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS
   } else if (tokenASymbol !== 'CSPR' && tokenBSymbol === 'CSPR') {
-    return SwapEntryPoint.SWAP_TOKENS_FOR_EXACT_CSPR
+    return SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_CSPR
   } else if (tokenASymbol !== 'CSPR' && tokenBSymbol !== 'CSPR') {
     return SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS
   }
@@ -134,6 +134,31 @@ export const signAndDeploySwap = async (
           RuntimeArgs.fromMap({
             amount_out: CLValueBuilder.u256(new BigNumber(amountOut).toFixed(0, BigNumber.ROUND_DOWN)),
             amount_in_max: CLValueBuilder.u256(new BigNumber(amountIn).times(1 + slippage).toFixed(0, BigNumber.ROUND_UP)),
+            path: new CLList(path),
+            to: CLValueBuilder.uref(
+              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+              AccessRights.READ_ADD_WRITE
+            ),
+            deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
+
+            // Deploy wasm params
+            entrypoint: CLValueBuilder.string(entryPoint),
+            package_hash: new CLKey(
+              new CLByteArray(
+                Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
+              )
+            ),
+          }),
+          new BigNumber(gasFee * 10 ** 9),
+        )
+      case SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_CSPR:
+        // When swapping token for exact casper
+        return await casperClient.signAndDeployWasm(
+          wallet,
+          await apiClient.getDeployWasmData(),
+          RuntimeArgs.fromMap({
+            amount_in: CLValueBuilder.u256(new BigNumber(amountIn).times(1 - slippage).toFixed(0, BigNumber.ROUND_UP)),
+            amount_out_min: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_DOWN)),
             path: new CLList(path),
             to: CLValueBuilder.uref(
               Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),

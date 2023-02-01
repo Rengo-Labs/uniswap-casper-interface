@@ -18,7 +18,7 @@ export const StyledCommunityMenu = styled.ul`
   border: 1px solid #080808;
   border-radius: 16px 16px 0px 0px;
   width: 100vw;
-  height: 300px;
+  height: 350px;
   position: absolute;
   align-self: flex-end;
   margin-right: 33px;

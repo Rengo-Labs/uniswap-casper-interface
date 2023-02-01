@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 import BigNumber from 'bignumber.js';
 import React, {
   createContext,
@@ -51,7 +51,7 @@ import { ConfigState } from '../../reducers/ConfigReducers';
 import {Row, useAsyncDebounce, useGlobalFilter, useSortBy, useTable} from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
-import { ERROR_BLOCKCHAIN } from "../../constant/erros";
+import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import { getPath } from '../../commons/calculations'
 import {TableInstance} from "../../components/organisms/PoolModule";
 
@@ -265,7 +265,7 @@ export const ConfigContextWithReducer = ({
 
     try {
       const { balance, mainPurse } = await getStatus(w);
-      
+
       debounceConnect = false;
 
       return {
@@ -283,7 +283,7 @@ export const ConfigContextWithReducer = ({
         show: true,
         chargerBar: false
       });
-      
+
       debounceConnect = false;
 
       return {
@@ -294,7 +294,7 @@ export const ConfigContextWithReducer = ({
         isConnected: w.isConnected,
       };
     }
-    
+
   }
 
   async function updateBalances(
@@ -371,11 +371,11 @@ export const ConfigContextWithReducer = ({
   }
 
   async function refresh(wallet?: Wallet) {
-    await loadPairs();
     if (wallet) {
-      await loadPairsUserData(wallet, wallet?.isConnected);
       await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
+      await loadPairsUserData(wallet, wallet?.isConnected);
     }
+    await loadPairs();
     await getTVLandVolume()
   }
 
@@ -430,6 +430,17 @@ export const ConfigContextWithReducer = ({
         return
       }
 
+      if(err.message.includes('make sure you have the Signer installed')) {
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'This wallet is not installed.',
+          subtitle: '',
+          show: true,
+          chargerBar: true
+        })
+        return;
+      }
+
       if (err.message === 'main purse does not exist') {
         updateNotification({
           type: NotificationType.Error,
@@ -440,7 +451,7 @@ export const ConfigContextWithReducer = ({
         })
         return
       }
-        
+
       updateNotification({
         type: NotificationType.Error,
         title: 'Ooops we have an error',
@@ -628,8 +639,6 @@ export const ConfigContextWithReducer = ({
           name: pl.name,
           totalReserve0: reserve0,
           totalReserve1: reserve1,
-          token0Symbol: pl.token0Symbol,
-          token1Symbol: pl.token1Symbol,
           volume7d: new BigNumber(
             convertBigNumberToUIString(new BigNumber(0), 9)
           ).toFixed(2),
@@ -647,8 +656,6 @@ export const ConfigContextWithReducer = ({
           type: PairActions.LOAD_PAIR,
           payload: {
             name: pl.name,
-            token0Symbol: pl.token0Symbol,
-            token1Symbol: pl.token1Symbol,
             volume7d: pl.volume7d,
             fees24h: pl.fees24h,
             oneYFees: pl.oneYFees,
@@ -684,7 +691,7 @@ export const ConfigContextWithReducer = ({
         tokenDispatch({
           type: TokenActions.LOAD_PRICE_USD,
           payload: {
-            name: t.symbol, 
+            name: t.symbol,
             priceUSD,
           },
         })
@@ -698,13 +705,13 @@ export const ConfigContextWithReducer = ({
         pairDispatch({
           type: PairActions.LOAD_PAIR_USD,
           payload: {
-            name: p.name, 
+            name: p.name,
             token0Price: tokenPrices[p.token0Symbol],
             token1Price: tokenPrices[p.token1Symbol],
           },
         })
       }
-      
+
     } catch (err) {
       log.error('loadPairsUSD', err.message);
     }
@@ -865,8 +872,9 @@ export const ConfigContextWithReducer = ({
 
   const {setGlobalFilter} = tableInstance as any as TableInstance<PairData>
   const changeData = useAsyncDebounce(value => {
-      if (setGlobalFilter != undefined )
+      if(setGlobalFilter != undefined) {
         setGlobalFilter(value || "")
+      }
   }, 100)
 
   const refreshAll = async (): Promise<void> => {
@@ -900,10 +908,10 @@ export const ConfigContextWithReducer = ({
 
   /**
    * findReservesBySymbols search for pair data by the symbol pair
-   * 
+   *
    * @param tokenASymbol first token symbol string
    * @param tokenBSymbol second token symbol string
-   * 
+   *
    * @returns pair reserve data
    */
   const findReservesBySymbols = (
@@ -945,9 +953,9 @@ export const ConfigContextWithReducer = ({
 
     // use pathfinder for multi-pool
     const path = getPath(
-      tA, 
-      tB, 
-      Object.values(tokenState.tokens), 
+      tA,
+      tB,
+      Object.values(tokenState.tokens),
       Object.values(pairState)
     )
 
@@ -992,9 +1000,9 @@ export const ConfigContextWithReducer = ({
 
   /**
    * findReservesBySymbols search for pair data by the symbol pair
-   * 
+   *
    * @param tokenSymbol token symbol string
-   * 
+   *
    * @returns usd conversion rate
    */
   const findUSDRateBySymbol = (

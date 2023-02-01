@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import {
+  AccessRights,
   CLByteArray,
   CLKey,
   CLValueBuilder,
@@ -81,6 +82,7 @@ export enum RemoveLiquidityEntryPoint {
   tokenA: Token,
   tokenB: Token,
   slippage: number,
+  mainPurse: string,
   gasFee: number,
 ): Promise<[string, GetDeployResult]> => {
   try {
@@ -89,8 +91,9 @@ export enum RemoveLiquidityEntryPoint {
 
     switch (entryPoint) {
       case RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_CSPR:
+        console.log('removeLiquidityCSPR', tokenA, tokenB)
         // When adding cspr and token
-        const token = tokenA.symbol === 'CSPR' ? new CLByteArray(
+        const token = (tokenA.symbol === 'CSPR' || tokenA.symbol === 'WCSPR') ? new CLByteArray(
             Uint8Array.from(Buffer.from(tokenB.packageHash.slice(5), "hex"))
           ) : new CLByteArray(
             Uint8Array.from(Buffer.from(tokenA.packageHash.slice(5), "hex"))
@@ -111,6 +114,10 @@ export enum RemoveLiquidityEntryPoint {
             amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
+            to_purse: CLValueBuilder.uref(
+              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+              AccessRights.READ_ADD_WRITE
+            ),
 
             // Deploy wasm params
             //amount: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0)),
