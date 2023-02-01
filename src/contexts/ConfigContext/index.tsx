@@ -54,6 +54,7 @@ import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import { getPath } from '../../commons/calculations'
 import {TableInstance} from "../../components/organisms/PoolModule";
+import {getPairData} from "../../commons/api/InfoSwapClient";
 
 type MaybeWallet = Wallet | undefined;
 
@@ -339,6 +340,7 @@ export const ConfigContextWithReducer = ({
               )
               .then((response) => {
                 //console.log('balance', token, response)
+                console.log(x, convertBigNumberToUIString(new BigNumber(response)).toString())
                 tokenDispatch({
                   type: TokenActions.LOAD_BALANCE,
                   payload: {
@@ -624,6 +626,7 @@ export const ConfigContextWithReducer = ({
 
       const results = await Promise.all(pairs.map(async (pl) => {
         const pairDataResponse = await apiClient.getPairData(pl.contractHash)
+        const result = await getPairData([pl.packageHash.substr(5)])
         const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
         const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
         const reserve0 = convertBigNumberToUIString(
@@ -647,6 +650,9 @@ export const ConfigContextWithReducer = ({
           volume: convertBigNumberToUIString(new BigNumber(0), 9),
           totalSupply: convertBigNumberToUIString(
             new BigNumber(pairDataResponse.totalSupply)
+          ),
+          totalLiquidityUSD: convertBigNumberToUIString(
+            new BigNumber(result.length != 0 ? result[0].reserveUSD : 0)
           )
         }
       }))
@@ -663,6 +669,7 @@ export const ConfigContextWithReducer = ({
             totalReserve0: pl.totalReserve0,
             totalReserve1: pl.totalReserve1,
             totalSupply: pl.totalSupply,
+            totalLiquidityUSD: pl.totalLiquidityUSD
           },
         })
 

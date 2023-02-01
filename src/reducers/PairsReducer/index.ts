@@ -268,6 +268,7 @@ export type PairActionLoadPairPayLoad = {
   totalReserve0: string,
   totalReserve1: string,
   totalSupply: string,
+  totalLiquidityUSD: string
 }
 
 export type PairActionLoadPairUSDPayLoad = {
@@ -355,6 +356,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
               volume: action.payload.volume,
               reserve0,
               reserve1,
+              totalLiquidityUSD: action.payload.totalLiquidityUSD,
               totalReserve0: convertBigNumberToUIString(totalReserve0),
               totalReserve1: convertBigNumberToUIString(totalReserve1),
               totalSupply: convertBigNumberToUIString(totalSupply),
@@ -365,9 +367,9 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           {
             const oldState = state[`${action.payload.name}`]
 
-            const totalLiquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.reserve0))
+            const liquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.reserve0))
               .times(action.payload.token0Price)
-              .plus(new BigNumber(convertUIStringToBigNumber(oldState.reserve0)).times(action.payload.token1Price))
+              .plus(new BigNumber(convertUIStringToBigNumber(oldState.reserve1)).times(action.payload.token1Price))
               .div(10**9)
               .toString()
 
@@ -377,7 +379,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
               ...state,
               [`${action.payload.name}`]: {
                 ...oldState,
-                totalLiquidityUSD,
+                liquidityUSD,
                 token0Price: action.payload.token0Price,
                 token1Price: action.payload.token1Price,
               },

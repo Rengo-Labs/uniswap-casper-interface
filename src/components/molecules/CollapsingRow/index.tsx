@@ -85,7 +85,7 @@ export const CollapsingRow = ({
                     <TColumn2andHalf/>
                 </TColumn6>
                 <PairTitleColumn>
-                    $ {convertNumber(parseFloat(row.original.totalSupply))}
+                    $ {convertNumber(parseFloat(row.original.totalLiquidityUSD))}
                 </PairTitleColumn>
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
                 <TColumn3>$ {row.original.fees24h}</TColumn3>
@@ -116,7 +116,7 @@ export const CollapsingRow = ({
                             <TitleBodyRow>Your Liquidity</TitleBodyRow>
                         </TRow>
                         <TRow>
-                            <NormalBodyRow>$ {convertNumber(parseFloat(row.original.totalLiquidityUSD))}</NormalBodyRow>
+                            <NormalBodyRow>$ {convertNumber(parseFloat(row.original.liquidityUSD))}</NormalBodyRow>
                         </TRow>
                         <TRow>
                             <NormalBodyRow>{convertNumber(parseFloat(row.original.balance))} LP</NormalBodyRow>
