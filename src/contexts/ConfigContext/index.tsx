@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { PopupsModule } from '../../components/organisms';
-import { BASE_URL, NODE_ADDRESS, NotificationType } from '../../constant';
+import { BASE_URL, NODE_ADDRESS, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
 
 import {
   initialConfigState,
@@ -815,7 +815,7 @@ export const ConfigContextWithReducer = ({
       );
 
       setProgressModal(true);
-      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`);
+      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
 
       const result = await casperClient.waitForDeployExecution(deployHash);
       setProgressModal(false);

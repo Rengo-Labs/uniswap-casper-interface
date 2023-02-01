@@ -87,7 +87,7 @@ export const ConnectionPopup = ({
                 }
               </PopupContent>
               <PopupBottom>
-                <a href='https://docs.casperswap.xyz/the-casperswap-protocol-1/how-to-make-a-swap-on-casperswap'>
+                <a href='https://docs.casperswap.xyz/the-casperswap-protocol-1/how-to-make-a-swap-on-casperswap' target='_blank'>
                   <HRefLink>New Here? Get started on Casperswap</HRefLink>
                 </a>
               </PopupBottom>
