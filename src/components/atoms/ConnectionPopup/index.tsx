@@ -49,51 +49,53 @@ export const ConnectionPopup = ({
 
   return (
 
-      <>
-          {!isConnected && (
-              <>
-                  {showButton !== false && <PopoverButtonStyled onClick={onToggle}>Connect Wallet</PopoverButtonStyled>}
-                  <OverlayPopup isOpened={isOpened}>
-                      <PopupContainer>
-                          <PopupTitle>
-                              {title}
-                              <PopupClose onClick={closeHandler}>
-                                  <NewIcons Icon={Close} size={24} style={{ fill: theme.NewPurpleColor }} />
-                              </PopupClose>
-                          </PopupTitle>
-                          <PopupContent>
-                              <DisclaimerContent>
-                                  By connecting your wallet, you acknowledge that you have read, understand and accept
-                                  the terms in the Disclaimer
-                              </DisclaimerContent>
-                              <WalletContainer>
-                                  <WalletSelectionDiv
-                                      isSelected={false}
-                                      onClick={() => onConnect(WalletName.CASPER_SIGNER)}
-                                  >
-                                      <WalletSelectionImageStyled src={casperWallet} alt="" />
-                                      <ButtonText>Signer Wallet</ButtonText>
-                                  </WalletSelectionDiv>
-                                  <WalletSelectionDiv
-                                      isSelected={false}
-                                      onClick={() => onConnect(WalletName.TORUS)}
-                                  >
-                                      <WalletSelectionImageStyled src={torusWallet} alt="" />
-                                      <ButtonText>Torus Wallet</ButtonText>
-                                  </WalletSelectionDiv>
-                              </WalletContainer>
-                              {
-                                  //<CollapsingPopup>show uninstall wallets <HiChevronDown /></CollapsingPopup>
-                              }
-                          </PopupContent>
-                          <PopupBottom>
-                              <HRefLink>New Here? Get started on Casperswap</HRefLink>
-                          </PopupBottom>
-                      </PopupContainer>
-                  </OverlayPopup>
-              </>
-          )}
-      </>
+    <>
+      {!isConnected && (
+        <>
+          {showButton !== false && <PopoverButtonStyled onClick={onToggle}>Connect Wallet</PopoverButtonStyled>}
+          <OverlayPopup isOpened={isOpened}>
+            <PopupContainer>
+              <PopupTitle>
+                {title}
+                <PopupClose onClick={closeHandler}>
+                  <NewIcons Icon={Close} size={24} style={{ fill: theme.NewPurpleColor }} />
+                </PopupClose>
+              </PopupTitle>
+              <PopupContent>
+                <DisclaimerContent>
+                  By connecting your wallet, you acknowledge that you have read, understand and accept
+                  the terms in the Disclaimer
+                </DisclaimerContent>
+                <WalletContainer>
+                  <WalletSelectionDiv
+                    isSelected={false}
+                    onClick={() => onConnect(WalletName.CASPER_SIGNER)}
+                  >
+                    <WalletSelectionImageStyled src={casperWallet} alt="" />
+                    <ButtonText>Signer Wallet</ButtonText>
+                  </WalletSelectionDiv>
+                  <WalletSelectionDiv
+                    isSelected={false}
+                    onClick={() => onConnect(WalletName.TORUS)}
+                  >
+                    <WalletSelectionImageStyled src={torusWallet} alt="" />
+                    <ButtonText>Torus Wallet</ButtonText>
+                  </WalletSelectionDiv>
+                </WalletContainer>
+                {
+                  //<CollapsingPopup>show uninstall wallets <HiChevronDown /></CollapsingPopup>
+                }
+              </PopupContent>
+              <PopupBottom>
+                <a href='https://docs.casperswap.xyz/the-casperswap-protocol-1/how-to-make-a-swap-on-casperswap'>
+                  <HRefLink>New Here? Get started on Casperswap</HRefLink>
+                </a>
+              </PopupBottom>
+            </PopupContainer>
+          </OverlayPopup>
+        </>
+      )}
+    </>
   );
 
 }
