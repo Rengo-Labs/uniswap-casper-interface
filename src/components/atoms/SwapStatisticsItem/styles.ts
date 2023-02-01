@@ -34,7 +34,7 @@ export const Content = styled.div`
 
   @media ${device.tablet} {
     flex-wrap: nowrap;
-    justify-content: center;
+    justify-content: left;
     gap: 1.5rem;
     padding: 0 1rem;
   }
@@ -44,6 +44,7 @@ export const TokenContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1.5;
 `;
 
 export const PriceContainer = styled.div`
@@ -52,6 +53,7 @@ export const PriceContainer = styled.div`
   justify-content: flex-start;
   align-items: center;
   gap: 0.7rem;
+  flex: 1;
 `;
 
 export const Divider = styled.div`

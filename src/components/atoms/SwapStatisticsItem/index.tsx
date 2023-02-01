@@ -38,7 +38,6 @@ export const SwapStatisticsItem = ({ statistic }: ISwapStatisticsItemProps) => {
           <NewTokenDetailItems2NSM src={token.logoURI} width={35} height={35} />
           <NewTokenDetailItems3NSM>{token.symbol}</NewTokenDetailItems3NSM>
         </TokenContainer>
-        <Divider />
         <PriceContainer>
           <PriceTitle>Price</PriceTitle>
           <PriceValue>${price}</PriceValue>

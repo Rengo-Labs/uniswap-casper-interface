@@ -865,7 +865,8 @@ export const ConfigContextWithReducer = ({
 
   const {setGlobalFilter} = tableInstance as any as TableInstance<PairData>
   const changeData = useAsyncDebounce(value => {
-      setGlobalFilter(value || "")
+      if (setGlobalFilter != undefined )
+        setGlobalFilter(value || "")
   }, 100)
 
   const refreshAll = async (): Promise<void> => {
