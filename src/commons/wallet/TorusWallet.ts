@@ -24,7 +24,7 @@ const SUPPORTED_NETWORKS = {
   rpcTarget: process.env.REACT_APP_RPC_TARGET,
   ticker: process.env.REACT_APP_TICKER,
   tickerName: process.env.REACT_APP_TICKER_NAME,
-  networkKey: process.env.REACT_APP_NETWORK_KEY
+  networkKey: process.env.REACT_APP_NETWORK_KEY,
 };
 
 /**
@@ -109,7 +109,7 @@ export class TorusWallet implements Wallet {
         // initialize the Torus instance
         await torus.init({
           // TODO: multiplex based on URL
-          buildEnv: 'testing',
+          buildEnv: 'production',
           showTorusButton: true,
           network: SUPPORTED_NETWORKS
         })
