@@ -163,7 +163,7 @@ const LiquidityNewModule = () => {
         selectAndCloseTokenB(tokens[symbol])
       } else {
         selectAndCloseTokenA(firstTokenSelected)
-        selectAndCloseTokenA(secondTokenSelected)
+        selectAndCloseTokenB(secondTokenSelected)
       }
     }
 
@@ -239,17 +239,22 @@ const LiquidityNewModule = () => {
       firstReserve,
       secondReserve,
     } = getLiquidityDetailResponse
+
     exchangeRateASetter(exchangeRateA)
     exchangeRateBSetter(exchangeRateB)
-    setFirstReserve(firstReserve)
-    setSecondReserve(secondReserve)
+    if (token === tokenA) {
+      setFirstReserve(firstReserve)
+      setSecondReserve(secondReserve)
+    } else {
+      setFirstReserve(secondReserve)
+      setSecondReserve(firstReserve)
+    }
 
     calculateUSDValues(value, tokensToTransfer)
     return tokensToTransfer
   }
 
   async function requestIncreaseAllowance(amount, contractHash) {
-    console.log("requestIncreaseAllowance")
     await onIncreaseAllow(amount, contractHash)
     await updateLiquidityDetail(firstTokenSelected, secondTokenSelected)
   }
@@ -388,6 +393,12 @@ const LiquidityNewModule = () => {
   }
 
   const disableButton = (amount0, amount1) => {
+    if (isNaN(amount0)) {
+      return true
+    }
+    if (isNaN(amount1)) {
+      return true
+    }
     if (!isConnected) {
       return true
     }
@@ -399,14 +410,16 @@ const LiquidityNewModule = () => {
     }
   }
 
-  const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenA)).toNumber()
+  const amountA = isNaN(amountSwapTokenA) ? 0 : amountSwapTokenA
+  const amountB = isNaN(amountSwapTokenB) ? 0 : amountSwapTokenB
+  const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0).minus(new BigNumber(amountA || 0)).toNumber()
 
   const isApprovedA = firstTokenSelected.symbol === 'CSPR' || (
     firstTokenSelected.symbol !== 'CSPR' &&
     freeAllowanceA >= 0
   )
 
-  const freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenB)).toNumber()
+  const freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0).minus(new BigNumber(amountB || 0)).toNumber()
 
   const isApprovedB = secondTokenSelected.symbol === 'CSPR' || (
     secondTokenSelected.symbol !== 'CSPR' &&
@@ -527,8 +540,8 @@ const LiquidityNewModule = () => {
             secondSymbolToken={secondTokenSelected.symbol}
             secondTokenAmount={amountSwapTokenB}
             liquidity={parseFloat(totalLiquidity)}
-            firstReserve={currentFReserve}
-            secondReserve={currentSReserve}
+            firstReserve={currentFReserve/10**firstTokenSelected.decimals}
+            secondReserve={currentSReserve/10**secondTokenSelected.decimals}
             gasFee={gasFee}
             gasFeeSetter={gasFeeSetter}
             gasFeeEnabled={true}

@@ -46,7 +46,7 @@ export const calculateLiquidityDetails = async (
 
       const liquidityA = new BigNumber(reserve0)
       const liquidityB = new BigNumber(reserve1)
-      const inputValue = new BigNumber(inputValueRaw).times(Math.pow(10,9))
+      const inputValue = new BigNumber(inputValueRaw).times(Math.pow(10,token.decimals))
       
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -58,35 +58,16 @@ export const calculateLiquidityDetails = async (
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
       //console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
 
+      const ttt = inputValue.times(inputExchangeRate).div(Math.pow(10,token.decimals))
       return {
-          tokensToTransfer: inputValue.times(inputExchangeRate).div(Math.pow(10,9)).toNumber().toFixed(9),
+          tokensToTransfer: ttt.eq(0) ? '0' : ttt.toFixed(token.decimals, BigNumber.ROUND_CEIL),
           exchangeRateA: exchangeRateA.toNumber(),
           exchangeRateB : exchangeRateB.toNumber(),
-          firstReserve: normalizeAmount(inputLiquidity.toString(), 9),
-          secondReserve: normalizeAmount(outputLiquidity.toString(), 9)
+          firstReserve: parseFloat(inputLiquidity.toFixed(tokenA.decimals, BigNumber.ROUND_CEIL)),
+          secondReserve: parseFloat(outputLiquidity.toFixed(tokenB.decimals, BigNumber.ROUND_CEIL)),
       }
   } catch (err) {
       log.error(`getSwapDetail error: ${err}`)
       throw err
   }
-}
-
-const normalizeAmount = (amount, decimalQuantity) => {
-    const strAmount = parseFloat(amount).toFixed(0).toString();
-
-    if (strAmount.length > decimalQuantity) {
-        const newReserve = strAmount.slice(0, strAmount.length - decimalQuantity) + '.' + strAmount.slice(strAmount.length - decimalQuantity, strAmount.length)
-        return parseFloat(newReserve)
-    } else {
-        let newReserve = strAmount
-
-        for (let i = 0; i < decimalQuantity; i++) {
-            if (newReserve.length < decimalQuantity) {
-                newReserve = '0' + newReserve
-            } else {
-                break
-            }
-        }
-        return parseFloat(`0.${newReserve}`)
-    }
 }
