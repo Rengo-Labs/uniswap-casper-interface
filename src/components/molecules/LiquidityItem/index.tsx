@@ -87,7 +87,7 @@ export const LiquidityItem = ({ firstIcon, firstSymbol, firstLiquidity, secondIc
             Your share
           </TColumn1>
           <TColumn1WithColor>
-            {perLiquidity } %
+            {perLiquidity} %
           </TColumn1WithColor>
         </WrappedRow>
         <WrappedRow>
