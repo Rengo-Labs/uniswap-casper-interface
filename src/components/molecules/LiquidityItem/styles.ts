@@ -27,7 +27,7 @@ export const TRow = styled.div`
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    padding: 3px 25px
+    padding: 3px 10px;
 `
 export const TColumn1 = styled.div`
     flex: 1;
