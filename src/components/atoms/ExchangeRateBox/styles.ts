@@ -37,8 +37,8 @@ export const PriceImpactLabel = styled(PriceImpactTitle)`
   transition: color 1s;
   color: ${(props) =>
     props.priceImpact <= 1 || props.priceImpact === '<0.01'
-      ? 'red'
+      ? 'green'
       : props.priceImpact > 1 && props.priceImpact <= 5
-      ? props.NewPurpleColor
-      : 'orange'};
+      ? 'orange'
+      : 'red'};
 `;
