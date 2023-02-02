@@ -278,10 +278,19 @@ export class Client {
 
       console.log('deployHash', deployHash)
 
+      let deployCheck = 0
       // Get the deploy hash from the network
-      const [_, deployResult] = await this.getDeploy(deployHash)
-
-      return [deployHash, deployResult]
+      
+      while (deployCheck < 10) {
+        try {
+          const [_, deployResult] = await this.getDeploy(deployHash)
+          
+          return [deployHash, deployResult]
+        } catch(e) {
+          deployCheck++
+        }
+      }
+      throw new Error('Could not confirm deploy.')
     } catch (err) {
       log.error(`Casper Client - putAndConfirmDeploy error: ${err}`)
       
