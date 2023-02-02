@@ -377,9 +377,69 @@ export const ConfigContextWithReducer = ({
     if (wallet) {
       await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
       await loadPairsUserData(wallet, wallet?.isConnected);
+    } else {
+      await clearPairsUserData()
     }
     await loadPairs();
     await getTVLandVolume()
+  }
+
+  const clearPairsUserData = async () => {
+    Object.keys(tokens).map((x) => {
+      if (tokens[x].contractHash) {
+        tokenDispatch({
+          type: TokenActions.LOAD_ALLOWANCE,
+          payload: {
+            name: x,
+            allowance: convertBigNumberToUIString(
+              new BigNumber(0)
+            ),
+          },
+        })
+
+        tokenDispatch({
+          type: TokenActions.LOAD_BALANCE,
+          payload: {
+            name: x,
+            amount: convertBigNumberToUIString(
+              new BigNumber(0)
+            ),
+          },
+        })
+      } else {
+        tokenDispatch({
+          type: TokenActions.LOAD_BALANCE,
+          payload: {
+            name: 'CSPR',
+            amount: convertBigNumberToUIString(new BigNumber(0)),
+          },
+        })
+      }
+    });
+
+    const pairList = Object.keys(pairState).map((x) => pairState[x]);
+    for (const pair of pairList) {
+
+      pairDispatch({
+        type: PairActions.ADD_ALLOWANCE_TO_PAIR,
+        payload: {
+          name: pair.name,
+          allowance: convertBigNumberToUIString(
+            new BigNumber(0)
+          ),
+        },
+      })
+
+      pairDispatch({
+        type: PairActions.ADD_BALANCE_TO_PAIR,
+        payload: {
+          name: pair.name,
+          balance: convertBigNumberToUIString(
+            new BigNumber(0)
+          ),
+        },
+      })
+    }
   }
 
   async function onConnectWallet(
