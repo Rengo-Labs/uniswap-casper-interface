@@ -1,5 +1,5 @@
 export const NODE_ADDRESSES = process.env.REACT_APP_NODE_ADDRESSES.split(',');
-export const NODE_PROXY = process.env.REACT_APP_NODE_PROXY
+export const NODE_PROXY = (window && /.*casperswap\.xyz/.test(window.location.hostname)) ? '' : process.env.REACT_APP_NODE_PROXY
 // export const NODE_ADDRESS = NODE_PROXY + NODE_ADDRESSES[Math.floor(Math.random() * NODE_ADDRESSES.length)]
 export const NODE_ADDRESS = NODE_PROXY + NODE_ADDRESSES[0]
 export const DEADLINE = parseInt(process.env.REACT_APP_DEADLINE);
