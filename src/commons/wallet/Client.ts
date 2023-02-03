@@ -150,7 +150,7 @@ export class Client {
         }
       } else {
         i++
-        await sleep(1000)
+        await sleep(5000)
         continue;
       }
     }
