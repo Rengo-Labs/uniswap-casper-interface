@@ -5,7 +5,7 @@
   "license": "GPLv3",
   "scripts": {
     "start": "npx env-cmd -f .env.development react-app-rewired start",
-    "build": "npx env-cmd -f .env.development react-app-rewired build",
+    "build": "npx env-cmd -f .env.testnet react-app-rewired build",
     "build-production": "npx env-cmd -f .env.production react-app-rewired build",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
