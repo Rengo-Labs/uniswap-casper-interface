@@ -30,6 +30,7 @@ export const MenuStyled = styled.div`
     
     @media ${device.laptop} {
         flex-direction: row;
+        padding: 0;
     }
     
     gap: 16px;
