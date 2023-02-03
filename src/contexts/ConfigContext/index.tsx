@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { PopupsModule } from '../../components/organisms';
-import { BASE_URL, NODE_ADDRESS, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
+import { NODE_ADDRESS, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
 
 import {
   initialConfigState,
@@ -112,7 +112,7 @@ export const ConfigProviderContext = createContext<ConfigContext>({} as any);
 
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
-export const apiClient = new APIClient(BASE_URL, casperClient);
+export const apiClient = new APIClient(casperClient);
 
 const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 

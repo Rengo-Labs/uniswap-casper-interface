@@ -66,7 +66,6 @@ export interface PairUserDataResponse {
 export class APIClient {
 
   constructor(
-    private _baseURL: string,
     private _client: CasperClient,
   ){
   }
