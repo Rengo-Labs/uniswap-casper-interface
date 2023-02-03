@@ -288,6 +288,7 @@ export class Client {
           return [deployHash, deployResult]
         } catch(e) {
           deployCheck++
+          await sleep(1000)
         }
       }
       throw new Error('Could not confirm deploy.')
