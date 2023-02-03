@@ -55,6 +55,7 @@ import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import { getPath } from '../../commons/calculations'
 import {TableInstance} from "../../components/organisms/PoolModule";
 import {getPairData} from "../../commons/api/InfoSwapClient";
+import store from "store2";
 
 type MaybeWallet = Wallet | undefined;
 
@@ -686,6 +687,10 @@ export const ConfigContextWithReducer = ({
       const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
       const results = await Promise.all(pairs.map(async (pl) => {
+
+        const pairChecked = store.get(pl.name)
+        changeRowPriority(pl.name, pairChecked)
+
         const pairDataResponse = await apiClient.getPairData(pl.contractHash)
         const result = await getPairData([pl.packageHash.substr(5)])
         const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
@@ -1103,6 +1108,7 @@ export const ConfigContextWithReducer = ({
   }
 
   const changeRowPriority = (name, priority) => {
+    store.set(name, priority)
     pairDispatch({
       type: PairActions.CHANGE_PRIORITY,
       payload: {

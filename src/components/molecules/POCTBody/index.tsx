@@ -6,6 +6,7 @@ import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import { Row, TableBodyPropGetter, TableBodyProps } from 'react-table'
 import { PairData } from '../../../reducers/PairsReducer'
 import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
+import store from "store2";
 
 export interface POCTBodyProps {
     getTableBodyProps: (propGetter?: TableBodyPropGetter<PairData>) => TableBodyProps,
@@ -29,7 +30,7 @@ export const POCTBody = ({
     const sortByPriority = (rows) => {
 
         rows.sort((row1: Row<PairData>, row2: Row<PairData>) => {
-            return row1.original.checked ? -1 : 1
+            return store.get(row1.original.name) ? -1 : 1
         })
 
         return rows
