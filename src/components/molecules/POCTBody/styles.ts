@@ -42,11 +42,13 @@ export const CircleTrashIcon = styled(TbTrash)`
 `
 
 export const CircleStarIcon = styled(AiFillStar)`
+    cursor: pointer;
     font-size: 22px;
     color: ${props => props.theme.secondBackgroundColor};
 `
 
 export const CircleStarDisabledIcon = styled(AiOutlineStar)`
+    cursor: pointer;
     font-size: 22px;
     color: ${props => props.theme.secondBackgroundColor};
 `

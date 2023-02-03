@@ -101,6 +101,11 @@ export const TColumn1 = styled.div`
     flex: 1;
 `
 
+export const TClickableColumn1 = styled.div`
+    cursor: pointer;
+    flex: 1;
+`
+
 export const TColumn2andHalf = styled.div`
     @media ${device.tablet} {
       flex: 0;

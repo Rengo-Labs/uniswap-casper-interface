@@ -38,7 +38,7 @@ import {
     TBodyExpanded,
     TBodyColumn3,
     TButtonColumn3,
-    TBodyColumn6
+    TBodyColumn6, TClickableColumn1
 } from "./styles";
 
 export interface CollapsingRowProps {
@@ -104,7 +104,7 @@ export const CollapsingRow = ({
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
                 <TColumn3>$ {row.original.fees24h}</TColumn3>
                 <TColumn3>{row.original.oneYFees} %</TColumn3>
-                <TColumn1  {...getToggleProps({onClick: handleOnClick}) }>{isExpanded ? <FiChevronUp /> : <FiChevronDown />}</TColumn1>
+                <TClickableColumn1 {...getToggleProps({onClick: handleOnClick}) }>{isExpanded ? <FiChevronUp /> : <FiChevronDown />}</TClickableColumn1>
             </TRow>
             <TBodyExpanded {...getCollapseProps()}>
                 <WrappedRow>
@@ -191,7 +191,7 @@ export const CollapsingRow = ({
                     <PairTitleColumn>{row.original.token0Symbol} - {row.original.token1Symbol}</PairTitleColumn>
                     <TColumn2andHalf/>
                 </TColumn6>
-                <TColumn1 {...getToggleProps({onClick: handleOnClick}) }>{isExpanded ? <FiChevronUp style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/> : <FiChevronDown style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}} />}</TColumn1>
+                <TClickableColumn1 {...getToggleProps({onClick: handleOnClick}) }>{isExpanded ? <FiChevronUp style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/> : <FiChevronDown style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}} />}</TClickableColumn1>
             </TFirstRow>
             <TSecondRow {...getCollapseProps()}>
                 <WrappedRow>
