@@ -28,10 +28,11 @@ export const CardStyled = styled.section<CardStyledInterface>`
   }
   
   @media ${device.laptop} {
-    margin: .5em auto 4vh auto;
+    margin: .5em auto .5em  auto;
     width: ${props => props.width};
     grid-column: ${props => props.gridColumn};
     border: 2px solid black;
+    padding: 0;
   }
 `
 export const CardHeaderStyled = styled.section`
