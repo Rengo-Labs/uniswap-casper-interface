@@ -613,6 +613,7 @@ export const ConfigContextWithReducer = ({
   }
 
   interface PairTotalReserves {
+    orderedName: string,
     totalReserve0: BigNumber.Value,
     totalReserve1: BigNumber.Value,
   }
@@ -622,7 +623,7 @@ export const ConfigContextWithReducer = ({
       const pairs = Object.values(pairState)
       const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
-      const results = await Promise.all(pairs.map(async (pl) => {
+      const results = await Promise.all(pairs.map(async (pl: PairData) => {
         const pairDataResponse = await apiClient.getPairData(pl.contractHash)
         const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
         const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
@@ -637,6 +638,7 @@ export const ConfigContextWithReducer = ({
 
         return {
           name: pl.name,
+          orderedName: pl.orderedName,
           totalReserve0: reserve0,
           totalReserve1: reserve1,
           volume7d: new BigNumber(
@@ -667,6 +669,7 @@ export const ConfigContextWithReducer = ({
         })
 
         pairTotalReserves[pl.name] = {
+          orderedName: pl.orderedName,
           totalReserve0: pl.totalReserve0,
           totalReserve1: pl.totalReserve1,
         }
@@ -917,7 +920,7 @@ export const ConfigContextWithReducer = ({
   const findReservesBySymbols = (
     tokenASymbol: string,
     tokenBSymbol: string,
-    overrideReserves: Record<string, PairTotalReserves> = {},
+    overrideReserves?: Record<string, PairTotalReserves>,
   ): PairReserves | undefined => {
     let tA = tokenASymbol
     let tB = tokenBSymbol
@@ -931,23 +934,27 @@ export const ConfigContextWithReducer = ({
     let lookUp = `${tA}-${tB}`
 
     // do a simple look up
-    let pairData = overrideReserves[lookUp] ?? pairState[lookUp]
-
-    if (pairData) {
-      return {
-        reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
-        reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
-      }
-    }
-
-    // do different simple look up
-    lookUp = `${tB}-${tA}`
-    pairData = overrideReserves[lookUp] ?? pairState[lookUp]
+    let [pairData] = Object.values(overrideReserves ?? pairState).filter((x) => {
+      return x.orderedName == lookUp
+    })
 
     if (pairData) {
       return {
         reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
         reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
+      }
+    }
+
+    // do different simple look up
+    lookUp = `${tB}-${tA}`
+    pairData = Object.values(overrideReserves ?? pairState).filter((x) => {
+      return x.orderedName == lookUp
+    })[0]
+
+    if (pairData) {
+      return {
+        reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
+        reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
       }
     }
 
