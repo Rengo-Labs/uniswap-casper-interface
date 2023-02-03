@@ -99,6 +99,7 @@ const LiquidityNewModule = () => {
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
+  const [isProcessingTransaction, setIsProcessingTransaction] = useState(false);
 
   useEffect(() => {
     const t0 = searchParams.get("token0")
@@ -255,8 +256,10 @@ const LiquidityNewModule = () => {
   }
 
   async function requestIncreaseAllowance(amount, contractHash) {
+    setIsProcessingTransaction(true);
     await onIncreaseAllow(amount, contractHash)
     await updateLiquidityDetail(firstTokenSelected, secondTokenSelected)
+    setIsProcessingTransaction(false);
   }
 
   async function changeTokenA(value: string) {
@@ -387,8 +390,9 @@ const LiquidityNewModule = () => {
   }
 
   async function onLiquidity() {
-
+    setIsProcessingTransaction(true);
     await onAddLiquidity(amountSwapTokenA, amountSwapTokenB, slippageTolerance, gasFee)
+    setIsProcessingTransaction(false);
     resetAll()
   }
 
@@ -556,14 +560,14 @@ const LiquidityNewModule = () => {
           }
           {
             !isApprovedA && isConnected &&
-            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
+            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || isProcessingTransaction} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
           }
           {
             !isApprovedB && isConnected &&
-            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
+            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || isProcessingTransaction} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
           }
           {
-            isApprovedA && isApprovedB && isConnected && <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
+            isApprovedA && isApprovedB && isConnected && <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || isProcessingTransaction} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
           }
         </ButtonSpaceNSM>
 

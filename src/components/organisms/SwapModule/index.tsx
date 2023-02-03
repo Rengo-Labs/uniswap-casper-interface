@@ -90,6 +90,7 @@ const SwapNewModule = () => {
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
   const [priceA, setPriceA] = useState("0.00")
   const [priceB, setPriceB] = useState("0.00")
+  const [isProcessingTransaction, setIsProcessingTransaction] = useState(false);
 
   useEffect(() => {
     const t0 = searchParams.get('token0');
@@ -108,6 +109,10 @@ const SwapNewModule = () => {
   }, [isConnected, pairState]);
 
   useEffect(() => {
+    if (!isConnected) {
+      // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
+      resetAll()
+    }
     progressBar(async () => {
       lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
       await refreshAll()
@@ -136,12 +141,19 @@ const SwapNewModule = () => {
   }
 
   async function onConfirmSwap() {
+    setIsProcessingTransaction(true);
+
     const waiting = await onConfirmSwapConfig(
       amountSwapTokenA,
       amountSwapTokenB,
       slippageTolerance,
       gasFee
     );
+
+    if(waiting) {
+      setIsProcessingTransaction(false);
+    }
+
     resetAll();
   }
 
@@ -540,7 +552,8 @@ const SwapNewModule = () => {
                 disabled={
                   amountSwapTokenA <= 0 ||
                   amountSwapTokenB <= 0 ||
-                  amountSwapTokenA > parseFloat(firstTokenSelected.amount)
+                  amountSwapTokenA > parseFloat(firstTokenSelected.amount) ||
+                  isProcessingTransaction
                 }
                 handler={async () => {
                   await onConfirmSwap();
