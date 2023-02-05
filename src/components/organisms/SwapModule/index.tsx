@@ -42,6 +42,7 @@ import { ProgressBarProviderContext } from '../../../contexts/ProgressBarContext
 import styled from 'styled-components';
 import { SwapProviderContext } from "../../../contexts/SwapContext";
 import { globalStore } from '../../../store/store';
+import {getUSDPairData} from "../../../commons/api/InfoSwapClient";
 
 const Wrapper = styled.section`
   display: flex;
@@ -105,6 +106,8 @@ const SwapNewModule = () => {
       amountSwapTokenA,
       lastChanged == 'A' ? firstTokenSelected : secondTokenSelected,
     );
+
+    loadUSDPrice()
   }, [isConnected, pairState]);
 
   useEffect(() => {
@@ -197,8 +200,8 @@ const SwapNewModule = () => {
     );
   }
 
-  async function changeTokenA(value: number | string) {
-    let filteredValue = parseFloat(value as any);
+  async function changeTokenA(value) {
+    let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
     } else if (filteredValue < 0) {
@@ -216,10 +219,12 @@ const SwapNewModule = () => {
       firstTokenSelected
     );
     amountSwapTokenBSetter(parseFloat(minTokenToReceive));
+
+    loadUSDPrice()
   }
 
-  async function changeTokenB(value: number | string) {
-    let filteredValue = parseFloat(value as any);
+  async function changeTokenB(value) {
+    let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
     } else if (filteredValue < 0) {
@@ -237,6 +242,14 @@ const SwapNewModule = () => {
       secondTokenSelected
     );
     amountSwapTokenASetter(parseFloat(minTokenToReceive));
+
+    loadUSDPrice()
+  }
+
+  const loadUSDPrice = async () => {
+    const priceMap = await getUSDPairData(firstTokenSelected.symbol, secondTokenSelected.symbol, pairState)
+    setPriceA(priceMap.get(firstTokenSelected.symbol))
+    setPriceB(priceMap.get(secondTokenSelected.symbol))
   }
 
   const [searchModalA, searchModalASetter] = useState(false);

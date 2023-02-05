@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 import BigNumber from 'bignumber.js';
 import React, {
   createContext,
@@ -54,6 +54,8 @@ import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import { getPath } from '../../commons/calculations'
 import {TableInstance} from "../../components/organisms/PoolModule";
+import {getPairData} from "../../commons/api/InfoSwapClient";
+import store from "store2";
 
 type MaybeWallet = Wallet | undefined;
 
@@ -100,7 +102,8 @@ export interface ConfigContext {
   setCurrentQuery: (v) => void,
   filterDataReload: (v) => any;
   mapExpandedRows: any[],
-  setMapExpandedRows: (l) => void
+  setMapExpandedRows: (l) => void,
+  changeRowPriority: (r, p) => void
 }
 
 export interface PairReserves {
@@ -339,6 +342,7 @@ export const ConfigContextWithReducer = ({
               )
               .then((response) => {
                 //console.log('balance', token, response)
+                console.log(x, convertBigNumberToUIString(new BigNumber(response)).toString())
                 tokenDispatch({
                   type: TokenActions.LOAD_BALANCE,
                   payload: {
@@ -374,9 +378,69 @@ export const ConfigContextWithReducer = ({
     if (wallet) {
       await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
       await loadPairsUserData(wallet, wallet?.isConnected);
+    } else {
+      await clearPairsUserData()
     }
     await loadPairs();
     await getTVLandVolume()
+  }
+
+  const clearPairsUserData = async () => {
+    Object.keys(tokens).map((x) => {
+      if (tokens[x].contractHash) {
+        tokenDispatch({
+          type: TokenActions.LOAD_ALLOWANCE,
+          payload: {
+            name: x,
+            allowance: convertBigNumberToUIString(
+              new BigNumber(0)
+            ),
+          },
+        })
+
+        tokenDispatch({
+          type: TokenActions.LOAD_BALANCE,
+          payload: {
+            name: x,
+            amount: convertBigNumberToUIString(
+              new BigNumber(0)
+            ),
+          },
+        })
+      } else {
+        tokenDispatch({
+          type: TokenActions.LOAD_BALANCE,
+          payload: {
+            name: 'CSPR',
+            amount: convertBigNumberToUIString(new BigNumber(0)),
+          },
+        })
+      }
+    });
+
+    const pairList = Object.keys(pairState).map((x) => pairState[x]);
+    for (const pair of pairList) {
+
+      pairDispatch({
+        type: PairActions.ADD_ALLOWANCE_TO_PAIR,
+        payload: {
+          name: pair.name,
+          allowance: convertBigNumberToUIString(
+            new BigNumber(0)
+          ),
+        },
+      })
+
+      pairDispatch({
+        type: PairActions.ADD_BALANCE_TO_PAIR,
+        payload: {
+          name: pair.name,
+          balance: convertBigNumberToUIString(
+            new BigNumber(0)
+          ),
+        },
+      })
+    }
   }
 
   async function onConnectWallet(
@@ -624,7 +688,12 @@ export const ConfigContextWithReducer = ({
       const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
       const results = await Promise.all(pairs.map(async (pl: PairData) => {
+
+        const pairChecked = store.get(pl.name)
+        changeRowPriority(pl.name, pairChecked)
+
         const pairDataResponse = await apiClient.getPairData(pl.contractHash)
+        const result = await getPairData([pl.packageHash.substr(5)])
         const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
         const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
         const reserve0 = convertBigNumberToUIString(
@@ -649,6 +718,9 @@ export const ConfigContextWithReducer = ({
           volume: convertBigNumberToUIString(new BigNumber(0), 9),
           totalSupply: convertBigNumberToUIString(
             new BigNumber(pairDataResponse.totalSupply)
+          ),
+          totalLiquidityUSD: convertBigNumberToUIString(
+            new BigNumber(result.length != 0 ? result[0].reserveUSD : 0)
           )
         }
       }))
@@ -665,6 +737,7 @@ export const ConfigContextWithReducer = ({
             totalReserve0: pl.totalReserve0,
             totalReserve1: pl.totalReserve1,
             totalSupply: pl.totalSupply,
+            totalLiquidityUSD: pl.totalLiquidityUSD
           },
         })
 
@@ -1041,6 +1114,17 @@ export const ConfigContextWithReducer = ({
     return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
   }
 
+  const changeRowPriority = (name, priority) => {
+    store.set(name, priority)
+    pairDispatch({
+      type: PairActions.CHANGE_PRIORITY,
+      payload: {
+        name: name,
+        checked: priority
+      }
+    });
+  }
+
   return (
     <ConfigProviderContext.Provider
       value={{
@@ -1082,6 +1166,7 @@ export const ConfigContextWithReducer = ({
         filterDataReload,
         mapExpandedRows,
         setMapExpandedRows,
+        changeRowPriority
       }}
     >
       {children}

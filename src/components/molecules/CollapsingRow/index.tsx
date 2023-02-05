@@ -5,7 +5,7 @@ import {NewIcons} from '../../atoms'
 import { useNavigate } from 'react-router-dom';
 
 import {
-    CircleButton, CircleStarIcon, CircleSwapIcon, CircleTrashIcon
+    CircleButton, CircleStarDisabledIcon, CircleStarIcon, CircleSwapIcon, CircleTrashIcon
 } from "../POCTBody/styles";
 import {SwapIconImageStyled, SwapIconTwoImageStyled} from "../LiquidityItem/styles";
 import {ReactComponent as FarmIcon} from '../../../assets/newIcons/farmIconCyan.svg'
@@ -38,25 +38,30 @@ import {
     TBodyExpanded,
     TBodyColumn3,
     TButtonColumn3,
-    TBodyColumn6
+    TBodyColumn6, TClickableColumn1
 } from "./styles";
 
 export interface CollapsingRowProps {
     row: Row<PairData>,
     fullExpanded?: boolean,
+    priority?: boolean,
     isMobile?: boolean,
     onRemovingPopupListener: (remove: boolean) => void,
     onClick,
+    onAssignPriority
 }
 
 export const CollapsingRow = ({
     row, 
     fullExpanded = false,
     isMobile = false,
+    priority = false,
     onRemovingPopupListener,
-    onClick
+    onClick,
+    onAssignPriority
 }: CollapsingRowProps)  => {
     const [ isExpanded, setExpanded ] = useState(fullExpanded);
+    const [ hasPriority, setPriority] = useState(priority)
     const navigate = useNavigate()
 
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
@@ -64,6 +69,11 @@ export const CollapsingRow = ({
     const handleOnClick = () => {
         onClick(row.original.name, !isExpanded)
         setExpanded(!isExpanded)
+    }
+
+    const onChangePriority = () => {
+        onAssignPriority(row.original.name, ! hasPriority)
+        setPriority(! hasPriority)
     }
 
     const goTo = (path: string, removingPopup= false) => {
@@ -74,9 +84,13 @@ export const CollapsingRow = ({
     }
 
     return ( !isMobile ? <TWrapRow className="collapsible" {...row.getRowProps()} >
-            <TRow {...getToggleProps({onClick: handleOnClick}) }>
+            <TRow>
                 <TColumn6 style={{display: "flex"}}>
-                    <IconColumn1><CircleStarIcon/></IconColumn1>
+                    <IconColumn1 onClick={onChangePriority}>
+                        {
+                            hasPriority ? <CircleStarIcon/> :  <CircleStarDisabledIcon/>
+                        }
+                    </IconColumn1>
                     <IconColumn1>
                         <SwapIconImageStyled src={row.original.token0Icon} width="45" height="45" />
                         <SwapIconTwoImageStyled src={row.original.token1Icon} width="45" height="45" />
@@ -85,12 +99,12 @@ export const CollapsingRow = ({
                     <TColumn2andHalf/>
                 </TColumn6>
                 <PairTitleColumn>
-                    $ {convertNumber(parseFloat(row.original.totalSupply))}
+                    $ {convertNumber(parseFloat(row.original.totalLiquidityUSD))}
                 </PairTitleColumn>
                 <TColumn3>$ {row.original.volume7d}</TColumn3>
                 <TColumn3>$ {row.original.fees24h}</TColumn3>
                 <TColumn3>{row.original.oneYFees} %</TColumn3>
-                <TColumn1>{isExpanded ? <FiChevronUp /> : <FiChevronDown />}</TColumn1>
+                <TClickableColumn1 {...getToggleProps({onClick: handleOnClick}) }>{isExpanded ? <FiChevronUp /> : <FiChevronDown />}</TClickableColumn1>
             </TRow>
             <TBodyExpanded {...getCollapseProps()}>
                 <WrappedRow>
@@ -116,7 +130,7 @@ export const CollapsingRow = ({
                             <TitleBodyRow>Your Liquidity</TitleBodyRow>
                         </TRow>
                         <TRow>
-                            <NormalBodyRow>$ {convertNumber(parseFloat(row.original.totalLiquidityUSD))}</NormalBodyRow>
+                            <NormalBodyRow>$ {convertNumber(parseFloat(row.original.liquidityUSD))}</NormalBodyRow>
                         </TRow>
                         <TRow>
                             <NormalBodyRow>{convertNumber(parseFloat(row.original.balance))} LP</NormalBodyRow>
@@ -163,9 +177,13 @@ export const CollapsingRow = ({
             </TBodyExpanded>
         </TWrapRow> :
         <TWrapCardRow className="collapsible" {...row.getRowProps()} >
-            <TFirstRow {...getToggleProps({onClick: handleOnClick}) }>
+            <TFirstRow>
                 <TColumn6 style={{display: "flex"}}>
-                    <IconColumn1><CircleStarIcon/></IconColumn1>
+                    <IconColumn1 onClick={onChangePriority}>
+                        {
+                            hasPriority ? <CircleStarIcon/> :  <CircleStarDisabledIcon/>
+                        }
+                    </IconColumn1>
                     <IconColumn1>
                         <SwapIconImageStyled src={row.original.token0Icon} width="45" height="45" />
                         <SwapIconTwoImageStyled src={row.original.token1Icon} width="45" height="45" />
@@ -173,7 +191,7 @@ export const CollapsingRow = ({
                     <PairTitleColumn>{row.original.token0Symbol} - {row.original.token1Symbol}</PairTitleColumn>
                     <TColumn2andHalf/>
                 </TColumn6>
-                <TColumn1>{isExpanded ? <FiChevronUp style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/> : <FiChevronDown style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}} />}</TColumn1>
+                <TClickableColumn1 {...getToggleProps({onClick: handleOnClick}) }>{isExpanded ? <FiChevronUp style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}}/> : <FiChevronDown style={{color: lightTheme.secondBackgroundColor, fontSize: "22px"}} />}</TClickableColumn1>
             </TFirstRow>
             <TSecondRow {...getCollapseProps()}>
                 <WrappedRow>
