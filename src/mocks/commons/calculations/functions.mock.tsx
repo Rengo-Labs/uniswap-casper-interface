@@ -3,6 +3,7 @@ import {PairState} from "../../../reducers/PairsReducer";
 
 export const initialPairsStateMock1: PairState = {
   "CSX-WETH": {
+    checked: false,
     name: "CSX-WETH",
     contractHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
     packageHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
@@ -21,6 +22,7 @@ export const initialPairsStateMock1: PairState = {
     decimals: 9,
   },
   "CSX-WCSPR": {
+    checked: false,
     name: "CSX-WCSPR",
     contractHash: "hash-9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
     packageHash: "hash-9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
@@ -39,6 +41,7 @@ export const initialPairsStateMock1: PairState = {
     decimals: 9,
   },
   "WETH-WCSPR": {
+    checked: false,
     name: "WETH-WCSPR",
     contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
     packageHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
@@ -121,6 +124,7 @@ export const initialTokenStateMock1: TokenState = {
 
 export const initialPairsStateMock2: PairState = {
   "USDC-WCSPR": {
+    checked: false,
     name: "USDC-WCSPR",
     contractHash: "hash-b080106ba9a0838173c4a41b29220deae768d0614bfbebfe653ca8a52a0bc23d",
     packageHash: "hash-b080106ba9a0838173c4a41b29220deae768d0614bfbebfe653ca8a52a0bc23d",
@@ -139,6 +143,7 @@ export const initialPairsStateMock2: PairState = {
     decimals: 9,
   },
   "DAI-WCSPR": {
+    checked: false,
     name: "DAI-WCSPR",
     contractHash: "hash-0576fbbe71ea1beef03a384a3cfa5be9ea90e849900f8442a7c0860f5bec3e96",
     packageHash: "hash-0576fbbe71ea1beef03a384a3cfa5be9ea90e849900f8442a7c0860f5bec3e96",
@@ -157,6 +162,7 @@ export const initialPairsStateMock2: PairState = {
     decimals: 9,
   },
   "USDT-WCSPR": {
+    checked: false,
     name: "USDT-WCSPR",
     contractHash: "hash-17277427f5bc536313f1e8b536d9bb6ab87ff13583402679b582d9b6b1774aaf",
     packageHash: "hash-17277427f5bc536313f1e8b536d9bb6ab87ff13583402679b582d9b6b1774aaf",
@@ -175,6 +181,7 @@ export const initialPairsStateMock2: PairState = {
     decimals: 9,
   },
   "CSX-WETH": {
+    checked: false,
     name: "CSX-WETH",
     contractHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
     packageHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
@@ -193,6 +200,7 @@ export const initialPairsStateMock2: PairState = {
     decimals: 9,
   },
   "CSX-WCSPR": {
+    checked: false,
     name: "CSX-WCSPR",
     contractHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
     packageHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
@@ -211,6 +219,7 @@ export const initialPairsStateMock2: PairState = {
     decimals: 9,
   },
   "WETH-WCSPR": {
+    checked: false,
     name: "WETH-WCSPR",
     contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
     packageHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
@@ -331,6 +340,7 @@ export const initialTokenStateMock2: TokenState = {
 
 export const initialPairsStateMock3: PairState = {
   "USDC-WCSPR": {
+    checked: false,
     name: "USDC-WCSPR",
     contractHash: "hash-b080106ba9a0838173c4a41b29220deae768d0614bfbebfe653ca8a52a0bc23d",
     packageHash: "hash-b080106ba9a0838173c4a41b29220deae768d0614bfbebfe653ca8a52a0bc23d",
@@ -349,6 +359,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "DAI-WCSPR": {
+    checked: false,
     name: "DAI-WCSPR",
     contractHash: "hash-0576fbbe71ea1beef03a384a3cfa5be9ea90e849900f8442a7c0860f5bec3e96",
     packageHash: "hash-0576fbbe71ea1beef03a384a3cfa5be9ea90e849900f8442a7c0860f5bec3e96",
@@ -367,6 +378,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "USDT-WCSPR": {
+    checked: false,
     name: "USDT-WCSPR",
     contractHash: "hash-17277427f5bc536313f1e8b536d9bb6ab87ff13583402679b582d9b6b1774aaf",
     packageHash: "hash-17277427f5bc536313f1e8b536d9bb6ab87ff13583402679b582d9b6b1774aaf",
@@ -385,6 +397,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "CSX-WETH": {
+    checked: false,
     name: "CSX-WETH",
     contractHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
     packageHash: "hash-b9d9fe8057c2df9e1126582b7962b2fff22f91aa59014f8b02ee11075dd19670",
@@ -403,6 +416,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "CSX-WCSPR": {
+    checked: false,
     name: "CSX-WCSPR",
     contractHash: "hash-9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
     packageHash: "hash-9b4f66939ce96621b5f60386f57ae8c4c8f998e4156caf6e5b8bea987756e7d3",
@@ -421,6 +435,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "WETH-WCSPR": {
+    checked: false,
     name: "WETH-WCSPR",
     contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
     packageHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8dd",
@@ -439,6 +454,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "WETH-SOL": {
+    checked: false,
     name: "WETH-SOL",
     contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa813",
     packageHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa813",
@@ -457,6 +473,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "DAI-SOL": {
+    checked: false,
     name: "DAI-SOL",
     contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8af",
     packageHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa813",
@@ -475,6 +492,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "DOT-SOL": {
+    checked: false,
     name: "DOT-SOL",
     contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa899",
     packageHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa899",
@@ -493,6 +511,7 @@ export const initialPairsStateMock3: PairState = {
     decimals: 9,
   },
   "DOT-BNB": {
+    checked: false,
     name: "DOT-BNB",
     contractHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8df",
     packageHash: "hash-38d062de4d40d8f3a1f5352d080c5393f27a52b4685a97fb0784979dd2bfa8df",

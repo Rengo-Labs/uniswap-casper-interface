@@ -34,6 +34,7 @@ export const TWrapRow = styled.div`
     font-size: 14px;
     line-height: 18px;
     letter-spacing: 0.02em;
+    cursor: pointer;
     
     @media ${device.laptop} {
       display: block;
@@ -98,6 +99,11 @@ export const TColumn3 = styled.div`
 `
 
 export const TColumn1 = styled.div`
+    flex: 1;
+`
+
+export const TClickableColumn1 = styled.div`
+    cursor: pointer;
     flex: 1;
 `
 

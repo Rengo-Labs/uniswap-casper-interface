@@ -197,8 +197,8 @@ const SwapNewModule = () => {
     );
   }
 
-  async function changeTokenA(value: number | string) {
-    let filteredValue = parseFloat(value as any);
+  async function changeTokenA(value) {
+    let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
     } else if (filteredValue < 0) {
@@ -218,8 +218,8 @@ const SwapNewModule = () => {
     amountSwapTokenBSetter(parseFloat(minTokenToReceive));
   }
 
-  async function changeTokenB(value: number | string) {
-    let filteredValue = parseFloat(value as any);
+  async function changeTokenB(value) {
+    let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
     } else if (filteredValue < 0) {
@@ -237,6 +237,7 @@ const SwapNewModule = () => {
       secondTokenSelected
     );
     amountSwapTokenASetter(parseFloat(minTokenToReceive));
+
   }
 
   const [searchModalA, searchModalASetter] = useState(false);
@@ -550,7 +551,7 @@ const SwapNewModule = () => {
           </ButtonSpaceNSM>
         </ContainerSwapActionsNSM>
       </ContainerInnerNSM>
-      { /* <SwapStatistics token0Price={priceA} token1Price={priceB} token0Per={0} token1Per={0} /> */ }
+      <SwapStatistics token0Price={priceA} token1Price={priceB} token0Per={0} token1Per={0} />
 
     </Wrapper>
   );
