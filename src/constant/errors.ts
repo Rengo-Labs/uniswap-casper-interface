@@ -1,4 +1,7 @@
 export const ERROR_BLOCKCHAIN = {
+  "Mint error: 0": {
+    message: "Error: Insufficent CSPR for gas."
+  },
   "Error: Contract execution: User error: 55": {
     message: "Error: Tried to reserve reserve that does not exist." //Todo check this
   },
@@ -29,9 +32,12 @@ export const ERROR_BLOCKCHAIN = {
   "Error: Contract execution: User error: 78": {
     message: "Error: Received token amount exceeds slippage."
   },
+  "Error: Contract execution: User error: 82": {
+    message: "Error: Add liquidity optimal amounts exceed slippage."
+  },
   "Error: Contract execution: User error: 83": {
     message: "Error: Deploy timed out."
-  },
+  },  
   "Error: Contract execution: User error: 84": {
     message: "Error: Deploy timed out."
   },

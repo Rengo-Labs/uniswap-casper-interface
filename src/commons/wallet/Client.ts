@@ -115,8 +115,20 @@ export class Client {
    */
   async getDeploy(deployHash: string): Promise<[DeployUtil.Deploy, GetDeployResult]> {
     try {
-      const casperClient = this.casperClient
-      return await casperClient.getDeploy(deployHash)
+      
+      let deployCheck = 0
+      // Get the deploy hash from the network
+      
+      while (deployCheck < 5) {
+        try {
+          const casperClient = this.casperClient
+          return await casperClient.getDeploy(deployHash)          
+        } catch(e) {
+          deployCheck++
+          await sleep(1000)
+        }
+      }
+      throw new Error('Could not confirm deploy.')
     } catch(err) {
       log.error(`Casper Client - getDeploy error: ${err}`)
       
@@ -278,9 +290,8 @@ export class Client {
 
       console.log('deployHash', deployHash)
 
-      // Get the deploy hash from the network
       const [_, deployResult] = await this.getDeploy(deployHash)
-
+      
       return [deployHash, deployResult]
     } catch (err) {
       log.error(`Casper Client - putAndConfirmDeploy error: ${err}`)

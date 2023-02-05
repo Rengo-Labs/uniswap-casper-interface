@@ -68,10 +68,10 @@ export const PriceTitle = styled.div`
   color: #000;
   font-family: 'Epilogue';
 `;
+
 export const PriceValue = styled.div<IPriceValue>`
   font-size: 0.9rem;
-  color: ${(props) =>
-    props.percent ? props.theme.NewGreenColor : props.theme.NewGrayColor};
+  color: ${(props) => props.percent ? props.theme.NewGreenColor : props.theme.NewGrayColor};
   font-family: 'Epilogue';
 `;
 

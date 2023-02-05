@@ -13,7 +13,7 @@ export const TBody = styled.div`
     
     @media ${device.laptop} {
         overflow-y: scroll;
-        height: 32rem;
+        height: 32.5rem;
     }
 `
 

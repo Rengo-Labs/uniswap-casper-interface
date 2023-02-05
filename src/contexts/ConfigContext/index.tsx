@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { PopupsModule } from '../../components/organisms';
-import { BASE_URL, NODE_ADDRESS, NotificationType } from '../../constant';
+import { NODE_ADDRESS, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
 
 import {
   initialConfigState,
@@ -115,7 +115,7 @@ export const ConfigProviderContext = createContext<ConfigContext>({} as any);
 
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
-export const apiClient = new APIClient(BASE_URL, casperClient);
+export const apiClient = new APIClient(casperClient);
 
 const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -677,6 +677,7 @@ export const ConfigContextWithReducer = ({
   }
 
   interface PairTotalReserves {
+    orderedName: string,
     totalReserve0: BigNumber.Value,
     totalReserve1: BigNumber.Value,
   }
@@ -686,7 +687,7 @@ export const ConfigContextWithReducer = ({
       const pairs = Object.values(pairState)
       const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
-      const results = await Promise.all(pairs.map(async (pl) => {
+      const results = await Promise.all(pairs.map(async (pl: PairData) => {
 
         const pairChecked = store.get(pl.name)
         changeRowPriority(pl.name, pairChecked)
@@ -706,6 +707,7 @@ export const ConfigContextWithReducer = ({
 
         return {
           name: pl.name,
+          orderedName: pl.orderedName,
           totalReserve0: reserve0,
           totalReserve1: reserve1,
           volume7d: new BigNumber(
@@ -740,6 +742,7 @@ export const ConfigContextWithReducer = ({
         })
 
         pairTotalReserves[pl.name] = {
+          orderedName: pl.orderedName,
           totalReserve0: pl.totalReserve0,
           totalReserve1: pl.totalReserve1,
         }
@@ -888,7 +891,7 @@ export const ConfigContextWithReducer = ({
       );
 
       setProgressModal(true);
-      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`);
+      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
 
       const result = await casperClient.waitForDeployExecution(deployHash);
       setProgressModal(false);
@@ -990,7 +993,7 @@ export const ConfigContextWithReducer = ({
   const findReservesBySymbols = (
     tokenASymbol: string,
     tokenBSymbol: string,
-    overrideReserves: Record<string, PairTotalReserves> = {},
+    overrideReserves?: Record<string, PairTotalReserves>,
   ): PairReserves | undefined => {
     let tA = tokenASymbol
     let tB = tokenBSymbol
@@ -1004,23 +1007,27 @@ export const ConfigContextWithReducer = ({
     let lookUp = `${tA}-${tB}`
 
     // do a simple look up
-    let pairData = overrideReserves[lookUp] ?? pairState[lookUp]
-
-    if (pairData) {
-      return {
-        reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
-        reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
-      }
-    }
-
-    // do different simple look up
-    lookUp = `${tB}-${tA}`
-    pairData = overrideReserves[lookUp] ?? pairState[lookUp]
+    let [pairData] = Object.values(overrideReserves ?? pairState).filter((x) => {
+      return x.orderedName == lookUp
+    })
 
     if (pairData) {
       return {
         reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
         reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
+      }
+    }
+
+    // do different simple look up
+    lookUp = `${tB}-${tA}`
+    pairData = Object.values(overrideReserves ?? pairState).filter((x) => {
+      return x.orderedName == lookUp
+    })[0]
+
+    if (pairData) {
+      return {
+        reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
+        reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
       }
     }
 

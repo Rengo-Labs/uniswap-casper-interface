@@ -1,5 +1,7 @@
-export const NODE_ADDRESS = process.env.REACT_APP_NODE_ADDRESS;
-export const BASE_URL = process.env.REACT_APP_BASE_URL;
+export const NODE_ADDRESSES = process.env.REACT_APP_NODE_ADDRESSES.split(',');
+export const NODE_PROXY = process.env.REACT_APP_NODE_PROXY
+// export const NODE_ADDRESS = NODE_PROXY + NODE_ADDRESSES[Math.floor(Math.random() * NODE_ADDRESSES.length)]
+export const NODE_ADDRESS = NODE_PROXY + NODE_ADDRESSES[0]
 export const DEADLINE = parseInt(process.env.REACT_APP_DEADLINE);
 export const ROUTER_CONTRACT_HASH = process.env.REACT_APP_ROUTER_CONTRACT_HASH;
 export const ROUTER_PACKAGE_HASH = process.env.REACT_APP_ROUTER_PACKAGE_HASH;

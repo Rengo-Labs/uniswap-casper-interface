@@ -14,7 +14,7 @@ import {
   sleep,
   Token,
 } from '../../commons';
-import { DEADLINE, NotificationType } from '../../constant';
+import { DEADLINE, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
 import {
   apiClient,
   casperClient,
@@ -101,7 +101,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       );
 
       setProgressModal(true);
-      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`);
+      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
 
       const result = await casperClient.waitForDeployExecution(deployHash);
       setProgressModal(false);
@@ -166,7 +166,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       );
 
       setProgressModal(true);
-      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`);
+      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
 
       const result = await casperClient.waitForDeployExecution(deployHash);
       setProgressModal(false);

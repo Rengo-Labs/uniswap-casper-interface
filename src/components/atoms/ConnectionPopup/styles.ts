@@ -93,6 +93,7 @@ export const HRefLink = styled.button`
     color: ${props => props.theme.secondBackgroundColor};
     border: 0;
     background-color: transparent;
+    cursor: pointer;
 `
 export const PopoverButtonStyled= styled.div`
     display: flex;

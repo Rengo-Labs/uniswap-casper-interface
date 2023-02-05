@@ -14,7 +14,7 @@ import { ReactComponent as copyIcon } from '../../../assets/newIcons/copyIcon.sv
 import { ReactComponent as recentTransactionIcon } from '../../../assets/newIcons/recentTransactionIcon.svg';
 import { ReactComponent as disconnectWallet } from '../../../assets/newIcons/disconnectWalletIcon.svg';
 import { notificationStore } from '../../../store/store';
-import { NotificationType } from '../../../constant';
+import { NotificationType, SUPPORTED_NETWORKS } from '../../../constant';
 
 export interface PopoverButtonInterface {
   isConnected: boolean;
@@ -58,13 +58,7 @@ export const PopoverButton = ({
   };
 
   const redirectToTransactionsList = () => {
-    updateNotification({
-      type: NotificationType.Info,
-      title: 'Nothing now',
-      subtitle: '',
-      show: true,
-      chargerBar: true,
-    });
+    window.open(SUPPORTED_NETWORKS.blockExplorerUrl + `/account/${accountHashString}`, '_blank')
   };
 
   return (

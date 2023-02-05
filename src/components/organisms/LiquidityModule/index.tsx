@@ -114,7 +114,7 @@ const LiquidityNewModule = () => {
     }
 
     updateLiquidityDetail(
-      firstTokenSelected, 
+      firstTokenSelected,
       secondTokenSelected,
       amountSwapTokenA,
       lastChanged == 'A' ? firstTokenSelected : secondTokenSelected,
@@ -122,6 +122,10 @@ const LiquidityNewModule = () => {
   }, [isConnected, pairState]);
 
   useEffect(() => {
+      if (!isConnected) {
+        // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
+        resetAll()
+      }
       progressBar(async () => {lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
       await refreshAll()
     })
@@ -159,7 +163,7 @@ const LiquidityNewModule = () => {
         selectAndCloseTokenB(tokens[symbol])
       } else {
         selectAndCloseTokenA(firstTokenSelected)
-        selectAndCloseTokenA(secondTokenSelected)
+        selectAndCloseTokenB(secondTokenSelected)
       }
     }
 
@@ -210,7 +214,7 @@ const LiquidityNewModule = () => {
 
   async function updateLiquidityDetail(tokenA, tokenB, value = amountSwapTokenA, token = firstTokenSelected) {
     const {
-      reserve0, 
+      reserve0,
       reserve1,
     } = findReservesBySymbols(tokenA.symbol, tokenB.symbol)
 
@@ -235,17 +239,22 @@ const LiquidityNewModule = () => {
       firstReserve,
       secondReserve,
     } = getLiquidityDetailResponse
+
     exchangeRateASetter(exchangeRateA)
     exchangeRateBSetter(exchangeRateB)
-    setFirstReserve(firstReserve)
-    setSecondReserve(secondReserve)
+    if (token === tokenA) {
+      setFirstReserve(firstReserve)
+      setSecondReserve(secondReserve)
+    } else {
+      setFirstReserve(secondReserve)
+      setSecondReserve(firstReserve)
+    }
 
     calculateUSDValues(value, tokensToTransfer)
     return tokensToTransfer
   }
 
   async function requestIncreaseAllowance(amount, contractHash) {
-    console.log("requestIncreaseAllowance")
     await onIncreaseAllow(amount, contractHash)
     await updateLiquidityDetail(firstTokenSelected, secondTokenSelected)
   }
@@ -309,7 +318,7 @@ const LiquidityNewModule = () => {
 
     const tokens = Object.values(tokenState.tokens)
     const excludes = tokens.reduce((
-      acc: string[], 
+      acc: string[],
       v: Token
     ): string[] => {
       if (!includes[v.symbol]) {
@@ -351,7 +360,7 @@ const LiquidityNewModule = () => {
 
     const tokens = Object.values(tokenState.tokens)
     const excludes = tokens.reduce((
-      acc: string[], 
+      acc: string[],
       v: Token
     ): string[] => {
       if (!includes[v.symbol]) {
@@ -384,6 +393,12 @@ const LiquidityNewModule = () => {
   }
 
   const disableButton = (amount0, amount1) => {
+    if (isNaN(amount0)) {
+      return true
+    }
+    if (isNaN(amount1)) {
+      return true
+    }
     if (!isConnected) {
       return true
     }
@@ -395,14 +410,16 @@ const LiquidityNewModule = () => {
     }
   }
 
-  const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenA)).toNumber()
+  const amountA = isNaN(amountSwapTokenA) ? 0 : amountSwapTokenA
+  const amountB = isNaN(amountSwapTokenB) ? 0 : amountSwapTokenB
+  const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0).minus(new BigNumber(amountA || 0)).toNumber()
 
   const isApprovedA = firstTokenSelected.symbol === 'CSPR' || (
     firstTokenSelected.symbol !== 'CSPR' &&
     freeAllowanceA >= 0
   )
 
-  const freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0).minus(new BigNumber(amountSwapTokenB)).toNumber()
+  const freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0).minus(new BigNumber(amountB || 0)).toNumber()
 
   const isApprovedB = secondTokenSelected.symbol === 'CSPR' || (
     secondTokenSelected.symbol !== 'CSPR' &&
@@ -523,8 +540,8 @@ const LiquidityNewModule = () => {
             secondSymbolToken={secondTokenSelected.symbol}
             secondTokenAmount={amountSwapTokenB}
             liquidity={parseFloat(totalLiquidity)}
-            firstReserve={currentFReserve}
-            secondReserve={currentSReserve}
+            firstReserve={currentFReserve/10**firstTokenSelected.decimals}
+            secondReserve={currentSReserve/10**secondTokenSelected.decimals}
             gasFee={gasFee}
             gasFeeSetter={gasFeeSetter}
             gasFeeEnabled={true}
@@ -557,7 +574,7 @@ const LiquidityNewModule = () => {
           {
             // Loop over the table rows
             userPairDataNonZero.map(row => {
-              
+
               const openPopup = isOpenedRemoving && row.token0Symbol === firstTokenSelected.symbolPair && row.token1Symbol === secondTokenSelected.symbolPair
               return (
                 // Apply the row props
