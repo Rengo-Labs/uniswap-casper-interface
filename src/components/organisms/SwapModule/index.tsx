@@ -42,7 +42,6 @@ import { ProgressBarProviderContext } from '../../../contexts/ProgressBarContext
 import styled from 'styled-components';
 import { SwapProviderContext } from "../../../contexts/SwapContext";
 import { globalStore } from '../../../store/store';
-import {getUSDPairData} from "../../../commons/api/InfoSwapClient";
 
 const Wrapper = styled.section`
   display: flex;
@@ -106,8 +105,6 @@ const SwapNewModule = () => {
       amountSwapTokenA,
       lastChanged == 'A' ? firstTokenSelected : secondTokenSelected,
     );
-
-    loadUSDPrice()
   }, [isConnected, pairState]);
 
   useEffect(() => {
@@ -219,8 +216,6 @@ const SwapNewModule = () => {
       firstTokenSelected
     );
     amountSwapTokenBSetter(parseFloat(minTokenToReceive));
-
-    loadUSDPrice()
   }
 
   async function changeTokenB(value) {
@@ -243,13 +238,6 @@ const SwapNewModule = () => {
     );
     amountSwapTokenASetter(parseFloat(minTokenToReceive));
 
-    loadUSDPrice()
-  }
-
-  const loadUSDPrice = async () => {
-    const priceMap = await getUSDPairData(firstTokenSelected.symbol, secondTokenSelected.symbol, pairState)
-    setPriceA(priceMap.get(firstTokenSelected.symbol))
-    setPriceB(priceMap.get(secondTokenSelected.symbol))
   }
 
   const [searchModalA, searchModalASetter] = useState(false);

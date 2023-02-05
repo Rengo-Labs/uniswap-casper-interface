@@ -34,6 +34,7 @@ export const TWrapRow = styled.div`
     font-size: 14px;
     line-height: 18px;
     letter-spacing: 0.02em;
+    cursor: pointer;
     
     @media ${device.laptop} {
       display: block;

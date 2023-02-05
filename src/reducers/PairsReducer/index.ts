@@ -20,9 +20,7 @@ export type PairData = {
   token1Icon?: string,
   liquidity?: string,
   volume7d?: string,
-  fees24h?: string,
-  oneYFees?: string,
-  volume?: string,
+  volume1d?: string,
   totalSupply?: string,
   token0Price?: string,
   token1Price?: string,
@@ -78,9 +76,7 @@ const RAW_PAIRS: PairState = {
     token1Symbol: 'WCSPR',
     liquidity: '0',
     volume7d: '0',
-    fees24h: '0',
-    oneYFees: '0',
-    volume: '0',
+    volume1d: '0',
     totalSupply: '0',
     token0Price: '0',
     token1Price: '0',
@@ -104,9 +100,7 @@ const RAW_PAIRS: PairState = {
     token1Symbol: 'WBTC',
     liquidity: '0',
     volume7d: '0',
-    fees24h: '0',
-    oneYFees: '0',
-    volume: '0',
+    volume1d: '0',
     totalSupply: '0',
     token0Price: '0',
     token1Price: '0',
@@ -129,9 +123,7 @@ const RAW_PAIRS: PairState = {
     token1Symbol: 'WETH',
     liquidity: '0',
     volume7d: '0',
-    fees24h: '0',
-    oneYFees: '0',
-    volume: '0',
+    volume1d: '0',
     totalSupply: '0',
     token0Price: '0',
     token1Price: '0',
@@ -155,9 +147,7 @@ const RAW_PAIRS: PairState = {
     token1Symbol: 'USDT',
     liquidity: '0',
     volume7d: '0',
-    fees24h: '0',
-    oneYFees: '0',
-    volume: '0',
+    volume1d: '0',
     totalSupply: '0',
     token0Price: '0',
     token1Price: '0',
@@ -181,9 +171,7 @@ const RAW_PAIRS: PairState = {
     token1Symbol: 'USDC',
     liquidity: '0',
     volume7d: '0',
-    fees24h: '0',
-    oneYFees: '0',
-    volume: '0',
+    volume1d: '0',
     totalSupply: '0',
     token0Price: '0',
     token1Price: '0',
@@ -207,9 +195,7 @@ const RAW_PAIRS: PairState = {
     token1Symbol: 'USDT',
     liquidity: '0',
     volume7d: '0',
-    fees24h: '0',
-    oneYFees: '0',
-    volume: '0',
+    volume1d: '0',
     totalSupply: '0',
     token0Price: '0',
     token1Price: '0',
@@ -279,9 +265,7 @@ export type PairActionAllowancePayload = {
 export type PairActionLoadPairPayLoad = {
   name: string,
   volume7d: string,
-  fees24h: string,
-  oneYFees: string,
-  volume: string,
+  volume1d: string,
   totalReserve0: string,
   totalReserve1: string,
   totalSupply: string,
@@ -371,57 +355,54 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
         const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
 
-          return {
-            ...state,
-            [`${action.payload.name}`]: {
-              ...oldState,
-              volume7d: action.payload.volume7d,
-              fees24h: action.payload.fees24h,
-              oneYFees: action.payload.oneYFees,
-              volume: action.payload.volume,
-              reserve0,
-              reserve1,
-              totalLiquidityUSD: action.payload.totalLiquidityUSD,
-              totalReserve0: convertBigNumberToUIString(totalReserve0),
-              totalReserve1: convertBigNumberToUIString(totalReserve1),
-              totalSupply: convertBigNumberToUIString(totalSupply),
-            },
-          }
+        return {
+          ...state,
+          [`${action.payload.name}`]: {
+            ...oldState,
+            volume7d: action.payload.volume7d,
+            volume1d: action.payload.volume1d,
+            reserve0,
+            reserve1,
+            totalLiquidityUSD: action.payload.totalLiquidityUSD,
+            totalReserve0: convertBigNumberToUIString(totalReserve0),
+            totalReserve1: convertBigNumberToUIString(totalReserve1),
+            totalSupply: convertBigNumberToUIString(totalSupply),
+          },
         }
       }
     case PairActions.LOAD_PAIR_USD:
       {
         const oldState = state[`${action.payload.name}`]
 
-            const liquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.reserve0))
-              .times(action.payload.token0Price)
-              .plus(new BigNumber(convertUIStringToBigNumber(oldState.reserve1)).times(action.payload.token1Price))
-              .div(10**9)
-              .toString()
+        const liquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.reserve0))
+          .times(action.payload.token0Price)
+          .plus(new BigNumber(convertUIStringToBigNumber(oldState.reserve1)).times(action.payload.token1Price))
+          .div(10 ** 9)
+          .toString()
         // console.log('action.payload', action.payload, oldState.totalReserve0, oldState.totalReserve1)
 
-            return {
-              ...state,
-              [`${action.payload.name}`]: {
-                ...oldState,
-                liquidityUSD,
-                token0Price: action.payload.token0Price,
-                token1Price: action.payload.token1Price,
-              },
-            }
-          }
-    case PairActions.CHANGE_PRIORITY:
-    {
-      const oldState = state[`${action.payload.name}`]
-
-      return {
-        ...state,
-        [`${action.payload.name}`]: {
-          ...oldState,
-          checked: action.payload.checked
+        return {
+          ...state,
+          [`${action.payload.name}`]: {
+            ...oldState,
+            liquidityUSD,
+            token0Price: action.payload.token0Price,
+            token1Price: action.payload.token1Price,
+          },
         }
       }
-    }
+    case PairActions.CHANGE_PRIORITY:
+      {
+        const oldState = state[`${action.payload.name}`]
+
+        return {
+          ...state,
+          [`${action.payload.name}`]: {
+            ...oldState,
+            checked: action.payload.checked
+          }
+        }
+      }
     /* case PairActions.LOAD_USER_PAIR:
       return {
         ...state,

@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { PopupsModule } from '../../components/organisms';
-import { NODE_ADDRESS, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
+import { NODE_ADDRESS, NotificationType } from '../../constant';
 
 import {
   initialConfigState,
@@ -48,16 +48,21 @@ import {
 
 import { signAndDeployAllowance } from '../../commons/deploys';
 import { ConfigState } from '../../reducers/ConfigReducers';
-import {Row, useAsyncDebounce, useGlobalFilter, useSortBy, useTable} from 'react-table';
+import { Row, useAsyncDebounce, useGlobalFilter, useSortBy, useTable } from 'react-table';
 import { ConnectionPopup } from '../../components/atoms';
 import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import { getPath } from '../../commons/calculations'
-import {TableInstance} from "../../components/organisms/PoolModule";
-import {getPairData} from "../../commons/api/InfoSwapClient";
+import { TableInstance } from "../../components/organisms/PoolModule";
+import { getPairData } from "../../commons/api/ApolloQueries";
 import store from "store2";
 
 type MaybeWallet = Wallet | undefined;
+
+interface TVLAndVolume {
+  tvl: string,
+  totalVolume: string,
+}
 
 export interface ConfigContext {
   onConnectWallet?: (name?: WalletName, ignoreError?: boolean) => Promise<void>;
@@ -82,8 +87,7 @@ export interface ConfigContext {
   poolColumns?: any[];
   columns?: any[];
   getPoolList?: () => PairData[];
-  getTVLandVolume?: () => Promise<void>;
-  gralData?: Record<string, string>;
+  getTVLandVolume: () => TVLAndVolume;
   isStaked?: boolean;
   setStaked?: (v: boolean) => void;
   filter?: (onlyStaked: boolean, row: Row<PairData>) => any;
@@ -165,7 +169,6 @@ export const ConfigContextWithReducer = ({
   const [confirmModal, setConfirmModal] = useState(false);
   const columns = getColumns();
   const poolColumns = React.useMemo(() => columns, []);
-  const [gralData, setGralData] = useState({});
   const [isStaked, setStaked] = useState(false);
   const [linkExplorer, setLinkExplorer] = useState('');
   const { updateNotification, dismissNotification } = notificationStore();
@@ -382,7 +385,6 @@ export const ConfigContextWithReducer = ({
       await clearPairsUserData()
     }
     await loadPairs();
-    await getTVLandVolume()
   }
 
   const clearPairsUserData = async () => {
@@ -494,7 +496,7 @@ export const ConfigContextWithReducer = ({
         return
       }
 
-      if(err.message.includes('make sure you have the Signer installed')) {
+      if (err.message.includes('make sure you have the Signer installed')) {
         updateNotification({
           type: NotificationType.Error,
           title: 'This wallet is not installed.',
@@ -640,13 +642,23 @@ export const ConfigContextWithReducer = ({
     ];
   }
 
-  const getTVLandVolume = async (): Promise<void> => {
+  const getTVLandVolume = (): TVLAndVolume => {
+    const pairs = Object.values(pairState)
+
+    const tvl = pairs.reduce((acc, pl) => {
+      return acc += parseFloat(pl.totalLiquidityUSD)
+    }, 0).toFixed(2)
+
+    const totalVolume = pairs.reduce((acc, pl) => {
+      return acc += parseFloat(pl.volume7d)
+    }, 0).toFixed(2)
+
     const data = {
-      tvl: '192,168,000,000',
-      totalVolume: '1,000,000',
+      tvl,
+      totalVolume,
     };
 
-    setGralData(data);
+    return data
   };
 
   const getPoolList = (): PairData[] => {
@@ -670,14 +682,13 @@ export const ConfigContextWithReducer = ({
     const query = currentQuery.toUpperCase()
 
     if (data.name.includes(query) || data.totalSupply.includes(query)
-      || data.volume7d.includes(query) || data.fees24h.includes(query) || data.oneYFees.includes(query)) {
+      || data.volume7d.includes(query) || data.volume1d.includes(query)) {
       return true
     }
     return false
   }
 
   interface PairTotalReserves {
-    orderedName: string,
     totalReserve0: BigNumber.Value,
     totalReserve1: BigNumber.Value,
   }
@@ -687,13 +698,16 @@ export const ConfigContextWithReducer = ({
       const pairs = Object.values(pairState)
       const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
-      const results = await Promise.all(pairs.map(async (pl: PairData) => {
+      const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
+      const infoResultMap: Record<string, any> = {}
+      infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
+      
+      const results = await Promise.all(pairs.map(async (pl) => {
 
         const pairChecked = store.get(pl.name)
         changeRowPriority(pl.name, pairChecked)
 
         const pairDataResponse = await apiClient.getPairData(pl.contractHash)
-        const result = await getPairData([pl.packageHash.substr(5)])
         const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
         const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
         const reserve0 = convertBigNumberToUIString(
@@ -705,22 +719,19 @@ export const ConfigContextWithReducer = ({
           token1Decimals
         );
 
+        const infoResult = infoResultMap[pl.packageHash]
+
         return {
           name: pl.name,
-          orderedName: pl.orderedName,
           totalReserve0: reserve0,
           totalReserve1: reserve1,
-          volume7d: new BigNumber(
-            convertBigNumberToUIString(new BigNumber(0), 9)
-          ).toFixed(2),
-          fees24h: '0',
-          oneYFees: '0',
-          volume: convertBigNumberToUIString(new BigNumber(0), 9),
+          volume7d: new BigNumber(infoResult.oneWeekVolumeUSD).div(10**pl.decimals).toFixed(2),
+          volume1d: new BigNumber(infoResult.oneDayVolumeUSD).div(10**pl.decimals).toFixed(2),
           totalSupply: convertBigNumberToUIString(
             new BigNumber(pairDataResponse.totalSupply)
           ),
           totalLiquidityUSD: convertBigNumberToUIString(
-            new BigNumber(result.length != 0 ? result[0].reserveUSD : 0)
+            new BigNumber(infoResult != 0 ? infoResult.reserveUSD : 0)
           )
         }
       }))
@@ -731,9 +742,7 @@ export const ConfigContextWithReducer = ({
           payload: {
             name: pl.name,
             volume7d: pl.volume7d,
-            fees24h: pl.fees24h,
-            oneYFees: pl.oneYFees,
-            volume: pl.volume,
+            volume1d: pl.volume1d,
             totalReserve0: pl.totalReserve0,
             totalReserve1: pl.totalReserve1,
             totalSupply: pl.totalSupply,
@@ -742,7 +751,6 @@ export const ConfigContextWithReducer = ({
         })
 
         pairTotalReserves[pl.name] = {
-          orderedName: pl.orderedName,
           totalReserve0: pl.totalReserve0,
           totalReserve1: pl.totalReserve1,
         }
@@ -891,7 +899,7 @@ export const ConfigContextWithReducer = ({
       );
 
       setProgressModal(true);
-      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
+      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`);
 
       const result = await casperClient.waitForDeployExecution(deployHash);
       setProgressModal(false);
@@ -946,11 +954,11 @@ export const ConfigContextWithReducer = ({
     }
   }
 
-  const {setGlobalFilter} = tableInstance as any as TableInstance<PairData>
+  const { setGlobalFilter } = tableInstance as any as TableInstance<PairData>
   const changeData = useAsyncDebounce(value => {
-      if(setGlobalFilter != undefined) {
-        setGlobalFilter(value || "")
-      }
+    if (setGlobalFilter != undefined) {
+      setGlobalFilter(value || "")
+    }
   }, 100)
 
   const refreshAll = async (): Promise<void> => {
@@ -993,7 +1001,7 @@ export const ConfigContextWithReducer = ({
   const findReservesBySymbols = (
     tokenASymbol: string,
     tokenBSymbol: string,
-    overrideReserves?: Record<string, PairTotalReserves>,
+    overrideReserves: Record<string, PairTotalReserves> = {},
   ): PairReserves | undefined => {
     let tA = tokenASymbol
     let tB = tokenBSymbol
@@ -1007,27 +1015,23 @@ export const ConfigContextWithReducer = ({
     let lookUp = `${tA}-${tB}`
 
     // do a simple look up
-    let [pairData] = Object.values(overrideReserves ?? pairState).filter((x) => {
-      return x.orderedName == lookUp
-    })
-
-    if (pairData) {
-      return {
-        reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
-        reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
-      }
-    }
-
-    // do different simple look up
-    lookUp = `${tB}-${tA}`
-    pairData = Object.values(overrideReserves ?? pairState).filter((x) => {
-      return x.orderedName == lookUp
-    })[0]
+    let pairData = overrideReserves[lookUp] ?? pairState[lookUp]
 
     if (pairData) {
       return {
         reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
         reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
+      }
+    }
+
+    // do different simple look up
+    lookUp = `${tB}-${tA}`
+    pairData = overrideReserves[lookUp] ?? pairState[lookUp]
+
+    if (pairData) {
+      return {
+        reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
+        reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
       }
     }
 
@@ -1057,7 +1061,7 @@ export const ConfigContextWithReducer = ({
     let reserve1 = new BigNumber(1)
     for (let i = 1; i < path.length; i++) {
       const pair = overrideReserves[path[i].label.name] ?? path[i].label
-      if (path[i-1].id == tokenASymbol) {
+      if (path[i - 1].id == tokenASymbol) {
         reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1))
         reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0))
       } else {
@@ -1146,7 +1150,6 @@ export const ConfigContextWithReducer = ({
         columns,
         getPoolList,
         getTVLandVolume,
-        gralData,
         isStaked,
         setStaked,
         filter,
