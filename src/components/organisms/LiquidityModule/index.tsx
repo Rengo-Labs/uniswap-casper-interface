@@ -43,10 +43,10 @@ import {
 import { BalanceInput } from '../../atoms/BalanceInputNSM'
 import { ContainerLiquidityNSM } from '../../atoms/ContainerLiquidityNSM'
 import { ContainerLiquidityPoolList } from "../../atoms/ContainerLiquidityPoolList";
-import {UpdatableCircle} from "../../atoms/UpdatableCircle";
-import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
-import {LiquidityRemovingWithInputRangeModule} from "../LiquidityRemovingWithInputRangeModule";
-import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
+import { UpdatableCircle } from "../../atoms/UpdatableCircle";
+import { ProgressBarProviderContext } from "../../../contexts/ProgressBarContext";
+import { LiquidityRemovingWithInputRangeModule } from "../LiquidityRemovingWithInputRangeModule";
+import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import { globalStore } from '../../../store/store'
 
 const LiquidityNewModule = () => {
@@ -122,14 +122,15 @@ const LiquidityNewModule = () => {
   }, [isConnected, pairState]);
 
   useEffect(() => {
-      if (!isConnected) {
-        // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
-        resetAll()
-      }
-      progressBar(async () => {lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
+    if (!isConnected) {
+      // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
+      resetAll()
+    }
+    progressBar(async () => {
+      //lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
       await refreshAll()
     })
-  }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
+  }, [isConnected]);
 
   useEffect(() => {
 
@@ -183,14 +184,20 @@ const LiquidityNewModule = () => {
 
   function onSwitchTokensHandler() {
     onSwitchTokens()
+    
+    exchangeRateASetter(exchangeRateB)
+    exchangeRateBSetter(exchangeRateA)
+    amountSwapTokenASetter(amountSwapTokenB)
+    amountSwapTokenBSetter(amountSwapTokenA)
 
-    if (lastChanged == 'A') {
-      changeTokenB(amountSwapTokenA)
-      setLastChanged('B')
-    } else if (lastChanged == 'B') {
-      changeTokenA(amountSwapTokenB)
-      setLastChanged('A')
-    }
+    setFirstReserve(currentSReserve)
+    setSecondReserve(currentFReserve)
+    
+    setValueAUSD(valueBUSD)
+    setValueBUSD(valueAUSD)
+
+    setExcludedA(excludedB)
+    setExcludedB(excludedA)
   }
 
   const calculateTotalLP = (token0, token1) => {
@@ -277,7 +284,7 @@ const LiquidityNewModule = () => {
     setTotalLiquidity(totalLP)
   }
 
-  async function changeTokenB(value) {
+  async function changeTokenB(value: string) {
     let filteredValue = parseFloat(value)
     if (isNaN(filteredValue)) {
       filteredValue = 0
@@ -288,7 +295,7 @@ const LiquidityNewModule = () => {
     setLastChanged('B')
 
     amountSwapTokenBSetter(filteredValue)
-    const minTokenToReceive = await updateLiquidityDetail(secondTokenSelected, firstTokenSelected, value, secondTokenSelected)
+    const minTokenToReceive = await updateLiquidityDetail(firstTokenSelected, secondTokenSelected, filteredValue, secondTokenSelected)
     amountSwapTokenASetter(minTokenToReceive)
 
     const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
@@ -440,7 +447,7 @@ const LiquidityNewModule = () => {
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
               <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>from</NewTokenDetailItems1NSM>
-              <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
+              <NewTokenDetailItems2NSM src={firstTokenSelected.logoURI} handleClick={() => searchModalASetter(true)} />
               <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{firstTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
                 <ArrowContainerNSM>
@@ -495,7 +502,7 @@ const LiquidityNewModule = () => {
           <TokenSelectNSM>
             <NewTokenDetailSelectNSM>
               <NewTokenDetailItems1NSM handleClick={() => searchModalASetter(true)}>to</NewTokenDetailItems1NSM>
-              <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} handleClick={() => searchModalASetter(true)}/>
+              <NewTokenDetailItems2NSM src={secondTokenSelected.logoURI} handleClick={() => searchModalASetter(true)} />
               <NewTokenDetailItems3NSM handleClick={() => searchModalASetter(true)}>{secondTokenSelected.symbol}</NewTokenDetailItems3NSM>
               <NewTokenDetailItems4NSM>
                 <ArrowContainerNSM>
@@ -540,8 +547,8 @@ const LiquidityNewModule = () => {
             secondSymbolToken={secondTokenSelected.symbol}
             secondTokenAmount={amountSwapTokenB}
             liquidity={parseFloat(totalLiquidity)}
-            firstReserve={currentFReserve/10**firstTokenSelected.decimals}
-            secondReserve={currentSReserve/10**secondTokenSelected.decimals}
+            firstReserve={currentFReserve / 10 ** firstTokenSelected.decimals}
+            secondReserve={currentSReserve / 10 ** secondTokenSelected.decimals}
             gasFee={gasFee}
             gasFeeSetter={gasFeeSetter}
             gasFeeEnabled={true}
@@ -552,7 +559,7 @@ const LiquidityNewModule = () => {
         <ButtonSpaceNSM>
           {
             !isConnected &&
-              <NewSwapButtonWidth100 content="Connect to Wallet" handler={async () => { onConnect() }} />
+            <NewSwapButtonWidth100 content="Connect to Wallet" handler={async () => { onConnect() }} />
           }
           {
             !isApprovedA && isConnected &&

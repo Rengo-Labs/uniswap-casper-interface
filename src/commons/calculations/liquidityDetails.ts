@@ -56,7 +56,7 @@ export const calculateLiquidityDetails = async (
 
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
-      //console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
+      // console.log("exchangeRateA", exchangeRateA.toNumber(), "exchangeRateB", exchangeRateB.toNumber())
 
       const ttt = inputValue.times(inputExchangeRate).div(Math.pow(10,token.decimals))
       return {
