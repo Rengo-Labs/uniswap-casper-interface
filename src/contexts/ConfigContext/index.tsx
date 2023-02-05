@@ -56,6 +56,7 @@ import { getPath } from '../../commons/calculations'
 import { TableInstance } from "../../components/organisms/PoolModule";
 import { getPairData } from "../../commons/api/ApolloQueries";
 import store from "store2";
+import { stringify } from 'querystring';
 
 type MaybeWallet = Wallet | undefined;
 
@@ -164,6 +165,12 @@ export const ConfigContextWithReducer = ({
     PairsReducer,
     initialPairsState
   );
+
+  const orderedPairState: Record<string, PairTotalReserves> = {}
+  Object.values(pairState).map((pl) => {
+    orderedPairState[pl.orderedName] = pl
+  })
+
   const { tokens } = tokenState;
   const [progressModal, setProgressModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -723,6 +730,7 @@ export const ConfigContextWithReducer = ({
 
         return {
           name: pl.name,
+          orderedName: pl.orderedName,
           totalReserve0: reserve0,
           totalReserve1: reserve1,
           volume7d: new BigNumber(infoResult.oneWeekVolumeUSD).div(10**pl.decimals).toFixed(2),
@@ -750,7 +758,7 @@ export const ConfigContextWithReducer = ({
           },
         })
 
-        pairTotalReserves[pl.name] = {
+        pairTotalReserves[pl.orderedName] = {
           totalReserve0: pl.totalReserve0,
           totalReserve1: pl.totalReserve1,
         }
@@ -1015,23 +1023,25 @@ export const ConfigContextWithReducer = ({
     let lookUp = `${tA}-${tB}`
 
     // do a simple look up
-    let pairData = overrideReserves[lookUp] ?? pairState[lookUp]
+    let pairData = overrideReserves[lookUp] ?? orderedPairState[lookUp]
 
     if (pairData) {
+      // console.log('a', pairData)
       return {
-        reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
-        reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
+        reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
+        reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
       }
     }
 
     // do different simple look up
     lookUp = `${tB}-${tA}`
-    pairData = overrideReserves[lookUp] ?? pairState[lookUp]
+    pairData = overrideReserves[lookUp] ?? orderedPairState[lookUp]
 
     if (pairData) {
+      //console.log('b', pairData)
       return {
-        reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
-        reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
+        reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
+        reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
       }
     }
 
