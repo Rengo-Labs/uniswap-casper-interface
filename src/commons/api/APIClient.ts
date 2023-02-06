@@ -205,7 +205,8 @@ export class APIClient {
     }
     
     try {
-      const [reserve0, reserve1, totalSupply]: StoredValue[] = await Promise.all([
+      //FIXME: Avoid using any
+      const [reserve0, reserve1, totalSupply]: any[] = await Promise.all([
           casperService.getBlockState(srh, contractHash, [PairKeys.RESERVE0]),
           casperService.getBlockState(srh, contractHash, [PairKeys.RESERVE1]),
           casperService.getBlockState(srh, contractHash, [ERC20Keys.TOTAL_SUPPLY]),
