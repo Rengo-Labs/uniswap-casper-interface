@@ -13,7 +13,7 @@ interface ItemProperties {
   options: string[];
 }
 
-export const ItemSelector: React.FC<ItemProperties> = ({ options }: any) => {
+export const ItemSelector: React.FC<ItemProperties> = ({ options }: ItemProperties) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggling = () => setIsOpen(!isOpen);
   const [selectedOption, setSelectedOption] = useState(options[0]);

@@ -13,8 +13,8 @@ export interface LiquidityDetails {
   exchangeRateA: number,
   // effective exchange rate from B to A
   exchangeRateB: number,
-  firstReserve: any,
-  secondReserve: any
+  firstReserve: number,
+  secondReserve: number
 }
 
 /**

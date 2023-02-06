@@ -56,7 +56,7 @@ export interface PathResponse {
  */
 export interface DeployWasmDataResponse {
   message: string,
-  wasmData: any,
+  wasmData: unknown,
   success: boolean,
 }
 

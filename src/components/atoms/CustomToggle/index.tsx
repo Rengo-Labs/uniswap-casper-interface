@@ -3,11 +3,11 @@ import {StyledSwitch} from "./styles";
 
 interface SwitchProperties {
   id: string;
-  onChange: (isChecked: boolean) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isChecked: boolean;
 }
 
-export const CustomToggle: React.FC<SwitchProperties> = ({id, isChecked, onChange}: any) => {
+export const CustomToggle: React.FC<SwitchProperties> = ({id, isChecked, onChange}: SwitchProperties) => {
   return (
       <StyledSwitch htmlFor={id}>
         <input

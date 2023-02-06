@@ -12,6 +12,7 @@ import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {UpdatableCircle} from "../UpdatableCircle";
 
+//FIXME: Avoid using any
 export const FilterSelector = ({
                                getTableProps,
                                headerGroups,

@@ -25,6 +25,7 @@ export enum CasperSignerEvents {
 /**
  * Casper Signer Wallet
  */
+//FIXME: Avoid using any
 export class CasperSignerWallet implements Wallet{
   private _connectPromise?: Promise<string>
   private _connectEventHandler: any

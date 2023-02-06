@@ -56,6 +56,7 @@ export class Client {
   async getBalance(wallet: Wallet): Promise<BigNumber> {
     try {
       const casperClient = this.casperClient
+      //FIXME: Avoid using any
       const balance: any = await casperClient.balanceOfByPublicKey(wallet.publicKey as CLPublicKey)
 
       return balance

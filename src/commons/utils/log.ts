@@ -1,3 +1,4 @@
+//FIXME: Avoid using any
 export class Logger {
   log(level: string, ...elements: any[]) {
     let s = ' '

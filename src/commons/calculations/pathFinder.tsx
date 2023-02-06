@@ -11,7 +11,7 @@ export type NodeId = string;
 export interface Node {
   id: NodeId
   priority: number
-  label: any
+  label: string
 }
 class PriorityQueue {
   values: Node[];
@@ -87,9 +87,10 @@ class PriorityQueue {
 export interface LinkedListItem {
   source: NodeId
   target: NodeId
-  label: any
+  label: string
 }
 
+//FIXME: Avoid using any
 export interface PathItem {
   id: string
   label: any
@@ -101,6 +102,7 @@ export interface RouterPathItem {
   hash: string
 }
 
+//FIXME: Avoid using any
 export class DijkstraCalculator {
   adjacencyList: { 
     [key: NodeId]: { 

@@ -4,18 +4,11 @@ import {
   CasperServiceByJsonRPC,
   CLByteArray,
   Contracts,
+  StoredValue,
 } from 'casper-js-sdk'
 
 import { 
-  AllowanceAgainstOwnerAndSpenderResponse,
-  DeployWasmDataResponse,
-  TokenList,
   PathResponse,
-  PathReservesResponse,
-  LiquidityAgainstUserAndPairResponse,
-  BalanceAgainstUserResponse,
-  PairListResponse,
-  PairAgainstUserResponse,
 } from './types'
 
 import {
@@ -212,23 +205,11 @@ export class APIClient {
     }
     
     try {
-      const [reserve0, reserve1, totalSupply]: any[] = await Promise.all([
-        casperService.getBlockState(
-          srh,
-          contractHash,
-          [PairKeys.RESERVE0],
-        ),
-        casperService.getBlockState(
-          srh,
-          contractHash,
-          [PairKeys.RESERVE1],
-        ),
-        casperService.getBlockState(
-          srh,
-          contractHash,
-          [ERC20Keys.TOTAL_SUPPLY],
-        )
-      ])
+      const [reserve0, reserve1, totalSupply]: StoredValue[] = await Promise.all([
+          casperService.getBlockState(srh, contractHash, [PairKeys.RESERVE0]),
+          casperService.getBlockState(srh, contractHash, [PairKeys.RESERVE1]),
+          casperService.getBlockState(srh, contractHash, [ERC20Keys.TOTAL_SUPPLY]),
+      ]);
 
       return {
         reserve0: reserve0?.CLValue?.isCLValue ? reserve0?.CLValue?.value().toString() : '0',
@@ -263,7 +244,7 @@ export class APIClient {
     }
     
     try {
-      const [allowance, balance]: any[] = await Promise.all([
+      const [allowance, balance]: string[] = await Promise.all([
         this.getERC20Allowance(wallet, contractHash, srh).catch(e => '0'),  
         this.getERC20Balance(wallet, contractHash, srh),      
       ])
