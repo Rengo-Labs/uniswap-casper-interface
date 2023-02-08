@@ -1,4 +1,3 @@
-
 import BigNumber from 'bignumber.js';
 import React, {
   createContext,
@@ -705,9 +704,14 @@ export const ConfigContextWithReducer = ({
       const pairs = Object.values(pairState)
       const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
-      const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
       const infoResultMap: Record<string, any> = {}
-      infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
+
+      try {
+        const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
+        infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
+      } catch (e) {
+        console.log(`graphql error: ${e}`)
+      }
       
       const results = await Promise.all(pairs.map(async (pl) => {
 
@@ -726,7 +730,11 @@ export const ConfigContextWithReducer = ({
           token1Decimals
         );
 
-        const infoResult = infoResultMap[pl.packageHash]
+        const infoResult = infoResultMap[pl.packageHash] ?? {
+          oneWeekVoluemUSD: 0,
+          oneDayVoluemUSD: 0,
+          reserveUSD: 0,
+        }
 
         return {
           name: pl.name,
@@ -739,7 +747,7 @@ export const ConfigContextWithReducer = ({
             new BigNumber(pairDataResponse.totalSupply)
           ),
           totalLiquidityUSD: convertBigNumberToUIString(
-            new BigNumber(infoResult != 0 ? infoResult.reserveUSD : 0)
+            new BigNumber(infoResult ? infoResult.reserveUSD : 0)
           )
         }
       }))
