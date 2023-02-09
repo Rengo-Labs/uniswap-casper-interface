@@ -506,11 +506,8 @@ async function getBulkPairData(pairList, ethPrice) {
 export const getPairData = async (pairList = []): Promise<any[]> => {
   try {
     const ethPrice = await getEthPrice()
-
     const result = await getBulkPairData(pairList, ethPrice)
-
     console.log('result', result)
-
     return result
   } catch (e) {
     console.error(e)

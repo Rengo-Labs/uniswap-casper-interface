@@ -162,6 +162,8 @@ export const ConfigContextWithReducer = ({
     TokenReducer,
     initialTokenState
   );
+
+  // TODO ESTO SE VA PARA PAIR CONTEXT
   const [pairState, pairDispatch] = useReducer(
     PairsReducer,
     initialPairsState
@@ -696,6 +698,7 @@ export const ConfigContextWithReducer = ({
     return false
   }
 
+  // TODO REMOVER ESTE CODIGO
   interface PairTotalReserves {
     totalReserve0: BigNumber.Value,
     totalReserve1: BigNumber.Value,
@@ -714,7 +717,7 @@ export const ConfigContextWithReducer = ({
       } catch (e) {
         console.log(`graphql error: ${e}`)
       }
-      
+
       const results = await Promise.all(pairs.map(async (pl) => {
 
         const pairChecked = store.get(pl.name)

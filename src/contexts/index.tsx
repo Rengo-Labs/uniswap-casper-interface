@@ -11,13 +11,13 @@ import { ProgressBarContextWithReducer } from "./ProgressBarContext"
 import { SwapContext } from "./SwapContext";
 import { NotificationSystem } from '../components/organisms'
 import { PopupsContainer } from '../components/PopupsContainer'
-
-
+import {StateHashProvideContext} from './StateHashContext'
 export const BigContext = ({ children }: { children: ReactNode }) => {
 
   return (
     <ThemeContext>
       <ConfigContextWithReducer>
+        <StateHashProvideContext>
         <SwapContext>
           <LiquidityContext>
             <ProgressBarContextWithReducer>
@@ -37,6 +37,7 @@ export const BigContext = ({ children }: { children: ReactNode }) => {
           </LiquidityContext>
         </SwapContext>
         <PopupsContainer/>
+        </StateHashProvideContext>
       </ConfigContextWithReducer>
     </ThemeContext>
   )
