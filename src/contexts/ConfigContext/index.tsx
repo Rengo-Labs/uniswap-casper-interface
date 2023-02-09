@@ -6,7 +6,6 @@ import React, {
   useReducer,
   useState,
 } from 'react';
-import { PopupsModule } from '../../components/organisms';
 import { NODE_ADDRESS, NotificationType } from '../../constant';
 
 import {
@@ -47,15 +46,13 @@ import {
 
 import { signAndDeployAllowance } from '../../commons/deploys';
 import { ConfigState } from '../../reducers/ConfigReducers';
-import { Row, useAsyncDebounce, useGlobalFilter, useSortBy, useTable } from 'react-table';
-import { ConnectionPopup } from '../../components/atoms';
+import { Row, useAsyncDebounce } from 'react-table';
 import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import { getPath } from '../../commons/calculations'
 import { TableInstance } from "../../components/organisms/PoolModule";
 import { getPairData } from "../../commons/api/ApolloQueries";
 import store from "store2";
-import { stringify } from 'querystring';
 
 type MaybeWallet = Wallet | undefined;
 
@@ -82,6 +79,11 @@ export interface ConfigContext {
     contractHash: string
   ) => Promise<boolean>;
   pairState?: PairState;
+  confirmModal: boolean;
+  linkExplorer: string;
+  progressModal: boolean;
+  setShowConnectionPopup: (show: boolean) => void;
+  showConnectionPopup: boolean;
 
   // To Delete
   poolColumns?: any[];
@@ -534,7 +536,7 @@ export const ConfigContextWithReducer = ({
     }
   }
 
-  const { isConnected, walletSelected, slippageToleranceSelected, mainPurse } =
+  const { isConnected, slippageToleranceSelected, mainPurse } =
     state;
 
   const handleResize = () => {
@@ -1187,41 +1189,15 @@ export const ConfigContextWithReducer = ({
         filterDataReload,
         mapExpandedRows,
         setMapExpandedRows,
-        changeRowPriority
+        changeRowPriority,
+        confirmModal,
+        linkExplorer,
+        progressModal,
+        setShowConnectionPopup,
+        showConnectionPopup
       }}
     >
       {children}
-      <PopupsModule
-        isOpen={progressModal}
-        handleOpen={setProgressModal}
-        progress
-      >
-        Check the progress of your{' '}
-        <a href={linkExplorer} target='_blank'>
-          deploy
-        </a>
-        .
-      </PopupsModule>
-      <PopupsModule
-        isOpen={confirmModal}
-        handleOpen={setConfirmModal}
-        progress={false}
-      >
-        Your{' '}
-        <a href={linkExplorer} target='_blank'>
-          deploy
-        </a>{' '}
-        was successful.
-      </PopupsModule>
-      <ConnectionPopup
-        isConnected={isConnected}
-        isOpened={showConnectionPopup}
-        onToggle={() => setShowConnectionPopup(!showConnectionPopup)}
-        title='Connect your wallet to CasperSwap'
-        onClose={() => setShowConnectionPopup(false)}
-        onConnect={onConnectWallet}
-        showButton={false}
-      />
     </ConfigProviderContext.Provider>
   );
 };
