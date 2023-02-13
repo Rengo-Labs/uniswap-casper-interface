@@ -48,6 +48,7 @@ import { ProgressBarProviderContext } from "../../../contexts/ProgressBarContext
 import { LiquidityRemovingWithInputRangeModule } from "../LiquidityRemovingWithInputRangeModule";
 import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import { globalStore } from '../../../store/store'
+import isCSPRValid from '../../../hooks/isCSPRValid'
 
 const LiquidityNewModule = () => {
   const {
@@ -96,9 +97,13 @@ const LiquidityNewModule = () => {
   const [lastChanged, setLastChanged] = useState('')
   const [valueAUSD, setValueAUSD] = useState("0")
   const [valueBUSD, setValueBUSD] = useState("0")
+  const [currentValue, setCurrentValue] = useState<number>(0)
 
   const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForLiquidity)
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
+  const { disableButtom, handleValidate } = isCSPRValid(
+    gasFee
+  );
 
   useEffect(() => {
     const t0 = searchParams.get("token0")
@@ -282,6 +287,13 @@ const LiquidityNewModule = () => {
 
     const totalLP = calculateTotalLP(firstTokenSelected.symbolPair, secondTokenSelected.symbolPair)
     setTotalLiquidity(totalLP)
+  }
+
+
+  const handleChange = (e) =>{
+    setCurrentValue(parseFloat(e.target.value))
+    handleValidate(parseFloat(e.target.value), parseFloat(firstTokenSelected.amount));
+    changeTokenA(e.target.value);
   }
 
   async function changeTokenB(value: string) {
@@ -474,7 +486,7 @@ const LiquidityNewModule = () => {
                   <BalanceInputItem1NSM>
                     <BalanceInputNSM
                       min={0}
-                      onChange={(e) => { changeTokenA(e.target.value) }}
+                      onChange={handleChange}
                       type="number" name="" id="" value={amountSwapTokenA} />
                   </BalanceInputItem1NSM>
                   <BalanceInputItem2NSM>
@@ -563,14 +575,14 @@ const LiquidityNewModule = () => {
           }
           {
             !isApprovedA && isConnected &&
-            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
+            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtom} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
           }
           {
             !isApprovedB && isConnected &&
-            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
+            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtom} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
           }
           {
-            isApprovedA && isApprovedB && isConnected && <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB)} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
+            isApprovedA && isApprovedB && isConnected && <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtom} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
           }
         </ButtonSpaceNSM>
 
