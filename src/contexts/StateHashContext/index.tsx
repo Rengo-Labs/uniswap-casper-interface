@@ -1,7 +1,6 @@
 import {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
-
 import {casperClient} from "../ConfigContext";
-
+import {PairsContextProvider} from "../PairsContext";
 interface StateHashContextProps {
     children: ReactNode
 }
@@ -16,10 +15,25 @@ export const StateHashContext = createContext<StateHashContext>({} as any)
 
 export const StateHashProvideContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
+    const {loadPairs} = useContext(PairsContextProvider)
 
     const getLatestRootHash = useCallback(async () => {
         return casperClient.getStateRootHash()
     }, [])
+
+    const getPairs = useCallback(async () => {
+        // TODO traer toda la info de los pairs o llamar a las funciones que necesitemos
+        await loadPairs()
+    }, [])
+
+    const getTokens = useCallback(async () => {
+        // TODO traer toda la info de los tokens o llamar a las funciones que necesitemos
+    }, [])
+
+    useEffect(() => {
+        getPairs().then(() => console.log('#### pairs loaded with StateHashContext ####'))
+
+    },  [stateHash])
 
     const getRootHash = useCallback(async () => {
         const rootHash = await getLatestRootHash()
@@ -28,10 +42,7 @@ export const StateHashProvideContext = ({children}: StateHashContextProps) => {
         }
     }, [])
 
-    // TODO borrar esto cuando terminemos de probar
-    useEffect(() => {
-        console.log('#### stateHash value ####', stateHash)
-    }, [stateHash])
+    console.log('#### stateHash value ####', stateHash)
 
     useEffect(() => {
         getRootHash()
