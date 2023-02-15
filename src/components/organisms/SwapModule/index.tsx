@@ -53,6 +53,11 @@ const Wrapper = styled.section`
   color: black;
 `;
 
+enum tokenType {
+  tokenA = 'tokenA',
+  tokenB = 'tokenB',
+}
+
 const SwapNewModule = () => {
   const {
     onConnectWallet,
@@ -74,7 +79,7 @@ const SwapNewModule = () => {
     useContext(SwapProviderContext);
   const { progressBar } = useContext(ProgressBarProviderContext);
 
-  const [gasFee, gasFeeSetter] = useState(gasPriceSelectedForSwapping);
+  const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<number>(0);
   const [priceImpact, priceImpactSetter] = useState<number | string>(0);
@@ -84,11 +89,10 @@ const SwapNewModule = () => {
   const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] =
     useState<string>('');
   const [searchParams, setSearchParams] = useSearchParams();
-  const [currentValue, setCurrentValue] = useState<number>(0)
+  const [currentValue, setCurrentValue] = useState<number>(0);
 
-  const { disableButtom, handleValidate } = isCSPRValid(
-    gasFee
-  );
+  const { disableButtom, handleValidate, showNotification } =
+    isCSPRValid();
 
   const [lastChanged, setLastChanged] = useState('');
   const [valueAUSD, setValueAUSD] = useState('0.00');
@@ -225,11 +229,15 @@ const SwapNewModule = () => {
     amountSwapTokenBSetter(parseFloat(minTokenToReceive));
   }
 
-  const handleChange = (e) =>{
-    setCurrentValue(parseFloat(e.target.value))
-    handleValidate(parseFloat(e.target.value), parseFloat(firstTokenSelected.amount));
+  const handleChange = (e) => {
+    setCurrentValue(e.target.value);
+    handleValidate(
+      parseFloat(e.target.value),
+      parseFloat(firstTokenSelected.amount),
+      gasFee || 0 
+    );
     changeTokenA(e.target.value);
-  }
+  };
 
   async function changeTokenB(value) {
     let filteredValue = parseFloat(value);
@@ -250,6 +258,27 @@ const SwapNewModule = () => {
       secondTokenSelected
     );
     amountSwapTokenASetter(parseFloat(minTokenToReceive));
+  }
+
+  const handleChangeB = async (e) => {
+    changeTokenB(e.target.value);
+    const minTokenToReceive = await updateSwapDetail(
+      firstTokenSelected,
+      secondTokenSelected,
+      parseFloat(e.target.value),
+      secondTokenSelected
+    );
+    handleValidate(
+      parseFloat(minTokenToReceive),
+      parseFloat(firstTokenSelected.amount),
+      gasFee || 0
+    );
+  };
+
+  const handleChangeGasFee = (value) => {
+    const gasFeeValue = value ? parseFloat(value) : 0;
+    gasFeeSetter(value);
+    handleValidate(currentValue,parseFloat(firstTokenSelected.amount), gasFeeValue);
   }
 
   const [searchModalA, searchModalASetter] = useState(false);
@@ -284,10 +313,40 @@ const SwapNewModule = () => {
     amountSwapTokenASetter(parseFloat(minTokenToReceive));
   }
 
-  function makeHalf(amount, Setter) {
+  async function ValidateToken(amount, token) {
+    if (token === tokenType.tokenA) {
+      if (parseFloat(firstTokenSelected.amount) > gasFee) {
+        amount = parseFloat(firstTokenSelected.amount) - gasFee;
+        setCurrentValue(amount);
+      } else {
+        showNotification();
+        setCurrentValue(amount);
+      }
+    } else if (token == tokenType.tokenB) {
+      const minTokenToReceive = await updateSwapDetail(
+        firstTokenSelected,
+        secondTokenSelected,
+        parseFloat(amount),
+        secondTokenSelected
+      );
+      setCurrentValue(parseFloat(minTokenToReceive));
+      if (
+        parseFloat(minTokenToReceive) >
+        parseFloat(firstTokenSelected.amount) - gasFee
+      ) {
+        showNotification();
+      }
+    }
+
+    return amount;
+  }
+
+  async function makeHalf(amount, Setter, token) {
+    amount = await ValidateToken(amount, token);
     Setter(amount / 2);
   }
-  function makeMax(amount, Setter) {
+  async function makeMax(amount, Setter, token) {
+    amount = await ValidateToken(amount, token);
     Setter(amount);
   }
 
@@ -375,14 +434,22 @@ const SwapNewModule = () => {
                   <ButtonHalfMaxContainer>
                     <ButtonHalfMax
                       onClick={() => {
-                        makeHalf(firstTokenSelected.amount, changeTokenA);
+                        makeHalf(
+                          firstTokenSelected.amount,
+                          changeTokenA,
+                          tokenType.tokenA
+                        );
                       }}
                     >
                       Half
                     </ButtonHalfMax>
                     <ButtonHalfMax
                       onClick={() => {
-                        makeMax(firstTokenSelected.amount, changeTokenA);
+                        makeMax(
+                          firstTokenSelected.amount,
+                          changeTokenA,
+                          tokenType.tokenA
+                        );
                       }}
                     >
                       Max
@@ -472,14 +539,22 @@ const SwapNewModule = () => {
                   <ButtonHalfMaxContainer>
                     <ButtonHalfMax
                       onClick={() => {
-                        makeHalf(secondTokenSelected.amount, changeTokenB);
+                        makeHalf(
+                          secondTokenSelected.amount,
+                          changeTokenB,
+                          tokenType.tokenB
+                        );
                       }}
                     >
                       Half
                     </ButtonHalfMax>
                     <ButtonHalfMax
                       onClick={() => {
-                        makeMax(secondTokenSelected.amount, changeTokenB);
+                        makeMax(
+                          secondTokenSelected.amount,
+                          changeTokenB,
+                          tokenType.tokenB
+                        );
                       }}
                     >
                       Max
@@ -489,9 +564,7 @@ const SwapNewModule = () => {
                     <BalanceInputItem1NSM>
                       <BalanceInputNSM
                         min={0}
-                        onChange={(e) => {
-                          changeTokenB(e.target.value);
-                        }}
+                        onChange={handleChangeB}
                         type='number'
                         name=''
                         id=''
@@ -515,7 +588,7 @@ const SwapNewModule = () => {
               priceImpactMessage={defaultPriceImpactLabel}
               priceImpact={priceImpact}
               gasFee={gasFee}
-              gasFeeSetter={gasFeeSetter}
+              gasFeeSetter={handleChangeGasFee}
               gasFeeEnabled={true}
               slippage={slippageTolerance}
               slippageEnabled={true}
