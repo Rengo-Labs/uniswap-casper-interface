@@ -40,7 +40,7 @@ export const SwapStatisticsItem = ({ statistic }: ISwapStatisticsItemProps) => {
         </TokenContainer>
         <PriceContainer>
           <PriceTitle>Price</PriceTitle>
-          <PriceValue>${price}</PriceValue>
+          <PriceValue>${price.toFixed(4)}</PriceValue>
         </PriceContainer>
         <PriceContainer>
           <PriceTitle>24H%</PriceTitle>

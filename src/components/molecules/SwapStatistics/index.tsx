@@ -13,14 +13,14 @@ export const SwapStatistics = ({token0Price, token1Price, token0Per, token1Per})
     {
       id: 1,
       token: firstTokenSelected,
-      price: token0Price,
+      price: Number(firstTokenSelected.priceUSD),
       percent: token0Per,
       graphic: "graphic",
     },
     {
       id: 2,
       token: secondTokenSelected,
-      price: token1Price,
+      price: Number(secondTokenSelected.priceUSD),
       percent: token1Per,
       graphic: "graphic",
     },
