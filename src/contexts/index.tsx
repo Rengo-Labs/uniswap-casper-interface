@@ -19,29 +19,29 @@ export const BigContext = ({children}: { children: ReactNode }) => {
     return (
         <ThemeContext>
             <ConfigContextWithReducer>
-                <PairsContext>
-                    <StateHashProvideContext>
-                        <SwapContext>
-                            <LiquidityContext>
-                                <ProgressBarContextWithReducer>
-                                    <NotificationSystem/>
-                                    <TorusContext>
-                                        <InitialContext>
-                                            <TokensContext2>
-                                                <LiquidityContext>
-                                                    <TokensContext>
+                <TokensContext>
+                    <PairsContext>
+                        <StateHashProvideContext>
+                            <SwapContext>
+                                <LiquidityContext>
+                                    <ProgressBarContextWithReducer>
+                                        <NotificationSystem/>
+                                        <TorusContext>
+                                            <InitialContext>
+                                                <TokensContext2>
+                                                    <LiquidityContext>
                                                         {children}
-                                                    </TokensContext>
-                                                </LiquidityContext>
-                                            </TokensContext2>
-                                        </InitialContext>
-                                    </TorusContext>
-                                </ProgressBarContextWithReducer>
-                            </LiquidityContext>
-                        </SwapContext>
-                        <PopupsContainer/>
-                    </StateHashProvideContext>
-                </PairsContext>
+                                                    </LiquidityContext>
+                                                </TokensContext2>
+                                            </InitialContext>
+                                        </TorusContext>
+                                    </ProgressBarContextWithReducer>
+                                </LiquidityContext>
+                            </SwapContext>
+                            <PopupsContainer/>
+                        </StateHashProvideContext>
+                    </PairsContext>
+                </TokensContext>
             </ConfigContextWithReducer>
         </ThemeContext>
     )

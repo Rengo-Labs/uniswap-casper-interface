@@ -1,11 +1,7 @@
 import {useReducer} from "react";
-import {initialTokenState, TokenReducer} from "../../reducers/TokenReducers";
+import {initialTokenState, TokenReducer, TokenState} from "../../reducers/TokenReducers";
 
-const TokenResponsibilities = () => {
-    const [tokenState, tokenDispatch] = useReducer(
-        TokenReducer,
-        initialTokenState
-    );
+const TokenResponsibilities = (tokenState: TokenState, pairDispatch) => {
 
     const getTokenPrices = () => {
         return tokenState.tokens;
@@ -30,9 +26,14 @@ const TokenResponsibilities = () => {
     //     }
     // }
 
+    const loadToken = async () => {
+
+    }
+
 
     return {
         getTokenPrices,
+        loadToken
     }
 
 }

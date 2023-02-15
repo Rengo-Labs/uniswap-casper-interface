@@ -6,12 +6,13 @@ import {PairActions, PairState} from "../../reducers/PairsReducer";
 import {apiClient} from "../../contexts/ConfigContext";
 import {Wallet} from "../wallet";
 import TokenResponsibilities from "../TokenResponsibilities";
+import {TokenState} from "../../reducers/TokenReducers";
 interface PairTotalReserves {
     totalReserve0: BigNumber.Value,
     totalReserve1: BigNumber.Value,
 }
 
-const PairsResponsibilities = (pairState: PairState, pairDispatch) => {
+const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: TokenState) => {
 
     const changeRowPriority = (name, priority) => {
         store.set(name, priority)
@@ -101,9 +102,13 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch) => {
 
         try {
             const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
-            infoResults.map(pl => {
-                infoResultMap[`hash-${pl.id}`] = {...pl}
-            })
+            // infoResults.map(pl => {
+            //     infoResultMap[`hash-${pl.id}`] = {...pl}
+            // })
+            infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
+
+            console.log('infoResults', infoResults)
+
             return infoResults
         } catch (e) {
             console.log(`graphql error - PairsResponsibility: ${e}`)
@@ -129,7 +134,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch) => {
 
             const pairDataResponse = await apiClient.getPairData(pl.contractHash)
 
-            const tokens = TokenResponsibilities().getTokenPrices()
+            const tokens = tokenState.tokens
 
             const token0Decimals = tokens[pl.token0Symbol].decimals;
             const token1Decimals = tokens[pl.token1Symbol].decimals;

@@ -1,6 +1,7 @@
-import {ReactNode, useState, createContext, useReducer, useEffect} from "react";
+import {ReactNode, useState, createContext, useReducer, useEffect, useContext} from "react";
 import {initialPairsState, PairsReducer} from "../../reducers/PairsReducer";
 import PairsResponsibilities from "../../commons/PairsResponsibilities";
+import {TokensProviderContext} from "../TokensContext";
 
 interface PairsContextProps {
     children: ReactNode
@@ -18,9 +19,10 @@ export const PairsContext = ({children} : PairsContextProps) => {
         PairsReducer,
         initialPairsState
     );
+    const {tokenState} = useContext(TokensProviderContext)
 
     const loadPairs = async (): Promise<void> => {
-       await PairsResponsibilities(pairState, pairDispatch).loadPairs()
+       await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairs()
     }
 
     return (
