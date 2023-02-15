@@ -30,6 +30,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: T
             const tokenPrices: Record<string, string> = {}
             const pairs = Object.values(pairState)
             for (const p of pairs) {
+
+
                 pairDispatch({
                     type: PairActions.LOAD_PAIR_USD,
                     payload: {
@@ -95,21 +97,14 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: T
         }
     }
 
-    const loadLatestPairsData = async () => {
+    const loadLatestPairsData = async (pairs) => {
         console.log('loadLatestPairsData from PairsResponsibility')
-        const pairs = Object.values(pairState)
         const infoResultMap: Record<string, any> = {}
-
         try {
             const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
-            // infoResults.map(pl => {
-            //     infoResultMap[`hash-${pl.id}`] = {...pl}
-            // })
             infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
 
-            console.log('infoResults', infoResults)
-
-            return infoResults
+            return infoResultMap
         } catch (e) {
             console.log(`graphql error - PairsResponsibility: ${e}`)
             return []
@@ -125,7 +120,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: T
         }
     }
 
-    const getGeneralPairData = async (pairs) => {
+    const getGeneralPairData = async (pairs, pairsMap) => {
         console.log('getGeneralPairData from PairsResponsibility')
         const results = await Promise.all(pairs.map(async (pl) => {
 
@@ -148,7 +143,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: T
             );
 
             //TODO Chequear informacion en pares reducer.
-            const infoResult = pairs[pl.packageHash] ?? {
+            const infoResult = pairsMap[pl.packageHash] ?? {
                 oneWeekVoluemUSD: 0,
                 oneDayVoluemUSD: 0,
                 reserveUSD: 0,
@@ -169,9 +164,11 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: T
                 )
             }
         }))
+
+        return results
     }
 
-    const updateGeneralPairData = (results) => {
+    const updateGeneralPairData = async (results) => {
         console.log('updateGeneralPairData from PairsResponsibility')
         const pairTotalReserves: Record<string, PairTotalReserves> = {}
         for (const pl of results) {
@@ -202,9 +199,10 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: T
     const loadPairs = async (): Promise<void> => {
         try {
             console.log('Start loadPairs from PairsResponsibility')
-            const pairs = await loadLatestPairsData()
-            const loadPairBalances = await getGeneralPairData(pairs)
-            const pairTotalReserves = updateGeneralPairData(loadPairBalances)
+            const pairs = Object.values(pairState)
+            const  infoResultMap = await loadLatestPairsData(pairs)
+            const loadPairBalances = await getGeneralPairData(pairs, infoResultMap)
+            const pairTotalReserves = await updateGeneralPairData(loadPairBalances)
             await loadPairsUSD(pairTotalReserves)
         } catch (err) {
             log.error('loadPairs from PairsResponsibility', err.message);
