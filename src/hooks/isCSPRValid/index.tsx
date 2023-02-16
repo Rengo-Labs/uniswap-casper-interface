@@ -3,7 +3,7 @@ import { NotificationType } from '../../constant';
 import { notificationStore } from '../../store/store';
 
 const isCSPRValid = () => {
-  const [disableButtom, setDisableButtom] = useState<boolean>(false);
+  const [disableButton, setDisableButton] = useState<boolean>(false);
   const { updateNotification, dismissNotification } = notificationStore();
 
   const showNotification = () =>
@@ -12,21 +12,21 @@ const isCSPRValid = () => {
       title: 'Insufficent Gas Reserved',
       subtitle: '',
       show: true,
-      chargerBar: true,
+      chargerBar: false,
     });
 
 
   const handleValidate = (currentValue: number, balance: number, gasFee: number) => {
     if ((Number(currentValue) + Number(gasFee)) > balance) {
-      setDisableButtom(true);
+      setDisableButton(true);
       showNotification()
     } else {
-      setDisableButtom(false);
+      setDisableButton(false);
       dismissNotification();
     }
   };
 
-  return { disableButtom, setDisableButtom, handleValidate, showNotification, dismissNotification };
+  return { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification };
 };
 
 export default isCSPRValid;

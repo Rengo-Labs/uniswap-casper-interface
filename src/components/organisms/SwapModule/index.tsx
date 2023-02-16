@@ -91,7 +91,7 @@ const SwapNewModule = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentValue, setCurrentValue] = useState<number>(0);
 
-  const { disableButtom, setDisableButtom, handleValidate, showNotification, dismissNotification } =
+  const { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification } =
     isCSPRValid();
 
   const [lastChanged, setLastChanged] = useState('');
@@ -234,7 +234,7 @@ const SwapNewModule = () => {
     handleValidate(
       parseFloat(e.target.value),
       parseFloat(firstTokenSelected.amount),
-      gasFee || 0 
+      gasFee || 0
     );
     changeTokenA(e.target.value);
   };
@@ -278,7 +278,7 @@ const SwapNewModule = () => {
   const handleChangeGasFee = (value) => {
     const gasFeeValue = value ? parseFloat(value) : 0;
     gasFeeSetter(value);
-    handleValidate(currentValue,parseFloat(firstTokenSelected.amount), gasFeeValue);
+    handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
   }
 
   const [searchModalA, searchModalASetter] = useState(false);
@@ -313,13 +313,13 @@ const SwapNewModule = () => {
     amountSwapTokenASetter(parseFloat(minTokenToReceive));
   }
 
-  async function ValidateToken(amount, token) {
+  async function validateToken(amount, token) {
     if (token === tokenType.tokenA) {
       if (parseFloat(firstTokenSelected.amount) > gasFee) {
         amount = parseFloat(firstTokenSelected.amount) - gasFee;
         setCurrentValue(amount);
         dismissNotification();
-        setDisableButtom(false);
+        setDisableButton(false);
       } else {
         showNotification();
         setCurrentValue(amount);
@@ -342,13 +342,13 @@ const SwapNewModule = () => {
     return amount;
   }
 
-  async function makeHalf(amount, Setter, token) {
-    amount = await ValidateToken(amount, token);
-    Setter(amount / 2);
+  async function makeHalf(amount, setter, token) {
+    amount = await validateToken(amount, token);
+    setter(amount / 2);
   }
-  async function makeMax(amount, Setter, token) {
-    amount = await ValidateToken(amount, token);
-    Setter(amount);
+  async function makeMax(amount, setter, token) {
+    amount = await validateToken(amount, token);
+    setter(amount);
   }
 
   const freeAllowance = new BigNumber(firstTokenSelected.allowance || 0)
@@ -426,9 +426,9 @@ const SwapNewModule = () => {
                   Balance:{' '}
                   {firstTokenSelected.amount
                     ? convertAllFormatsToUIFixedString(
-                        firstTokenSelected.amount,
-                        firstTokenSelected.decimals
-                      )
+                      firstTokenSelected.amount,
+                      firstTokenSelected.decimals
+                    )
                     : '--'}
                 </NewBalanceSpaceNSM>
                 <ActionContainerNSM>
@@ -531,9 +531,9 @@ const SwapNewModule = () => {
                   Balance:{' '}
                   {secondTokenSelected.amount
                     ? convertAllFormatsToUIFixedString(
-                        secondTokenSelected.amount,
-                        firstTokenSelected.decimals
-                      )
+                      secondTokenSelected.amount,
+                      firstTokenSelected.decimals
+                    )
                     : '--'}
                 </NewBalanceSpaceNSM>
                 <ActionContainerNSM>
@@ -608,10 +608,9 @@ const SwapNewModule = () => {
             )}
             {!isApproved && isConnected && (
               <NewSwapButtonWidth100
-                content={`Approve ${-freeAllowance} ${
-                  firstTokenSelected.symbol
-                }`}
-                disabled={disableButtom}
+                content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol
+                  }`}
+                disabled={disableButton}
                 handler={async () => {
                   await requestIncreaseAllowance(
                     -freeAllowance,
@@ -624,7 +623,7 @@ const SwapNewModule = () => {
               <NewSwapButtonWidth100
                 content='Swap'
                 disabled={
-                  disableButtom ||
+                  disableButton ||
                   amountSwapTokenA <= 0 ||
                   amountSwapTokenB <= 0 ||
                   amountSwapTokenA > parseFloat(firstTokenSelected.amount)

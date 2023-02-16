@@ -106,7 +106,7 @@ const LiquidityNewModule = () => {
 
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
-  const { disableButtom, setDisableButtom,handleValidate, showNotification, dismissNotification } = isCSPRValid(
+  const { disableButton: disableButtonValid, setDisableButton ,handleValidate, showNotification, dismissNotification } = isCSPRValid(
   );
 
   useEffect(() => {
@@ -427,13 +427,13 @@ const LiquidityNewModule = () => {
     amountSwapTokenASetter(minTokenToReceive)
   }
 
-  async function ValidateToken(amount, token) {
+  async function validateToken(amount, token) {
     if (token === tokenType.tokenA) {
       if (parseFloat(firstTokenSelected.amount) > gasFee) {
         amount = parseFloat(firstTokenSelected.amount) - gasFee;
         setCurrentValue(amount);
         dismissNotification();
-        setDisableButtom(false);
+        setDisableButton(false);
       } else {
         showNotification();
         setCurrentValue(amount);
@@ -457,13 +457,13 @@ const LiquidityNewModule = () => {
     return amount;
   }
 
-  async function makeHalf(amount, Setter, token) {
-    amount = await ValidateToken(amount, token);
-    Setter(amount / 2);
+  async function makeHalf(amount, setter, token) {
+    amount = await validateToken(amount, token);
+    setter(amount / 2);
   }
-  async function makeMax(amount, Setter, token) {
-    amount = await ValidateToken(amount, token);
-    Setter(amount);
+  async function makeMax(amount, setter, token) {
+    amount = await validateToken(amount, token);
+    setter(amount);
   }
 
   async function onLiquidity() {
@@ -636,14 +636,14 @@ const LiquidityNewModule = () => {
           }
           {
             !isApprovedA && isConnected &&
-            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtom} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
+            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtonValid} content={`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceA, firstTokenSelected.contractHash) }} />
           }
           {
             !isApprovedB && isConnected &&
-            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtom} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
+            <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtonValid} content={`Approve ${-freeAllowanceB} ${secondTokenSelected.symbol}`} handler={async () => { await requestIncreaseAllowance(-freeAllowanceB, secondTokenSelected.contractHash) }} />
           }
           {
-            isApprovedA && isApprovedB && isConnected && <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtom} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
+            isApprovedA && isApprovedB && isConnected && <NewSwapButtonWidth100 disabled={disableButton(amountSwapTokenA, amountSwapTokenB) || disableButtonValid} content="Add Liquidity" handler={async () => { await onLiquidity() }} />
           }
         </ButtonSpaceNSM>
 
