@@ -106,7 +106,7 @@ const LiquidityNewModule = () => {
 
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
-  const { disableButtom, handleValidate, showNotification } = isCSPRValid(
+  const { disableButtom, setDisableButtom,handleValidate, showNotification, dismissNotification } = isCSPRValid(
   );
 
   useEffect(() => {
@@ -432,6 +432,8 @@ const LiquidityNewModule = () => {
       if (parseFloat(firstTokenSelected.amount) > gasFee) {
         amount = parseFloat(firstTokenSelected.amount) - gasFee;
         setCurrentValue(amount);
+        dismissNotification();
+        setDisableButtom(false);
       } else {
         showNotification();
         setCurrentValue(amount);

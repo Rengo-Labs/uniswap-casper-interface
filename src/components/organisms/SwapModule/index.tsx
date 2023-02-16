@@ -91,7 +91,7 @@ const SwapNewModule = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentValue, setCurrentValue] = useState<number>(0);
 
-  const { disableButtom, handleValidate, showNotification } =
+  const { disableButtom, setDisableButtom, handleValidate, showNotification, dismissNotification } =
     isCSPRValid();
 
   const [lastChanged, setLastChanged] = useState('');
@@ -318,6 +318,8 @@ const SwapNewModule = () => {
       if (parseFloat(firstTokenSelected.amount) > gasFee) {
         amount = parseFloat(firstTokenSelected.amount) - gasFee;
         setCurrentValue(amount);
+        dismissNotification();
+        setDisableButtom(false);
       } else {
         showNotification();
         setCurrentValue(amount);
@@ -337,7 +339,6 @@ const SwapNewModule = () => {
         showNotification();
       }
     }
-
     return amount;
   }
 

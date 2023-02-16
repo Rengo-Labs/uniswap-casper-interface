@@ -15,6 +15,7 @@ const isCSPRValid = () => {
       chargerBar: true,
     });
 
+
   const handleValidate = (currentValue: number, balance: number, gasFee: number) => {
     if ((Number(currentValue) + Number(gasFee)) > balance) {
       setDisableButtom(true);
@@ -25,7 +26,7 @@ const isCSPRValid = () => {
     }
   };
 
-  return { disableButtom, handleValidate, showNotification };
+  return { disableButtom, setDisableButtom, handleValidate, showNotification, dismissNotification };
 };
 
 export default isCSPRValid;
