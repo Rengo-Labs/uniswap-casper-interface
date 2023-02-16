@@ -91,7 +91,7 @@ const SwapNewModule = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentValue, setCurrentValue] = useState<number>(0);
 
-  const { disableButtom, handleValidate, showNotification } =
+  const { disableButton, handleValidate, showNotification } =
     isCSPRValid();
 
   const [lastChanged, setLastChanged] = useState('');
@@ -234,7 +234,7 @@ const SwapNewModule = () => {
     handleValidate(
       parseFloat(e.target.value),
       parseFloat(firstTokenSelected.amount),
-      gasFee || 0 
+      gasFee || 0
     );
     changeTokenA(e.target.value);
   };
@@ -278,7 +278,7 @@ const SwapNewModule = () => {
   const handleChangeGasFee = (value) => {
     const gasFeeValue = value ? parseFloat(value) : 0;
     gasFeeSetter(value);
-    handleValidate(currentValue,parseFloat(firstTokenSelected.amount), gasFeeValue);
+    handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
   }
 
   const [searchModalA, searchModalASetter] = useState(false);
@@ -425,9 +425,9 @@ const SwapNewModule = () => {
                   Balance:{' '}
                   {firstTokenSelected.amount
                     ? convertAllFormatsToUIFixedString(
-                        firstTokenSelected.amount,
-                        firstTokenSelected.decimals
-                      )
+                      firstTokenSelected.amount,
+                      firstTokenSelected.decimals
+                    )
                     : '--'}
                 </NewBalanceSpaceNSM>
                 <ActionContainerNSM>
@@ -530,9 +530,9 @@ const SwapNewModule = () => {
                   Balance:{' '}
                   {secondTokenSelected.amount
                     ? convertAllFormatsToUIFixedString(
-                        secondTokenSelected.amount,
-                        firstTokenSelected.decimals
-                      )
+                      secondTokenSelected.amount,
+                      firstTokenSelected.decimals
+                    )
                     : '--'}
                 </NewBalanceSpaceNSM>
                 <ActionContainerNSM>
@@ -607,10 +607,9 @@ const SwapNewModule = () => {
             )}
             {!isApproved && isConnected && (
               <NewSwapButtonWidth100
-                content={`Approve ${-freeAllowance} ${
-                  firstTokenSelected.symbol
-                }`}
-                disabled={disableButtom}
+                content={`Approve ${-freeAllowance} ${firstTokenSelected.symbol
+                  }`}
+                disabled={disableButton}
                 handler={async () => {
                   await requestIncreaseAllowance(
                     -freeAllowance,
@@ -623,7 +622,7 @@ const SwapNewModule = () => {
               <NewSwapButtonWidth100
                 content='Swap'
                 disabled={
-                  disableButtom ||
+                  disableButton ||
                   amountSwapTokenA <= 0 ||
                   amountSwapTokenB <= 0 ||
                   amountSwapTokenA > parseFloat(firstTokenSelected.amount)
