@@ -1,0 +1,60 @@
+{
+  "owner": {
+      "name": "CasperSwap",
+      "description": "CasperSwap Official Community Node running on a virtual private server.",
+      "type": ["validator", "exchange", "dapp", "dao"],
+      "identity": {
+          "ownership_disclosure_url": "",
+          "casper_association_kyc_url": "",
+          "casper_association_kyc_onchain": ""
+      },
+      "resources": {
+          "code_of_conduct_url": "",
+          "terms_of_service_url": "",
+          "privacy_policy_url": "",
+          "other": []
+      },
+      "affiliated_accounts": [
+          {"public_key": ""}
+      ],
+      "website": "https://casperswap.com",
+      "email": "info@casperswap.xyz",
+      "branding": {
+          "logo": {
+              "png_256": "",
+              "png_1024": "",
+              "svg": ""
+          }
+      },
+      "location": {
+          "name": "Virginia",
+          "country": "USA",
+          "latitude": 18.340216,
+          "longitude": -67.250015
+      },
+      "social": {
+          "keybase": "",
+          "telegram": "https://t.me/casperswapofficial",
+          "twitter": "@casperswap",
+          "github": "https://github.com/CasperSwap",
+          "youtube": "",
+          "facebook": "",
+          "medium": "https://medium.com/@casperswap",
+          "reddit": "",
+          "wechat": ""
+      }
+  },
+  "nodes": [
+      {
+          "public_key": "0155cc6eb5a41f2a29de00a2b189f4165ae452803f88b2c0b0898936f1a4078df7",
+          "description": "CasperSwap Official Community Node",
+          "location": {
+              "name": "Virginia",
+              "country": "USA",
+              "latitude": 38.846224,
+              "longitude": -77.306373
+          },
+          "functionality": ["validator"]
+      }
+  ]
+}
