@@ -35,7 +35,7 @@ import { SwapDetail, SwapStatistics } from '../../molecules';
 import FloatMenu from '../FloatMenu';
 import { useSearchParams } from 'react-router-dom';
 
-import { convertAllFormatsToUIFixedString, Token } from '../../../commons';
+import { convertAllFormatsToUIFixedString, formatNaN, Token } from '../../../commons';
 import SwitchSwap from '../../atoms/SwitchSwap';
 import { UpdatableCircle } from '../../atoms/UpdatableCircle';
 import { ProgressBarProviderContext } from '../../../contexts/ProgressBarContext';
@@ -149,7 +149,7 @@ const SwapNewModule = () => {
   }
 
   async function onConfirmSwap() {
-    const waiting = await onConfirmSwapConfig(
+    await onConfirmSwapConfig(
       amountSwapTokenA,
       amountSwapTokenB,
       slippageTolerance,
@@ -208,11 +208,9 @@ const SwapNewModule = () => {
     );
   }
 
-  async function changeTokenA(value) {
-    let filteredValue = parseFloat(value);
-    if (isNaN(filteredValue)) {
-      filteredValue = 0;
-    } else if (filteredValue < 0) {
+  async function changeTokenA(value: string | number) {
+    let filteredValue = formatNaN(value);
+    if (filteredValue < 0) {
       filteredValue = Math.abs(filteredValue);
     }
 
@@ -226,9 +224,10 @@ const SwapNewModule = () => {
       filteredValue,
       firstTokenSelected
     );
-    amountSwapTokenBSetter(parseFloat(minTokenToReceive));
-  }
 
+    amountSwapTokenBSetter(formatNaN(minTokenToReceive));
+  }
+  
   const handleChange = (e) => {
     setCurrentValue(e.target.value);
     handleValidate(
@@ -257,7 +256,7 @@ const SwapNewModule = () => {
       filteredValue,
       secondTokenSelected
     );
-    amountSwapTokenASetter(parseFloat(minTokenToReceive));
+    amountSwapTokenASetter(formatNaN(minTokenToReceive));
   }
 
   const handleChangeB = async (e) => {
@@ -294,11 +293,11 @@ const SwapNewModule = () => {
       amountSwapTokenA,
       token
     );
-    amountSwapTokenBSetter(parseFloat(minTokenToReceive));
+    amountSwapTokenBSetter(formatNaN(minTokenToReceive));
   }
 
   const [searchModalB, searchModalBSetter] = useState(false);
-  async function selectAndCloseTokenB(token): Promise<void> {
+  async function selectAndCloseTokenB(token: Token): Promise<void> {
     if (token.symbol === firstTokenSelected.symbol) {
       return;
     }
@@ -310,7 +309,7 @@ const SwapNewModule = () => {
       amountSwapTokenB,
       token
     );
-    amountSwapTokenASetter(parseFloat(minTokenToReceive));
+    amountSwapTokenASetter(formatNaN(minTokenToReceive));
   }
 
   async function validateToken(amount, token) {
@@ -365,17 +364,22 @@ const SwapNewModule = () => {
     await changeTokenA(amountSwapTokenA);
   };
 
-  const calculateUSDValues = (amountA, amountB) => {
+  const calculateUSDValues = (amountA: string | number, amountB: string | number) => {
     const [usdA, usdB] = calculateUSDtokens(
       firstTokenSelected.symbolPair,
       secondTokenSelected.symbolPair,
       amountA,
       amountB
     );
-    setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA);
-    setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB);
-    setPriceA((parseFloat(usdA) * exchangeRateA).toFixed(2));
-    setPriceB((parseFloat(usdB) * exchangeRateB).toFixed(2));
+  
+    const _usdA = isNaN(parseFloat(usdA)) ? "0.00" : usdA;
+    const _usdB = isNaN(parseFloat(usdB)) ? "0.00" : usdB;
+
+    setValueAUSD(_usdA);
+    setValueBUSD(_usdB);
+    
+    setPriceA((parseFloat(_usdA) * formatNaN(exchangeRateA)).toFixed(2));
+    setPriceB((parseFloat(_usdB) * formatNaN(exchangeRateB)).toFixed(2));
   };
 
   return (
