@@ -21,8 +21,8 @@
       "email": "info@casperswap.xyz",
       "branding": {
           "logo": {
-              "png_256": "",
-              "png_1024": "",
+              "png_256": "https://app.casperswap.xyz/logo_256_x_256.png",
+              "png_1024": "https://app.casperswap.xyz/logo_1024_x_1024.png",
               "svg": ""
           }
       },
