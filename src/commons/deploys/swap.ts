@@ -109,6 +109,7 @@ export const signAndDeploySwap = async (
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
+          SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS,
           RuntimeArgs.fromMap({
             amount_in: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_UP)),
             amount_out_min: CLValueBuilder.u256(new BigNumber(amountOut).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
@@ -131,6 +132,7 @@ export const signAndDeploySwap = async (
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
+          SwapEntryPoint.SWAP_TOKENS_FOR_EXACT_CSPR,
           RuntimeArgs.fromMap({
             amount_out: CLValueBuilder.u256(new BigNumber(amountOut).toFixed(0, BigNumber.ROUND_DOWN)),
             amount_in_max: CLValueBuilder.u256(new BigNumber(amountIn).times(1 + slippage).toFixed(0, BigNumber.ROUND_UP)),
@@ -156,6 +158,7 @@ export const signAndDeploySwap = async (
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
+          SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_CSPR,
           RuntimeArgs.fromMap({
             amount_in: CLValueBuilder.u256(new BigNumber(amountIn).times(1 - slippage).toFixed(0, BigNumber.ROUND_UP)),
             amount_out_min: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_DOWN)),
@@ -181,6 +184,7 @@ export const signAndDeploySwap = async (
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
+          SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS,
           RuntimeArgs.fromMap({
             amount_in: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_UP)),
             amount_out_min: CLValueBuilder.u256(new BigNumber(amountOut).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),

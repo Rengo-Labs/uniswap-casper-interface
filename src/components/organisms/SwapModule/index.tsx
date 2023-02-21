@@ -109,8 +109,8 @@ const SwapNewModule = () => {
 
   useEffect(() => {
     progressBar(async () => {
-      lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
       await refreshAll()
+      lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
     })
   }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
 

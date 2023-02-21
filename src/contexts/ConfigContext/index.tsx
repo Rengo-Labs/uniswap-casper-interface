@@ -1,62 +1,38 @@
-
 import BigNumber from 'bignumber.js';
-import React, {
-  createContext,
-  ReactNode,
-  useEffect,
-  useReducer,
-  useState,
-} from 'react';
-import { PopupsModule } from '../../components/organisms';
-import { NODE_ADDRESS, NotificationType } from '../../constant';
+import React, {createContext, ReactNode, useEffect, useReducer, useState,} from 'react';
+import {PopupsModule} from '../../components/organisms';
+import {NODE_ADDRESS, NotificationType} from '../../constant';
 
-import {
-  initialConfigState,
-  ConfigReducer,
-  ConfigActions,
-} from '../../reducers';
-import {
-  initialPairsState,
-  PairsReducer,
-  PairActions,
-  PairData,
-  PairState,
-} from '../../reducers/PairsReducer';
-import {
-  initialTokenState,
-  TokenReducer,
-  TokenActions,
-  TokenAction,
-  TokenState,
-} from '../../reducers/TokenReducers';
-
-const NETWORK_NAME = Network.CASPER_TESTNET;
-
+import {ConfigActions, ConfigReducer, initialConfigState,} from '../../reducers';
+import {initialPairsState, PairActions, PairData, PairsReducer, PairState,} from '../../reducers/PairsReducer';
+import {initialTokenState, TokenAction, TokenActions, TokenReducer, TokenState,} from '../../reducers/TokenReducers';
 import {
   APIClient,
-  Client as CasperClient,
   CasperSignerWallet,
-  TorusWallet,
-  Network,
-  Token,
-  Wallet,
+  Client as CasperClient,
   convertBigNumberToUIString,
   convertUIStringToBigNumber,
   log,
+  Network,
+  Token,
+  TorusWallet,
+  Wallet,
   WalletName,
 } from '../../commons';
 
-import { signAndDeployAllowance } from '../../commons/deploys';
-import { ConfigState } from '../../reducers/ConfigReducers';
-import { Row, useAsyncDebounce, useGlobalFilter, useSortBy, useTable } from 'react-table';
-import { ConnectionPopup } from '../../components/atoms';
-import { notificationStore } from '../../store/store';
-import { ERROR_BLOCKCHAIN } from "../../constant/errors";
-import { getPath } from '../../commons/calculations'
-import { TableInstance } from "../../components/organisms/PoolModule";
-import { getPairData } from "../../commons/api/ApolloQueries";
+import {signAndDeployAllowance} from '../../commons/deploys';
+import {ConfigState} from '../../reducers/ConfigReducers';
+import {Row, useAsyncDebounce} from 'react-table';
+import {ConnectionPopup} from '../../components/atoms';
+import {notificationStore} from '../../store/store';
+import {ERROR_BLOCKCHAIN} from "../../constant/errors";
+import {getPath} from '../../commons/calculations'
+import {TableInstance} from "../../components/organisms/PoolModule";
+import {getPairData} from "../../commons/api/ApolloQueries";
 import store from "store2";
-import { stringify } from 'querystring';
+import {CasperWallet} from "../../commons/wallet/CasperWallet";
+
+const NETWORK_NAME = Network.CASPER_TESTNET;
 
 type MaybeWallet = Wallet | undefined;
 
@@ -266,6 +242,14 @@ export const ConfigContextWithReducer = ({
           throw new Error('torus wallet error');
         }
         break;
+      case WalletName.CASPER_WALLET:
+
+        if (state.wallet?.isConnected) {
+          await state.wallet.disconnect();
+        }
+        w = new CasperWallet(NETWORK_NAME)
+        await w.connect()
+        break
       default:
         setShowConnectionPopup(true);
         return {
@@ -352,7 +336,7 @@ export const ConfigContextWithReducer = ({
               )
               .then((response) => {
                 //console.log('balance', token, response)
-                console.log(x, convertBigNumberToUIString(new BigNumber(response)).toString())
+                //console.log(x, convertBigNumberToUIString(new BigNumber(response)).toString())
                 tokenDispatch({
                   type: TokenActions.LOAD_BALANCE,
                   payload: {
@@ -387,11 +371,11 @@ export const ConfigContextWithReducer = ({
   async function refresh(wallet?: Wallet) {
     if (wallet) {
       await updateBalances(wallet, tokens, tokenDispatch, wallet?.isConnected);
-      await loadPairsUserData(wallet, wallet?.isConnected);
+      await loadPairsUserData(wallet, wallet?.isConnected); //TODO Cargas datos anteriores.
     } else {
       await clearPairsUserData()
     }
-    await loadPairs();
+    await loadPairs(); //TODO Obtiene el ultimo bloque
   }
 
   const clearPairsUserData = async () => {
@@ -456,6 +440,7 @@ export const ConfigContextWithReducer = ({
     name: WalletName = WalletName.NONE,
     ignoreError = false
   ): Promise<void> {
+    console.log("onConnectWallet", state.wallet?.isConnected)
     if (state.wallet?.isConnected) {
       return;
     }
@@ -564,6 +549,25 @@ export const ConfigContextWithReducer = ({
 
     fn().catch((e) => log.error(`UPDATE_TOKENS error": ${e}`));
   }, []);
+
+
+  const [extensionLoaded, setExtensionLoaded] = useState(false);
+
+  /*
+  useEffect(() => {
+    let timer;
+    if ((window as any).CasperWalletEventTypes != null) {
+      //CasperWalletEventTypes = (window as any).CasperWalletEventTypes;
+      setExtensionLoaded(true);
+      clearTimeout(timer);
+    } else {
+
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);*/
 
   useEffect(() => {
     window.addEventListener('signer:connected', (msg) => {
@@ -764,7 +768,7 @@ export const ConfigContextWithReducer = ({
         }
       }
 
-      console.log('pairTotalReserves', pairTotalReserves)
+      //console.log('pairTotalReserves', pairTotalReserves)
 
       await loadPairsUSD(pairTotalReserves)
     } catch (err) {
@@ -1064,7 +1068,7 @@ export const ConfigContextWithReducer = ({
       })
       throw new Error('path not found')
     }
-    console.log('path', path)
+    //console.log('path', path)
 
     let firstReserve0 = new BigNumber(1)
     let reserve0 = new BigNumber(1)

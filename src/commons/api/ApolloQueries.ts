@@ -430,7 +430,7 @@ async function getBulkPairData(pairList, ethPrice) {
       },
       fetchPolicy: 'network-only'
     })
-    console.log('PAIRS_BULK', current)
+    //console.log('PAIRS_BULK', current)
 
     const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
       [b1, b2, bWeek].map(async (block) => {
@@ -440,7 +440,7 @@ async function getBulkPairData(pairList, ethPrice) {
           fetchPolicy: 'network-only'
         })
 
-        console.log('PAIRS_HISTORICAL_BULK', result)
+        //console.log('PAIRS_HISTORICAL_BULK', result)
         return result
       })
     )
@@ -509,9 +509,9 @@ export const getPairData = async (pairList = []): Promise<any[]> => {
 
     const result = await getBulkPairData(pairList, ethPrice)
 
-    console.log('result', result)
+    //console.log('result', result)
 
-    return result
+    return result == undefined ? [] : result
   } catch (e) {
     console.error(e)
     return []

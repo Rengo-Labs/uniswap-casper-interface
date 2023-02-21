@@ -74,7 +74,7 @@ export const signAndDeployAllowance = async (
     const spenderByteArray = new CLByteArray(
         Uint8Array.from(Buffer.from(spender, "hex"))
     )
-          
+
     return await casperClient.signAndDeployContractCall(
       wallet,
       contractHash.slice(5), 

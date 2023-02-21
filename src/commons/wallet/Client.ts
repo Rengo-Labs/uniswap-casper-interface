@@ -2,6 +2,7 @@ import { Buffer } from 'buffer'
 import {
   CasperClient,
   CLPublicKey,
+  decodeBase16,
   DeployUtil,
   GetDeployResult,
   RuntimeArgs,
@@ -11,6 +12,7 @@ import BigNumber from 'bignumber.js';
 import { Wallet } from './Wallet'
 import { Network } from './types'
 import { log, sleep } from '../utils'
+import {ROUTER_PACKAGE_HASH} from "../../constant";
 
 /**
  * Client for working with Casper network
@@ -225,14 +227,18 @@ export class Client {
    */  
   async signAndDeployWasm(
     wallet: Wallet,
-    wasm: ArrayBuffer, 
-    args: RuntimeArgs, 
+    wasm: ArrayBuffer,
+    endpoint: string,
+    args: RuntimeArgs,
     gas: BigNumber, 
   ): Promise<[string, GetDeployResult]> {
     try {
       // Create the deploy item using wasm + args
-      const deployItem = DeployUtil.ExecutableDeployItem.newModuleBytes(
-        new Uint8Array(wasm),
+      const deployItem = DeployUtil.ExecutableDeployItem.newStoredVersionContractByHash(
+        decodeBase16(ROUTER_PACKAGE_HASH),
+        //new Uint8Array(wasm),
+        null,
+        endpoint,
         args,
       )
 
