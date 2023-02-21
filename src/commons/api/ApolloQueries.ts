@@ -2,6 +2,7 @@ import {ApolloClient, gql, HttpLink, InMemoryCache} from "@apollo/client";
 import {INFO_SWAP_URL, INFO_BLOCK_URL} from "../../constant";
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { Pair, PairByIdAndBlock } from "./types";
 
 // format libraries
 dayjs.extend(utc)
@@ -20,7 +21,7 @@ interface BasicData {
 }
 
 // Override data return from graph - usually because proxy token has changed
-// names since entitiy was created in subgraph
+// names since entity was created in subgraph
 // keys are lowercase token addresses <--------
 const TOKEN_OVERRIDES: { [address: string]: { name: string; symbol: string } } = {
   '0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a': {
@@ -120,7 +121,6 @@ export const GET_BLOCKS = (timestamps) => {
     }`
   })
   queryString += '}'
-  // console.log("queryString", queryString);
   return gql(queryString)
 }
 
@@ -134,7 +134,6 @@ export const PAIR_DATA_BY_ID_AND_BLOCK = (pairAddress, block) => {
     }
   }
   `
-  //console.log('queryStringqueryString', queryString)
   return gql(queryString)
 }
 
@@ -154,7 +153,6 @@ export const ETH_PRICE = (block?) => {
     }
   }
 `
-  // console.log("queryString", queryString);
   return gql(queryString)
 }
 
@@ -168,7 +166,6 @@ export const GET_BLOCK = (timestampFrom, timestampTo) => {
     }
   }
   `
-  // console.log("queryString", queryString);
   return gql(queryString)
 }
 
@@ -217,7 +214,7 @@ export async function splitQuery(query, localClient, vars, list, skipCount = 100
  * @dev timestamps are returns as they were provided; not the block time.
  * @param {Array} timestamps
  */
-export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
+export async function getBlocksFromTimestamps(timestamps: number[], skipCount = 500) {
   if (timestamps?.length === 0) {
     return []
   }
@@ -240,12 +237,11 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
       }
     }
   }
-  //console.log('blocks', blocks)
   return blocks
 }
 
 /**
- * gets the amoutn difference plus the % change in change itself (second order change)
+ * gets the amount difference plus the % change in change itself (second order change)
  * @param {*} valueNow
  * @param {*} value24HoursAgo
  * @param {*} value48HoursAgo
@@ -328,7 +324,7 @@ function parseData(data, oneDayData, twoDayData, oneWeekData, ethPrice, oneDayBl
   data.trackedReserveUSD = data.trackedReserveETH * ethPrice
   data.liquidityChangeUSD = getPercentChange(data.reserveUSD, oneDayData?.reserveUSD)
 
-  // format if pair hasnt existed for a day or a week
+  // format if pair hasn't existed for a day or a week
   if (!oneDayData && data && data.createdAtBlockNumber > oneDayBlock) {
     data.oneDayVolumeUSD = parseFloat(data.volumeUSD)
   }
@@ -358,9 +354,7 @@ function parseData(data, oneDayData, twoDayData, oneWeekData, ethPrice, oneDayBl
  * @dev Query speed is optimized by limiting to a 600-second period
  * @param {Int} timestamp in seconds
  */
-export async function getBlockFromTimestamp(timestamp) {
-  // console.log("timestamptimestamp", timestamp);
-  // console.log("new Date(timestamp)new Date(timestamp)", new Date(timestamp * 1000).toISOString());
+export async function getBlockFromTimestamp(timestamp: number) {
   const timestampFrom = new Date(timestamp * 1000).toISOString()
   const timestampTo = new Date((timestamp + 600) * 1000).toISOString()
 
@@ -369,7 +363,6 @@ export async function getBlockFromTimestamp(timestamp) {
     fetchPolicy: 'cache-first',
   })
 
-  //console.log('resultresultresultresult', result)
   return result?.data?.getBlockBetweenTimestampsAsc?.number
 }
 
@@ -386,23 +379,17 @@ const getEthPrice = async () => {
 
   try {
     const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
-    //console.log('oneDayBlock', oneDayBlock)
     const result = await v2client.query({
       query: ETH_PRICE(),
       fetchPolicy: 'cache-first',
     })
-    //console.log('ETH_PRICE', result)
     const resultOneDay = await v2client.query({
       query: ETH_PRICE(oneDayBlock),
       fetchPolicy: 'cache-first',
     })
-    //console.log('ETH_PRICE2', resultOneDay)
     const currentPrice = result?.data?.bundle?.ethPrice
     const oneDayBackPrice = resultOneDay?.data?.bundleByIdandBlock?.ethPrice //null
-    // console.log("currentPrice", currentPrice);
-    // console.log("oneDayBackPrice", oneDayBackPrice);
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice)
-    // console.log("priceChangeETH", priceChangeETH);
     ethPrice = currentPrice
     ethPriceOneDay = oneDayBackPrice
     // ethPrice = 1
@@ -415,14 +402,11 @@ const getEthPrice = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
 
-async function getBulkPairData(pairList, ethPrice) {
+async function getBulkPairData(pairList: string[], ethPrice: number[]) {
   const [t1, t2, tWeek] = getTimestampsForChanges()
-  //console.log('t1, t2, tWeek', t1, t2, tWeek)
-  //console.log('await getBlocksFromTimestamps([t1, t2, tWeek])', await getBlocksFromTimestamps([t1, t2, tWeek]))
   const [{ number: b1 }, { number: b2 }, { number: bWeek }] = await getBlocksFromTimestamps([t1, t2, tWeek])
-  // console.log("b1, b2, bWeek", b1, b2, bWeek);
+
   try {
-    // console.log("pairList", pairList);
     const current = await v2client.query({
       query: PAIRS_BULK,
       variables: {
@@ -434,7 +418,7 @@ async function getBulkPairData(pairList, ethPrice) {
 
     const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
       [b1, b2, bWeek].map(async (block) => {
-        // console.log("blockblock", block);
+
         const result = await v2client.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'network-only'
@@ -444,28 +428,29 @@ async function getBulkPairData(pairList, ethPrice) {
         return result
       })
     )
-    // console.log("oneDayResult", oneDayResult);
-    // console.log("twoDayResult", twoDayResult);
-    // console.log("oneWeekResult", oneWeekResult);
-    const oneDayData = oneDayResult?.data?.pairsByIdsandBlock?.reduce((obj, cur, i) => {
-      //console.log('cur', cur)
-      return { ...obj, [cur.id]: cur }
-    }, {})
+    const oneDayData = oneDayResult?.data?.pairsByIdsandBlock?.reduce(
+      (obj: PairByIdAndBlock[], cur: PairByIdAndBlock) => {
+        return { ...obj, [cur.id]: cur }
+      }, 
+    {})
 
-    const twoDayData = twoDayResult?.data?.pairsByIdsandBlock?.reduce((obj, cur, i) => {
-      return { ...obj, [cur.id]: cur }
-    }, {})
+    const twoDayData = twoDayResult?.data?.pairsByIdsandBlock?.reduce(
+      (obj: PairByIdAndBlock[], cur: PairByIdAndBlock) => {
+          return { ...obj, [cur.id]: cur };
+      },
+      {}
+    );
 
-    const oneWeekData = oneWeekResult?.data?.pairsByIdsandBlock?.reduce((obj, cur, i) => {
-      return { ...obj, [cur.id]: cur }
-    }, {})
+    const oneWeekData = oneWeekResult?.data?.pairsByIdsandBlock?.reduce(
+      (obj: PairByIdAndBlock[], cur: PairByIdAndBlock) => {
+          return { ...obj, [cur.id]: cur };
+      },
+      {}
+    );
 
-    /* console.log('oneDayData', oneDayData)
-    console.log('twoDayData', twoDayData)
-    console.log('oneWeekData', oneWeekData) */
     const pairData = await Promise.all(
       current &&
-        current.data.allpairs.map(async (pair) => {
+        current.data.allpairs.map(async (pair: Pair) => {
           let data = Object.assign({}, pair)
           let oneDayHistory = oneDayData?.[pair.id]
 
@@ -474,6 +459,7 @@ async function getBulkPairData(pairList, ethPrice) {
               query: PAIR_DATA_BY_ID_AND_BLOCK(pair.id, b1),
               fetchPolicy: 'cache-first',
             })
+            console.warn({newData})
             oneDayHistory = newData.data.pairbyIdandBlock[0]
           }
           let twoDayHistory = twoDayData?.[pair.id]
@@ -496,20 +482,16 @@ async function getBulkPairData(pairList, ethPrice) {
           return data
         })
     )
-    //console.log('pairData', pairData)
     return pairData
   } catch (e) {
     console.log(e)
   }
 }
 
-export const getPairData = async (pairList = []): Promise<any[]> => {
+export const getPairData = async (pairList: string[] = []): Promise<Pair[]> => {
   try {
     const ethPrice = await getEthPrice()
-
     const result = await getBulkPairData(pairList, ethPrice)
-
-    console.log('result', result)
 
     return result
   } catch (e) {
