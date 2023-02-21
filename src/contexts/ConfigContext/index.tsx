@@ -99,7 +99,7 @@ export interface ConfigContext {
   setLinkExplorer?: (link: string) => void;
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
-  calculateUSDtokens: (t0, t1, amount0, amount1) => any[];
+  calculateUSDtokens: (t0: string, t1: string, amount0: string | number, amount1: string | number) => string[];
   tableInstance?: any,
   setTableInstance?: (t) => void;
   isMobile?: boolean;
@@ -987,7 +987,7 @@ export const ConfigContextWithReducer = ({
     changeData(currentQuery)
   };
 
-  const calculateUSDtokens = (token0, token1, amount0, amount1): any[] => {
+  const calculateUSDtokens = (token0: string, token1: string, amount0: string | number, amount1: string | number): string[] => {
     const filter = getPoolList().filter(
       (r) => r.token0Symbol === token0 && r.token1Symbol === token1
     );

@@ -112,27 +112,38 @@ export interface PairToken {
  * Pair
  */
 export interface Pair {
-  createdAtBlockNumber: string,
-  createdAtTimestamp: number,
-  id: string,
-  liquidityProviderCount: string,
-  reserve0: string,
-  reserve1: string,
-  totalReserve0: string,
-  totalReserve1: string,
-  reserveETH: string,
-  reserveUSD: string,
-  token0: PairToken,
-  token1: PairToken,
-  token0Price: string,
-  token1Price: string,
-  totalSupply: string,
-  trackedReserveETH: string,
-  txCount: string,
-  untrackedVolumeUSD: string,
-  volumeToken0: string,
-  volumeToken1: string,
-  volumeUSD: string,
+  createdAtBlockNumber: string;
+  createdAtTimestamp: number;
+  id: string;
+  liquidityProviderCount: string; //CHECK: not received from the api and is not used in the code
+  reserve0: string;
+  reserve1: string;
+  totalReserve0?: string; //CHECK: not received from the api but used in the code
+  totalReserve1?: string; //CHECK: not received from the api but used in the code
+  reserveETH: string;
+  reserveUSD: string;
+  token0: PairToken;
+  token1: PairToken;
+  token0Price: string;
+  token1Price: string;
+  totalSupply: string;
+  trackedReserveETH: string;
+  txCount: string;
+  untrackedVolumeUSD: string;
+  volumeToken0: string; //
+  volumeToken1: string; //
+  volumeUSD: string;
+
+  // CHECK: The following values are received from the api, but are not currently used.
+
+  // oneDayVolumeUSD: number; //0;
+  // oneWeekVolumeUSD: number; //22018646833.744995;
+  // volumeChangeUSD: number; //0;
+  // oneDayVolumeUntracked: number; //0;
+  // oneWeekVolumeUntracked: number; //22018646833.744995;
+  // volumeChangeUntracked: number; //0;
+  // trackedReserveUSD: number; //NaN;
+  // liquidityChangeUSD: number; //-0.026542998676653575;
 }
 
 /**
@@ -162,6 +173,17 @@ export interface PairAgainstUserResponse {
   userpairs: UserPair[],
   message: string,
   success: boolean,
+}
+
+/**
+ * Pair by id and block
+ */
+export interface PairByIdAndBlock {
+    id: string;
+    reserveUSD: string;
+    trackedReserveETH: string;
+    volumeUSD: string;
+    untrackedVolumeUSD: string;
 }
 
 /**
