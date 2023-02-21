@@ -1,5 +1,5 @@
 import {ApolloClient, gql, HttpLink, InMemoryCache} from "@apollo/client";
-import {INFO_SWAP_URL} from "../../constant";
+import {INFO_SWAP_URL, INFO_BLOCK_URL} from "../../constant";
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
@@ -39,7 +39,7 @@ const v2client = new ApolloClient({
 
 export const blockClient = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://block-api-test.casperswap.xyz/graphql',
+    uri: INFO_BLOCK_URL,
   }),
   cache: new InMemoryCache(),
   //shouldBatch: true,
