@@ -1,6 +1,7 @@
 import {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {casperClient} from "../ConfigContext";
 import {PairsContextProvider} from "../PairsContext";
+import {TokensProviderContext} from "../TokensContext";
 interface StateHashContextProps {
     children: ReactNode
 }
@@ -15,24 +16,45 @@ export const StateHashContext = createContext<StateHashContext>({} as any)
 
 export const StateHashProvideContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
-    const {loadPairs} = useContext(PairsContextProvider)
+    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, orderedPairState} = useContext(PairsContextProvider)
+    const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance} = useContext(TokensProviderContext)
+
 
     const getLatestRootHash = useCallback(async () => {
         return casperClient.getStateRootHash()
     }, [])
 
     const getPairs = useCallback(async () => {
-        // TODO traer toda la info de los pairs o llamar a las funciones que necesitemos
-        await loadPairs()
+        const pairsToReserves = await loadPairs(tokenState)
+        await loadPairsUSD(pairsToReserves)
+
+
+        //TODO wallet connection
+        //await loadUserPairsData(wallet, isConnected)
+        //await clearUserPairsData(pairState)
+
+        return pairsToReserves
     }, [])
 
-    const getTokens = useCallback(async () => {
-        // TODO traer toda la info de los tokens o llamar a las funciones que necesitemos
+    const getTokens = useCallback(async (pairsToReserves) => {
+
+
+        //TODO wallet connection
+        //await loadTokensBalance(wallet, isConnected)
+        //await clearTokensBalance(tokenState)
+
+        await loadTokensUSD(pairsToReserves, pairState, orderedPairState)
+
     }, [])
 
     useEffect(() => {
-        getPairs().then(() => console.log('#### pairs loaded with StateHashContext ####'))
+        const load = async () => {
+            const pairsToReserves = await getPairs()
+            console.log("pairs completed")
+            await getTokens(pairsToReserves)
+        }
 
+        load().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
     },  [stateHash])
 
     const getRootHash = useCallback(async () => {
@@ -45,9 +67,6 @@ export const StateHashProvideContext = ({children}: StateHashContextProps) => {
     console.log('#### stateHash value ####', stateHash)
 
     useEffect(() => {
-        getRootHash()
-            .then(() => console.log('#### root hash running first time ####'))
-            .catch((err) => console.log(err))
 
         const interval = setInterval(() => {
             getRootHash()
@@ -56,6 +75,7 @@ export const StateHashProvideContext = ({children}: StateHashContextProps) => {
         }, 20000)
 
         return () => clearInterval(interval)
+
     }, [])
 
     const value = useMemo(() => ({
