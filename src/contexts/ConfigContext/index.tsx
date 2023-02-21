@@ -394,7 +394,7 @@ export const ConfigContextWithReducer = ({
     } else {
       await clearPairsUserData()
     }
-    await loadPairs();
+    //await loadPairs();
   }
 
   const clearPairsUserData = async () => {
@@ -555,7 +555,7 @@ export const ConfigContextWithReducer = ({
 
   useEffect(() => {
     const fn = async () => {
-      refresh()
+      //refresh()
       /*const data = await apiClient.getTokenList();
       const tokens = tokensToObject(data.tokens);
       //console.log('TOKENS', tokens)
@@ -736,8 +736,8 @@ export const ConfigContextWithReducer = ({
         );
 
         const infoResult = infoResultMap[pl.packageHash] ?? {
-          oneWeekVoluemUSD: 0,
-          oneDayVoluemUSD: 0,
+          oneWeekVolumeUSD: 0,
+          oneDayVolumeUSD: 0,
           reserveUSD: 0,
         }
 
@@ -790,6 +790,7 @@ export const ConfigContextWithReducer = ({
       const tokens = Object.values(tokenState.tokens)
       const tokenPrices: Record<string, string> = {}
 
+      console.log("Antes", tokens)
       for (const t of tokens) {
         const priceUSD = findUSDRateBySymbol(t.symbolPair, pairTotalReserves).toString()
 
@@ -804,6 +805,7 @@ export const ConfigContextWithReducer = ({
         tokenPrices[t.symbol] = priceUSD
       }
 
+      console.log("", tokenState)
       const pairs = Object.values(pairState)
 
       for (const p of pairs) {
@@ -1035,18 +1037,19 @@ export const ConfigContextWithReducer = ({
 
     let lookUp = `${tA}-${tB}`
 
+    console.log("Buscar 1")
     // do a simple look up
     let pairData = overrideReserves[lookUp] ?? orderedPairState[lookUp]
-
     if (pairData) {
       // console.log('a', pairData)
+
       return {
         reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
         reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
       }
     }
-
     // do different simple look up
+    console.log("Buscar 2")
     lookUp = `${tB}-${tA}`
     pairData = overrideReserves[lookUp] ?? orderedPairState[lookUp]
 
@@ -1057,6 +1060,8 @@ export const ConfigContextWithReducer = ({
         reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
       }
     }
+
+    console.log("Buscar 3")
 
     // use pathfinder for multi-pool
     const path = getPath(
@@ -1077,7 +1082,7 @@ export const ConfigContextWithReducer = ({
       })
       throw new Error('path not found')
     }
-    console.log('path', path)
+    console.log('path Encontrados', path)
 
     let firstReserve0 = new BigNumber(1)
     let reserve0 = new BigNumber(1)

@@ -1,18 +1,25 @@
 import {getPairData} from "../api/ApolloQueries";
 import store from "store2";
-import {convertBigNumberToUIString, log} from "../utils";
+import {convertBigNumberToUIString, convertUIStringToBigNumber, log} from "../utils";
 import BigNumber from "bignumber.js";
 import {PairActions, PairState} from "../../reducers/PairsReducer";
-import {apiClient} from "../../contexts/ConfigContext";
+import {apiClient, PairReserves} from "../../contexts/ConfigContext";
 import {Wallet} from "../wallet";
-import TokenResponsibilities from "../TokenResponsibilities";
-import {TokenState} from "../../reducers/TokenReducers";
-interface PairTotalReserves {
+import {TokenActions, TokenState} from "../../reducers/TokenReducers";
+
+export interface PairTotalReserves {
     totalReserve0: BigNumber.Value,
     totalReserve1: BigNumber.Value,
 }
 
-const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: TokenState) => {
+const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: TokenState) => {
+    const orderedPairState = () : Record<string, PairTotalReserves> => {
+        const orderedPairs: Record<string, PairTotalReserves> = {}
+        Object.values(pairState).map((pl) => {
+            orderedPairs[pl.orderedName] = pl
+        })
+        return orderedPairs
+    }
 
     const changeRowPriority = (name, priority) => {
         store.set(name, priority)
@@ -25,19 +32,18 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: T
         });
     }
 
-    async function loadPairsUSD(pairTotalReserves: Record<string, PairTotalReserves>): Promise<void> {
+    async function loadPairsUSD(pairTotalReserves: Record<string, PairTotalReserves>, pairs): Promise<void> {
         try {
-            const tokenPrices: Record<string, string> = {}
-            const pairs = Object.values(pairState)
             for (const p of pairs) {
-
+                const price0USD = findUSDRateBySymbol(p.token0Symbol, pairTotalReserves).toString()
+                const price1USD = findUSDRateBySymbol(p.token1Symbol, pairTotalReserves).toString()
 
                 pairDispatch({
                     type: PairActions.LOAD_PAIR_USD,
                     payload: {
                         name: p.name,
-                        token0Price: tokenPrices[p.token0Symbol],
-                        token1Price: tokenPrices[p.token1Symbol],
+                        token0Price: price0USD,
+                        token1Price: price1USD,
                     },
                 })
             }
@@ -196,21 +202,133 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState: T
         return pairTotalReserves
     }
 
-    const loadPairs = async (): Promise<void> => {
+    const loadPairs = async (): Promise<Record<string, PairTotalReserves>> => {
         try {
             console.log('Start loadPairs from PairsResponsibility')
             const pairs = Object.values(pairState)
-            const  infoResultMap = await loadLatestPairsData(pairs)
+            const infoResultMap = await loadLatestPairsData(pairs)
             const loadPairBalances = await getGeneralPairData(pairs, infoResultMap)
-            const pairTotalReserves = await updateGeneralPairData(loadPairBalances)
-            await loadPairsUSD(pairTotalReserves)
+
+            return await updateGeneralPairData(loadPairBalances)
         } catch (err) {
             log.error('loadPairs from PairsResponsibility', err.message);
+            return {}
+        }
+    }
+
+    const loadPairsBalanceUSD = async (pairTotalReserves) => {
+        const pairs = Object.values(pairState)
+        await loadPairsUSD(pairTotalReserves, pairs)
+    }
+
+    const clearUserPairsData = async () => {
+        const pairList = Object.keys(pairState).map((x) => pairState[x]);
+        for (const pair of pairList) {
+
+            pairDispatch({
+                type: PairActions.ADD_ALLOWANCE_TO_PAIR,
+                payload: {
+                    name: pair.name,
+                    allowance: convertBigNumberToUIString(
+                      new BigNumber(0)
+                    ),
+                },
+            })
+
+            pairDispatch({
+                type: PairActions.ADD_BALANCE_TO_PAIR,
+                payload: {
+                    name: pair.name,
+                    balance: convertBigNumberToUIString(
+                      new BigNumber(0)
+                    ),
+                },
+            })
+        }
+    }
+
+    /**
+     * findReservesBySymbols search for pair data by the symbol pair
+     *
+     * @param tokenSymbol token symbol string
+     *
+     * @returns usd conversion rate
+     */
+    const findUSDRateBySymbol = (
+      tokenSymbol: string,
+      pairTotalReserves: Record<string, PairTotalReserves>,
+    ): BigNumber => {
+        let t = tokenSymbol
+        if (t === 'CSPR') {
+            t = 'WCSPR'
+        }
+
+        if (t === 'USDC') {
+            const ratesUSDC = findReservesBySymbols(t, 'USDT', pairTotalReserves)
+
+            return new BigNumber(ratesUSDC.reserve0).div(ratesUSDC.reserve1).plus(1).div(2)
+        }
+
+        if (t === 'USDT') {
+            const ratesUSDT = findReservesBySymbols(t, 'USDC', pairTotalReserves)
+
+            return new BigNumber(ratesUSDT.reserve0).div(ratesUSDT.reserve1).plus(1).div(2)
+        }
+
+        const ratesUSDC = findReservesBySymbols(t, 'USDC', pairTotalReserves)
+        const ratesUSDT = findReservesBySymbols(t, 'USDT', pairTotalReserves)
+
+        // console.log('ratesUSDC/T', ratesUSDC.reserve0.toString(), ratesUSDT.reserve0.toString())
+
+        if (ratesUSDC.reserve0.toString() === '0' || ratesUSDT.reserve0.toString() === '0') {
+            return new BigNumber(0)
+        }
+
+        console.log(ratesUSDC.reserve0.toString(), ratesUSDC.reserve1.toString(), ratesUSDT.reserve0.toString(), ratesUSDT.reserve1.toString())
+        return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
+    }
+
+    /**
+     * findReservesBySymbols search for pair data by the symbol pair
+     *
+     * @param tokenASymbol first token symbol string
+     * @param tokenBSymbol second token symbol string
+     *
+     * @returns pair reserve data
+     */
+    const findReservesBySymbols = (
+      tokenASymbol: string,
+      tokenBSymbol: string,
+      overrideReserves: Record<string, PairTotalReserves> = {},
+    ): PairReserves | undefined => {
+        let tA = tokenASymbol
+        let tB = tokenBSymbol
+        if (tA === 'CSPR') {
+            tA = 'WCSPR'
+        }
+        if (tB === 'CSPR') {
+            tB = 'WCSPR'
+        }
+
+        const lookUp = `${tA}-${tB}`
+
+        // do a simple look up
+        const pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
+
+        if (pairData) {
+            return {
+                reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
+                reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
+            }
         }
     }
 
     return {
         loadPairs,
+        loadPairsBalanceUSD,
+        loadPairsUserData,
+        orderedPairState,
+        clearUserPairsData
     }
 }
 
