@@ -1,11 +1,35 @@
 import BigNumber from 'bignumber.js';
-import React, {createContext, ReactNode, useEffect, useReducer, useState,} from 'react';
-import {PopupsModule} from '../../components/organisms';
-import {NODE_ADDRESS, NotificationType} from '../../constant';
+import React, {
+  createContext,
+  ReactNode,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
+import { NODE_ADDRESS, NotificationType } from '../../constant';
 
-import {ConfigActions, ConfigReducer, initialConfigState,} from '../../reducers';
-import {initialPairsState, PairActions, PairData, PairsReducer, PairState,} from '../../reducers/PairsReducer';
-import {initialTokenState, TokenAction, TokenActions, TokenReducer, TokenState,} from '../../reducers/TokenReducers';
+import {
+  initialConfigState,
+  ConfigReducer,
+  ConfigActions,
+} from '../../reducers';
+import {
+  initialPairsState,
+  PairsReducer,
+  PairActions,
+  PairData,
+  PairState,
+} from '../../reducers/PairsReducer';
+import {
+  initialTokenState,
+  TokenReducer,
+  TokenActions,
+  TokenAction,
+  TokenState,
+} from '../../reducers/TokenReducers';
+
+const NETWORK_NAME = Network.CASPER_TESTNET;
+
 import {
   APIClient,
   CasperSignerWallet,
@@ -32,8 +56,6 @@ import {getPairData} from "../../commons/api/ApolloQueries";
 import store from "store2";
 import {CasperWallet} from "../../commons/wallet/CasperWallet";
 
-const NETWORK_NAME = Network.CASPER_TESTNET;
-
 type MaybeWallet = Wallet | undefined;
 
 interface TVLAndVolume {
@@ -59,6 +81,11 @@ export interface ConfigContext {
     contractHash: string
   ) => Promise<boolean>;
   pairState?: PairState;
+  confirmModal: boolean;
+  linkExplorer: string;
+  progressModal: boolean;
+  setShowConnectionPopup: (show: boolean) => void;
+  showConnectionPopup: boolean;
 
   // To Delete
   poolColumns?: any[];
@@ -74,7 +101,7 @@ export interface ConfigContext {
   setLinkExplorer?: (link: string) => void;
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
-  calculateUSDtokens: (t0, t1, amount0, amount1) => any[];
+  calculateUSDtokens: (t0: string, t1: string, amount0: string | number, amount1: string | number) => string[];
   tableInstance?: any,
   setTableInstance?: (t) => void;
   isMobile?: boolean;
@@ -440,7 +467,6 @@ export const ConfigContextWithReducer = ({
     name: WalletName = WalletName.NONE,
     ignoreError = false
   ): Promise<void> {
-    console.log("onConnectWallet", state.wallet?.isConnected)
     if (state.wallet?.isConnected) {
       return;
     }
@@ -520,7 +546,7 @@ export const ConfigContextWithReducer = ({
     }
   }
 
-  const { isConnected, walletSelected, slippageToleranceSelected, mainPurse } =
+  const { isConnected, slippageToleranceSelected, mainPurse } =
     state;
 
   const handleResize = () => {
@@ -709,9 +735,14 @@ export const ConfigContextWithReducer = ({
       const pairs = Object.values(pairState)
       const pairTotalReserves: Record<string, PairTotalReserves> = {}
 
-      const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
       const infoResultMap: Record<string, any> = {}
-      infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
+
+      try {
+        const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
+        infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
+      } catch (e) {
+        console.log(`graphql error: ${e}`)
+      }
       
       const results = await Promise.all(pairs.map(async (pl) => {
 
@@ -730,7 +761,11 @@ export const ConfigContextWithReducer = ({
           token1Decimals
         );
 
-        const infoResult = infoResultMap[pl.packageHash]
+        const infoResult = infoResultMap[pl.packageHash] ?? {
+          oneWeekVoluemUSD: 0,
+          oneDayVoluemUSD: 0,
+          reserveUSD: 0,
+        }
 
         return {
           name: pl.name,
@@ -743,7 +778,7 @@ export const ConfigContextWithReducer = ({
             new BigNumber(pairDataResponse.totalSupply)
           ),
           totalLiquidityUSD: convertBigNumberToUIString(
-            new BigNumber(infoResult != 0 ? infoResult.reserveUSD : 0)
+            new BigNumber(infoResult ? infoResult.reserveUSD : 0)
           )
         }
       }))
@@ -978,7 +1013,7 @@ export const ConfigContextWithReducer = ({
     changeData(currentQuery)
   };
 
-  const calculateUSDtokens = (token0, token1, amount0, amount1): any[] => {
+  const calculateUSDtokens = (token0: string, token1: string, amount0: string | number, amount1: string | number): string[] => {
     const filter = getPoolList().filter(
       (r) => r.token0Symbol === token0 && r.token1Symbol === token1
     );
@@ -1183,41 +1218,15 @@ export const ConfigContextWithReducer = ({
         filterDataReload,
         mapExpandedRows,
         setMapExpandedRows,
-        changeRowPriority
+        changeRowPriority,
+        confirmModal,
+        linkExplorer,
+        progressModal,
+        setShowConnectionPopup,
+        showConnectionPopup
       }}
     >
       {children}
-      <PopupsModule
-        isOpen={progressModal}
-        handleOpen={setProgressModal}
-        progress
-      >
-        Check the progress of your{' '}
-        <a href={linkExplorer} target='_blank'>
-          deploy
-        </a>
-        .
-      </PopupsModule>
-      <PopupsModule
-        isOpen={confirmModal}
-        handleOpen={setConfirmModal}
-        progress={false}
-      >
-        Your{' '}
-        <a href={linkExplorer} target='_blank'>
-          deploy
-        </a>{' '}
-        was successful.
-      </PopupsModule>
-      <ConnectionPopup
-        isConnected={isConnected}
-        isOpened={showConnectionPopup}
-        onToggle={() => setShowConnectionPopup(!showConnectionPopup)}
-        title='Connect your wallet to CasperSwap'
-        onClose={() => setShowConnectionPopup(false)}
-        onConnect={onConnectWallet}
-        showButton={false}
-      />
     </ConfigProviderContext.Provider>
   );
 };

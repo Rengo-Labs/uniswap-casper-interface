@@ -234,17 +234,23 @@ export class Client {
   ): Promise<[string, GetDeployResult]> {
     try {
       // Create the deploy item using wasm + args
-      const deployItem = DeployUtil.ExecutableDeployItem.newStoredVersionContractByHash(
+      const deployItem = DeployUtil.ExecutableDeployItem.newModuleBytes(
+        new Uint8Array(wasm),
+        args,
+      )
+/*
+      const deployItem = DeployUtil.ExecutableDeployItem.newStoredContractByHash(
         decodeBase16(ROUTER_PACKAGE_HASH),
         //new Uint8Array(wasm),
-        null,
         endpoint,
         args,
       )
-
+*/
+      console.log("show deployItem", deployItem)
       // Convert the signed deploy json to a deploy
       const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
 
+      console.log("deploy w signature", signedDeploy)
       // Put and confirm deploy
       return this.putAndConfirmDeploy(wallet, signedDeploy)
     } catch (err) {

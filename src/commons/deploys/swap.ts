@@ -125,7 +125,7 @@ export const signAndDeploySwap = async (
               )
             ),
           }),
-          new BigNumber(gasFee * 10 ** 9).times(1.1),
+          new BigNumber(gasFee * 10 ** 9),
         )
       case SwapEntryPoint.SWAP_TOKENS_FOR_EXACT_CSPR:
         // When swapping token for exact casper

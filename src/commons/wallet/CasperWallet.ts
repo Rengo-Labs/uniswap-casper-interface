@@ -119,7 +119,6 @@ export class CasperWallet implements Wallet{
       // check if we're connected
       const signerIsConnected = await this.getCasperWalletInstance().isConnected()
 
-      console.log("Ya esta conectado", signerIsConnected)
       // if it is connected then set connect to true
       if (signerIsConnected) {
         this._isConnected = true
