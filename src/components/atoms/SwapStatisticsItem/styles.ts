@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { device } from '../../../contexts/ThemeContext/themes';
 
 interface IPriceValue {
-  percent?: boolean;
+  isNegative?: boolean;
 }
 
 export const Wrapper = styled.div`
@@ -69,9 +69,15 @@ export const PriceTitle = styled.div`
   font-family: 'Epilogue';
 `;
 
-export const PriceValue = styled.div<IPriceValue>`
+export const PriceValue = styled.div`
   font-size: 0.9rem;
-  color: ${(props) => props.percent ? props.theme.NewGreenColor : props.theme.NewGrayColor};
+  color: ${(props) => props.theme.NewGrayColor};
+  font-family: 'Epilogue';
+`;
+
+export const PriceValuePercent = styled.div<IPriceValue>`
+  font-size: 0.9rem;
+  color: ${(props) => props.isNegative ? 'red' : props.theme.NewGreenColor};
   font-family: 'Epilogue';
 `;
 
