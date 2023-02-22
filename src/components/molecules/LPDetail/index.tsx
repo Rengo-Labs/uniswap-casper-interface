@@ -12,6 +12,7 @@ import {
 import { RouterBox, SlippageBox } from '../../atoms';
 import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti';
 import { GasFeeBox } from '../../atoms/GasFeeBox';
+import { formatNaN } from '../../../commons';
 
 interface LPDetailProps {
   firstSymbolToken?: string;
@@ -68,7 +69,7 @@ export const LPDetail = ({
         <CollapsingRow>
           <CollapsingColumnLeft>Min Amount</CollapsingColumnLeft>
           <CollapsingColumnRight>
-            {(secondTokenAmount * (1 - slippage / 100)).toFixed(9)}{' '}
+            {(formatNaN(secondTokenAmount) * (1 - slippage / 100)).toFixed(9)}{' '}
             {secondSymbolToken}
           </CollapsingColumnRight>
         </CollapsingRow>

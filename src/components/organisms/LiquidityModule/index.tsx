@@ -613,8 +613,7 @@ const LiquidityNewModule = () => {
             </NewTokenDetailActionsNSM>
           </TokenSelectionNSM>
         </NewSwapContainerNSM>
-        {
-          amountSwapTokenA > 0 &&
+        {(exchangeRateA && exchangeRateB) ? (
           <LPDetail
             firstSymbolToken={firstTokenSelected.symbol}
             secondSymbolToken={secondTokenSelected.symbol}
@@ -627,8 +626,9 @@ const LiquidityNewModule = () => {
             gasFeeEnabled={true}
             slippage={slippageTolerance}
             slippageEnabled={true}
-            slippageSetter={updateSlippageTolerance} />
-        }
+            slippageSetter={updateSlippageTolerance}
+          />
+        ) : null}
         <ButtonSpaceNSM>
           {
             !isConnected &&

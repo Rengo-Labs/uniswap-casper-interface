@@ -115,13 +115,13 @@ export class Client {
    * 
    * @returns the an array with deploy and deploy result or throw error
    */
-  async getDeploy(deployHash: string): Promise<[DeployUtil.Deploy, GetDeployResult]> {
+  async getDeploy(deployHash: string, ticks = 5): Promise<[DeployUtil.Deploy, GetDeployResult]> {
     try {
       
       let deployCheck = 0
       // Get the deploy hash from the network
       
-      while (deployCheck < 5) {
+      while (deployCheck < ticks) {
         try {
           const casperClient = this.casperClient
           return await casperClient.getDeploy(deployHash)          
@@ -152,21 +152,25 @@ export class Client {
 
     let i = 0
     while (i !== ticks) {
-      const [deploy, raw] = await casperClient.getDeploy(deployHash);
-      if (raw.execution_results.length !== 0) {
-        if (raw.execution_results[0].result.Success) {
-          return [deploy, raw];
+      try {
+        const [deploy, raw] = await casperClient.getDeploy(deployHash);
+        if (raw.execution_results.length !== 0) {
+          if (raw.execution_results[0].result.Success) {
+            return [deploy, raw];
+          } else {
+            throw Error(
+              "Contract execution: " +
+              raw.execution_results[0].result.Failure?.error_message
+            );
+          }
         } else {
-          throw Error(
-            "Contract execution: " +
-            raw.execution_results[0].result.Failure?.error_message
-          );
+          i++
+          await sleep(1000)
         }
-      } else {
+      } catch (e){
         i++
         await sleep(1000)
-        continue;
-      }
+      }      
     }
     throw Error("Timeout after " + i + "s. Something's wrong");
   }

@@ -584,7 +584,7 @@ const SwapNewModule = () => {
               </NewTokenDetailActionsNSM>
             </TokenSelectionNSM>
           </NewSwapContainerNSM>
-          {amountSwapTokenB > 0 && (
+          {(exchangeRateA && exchangeRateB) ? (
             <SwapDetail
               firstSymbolToken={firstTokenSelected.symbol}
               firstTokenAmount={amountSwapTokenA}
@@ -600,7 +600,7 @@ const SwapNewModule = () => {
               slippageSetter={updateSlippageTolerance}
               fullExpanded={false}
             />
-          )}
+          ) : null}
           <ButtonSpaceNSM>
             {!isConnected && (
               <NewSwapButtonWidth100
