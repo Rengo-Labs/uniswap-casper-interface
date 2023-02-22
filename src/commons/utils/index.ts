@@ -15,8 +15,13 @@ export const convertAllFormatsToUIFixedString = (amount: BigNumber.Value, fixed 
  * @param ms 
  * @returns 
  */
-export const sleep = async (ms) => {
+export const sleep = async (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export const formatNaN = (value: string | number) => {
+  const parsedValue =  (typeof value === 'string') ? parseFloat(value) : value
+  return isNaN(parsedValue) ? 0 : parsedValue;
 }
 
 export { createRecipientAddress } from './keys'
