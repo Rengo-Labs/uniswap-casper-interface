@@ -105,7 +105,6 @@ export enum AddLiquidityEntryPoint {
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
-          AddLiquidityEntryPoint.ADD_LIQUIDITY_CSPR,
           RuntimeArgs.fromMap({
             token: new CLKey(token),
             amount_cspr_desired: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).toFixed(0, BigNumber.ROUND_UP)),
@@ -140,7 +139,6 @@ export enum AddLiquidityEntryPoint {
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
-          AddLiquidityEntryPoint.ADD_LIQUIDITY,
           RuntimeArgs.fromMap({
             token_a: new CLKey(tokenAContract),
             token_b: new CLKey(tokenBContract),

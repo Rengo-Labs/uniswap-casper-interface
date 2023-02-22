@@ -107,7 +107,6 @@ export enum RemoveLiquidityEntryPoint {
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
-          RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_CSPR,
           RuntimeArgs.fromMap({
             token: new CLKey(token),
             liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0, BigNumber.ROUND_UP)),
@@ -144,7 +143,6 @@ export enum RemoveLiquidityEntryPoint {
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
-          RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY,
           RuntimeArgs.fromMap({
             token_a: new CLKey(tokenAContract),
             token_b: new CLKey(tokenBContract),

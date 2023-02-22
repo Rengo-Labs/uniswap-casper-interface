@@ -5,7 +5,6 @@ import {
   CasperServiceByJsonRPC,
   CLPublicKey,
   DeployUtil,
-  Signer,
 } from 'casper-js-sdk'
 
 import {
@@ -14,8 +13,6 @@ import {
 
 import { Network, WalletName } from './types'
 import { NODE_ADDRESS } from '../../constant'
-import {CasperLabsHelper} from "casper-js-sdk/dist/@types/casperlabsSigner";
-import {SafeEventEmitterProvider} from "casper-js-sdk/dist/services/ProviderTransport";
 
 export const CASPER_WALLET_PUB_KEY = 'cw-pubk'
 
@@ -110,8 +107,6 @@ export class CasperWallet implements Wallet{
    */
   async connect(): Promise<string> {
     if (this.isConnected) {
-      console.log("Si ya se conecto antes", this.isConnected)
-
       return
     }
 
@@ -252,14 +247,10 @@ export class CasperWallet implements Wallet{
   async sign(deploy: DeployUtil.Deploy): Promise<DeployUtil.Deploy> {
     try {
       // Convert the deploy to a raw json
-      console.log("Tratando de aprobar deployJSON")
       const deployJSON = DeployUtil.deployToJson(deploy)
       // Sign the deploy with the signer
-
-      console.log("Tratando de aprobar signedDeployJSON", deployJSON)
       const signedDeployJSON = await this.getCasperWalletInstance().sign(JSON.stringify(deployJSON), this.publicKeyHex, this.publicKeyHex);
 
-      console.log("result deployFromJson", signedDeployJSON)
       // Convert the signed deploy json to a deploy
       return DeployUtil.setSignature(
         deploy,

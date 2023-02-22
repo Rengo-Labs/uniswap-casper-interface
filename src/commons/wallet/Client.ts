@@ -228,7 +228,6 @@ export class Client {
   async signAndDeployWasm(
     wallet: Wallet,
     wasm: ArrayBuffer,
-    endpoint: string,
     args: RuntimeArgs,
     gas: BigNumber, 
   ): Promise<[string, GetDeployResult]> {
@@ -238,19 +237,10 @@ export class Client {
         new Uint8Array(wasm),
         args,
       )
-/*
-      const deployItem = DeployUtil.ExecutableDeployItem.newStoredContractByHash(
-        decodeBase16(ROUTER_PACKAGE_HASH),
-        //new Uint8Array(wasm),
-        endpoint,
-        args,
-      )
-*/
-      console.log("show deployItem", deployItem)
+
       // Convert the signed deploy json to a deploy
       const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
 
-      console.log("deploy w signature", signedDeploy)
       // Put and confirm deploy
       return this.putAndConfirmDeploy(wallet, signedDeploy)
     } catch (err) {
