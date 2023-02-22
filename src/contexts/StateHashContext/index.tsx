@@ -2,6 +2,8 @@ import {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, u
 import {casperClient} from "../ConfigContext";
 import {PairsContextProvider} from "../PairsContext";
 import {TokensProviderContext} from "../TokensContext";
+import {Network, Wallet, WalletName} from "../../commons";
+
 interface StateHashContextProps {
     children: ReactNode
 }
@@ -18,7 +20,9 @@ export const StateHashProvideContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
     const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, orderedPairState} = useContext(PairsContextProvider)
     const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance} = useContext(TokensProviderContext)
-
+    // TODO Probar cuando tengamos filtros
+    //const {currentQuery, instance} = useContext(PoolProviderContext)
+    // TODO conetar la wallet y traer el contexto
 
     const getLatestRootHash = useCallback(async () => {
         return casperClient.getStateRootHash()
@@ -27,34 +31,53 @@ export const StateHashProvideContext = ({children}: StateHashContextProps) => {
     const getPairs = useCallback(async () => {
         const pairsToReserves = await loadPairs(tokenState)
         await loadPairsUSD(pairsToReserves)
-
-
-        //TODO wallet connection
-        //await loadUserPairsData(wallet, isConnected)
-        //await clearUserPairsData(pairState)
-
         return pairsToReserves
     }, [])
 
     const getTokens = useCallback(async (pairsToReserves) => {
-
-
         //TODO wallet connection
-        //await loadTokensBalance(wallet, isConnected)
-        //await clearTokensBalance(tokenState)
-
         await loadTokensUSD(pairsToReserves, pairState, orderedPairState)
-
     }, [])
 
+    const loadUserData = useCallback(async () => {
+        //TODO wallet connection borrar y usar el que viene del contexto
+        const wallet = {
+            isConnected: true,
+            network: Network.CASPER_TESTNET,
+            name: WalletName.NONE,
+            publicKey: undefined,
+            publicKeyHex: '',
+            accountHash: undefined,
+            accountHashString: ''
+        } as any;
+        const isConnected = wallet.isConnected
+
+        if (wallet) {
+            await loadUserPairsData(wallet, isConnected)
+            await loadTokensBalance(wallet, isConnected)
+        } else {
+            await clearUserPairsData(pairState)
+            await clearTokensBalance(tokenState)
+        }
+
+        //TODO REVISAR ESTO
+        // instance.changeData(currentQuery)
+    }, [])
+
+    const refresh = useCallback(async () => {
+        // si tenemos la wallet y sea manual
+        await getRootHash()
+    },[])
+
     useEffect(() => {
-        const load = async () => {
+        const loadAndRefresh = async () => {
             const pairsToReserves = await getPairs()
             console.log("pairs completed")
             await getTokens(pairsToReserves)
+            await loadUserData()
         }
 
-        load().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
+        loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
     },  [stateHash])
 
     const getRootHash = useCallback(async () => {

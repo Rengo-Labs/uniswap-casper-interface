@@ -541,6 +541,8 @@ export const ConfigContextWithReducer = ({
   const { isConnected, slippageToleranceSelected, mainPurse } =
     state;
 
+
+  // TODO  ESTO YA ESTA HOOKS/isMobileScreen
   const handleResize = () => {
     if (window.innerWidth < 1024) {
       setIsMobile(true)
@@ -552,6 +554,7 @@ export const ConfigContextWithReducer = ({
   useEffect(() => {
     window.addEventListener("resize", handleResize)
   })
+  // TODO  ESTO YA ESTA HOOKS/isMobileScreen
 
   useEffect(() => {
     const fn = async () => {
@@ -615,6 +618,8 @@ export const ConfigContextWithReducer = ({
     fn();
   }, [requestConnectWallet]);
 
+
+  // TODO move a un pools responsabilities
   function getColumns() {
     return [
       {
@@ -671,6 +676,7 @@ export const ConfigContextWithReducer = ({
     return data
   };
 
+  // TODO BORRAR se movio al pair responsabilities
   const getPoolList = (): PairData[] => {
     return Object.entries(pairState).map(([k, v]) => {
       return v;
@@ -697,6 +703,14 @@ export const ConfigContextWithReducer = ({
     }
     return false
   }
+
+  const { setGlobalFilter } = tableInstance as any as TableInstance<PairData>
+  const changeData = useAsyncDebounce(value => {
+    if (setGlobalFilter != undefined) {
+      setGlobalFilter(value || "")
+    }
+  }, 100)
+  // END MOVER A UN POOL RESPONSABILITIES
 
   // TODO REMOVER ESTE CODIGO
   interface PairTotalReserves {
@@ -976,13 +990,6 @@ export const ConfigContextWithReducer = ({
       });
     }
   }
-
-  const { setGlobalFilter } = tableInstance as any as TableInstance<PairData>
-  const changeData = useAsyncDebounce(value => {
-    if (setGlobalFilter != undefined) {
-      setGlobalFilter(value || "")
-    }
-  }, 100)
 
   const refreshAll = async (): Promise<void> => {
     await refresh(state.wallet);

@@ -13,36 +13,39 @@ import {NotificationSystem} from '../components/organisms'
 import {PopupsContainer} from '../components/PopupsContainer'
 import {StateHashProvideContext} from './StateHashContext'
 import {PairsContext} from "./PairsContext";
+import {PoolContext} from "./PoolContext";
 
 export const BigContext = ({children}: { children: ReactNode }) => {
 
     return (
         <ThemeContext>
-            <ConfigContextWithReducer>
-                <TokensContext>
-                    <PairsContext>
+            <TokensContext>
+                <PairsContext>
+                    <PoolContext>
                         <StateHashProvideContext>
-                            <SwapContext>
-                                <LiquidityContext>
-                                    <ProgressBarContextWithReducer>
-                                        <NotificationSystem/>
-                                        <TorusContext>
-                                            <InitialContext>
-                                                <TokensContext2>
-                                                    <LiquidityContext>
-                                                        {children}
-                                                    </LiquidityContext>
-                                                </TokensContext2>
-                                            </InitialContext>
-                                        </TorusContext>
-                                    </ProgressBarContextWithReducer>
-                                </LiquidityContext>
-                            </SwapContext>
-                            <PopupsContainer/>
+                            <ConfigContextWithReducer>
+                                <SwapContext>
+                                    <LiquidityContext>
+                                        <ProgressBarContextWithReducer>
+                                            <NotificationSystem/>
+                                            <TorusContext>
+                                                <InitialContext>
+                                                    <TokensContext2>
+                                                        <LiquidityContext>
+                                                            {children}
+                                                        </LiquidityContext>
+                                                    </TokensContext2>
+                                                </InitialContext>
+                                            </TorusContext>
+                                        </ProgressBarContextWithReducer>
+                                    </LiquidityContext>
+                                </SwapContext>
+                                <PopupsContainer/>
+                            </ConfigContextWithReducer>
                         </StateHashProvideContext>
-                    </PairsContext>
-                </TokensContext>
-            </ConfigContextWithReducer>
+                    </PoolContext>
+                </PairsContext>
+            </TokensContext>
         </ThemeContext>
     )
 }

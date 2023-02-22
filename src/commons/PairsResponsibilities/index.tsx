@@ -2,7 +2,7 @@ import {getPairData} from "../api/ApolloQueries";
 import store from "store2";
 import {convertBigNumberToUIString, convertUIStringToBigNumber, log} from "../utils";
 import BigNumber from "bignumber.js";
-import {PairActions, PairState} from "../../reducers/PairsReducer";
+import {PairActions, PairData, PairState} from "../../reducers/PairsReducer";
 import {apiClient, PairReserves} from "../../contexts/ConfigContext";
 import {Wallet} from "../wallet";
 import {TokenActions, TokenState} from "../../reducers/TokenReducers";
@@ -323,12 +323,19 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         }
     }
 
+    const getPoolList = (): PairData[] => {
+        return Object.entries(pairState).map(([k, v]) => {
+            return v;
+        });
+    };
+
     return {
         loadPairs,
         loadPairsBalanceUSD,
         loadPairsUserData,
         orderedPairState,
-        clearUserPairsData
+        clearUserPairsData,
+        getPoolList,
     }
 }
 
