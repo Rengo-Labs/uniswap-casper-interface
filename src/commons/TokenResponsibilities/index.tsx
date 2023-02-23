@@ -257,10 +257,40 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         });
     }
 
+    const onSelectFirstToken = (token: string | Token): void => {
+        if (typeof token === 'string') {
+            tokenDispatch({ type: TokenActions.SELECT_FIRST_TOKEN, payload: token });
+        } else {
+            tokenDispatch({
+                type: TokenActions.SELECT_FIRST_TOKEN,
+                payload: token.symbol,
+            });
+        }
+    }
+
+    const onSelectSecondToken = (token: string | Token): void  => {
+        if (typeof token === 'string') {
+            tokenDispatch({ type: TokenActions.SELECT_SECOND_TOKEN, payload: token });
+        } else {
+            tokenDispatch({
+                type: TokenActions.SELECT_SECOND_TOKEN,
+                payload: token.symbol,
+            });
+        }
+    }
+
+    const onSwitchTokens = (): void => {
+        tokenDispatch({ type: TokenActions.SWITCH_TOKENS });
+    }
+
+
     return {
         loadTokenUSD,
         updateBalances,
-        clearUserTokensData
+        clearUserTokensData,
+        onSelectFirstToken,
+        onSelectSecondToken,
+        onSwitchTokens,
     }
 
 }

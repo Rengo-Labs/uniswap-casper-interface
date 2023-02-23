@@ -26,7 +26,6 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     const [configState, setConfigState] = useState<ConfigState>(null)
     // TODO Probar cuando tengamos filtros
     //const {currentQuery, instance} = useContext(PoolProviderContext)
-    // TODO conetar la wallet y traer el contexto
 
     useEffect(() => {
         console.log("Cambio?", configState)
@@ -40,26 +39,22 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         const pairsToReserves = await loadPairs(tokenState)
         await loadPairsUSD(pairsToReserves)
         return pairsToReserves
-    }, [])
+    }, [stateHash])
 
     const getTokens = useCallback(async (pairsToReserves) => {
         //TODO wallet connection
         await loadTokensUSD(pairsToReserves, pairState, orderedPairState)
-    }, [])
+    }, [stateHash])
 
     const loadUserData = useCallback(async () => {
-        //TODO wallet connection borrar y usar el que viene del contexto
-
-        console.log("Checking information", configState?.wallet)
-        if (! configState?.wallet) {
+        if (!walletState?.wallet) {
             return;
         }
         const isConnected = configState.wallet.isConnected
 
-        console.log("wallet conectada", configState?.wallet)
-        if (configState?.wallet) {
-            await loadUserPairsData(configState?.wallet, isConnected)
-            await loadTokensBalance(configState?.wallet, isConnected)
+        if (walletState?.wallet) {
+            await loadUserPairsData(walletState?.wallet, isConnected)
+            await loadTokensBalance(walletState?.wallet, isConnected)
         } else {
             await clearUserPairsData(pairState)
             await clearTokensBalance(tokenState)
@@ -67,8 +62,11 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
 
         //TODO REVISAR ESTO
         // instance.changeData(currentQuery)
-    }, [])
 
+        // TODO REVISAR LAS DEPS DEL USECALLBACK
+    }, [stateHash, walletState])
+
+    // TODO llamar cuandos sea manual
     const refresh = useCallback(async () => {
         // si tenemos la wallet y sea manual
         await getRootHash()

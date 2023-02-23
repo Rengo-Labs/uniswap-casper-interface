@@ -751,6 +751,8 @@ export const ConfigContextWithReducer = ({
     }
   }
 */
+
+  // TODO - remove this functionS / Moved to poolresponsibilities
   function onSelectFirstToken(token: string | Token): void {
     if (typeof token === 'string') {
       tokenDispatch({ type: TokenActions.SELECT_FIRST_TOKEN, payload: token });

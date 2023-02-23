@@ -395,7 +395,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         loadPairsUserData,
         orderedPairState,
         clearUserPairsData,
-        getPoolList,
+        getList,
         findReservesBySymbols
     }
 }

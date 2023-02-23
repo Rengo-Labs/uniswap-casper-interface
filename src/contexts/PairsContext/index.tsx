@@ -17,12 +17,13 @@ interface PairsContext {
     orderedPairState,
     clearUserPairsData: (pairState) => Promise<void>,
     findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string) => PairReserves | undefined;
+    getPoolList: (pairState: Record<string, PairData>) => any[]
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
 
 
-export const PairsContext = ({children} : PairsContextProps) => {
+export const PairsContext = ({children}: PairsContextProps) => {
     const [pairState, pairDispatch] = useReducer(
         PairsReducer,
         initialPairsState
@@ -50,6 +51,8 @@ export const PairsContext = ({children} : PairsContextProps) => {
     const findReservesBySymbols = (symbolA, symbolB) => PairsResponsibilities(pairState, pairDispatch)
       .findReservesBySymbols(symbolA, symbolB, orderedPairState)
 
+    const getPoolList = (pairState) => PairsResponsibilities(pairState, pairDispatch).getList(pairState)
+
     return (
         <PairsContextProvider.Provider value={{
             pairState,
@@ -59,7 +62,8 @@ export const PairsContext = ({children} : PairsContextProps) => {
             loadUserPairsData,
             orderedPairState,
             clearUserPairsData,
-            findReservesBySymbols
+            findReservesBySymbols,
+            getPoolList
         }}>
             {children}
         </PairsContextProvider.Provider>

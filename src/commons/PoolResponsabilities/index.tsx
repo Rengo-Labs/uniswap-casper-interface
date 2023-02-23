@@ -1,15 +1,15 @@
 import {Row, useAsyncDebounce} from "react-table";
-import {PairData} from "../../reducers/PairsReducer";
+import {PairActions, PairData} from "../../reducers/PairsReducer";
 import {TableInstance} from "../../components/organisms/PoolModule";
 import React from "react";
+import store from "store2";
 
 interface TVLAndVolume {
     tvl: string,
     totalVolume: string,
 }
 
-const PoolResponsibilities = (pairState, currentQuery, tableInstance) => {
-
+const PoolResponsibilities = (pairState, pairDispatch, currentQuery, tableInstance) => {
     const getColumns = () => {
         return [
             {
@@ -94,12 +94,24 @@ const PoolResponsibilities = (pairState, currentQuery, tableInstance) => {
         }
     }, 100)
 
+    const changeRowPriority = (name, priority) => {
+        store.set(name, priority)
+        pairDispatch({
+            type: PairActions.CHANGE_PRIORITY,
+            payload: {
+                name: name,
+                checked: priority
+            }
+        });
+    }
+
     return {
         filter,
         changeData,
         filterDataReload,
         getColumns,
-        getTVLandVolume
+        getTVLandVolume,
+        changeRowPriority
     }
 
 }
