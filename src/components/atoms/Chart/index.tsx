@@ -1,14 +1,12 @@
-import { LineChart, Line } from 'recharts';
+import {
+  LineChart,
+  Line,
+} from 'recharts';
 
-export const Chart = ({ tokenOldPrice, tokenCurrentPrice }) => {
 
-  const data = [
-    { name: '24H', uv: tokenOldPrice},
-    { name: 'Now', uv: tokenCurrentPrice},
-  ];
-  return (
-    <LineChart width={100} height={20} data={data}>
-      <Line type='monotone' dataKey='uv' stroke='#715ff5' />
-    </LineChart>
-  );
-};
+
+export const Chart = ({ chartData }) => (
+  <LineChart width={100} height={30} data={chartData}>
+    <Line type='monotone' dataKey='price' stroke='#715ff5' />
+  </LineChart>
+);

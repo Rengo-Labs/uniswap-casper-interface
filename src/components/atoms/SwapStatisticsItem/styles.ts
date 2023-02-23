@@ -84,9 +84,9 @@ export const PriceValuePercent = styled.div<IPriceValue>`
 export const GraphicContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 0 10px;
+  padding: 0;
 
   @media ${device.mobileS} {
     flex: 1;

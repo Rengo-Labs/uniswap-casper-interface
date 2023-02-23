@@ -1,8 +1,14 @@
-import {ApolloClient, gql, HttpLink, DefaultOptions, InMemoryCache} from "@apollo/client";
-import {INFO_SWAP_URL, INFO_BLOCK_URL} from "../../constant";
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import { Pair, PairByIdAndBlock } from "./types";
+import {
+  ApolloClient,
+  gql,
+  HttpLink,
+  DefaultOptions,
+  InMemoryCache,
+} from '@apollo/client';
+import { INFO_SWAP_URL, INFO_BLOCK_URL } from '../../constant';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import { Pair, PairByIdAndBlock } from './types';
 
 // format libraries
 dayjs.extend(utc);
@@ -32,22 +38,22 @@ const TOKEN_OVERRIDES: { [address: string]: { name: string; symbol: string } } =
   };
 
 const defaultOptions: DefaultOptions = {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'ignore',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-  }
+  watchQuery: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'ignore',
+  },
+  query: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'all',
+  },
+};
 
 const v2client = new ApolloClient({
   link: new HttpLink({
     uri: INFO_SWAP_URL,
   }),
   cache: new InMemoryCache(),
-  defaultOptions: defaultOptions
+  defaultOptions: defaultOptions,
   //shouldBatch: true,
 });
 
@@ -150,11 +156,11 @@ export const GET_BLOCKS = (timestamps) => {
     ).toISOString()}") 
     {
       number
-    }`
-  })
-  queryString += '}'
-  return gql(queryString)
-}
+    }`;
+  });
+  queryString += '}';
+  return gql(queryString);
+};
 
 export const PAIR_DATA_BY_ID_AND_BLOCK = (pairAddress, block) => {
   const pairString = `"${pairAddress}"`;
@@ -165,9 +171,9 @@ export const PAIR_DATA_BY_ID_AND_BLOCK = (pairAddress, block) => {
       ...PairFields
     }
   }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export const ETH_PRICE = (block?) => {
   const queryString = block
@@ -227,6 +233,29 @@ export const TOKEN_DATA_BY_BLOCK = (tokenHash, block) => {
   return gql(queryString);
 };
 
+export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
+  let queryString = 'query blocks {';
+  queryString += blocks.map(
+    (block) => `
+      t${block.timestamp}:tokenbyIdandBlock(id: "${tokenAddress}", blockNumber : "${block.number}") {
+        derivedETH
+      }
+    `
+  );
+  queryString += ',';
+  queryString += blocks.map(
+    (block) => `
+      b${block.timestamp}: bundleByIdandBlock(id:"1",blockNumber: "${block.number}") {
+        ethPrice
+      }
+    `
+  );
+
+  queryString += '}';
+
+  return gql(queryString);
+};
+
 export const GET_BLOCK = (timestampFrom, timestampTo) => {
   const queryString = `
   query getBlockBetweenTimestampsAsc {
@@ -236,16 +265,20 @@ export const GET_BLOCK = (timestampFrom, timestampTo) => {
       timestamp
     }
   }
-  `
-  return gql(queryString)
-}
+  `;
+  return gql(queryString);
+};
 
 export function getTimestampsForChanges() {
   const utcCurrentTime = dayjs();
   const t1 = utcCurrentTime.subtract(1, 'day').startOf('minute').unix();
   const t2 = utcCurrentTime.subtract(2, 'day').startOf('minute').unix();
+  const t3 = utcCurrentTime.subtract(3, 'day').startOf('minute').unix();
+  const t4 = utcCurrentTime.subtract(4, 'day').startOf('minute').unix();
+  const t5 = utcCurrentTime.subtract(5, 'day').startOf('minute').unix();
+  const t6 = utcCurrentTime.subtract(6, 'day').startOf('minute').unix();
   const tWeek = utcCurrentTime.subtract(1, 'week').startOf('minute').unix();
-  return [t1, t2, tWeek];
+  return [t1, t2, t3, t4, t5, t6, tWeek];
 }
 
 export async function splitQuery(
@@ -294,7 +327,10 @@ export async function splitQuery(
  * @dev timestamps are returns as they were provided; not the block time.
  * @param {Array} timestamps
  */
-export async function getBlocksFromTimestamps(timestamps: number[], skipCount = 500) {
+export async function getBlocksFromTimestamps(
+  timestamps: number[],
+  skipCount = 500
+) {
   if (timestamps?.length === 0) {
     return [];
   }
@@ -323,7 +359,7 @@ export async function getBlocksFromTimestamps(timestamps: number[], skipCount = 
       }
     }
   }
-  return blocks
+  return blocks;
 }
 
 /**
@@ -366,7 +402,6 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
   if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
     return 0;
   }
-  console.log('adjustedPercentChange', adjustedPercentChange);
   return adjustedPercentChange;
 };
 
@@ -473,15 +508,15 @@ function parseData(
  * @param {Int} timestamp in seconds
  */
 export async function getBlockFromTimestamp(timestamp: number) {
-  const timestampFrom = new Date(timestamp * 1000).toISOString()
-  const timestampTo = new Date((timestamp + 600) * 1000).toISOString()
+  const timestampFrom = new Date(timestamp * 1000).toISOString();
+  const timestampTo = new Date((timestamp + 600) * 1000).toISOString();
 
   const result = await blockClient.query({
     query: GET_BLOCK(timestampFrom.toString(), timestampTo.toString()),
     fetchPolicy: 'cache-first',
   });
 
-  return result?.data?.getBlockBetweenTimestampsAsc?.number
+  return result?.data?.getBlockBetweenTimestampsAsc?.number;
 }
 
 /**
@@ -499,20 +534,20 @@ const getEthPrice = async () => {
   let priceChangeETH = 0;
 
   try {
-    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
+    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
     const result = await v2client.query({
       query: ETH_PRICE(),
       fetchPolicy: 'cache-first',
-    })
+    });
     const resultOneDay = await v2client.query({
       query: ETH_PRICE(oneDayBlock),
       fetchPolicy: 'cache-first',
-    })
-    const currentPrice = result?.data?.bundle?.ethPrice
-    const oneDayBackPrice = resultOneDay?.data?.bundleByIdandBlock?.ethPrice //null
-    priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice)
-    ethPrice = currentPrice
-    ethPriceOneDay = oneDayBackPrice
+    });
+    const currentPrice = result?.data?.bundle?.ethPrice;
+    const oneDayBackPrice = resultOneDay?.data?.bundleByIdandBlock?.ethPrice; //null
+    priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
+    ethPrice = currentPrice;
+    ethPriceOneDay = oneDayBackPrice;
     // ethPrice = 1
     // ethPriceOneDay = 1
     // priceChangeETH = 1
@@ -523,44 +558,39 @@ const getEthPrice = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH];
 };
 
-export async function getPercentChangeByToken(tokenHash) {
-  let data;
-  let oneDayResult;
-  try {
-    const [ethPrice, ethPriceOneDay, priceChangeETH] = await getEthPrice();
-
-    const utcCurrentTime = dayjs();
-    const utcOneDayBack = utcCurrentTime
-      .subtract(1, 'day')
-      .startOf('minute')
-      .unix();
-    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
-
-    const result = await v2client.query({
-      query: TOKEN_DATA(tokenHash),
-      fetchPolicy: 'no-cache',
-      
-    });
-    data = result?.data?.tokenbyId;
-    oneDayResult = await v2client.query({
-      query: TOKEN_DATA_BY_BLOCK(tokenHash, oneDayBlock),
-      fetchPolicy: 'no-cache',
-    });
-    const oneDayData = oneDayResult.data.tokenbyIdandBlock;
-    const nowPrice = parseFloat(data?.derivedETH) * ethPrice;
-    const oneDayPrice =
-      parseFloat(oneDayData?.derivedETH ?? 0) * ethPriceOneDay;
+export async function getPercentChangeByBlocks(pricesByBlocks, timestamps) {
+  const percents = [];
+  for (let i = 0; i < timestamps.length - 1; i++) {
+    const nowPrice = parseFloat(pricesByBlocks.data[`t${timestamps[i]}`].derivedETH) * parseFloat(pricesByBlocks.data[`b${timestamps[i]}`].ethPrice);
+    const oneDayPrice = parseFloat(pricesByBlocks.data[`t${timestamps[i + 1]}`].derivedETH) * parseFloat(pricesByBlocks.data[`b${timestamps[i + 1]}`].ethPrice);
     const percent = getPercentChange(nowPrice, oneDayPrice);
+    percents.push({nowPrice, oneDayPrice, percent});
+  }
+  return percents;
 
-    return { nowPrice, percent, oneDayPrice };
+}
+
+export async function getPercentChangeByToken(tokenHash) {
+  try {
+    const timestamps = getTimestampsForChanges();
+    const blocks = await getBlocksFromTimestamps([...timestamps]);
+    
+    const pricesByBlocks = await v2client.query({
+      query: PRICES_BY_BLOCK(tokenHash, blocks),
+      fetchPolicy: 'no-cache',
+    });
+   
+    return await getPercentChangeByBlocks(pricesByBlocks, timestamps);
   } catch (e) {
     console.log(e);
+    return [{nowPrice: 0, oneDayPrice: 0, percent: 0}];
   }
 }
 
 async function getBulkPairData(pairList: string[], ethPrice: number[]) {
-  const [t1, t2, tWeek] = getTimestampsForChanges()
-  const [{ number: b1 }, { number: b2 }, { number: bWeek }] = await getBlocksFromTimestamps([t1, t2, tWeek])
+  const [t1, t2, tWeek] = getTimestampsForChanges();
+  const [{ number: b1 }, { number: b2 }, { number: bWeek }] =
+    await getBlocksFromTimestamps([t1, t2, tWeek]);
 
   try {
     const current = await v2client.query({
@@ -574,7 +604,6 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
 
     const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
       [b1, b2, bWeek].map(async (block) => {
-
         const result = await v2client.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'network-only',
@@ -583,23 +612,24 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
         console.log('PAIRS_HISTORICAL_BULK', result);
         return result;
       })
-    )
+    );
     const oneDayData = oneDayResult?.data?.pairsByIdsandBlock?.reduce(
       (obj: PairByIdAndBlock[], cur: PairByIdAndBlock) => {
-        return { ...obj, [cur.id]: cur }
-      }, 
-    {})
+        return { ...obj, [cur.id]: cur };
+      },
+      {}
+    );
 
     const twoDayData = twoDayResult?.data?.pairsByIdsandBlock?.reduce(
       (obj: PairByIdAndBlock[], cur: PairByIdAndBlock) => {
-          return { ...obj, [cur.id]: cur };
+        return { ...obj, [cur.id]: cur };
       },
       {}
     );
 
     const oneWeekData = oneWeekResult?.data?.pairsByIdsandBlock?.reduce(
       (obj: PairByIdAndBlock[], cur: PairByIdAndBlock) => {
-          return { ...obj, [cur.id]: cur };
+        return { ...obj, [cur.id]: cur };
       },
       {}
     );
@@ -607,16 +637,16 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
     const pairData = await Promise.all(
       current &&
         current.data.allpairs.map(async (pair: Pair) => {
-          let data = Object.assign({}, pair)
-          let oneDayHistory = oneDayData?.[pair.id]
+          let data = Object.assign({}, pair);
+          let oneDayHistory = oneDayData?.[pair.id];
 
           if (!oneDayHistory) {
             const newData = await v2client.query({
               query: PAIR_DATA_BY_ID_AND_BLOCK(pair.id, b1),
               fetchPolicy: 'cache-first',
-            })
-            console.warn({newData})
-            oneDayHistory = newData.data.pairbyIdandBlock[0]
+            });
+            console.warn({ newData });
+            oneDayHistory = newData.data.pairbyIdandBlock[0];
           }
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
@@ -644,8 +674,8 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
           );
           return data;
         })
-    )
-    return pairData
+    );
+    return pairData;
   } catch (e) {
     console.log(e);
   }
@@ -653,10 +683,10 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
 
 export const getPairData = async (pairList: string[] = []): Promise<Pair[]> => {
   try {
-    const ethPrice = await getEthPrice()
-    const result = await getBulkPairData(pairList, ethPrice)
+    const ethPrice = await getEthPrice();
+    const result = await getBulkPairData(pairList, ethPrice);
 
-    return result
+    return result;
   } catch (e) {
     console.error(e);
     return [];

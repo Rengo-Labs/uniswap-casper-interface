@@ -18,7 +18,7 @@ export interface ISwapStatistics {
   id: number;
   token: any; // FIXME: Set type
   price: number;
-  tokenPrice: ITokenPrice;
+  tokenPrice: ITokenPrice[];
 }
 
 interface ISwapStatisticsItemProps {
@@ -27,7 +27,19 @@ interface ISwapStatisticsItemProps {
 
 export const SwapStatisticsItem = ({ statistic }: ISwapStatisticsItemProps) => {
   const { token, tokenPrice } = statistic;
-
+  const chartData = tokenPrice.map((item, index) => {
+    if (index === 0) {
+      return {
+        name: `Now`,
+        price: item.nowPrice,
+      };
+    }
+    return {
+      name: `Price ${index} day ago`,
+      price: item.nowPrice,
+    };
+  });
+  console.log('chartData',chartData);
   return (
     <Wrapper>
       <Content>
@@ -37,15 +49,17 @@ export const SwapStatisticsItem = ({ statistic }: ISwapStatisticsItemProps) => {
         </TokenContainer>
         <PriceContainer>
           <PriceTitle>Price</PriceTitle>
-          <PriceValue>${tokenPrice.nowPrice.toFixed(4)}</PriceValue>
+          <PriceValue>${tokenPrice[0].nowPrice.toFixed(4)}</PriceValue>
         </PriceContainer>
         <PriceContainer>
           <PriceTitle>24H%</PriceTitle>
-          <PriceValuePercent isNegative={tokenPrice.percent < 0}>{tokenPrice.percent.toFixed(4)}%</PriceValuePercent>
+          <PriceValuePercent isNegative={tokenPrice[0].percent < 0}>
+            {tokenPrice[0].percent.toFixed(4)}%
+          </PriceValuePercent>
         </PriceContainer>
       </Content>
       <GraphicContainer>
-       <Chart tokenOldPrice={tokenPrice.oneDayPrice} tokenCurrentPrice={tokenPrice.nowPrice}/>
+        <Chart chartData={chartData.reverse()} />
       </GraphicContainer>
     </Wrapper>
   );

@@ -17,8 +17,8 @@ export const SwapStatistics = () => {
     secondTokenSelected,
     tokenState,
   } = useContext(ConfigProviderContext)
-  const [firstTokenPercent, setFirstTokenPercent] = useState<ITokenPrice>({ nowPrice: 0, percent: 0, oneDayPrice: 0 })
-  const [secondTokenPercent, setSecondTokenPercent] = useState<ITokenPrice>({ nowPrice: 0, percent: 0, oneDayPrice: 0 })
+  const [firstTokenPercent, setFirstTokenPercent] = useState<ITokenPrice[]>([{ nowPrice: 0, percent: 0, oneDayPrice: 0 }])
+  const [secondTokenPercent, setSecondTokenPercent] = useState<ITokenPrice[]>([{ nowPrice: 0, percent: 0, oneDayPrice: 0 }])
 
   const getPercentage = async (token: Token) => {
     let currentToken = token
@@ -29,8 +29,8 @@ export const SwapStatistics = () => {
   }
 
   useEffect(() => {
-    getPercentage(firstTokenSelected).then(data => setFirstTokenPercent(data as ITokenPrice));
-    getPercentage(secondTokenSelected).then(data => setSecondTokenPercent(data as ITokenPrice))
+    getPercentage(firstTokenSelected).then(data => setFirstTokenPercent(data as ITokenPrice[]));
+    getPercentage(secondTokenSelected).then(data => setSecondTokenPercent(data as ITokenPrice[]))
   }, [firstTokenSelected, secondTokenSelected])
 
   const statistics = [
