@@ -1,6 +1,5 @@
 import React, {ReactNode} from 'react'
 import {LiquidityContext} from './LiquidityContext'
-import {PoolsContext} from '../mocks/components/organisms/PoolsContext'
 import {ThemeContext} from './ThemeContext'
 import {TokensContext2} from './TokenContext2'
 import {TokensContext} from './TokensContext'
@@ -11,7 +10,7 @@ import {ProgressBarContextWithReducer} from "./ProgressBarContext"
 import {SwapContext} from "./SwapContext";
 import {NotificationSystem} from '../components/organisms'
 import {PopupsContainer} from '../components/PopupsContainer'
-import {StateHashProvideContext} from './StateHashContext'
+import {StateHashContext} from './StateHashContext'
 import {PairsContext} from "./PairsContext";
 import {PoolContext} from "./PoolContext";
 
@@ -22,7 +21,7 @@ export const BigContext = ({children}: { children: ReactNode }) => {
             <TokensContext>
                 <PairsContext>
                     <PoolContext>
-                        <StateHashProvideContext>
+                        <StateHashContext>
                             <ConfigContextWithReducer>
                                 <SwapContext>
                                     <LiquidityContext>
@@ -42,7 +41,7 @@ export const BigContext = ({children}: { children: ReactNode }) => {
                                 </SwapContext>
                                 <PopupsContainer/>
                             </ConfigContextWithReducer>
-                        </StateHashProvideContext>
+                        </StateHashContext>
                     </PoolContext>
                 </PairsContext>
             </TokensContext>

@@ -125,7 +125,7 @@ const SwapNewModule = () => {
         : await changeTokenB(amountSwapTokenB);
       await refreshAll();
     });
-  }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
+  }, [amountSwapTokenA, amountSwapTokenB]);
 
   async function onConnect() {
     onConnectWallet();

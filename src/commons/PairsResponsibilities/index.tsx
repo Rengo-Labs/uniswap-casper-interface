@@ -6,6 +6,8 @@ import {PairActions, PairData, PairState} from "../../reducers/PairsReducer";
 import {apiClient, PairReserves} from "../../contexts/ConfigContext";
 import {Wallet} from "../wallet";
 import {TokenActions, TokenState} from "../../reducers/TokenReducers";
+import {getPath} from "../calculations";
+import {NotificationType} from "../../constant";
 
 export interface PairTotalReserves {
     totalReserve0: BigNumber.Value,
@@ -310,16 +312,74 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             tB = 'WCSPR'
         }
 
-        const lookUp = `${tA}-${tB}`
+        let lookUp = `${tA}-${tB}`
 
         // do a simple look up
-        const pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
-
+        let pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
         if (pairData) {
+            // console.log('a', pairData)
+
             return {
                 reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
                 reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
             }
+        }
+        // do different simple look up
+        lookUp = `${tB}-${tA}`
+        pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
+
+        if (pairData) {
+            //console.log('b', pairData)
+            return {
+                reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
+                reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
+            }
+        }
+
+        // use pathfinder for multi-pool
+        const path = getPath(
+          tA,
+          tB,
+          Object.values(tokenState.tokens),
+          Object.values(pairState)
+        )
+
+        if (!path || !path.length) {
+            /*
+            updateNotification({
+                type: NotificationType.Error,
+                title: `Path between ${tA}-${tB} not found`,
+                subtitle: '',
+                show: true,
+                timeToClose: 10,
+                chargerBar: true
+            })*/
+            throw new Error('path not found')
+        }
+
+        let firstReserve0 = new BigNumber(1)
+        let reserve0 = new BigNumber(1)
+        let reserve1 = new BigNumber(1)
+        for (let i = 1; i < path.length; i++) {
+            const pair = overrideReserves[path[i].label.name] ?? path[i].label
+            if (path[i - 1].id == tokenASymbol) {
+                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1))
+                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0))
+            } else {
+                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve0))
+                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve1))
+            }
+
+            if (i == 1) {
+                firstReserve0 = reserve0
+            }
+        }
+
+        const ratio = firstReserve0.div(reserve0)
+
+        return {
+            reserve0: firstReserve0,
+            reserve1: reserve1.times(ratio),
         }
     }
 
@@ -336,6 +396,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         orderedPairState,
         clearUserPairsData,
         getPoolList,
+        findReservesBySymbols
     }
 }
 

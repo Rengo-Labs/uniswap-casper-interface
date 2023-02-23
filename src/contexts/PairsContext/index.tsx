@@ -1,19 +1,22 @@
 import {ReactNode, useState, createContext, useReducer, useEffect, useContext} from "react";
-import {initialPairsState, PairsReducer} from "../../reducers/PairsReducer";
+import {initialPairsState, PairData, PairsReducer} from "../../reducers/PairsReducer";
 import PairsResponsibilities, {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Wallet} from "../../commons";
+import {PairReserves} from "../ConfigContext";
 
 interface PairsContextProps {
     children: ReactNode
 }
 
 interface PairsContext {
-    pairState: any,
+    pairState: Record<string, PairData>,
+    pairDispatch,
     loadPairs: (tokenState) => Promise<Record<string, PairTotalReserves>>
     loadPairsUSD: (pairsTotalReserves: Record<string, PairTotalReserves>) => Promise<void>,
     loadUserPairsData: (wallet: Wallet, isConnected) => Promise<void>,
     orderedPairState,
-    clearUserPairsData: (pairState) => Promise<void>
+    clearUserPairsData: (pairState) => Promise<void>,
+    findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string) => PairReserves | undefined;
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -44,14 +47,19 @@ export const PairsContext = ({children} : PairsContextProps) => {
         await PairsResponsibilities(pairState, pairDispatch).clearUserPairsData()
     }
 
+    const findReservesBySymbols = (symbolA, symbolB) => PairsResponsibilities(pairState, pairDispatch)
+      .findReservesBySymbols(symbolA, symbolB, orderedPairState)
+
     return (
         <PairsContextProvider.Provider value={{
             pairState,
+            pairDispatch,
             loadPairs,
             loadPairsUSD,
             loadUserPairsData,
             orderedPairState,
-            clearUserPairsData
+            clearUserPairsData,
+            findReservesBySymbols
         }}>
             {children}
         </PairsContextProvider.Provider>
