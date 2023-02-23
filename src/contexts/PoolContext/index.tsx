@@ -1,6 +1,8 @@
 import React, {createContext, ReactNode, useContext, useState, useMemo, useEffect} from "react";
 import {PairsContextProvider} from "../PairsContext";
 import PoolResponsibilities from "../../commons/PoolResponsabilities";
+import {PairData} from "../../reducers/PairsReducer";
+import {Row} from "react-table";
 
 interface poolContextProps {
     previousQuery;
@@ -8,7 +10,16 @@ interface poolContextProps {
     currentQuery;
     setTableInstance;
     tableInstance;
-    instance;
+    columns;
+    poolColumns?;
+    isStaked;
+    setStaked: (isStaked) => void;
+    changeRowPriority: (name, priority) => void,
+    filter: (onlyStaked: boolean, row: Row<PairData>) => any,
+    filterDataReload: (row: Row<PairData>) => boolean,
+    getTVLandVolume: (pairState: Record<string, PairData>) => any,
+    mapExpandedRows: any[],
+    setMapExpandedRows: (l) => void,
 }
 
 export const PoolProviderContext = createContext<poolContextProps>(null);

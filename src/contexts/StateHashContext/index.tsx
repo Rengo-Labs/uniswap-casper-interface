@@ -4,6 +4,7 @@ import {PairsContextProvider} from "../PairsContext";
 import {TokensProviderContext} from "../TokensContext";
 import {Network, Wallet, WalletName} from "../../commons";
 import {ConfigState} from "../../reducers/ConfigReducers";
+import {WalletProviderContext} from "../WalletContext";
 
 interface StateHashContextProps {
     children: ReactNode
@@ -13,8 +14,7 @@ interface StateHashContext {
     stateHash: string,
     setStateHash: (hash: string) => void,
     getLatestRootHash: () => Promise<string>,
-    refresh: (wallet?) => Promise<void>,
-    setConfigState?: (config: ConfigState) => void
+    refresh: (wallet?) => Promise<void>
 }
 
 export const StateHashProviderContext = createContext<StateHashContext>({} as any)
@@ -23,13 +23,11 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
     const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, orderedPairState} = useContext(PairsContextProvider)
     const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance} = useContext(TokensProviderContext)
-    const [configState, setConfigState] = useState<ConfigState>(null)
+    const {walletState} = useContext(WalletProviderContext)
+
+    //const [configState, setConfigState] = useState<ConfigState>(null)
     // TODO Probar cuando tengamos filtros
     //const {currentQuery, instance} = useContext(PoolProviderContext)
-
-    useEffect(() => {
-        console.log("Cambio?", configState)
-    }, [configState])
 
     const getLatestRootHash = useCallback(async () => {
         return casperClient.getStateRootHash()
@@ -50,7 +48,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         if (!walletState?.wallet) {
             return;
         }
-        const isConnected = configState.wallet.isConnected
+        const isConnected = walletState.wallet.isConnected
 
         if (walletState?.wallet) {
             await loadUserPairsData(walletState?.wallet, isConnected)
@@ -81,7 +79,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         }
 
         loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
-    },  [stateHash, configState])
+    },  [stateHash])
 
     const getRootHash = useCallback(async () => {
         const rootHash = await getLatestRootHash()
@@ -108,8 +106,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         stateHash,
         setStateHash,
         getLatestRootHash,
-        refresh,
-        setConfigState
+        refresh
     }), [stateHash, setStateHash, getLatestRootHash])
 
     return (

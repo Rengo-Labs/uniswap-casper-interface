@@ -162,7 +162,7 @@ export const ConfigContextWithReducer = ({
   children: ReactNode;
 }) => {
   const {walletState, onConnectWallet2, onDisconnectWallet2} = useContext(WalletProviderContext)
-  const {refresh, setConfigState} = useContext(StateHashProviderContext)
+  const {refresh} = useContext(StateHashProviderContext)
   const {tokenState, tokenDispatch} = useContext(TokensProviderContext)
   const {pairState, pairDispatch, findReservesBySymbols} = useContext(PairsContextProvider)
   const [state, dispatch] = useReducer(ConfigReducer, initialConfigState);
@@ -400,7 +400,7 @@ export const ConfigContextWithReducer = ({
   }
 
   const {isConnected, slippageToleranceSelected, mainPurse } =
-    state;
+    walletState;
 
 
   // TODO  ESTO YA ESTA HOOKS/isMobileScreen
@@ -898,9 +898,9 @@ export const ConfigContextWithReducer = ({
   return (
     <ConfigProviderContext.Provider
       value={{
-        onConnectWallet,
-        onDisconnectWallet,
-        configState: state,
+        onConnectWallet: onConnectWallet2,
+        onDisconnectWallet: onDisconnectWallet2,
+        configState: walletState,
         tokenState,
         onSelectFirstToken,
         onSelectSecondToken,
@@ -908,7 +908,7 @@ export const ConfigContextWithReducer = ({
         tokens,
         firstTokenSelected: tokenState.tokens[tokenState.firstTokenSelected],
         secondTokenSelected: tokenState.tokens[tokenState.secondTokenSelected],
-        isConnected,
+        isConnected: walletState?.isConnected,
         slippageToleranceSelected,
         onIncreaseAllow,
         pairState,

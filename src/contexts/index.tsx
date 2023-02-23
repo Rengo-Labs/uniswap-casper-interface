@@ -13,6 +13,7 @@ import {PopupsContainer} from '../components/PopupsContainer'
 import {StateHashContext} from './StateHashContext'
 import {PairsContext} from "./PairsContext";
 import {PoolContext} from "./PoolContext";
+import {WalletContext} from "./WalletContext";
 
 export const BigContext = ({children}: { children: ReactNode }) => {
 

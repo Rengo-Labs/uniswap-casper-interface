@@ -23,6 +23,10 @@ import {
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
 import {ERROR_BLOCKCHAIN} from "../../constant/errors";
+import {PairsContextProvider} from "../PairsContext";
+import {TokensProviderContext} from "../TokensContext";
+import {StateHashProviderContext} from "../StateHashContext";
+import {WalletProviderContext} from "../WalletContext";
 
 export interface LiquidityContext {
   onAddLiquidity: (
@@ -60,14 +64,14 @@ export const LiquidityProviderContext = createContext<LiquidityContext>(
 
 export const LiquidityContext = ({ children }: { children: ReactNode }) => {
   const {
-    firstTokenSelected,
-    secondTokenSelected,
-    refreshAll,
-    configState,
     setConfirmModal,
     setLinkExplorer,
     setProgressModal,
   } = useContext(ConfigProviderContext);
+
+  const {walletState} = useContext(WalletProviderContext)
+  const {refresh} = useContext(StateHashProviderContext)
+  const {firstTokenSelected, secondTokenSelected} = useContext(TokensProviderContext)
 
   const [isRemovingPopupOpen, setRemovingPopup] = useState(false);
   const { updateNotification, dismissNotification } = notificationStore();
@@ -89,14 +93,14 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       const [deployHash, deployResult] = await signAndDeployAddLiquidity(
         apiClient,
         casperClient,
-        configState.wallet,
+        walletState.wallet,
         DEADLINE,
         convertUIStringToBigNumber(amountA),
         convertUIStringToBigNumber(amountB),
         firstTokenSelected,
         secondTokenSelected,
         slippage / 100,
-        configState.mainPurse,
+        walletState.mainPurse,
         gasFee
       );
 
@@ -107,7 +111,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       setConfirmModal(true);
 
-      await refreshAll();
+      await refresh();
       updateNotification({
         type: NotificationType.Success,
         title: 'Success.',
@@ -119,7 +123,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       setProgressModal(false);
       dismissNotification();
-      await refreshAll();
+      await refresh();
       console.log('onAddLiquidity');
       updateNotification({
         type: NotificationType.Error,
@@ -153,7 +157,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       const [deployHash, deployResult] = await signAndDeployRemoveLiquidity(
         apiClient,
         casperClient,
-        configState.wallet,
+        walletState.wallet,
         DEADLINE,
         convertUIStringToBigNumber(liquidity),
         convertUIStringToBigNumber(amountA),
@@ -161,7 +165,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         tokenA,
         tokenB,
         slippage / 100,
-        configState.mainPurse,
+        walletState.mainPurse,
         gasFee,
       );
 
@@ -173,7 +177,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setConfirmModal(true);
 
       await sleep(15000);
-      await refreshAll();
+      await refresh();
       updateNotification({
         type: NotificationType.Success,
         title: 'Success.',
@@ -185,7 +189,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       setProgressModal(false);
       dismissNotification();
-      await refreshAll();
+      await refresh();
       console.log('onRemoveLiquidity');
       updateNotification({
         type: NotificationType.Error,

@@ -383,7 +383,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         }
     }
 
-    const getPoolList = (): PairData[] => {
+    const getList = (pairState: Record<string, PairData>): PairData[] => {
         return Object.entries(pairState).map(([k, v]) => {
             return v;
         });
