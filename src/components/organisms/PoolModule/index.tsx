@@ -28,7 +28,7 @@ export interface TableInstance<D extends object> extends UseTableInstanceProps<D
 
 export const PoolModule = ({ columns, data }: PoolModuleProps) => {
   const options = ["7 Days", "1 Day"]
-  const { setStaked, setTableInstance, currentQuery, setCurrentQuery } = React.useContext(PoolProviderContext)
+  const { setStaked, setTableInstance, setCurrentQuery } = React.useContext(PoolProviderContext)
 
   const tableInstance = useTable<PairData>({ columns, data }, useFilters, useGlobalFilter, useSortBy)
   const {

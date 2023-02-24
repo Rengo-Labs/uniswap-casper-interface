@@ -1,13 +1,12 @@
-import React, {useReducer} from "react";
-import {initialTokenState, TokenAction, TokenActions, TokenReducer, TokenState} from "../../reducers/TokenReducers";
+import React from "react";
+import { TokenActions, TokenState} from "../../reducers/TokenReducers";
 import BigNumber from "bignumber.js";
 import {convertBigNumberToUIString, convertUIStringToBigNumber, log} from "../utils";
 import {getPath} from "../calculations";
-import {NotificationType} from "../../constant";
 import {apiClient, casperClient, PairReserves} from "../../contexts/ConfigContext";
 import {Wallet} from "../wallet";
 import {Token} from "../api";
-import {PairActions} from "../../reducers/PairsReducer";
+import {pairFinder} from "../pairFinder";
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
@@ -16,7 +15,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         const tokens = Object.values(tokenState.tokens)
 
         for (const t of tokens) {
-            const priceUSD = findUSDRateBySymbol(t.symbolPair, pairTotalReserves, pairsState, orderedPairState).toString()
+            const priceUSD = pairFinder(pairsState, tokenState).findUSDRateBySymbol(t.symbolPair, pairTotalReserves).toString()
 
             tokenDispatch({
                 type: TokenActions.LOAD_PRICE_USD,
@@ -31,7 +30,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
         return tokens
     }
-
+/*
     const findUSDRateBySymbol = (
       tokenSymbol: string,
       pairTotalReserves: Record<string, any>,
@@ -74,6 +73,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
      *
      * @returns pair reserve data
      */
+    /*
     const findReservesBySymbols = (
       tokenASymbol: string,
       tokenBSymbol: string,
@@ -150,11 +150,9 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
             reserve1: reserve1.times(ratio),
         }
     }
+*/
 
-    const updateBalances = async (
-      wallet: Wallet,
-      isConnected: boolean
-    ): Promise<void> => {
+    const updateBalances = async (wallet: Wallet, isConnected: boolean): Promise<void> => {
         if (!isConnected) {
             return;
         }

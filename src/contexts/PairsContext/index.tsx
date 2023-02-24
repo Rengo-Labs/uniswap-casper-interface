@@ -17,7 +17,8 @@ interface PairsContext {
     orderedPairState,
     clearUserPairsData: (pairState) => Promise<void>,
     findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string) => PairReserves | undefined;
-    getPoolList: (pairState: Record<string, PairData>) => any[]
+    getPoolList: (pairState: Record<string, PairData>) => any[],
+    changeRowPriority: (name: string, checked: boolean) => void
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -53,6 +54,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
 
     const getPoolList = (pairState) => PairsResponsibilities(pairState, pairDispatch).getList(pairState)
 
+    const changeRowPriority = (name, checked) => PairsResponsibilities(pairState, pairDispatch).changeRowPriority(name, checked)
+
     return (
         <PairsContextProvider.Provider value={{
             pairState,
@@ -63,7 +66,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
             orderedPairState,
             clearUserPairsData,
             findReservesBySymbols,
-            getPoolList
+            getPoolList,
+            changeRowPriority
         }}>
             {children}
         </PairsContextProvider.Provider>

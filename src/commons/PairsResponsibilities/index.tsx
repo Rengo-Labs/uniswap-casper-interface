@@ -8,6 +8,7 @@ import {Wallet} from "../wallet";
 import {TokenActions, TokenState} from "../../reducers/TokenReducers";
 import {getPath} from "../calculations";
 import {NotificationType} from "../../constant";
+import {pairFinder} from "../pairFinder";
 
 export interface PairTotalReserves {
     totalReserve0: BigNumber.Value,
@@ -36,9 +37,10 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
 
     async function loadPairsUSD(pairTotalReserves: Record<string, PairTotalReserves>, pairs): Promise<void> {
         try {
+            const instance = pairFinder(pairState, tokenState)
             for (const p of pairs) {
-                const price0USD = findUSDRateBySymbol(p.token0Symbol, pairTotalReserves).toString()
-                const price1USD = findUSDRateBySymbol(p.token1Symbol, pairTotalReserves).toString()
+                const price0USD = instance.findUSDRateBySymbol(p.token0Symbol, pairTotalReserves).toString()
+                const price1USD = instance.findUSDRateBySymbol(p.token1Symbol, pairTotalReserves).toString()
 
                 pairDispatch({
                     type: PairActions.LOAD_PAIR_USD,
@@ -256,6 +258,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
      *
      * @returns usd conversion rate
      */
+    /*
     const findUSDRateBySymbol = (
       tokenSymbol: string,
       pairTotalReserves: Record<string, PairTotalReserves>,
@@ -289,7 +292,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         console.log(ratesUSDC.reserve0.toString(), ratesUSDC.reserve1.toString(), ratesUSDT.reserve0.toString(), ratesUSDT.reserve1.toString())
         return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
     }
-
+*/
     /**
      * findReservesBySymbols search for pair data by the symbol pair
      *
@@ -298,6 +301,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
      *
      * @returns pair reserve data
      */
+    /*
     const findReservesBySymbols = (
       tokenASymbol: string,
       tokenBSymbol: string,
@@ -345,7 +349,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         )
 
         if (!path || !path.length) {
-            /*
+
             updateNotification({
                 type: NotificationType.Error,
                 title: `Path between ${tA}-${tB} not found`,
@@ -353,7 +357,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 show: true,
                 timeToClose: 10,
                 chargerBar: true
-            })*/
+            })
             throw new Error('path not found')
         }
 
@@ -381,13 +385,15 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             reserve0: firstReserve0,
             reserve1: reserve1.times(ratio),
         }
-    }
+    }*/
 
     const getList = (pairState: Record<string, PairData>): PairData[] => {
         return Object.entries(pairState).map(([k, v]) => {
             return v;
         });
     };
+
+    const findReservesBySymbols = (symbolA, symbolB, orderedPairState) => pairFinder(pairState, tokenState).findReservesBySymbols(symbolA, symbolB, orderedPairState)
 
     return {
         loadPairs,
@@ -396,7 +402,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         orderedPairState,
         clearUserPairsData,
         getList,
-        findReservesBySymbols
+        findReservesBySymbols,
+        changeRowPriority
     }
 }
 

@@ -105,13 +105,22 @@ const PoolResponsibilities = (pairState, pairDispatch, currentQuery, tableInstan
         });
     }
 
+    const sortByPriority = (rows) => {
+        rows.sort((row1: Row<PairData>, row2: Row<PairData>) => {
+            return store.get(row1.original.name) ? -1 : 1
+        })
+
+        return rows
+    }
+
     return {
         filter,
         changeData,
         filterDataReload,
         getColumns,
         getTVLandVolume,
-        changeRowPriority
+        changeRowPriority,
+        sortByPriority
     }
 
 }
