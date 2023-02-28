@@ -86,16 +86,6 @@ const PoolResponsibilities = (pairState, pairDispatch) => {
         return false
     }
 
-    const changeData = (setGlobalFilter, value) => {
-        const change = useAsyncDebounce(value => {
-            if (setGlobalFilter != undefined) {
-                setGlobalFilter(value || "")
-            }
-        }, 100)
-
-        change(value)
-    }
-
     const changeRowPriority = (name, priority) => {
         store.set(name, priority)
         pairDispatch({
@@ -117,7 +107,6 @@ const PoolResponsibilities = (pairState, pairDispatch) => {
 
     return {
         filter,
-        changeData,
         filterDataReload,
         getColumns,
         getTVLandVolume,

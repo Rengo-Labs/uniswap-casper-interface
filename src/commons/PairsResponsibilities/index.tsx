@@ -1,6 +1,6 @@
 import {getPairData} from "../api/ApolloQueries";
 import store from "store2";
-import {convertBigNumberToUIString, convertUIStringToBigNumber, log} from "../utils";
+import {convertBigNumberToUIString, log} from "../utils";
 import BigNumber from "bignumber.js";
 import {PairActions, PairData, PairState} from "../../reducers/PairsReducer";
 import {apiClient, PairReserves} from "../../contexts/ConfigContext";
@@ -106,7 +106,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     }
 
     const loadLatestPairsData = async (pairs) => {
-        console.log('loadLatestPairsData from PairsResponsibility')
+        //console.log('loadLatestPairsData from PairsResponsibility')
         const infoResultMap: Record<string, any> = {}
         try {
             const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
@@ -129,7 +129,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     }
 
     const getGeneralPairData = async (pairs, pairsMap) => {
-        console.log('getGeneralPairData from PairsResponsibility')
+        //console.log('getGeneralPairData from PairsResponsibility')
         const results = await Promise.all(pairs.map(async (pl) => {
 
             const pairChecked = store.get(pl.name)
@@ -177,7 +177,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     }
 
     const updateGeneralPairData = async (results) => {
-        console.log('updateGeneralPairData from PairsResponsibility')
+        //console.log('updateGeneralPairData from PairsResponsibility')
         const pairTotalReserves: Record<string, PairTotalReserves> = {}
         for (const pl of results) {
             pairDispatch({
@@ -199,7 +199,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             }
         }
 
-        console.log('pairTotalReserves from PairsResponsibility', pairTotalReserves)
+        //console.log('pairTotalReserves from PairsResponsibility', pairTotalReserves)
 
         return pairTotalReserves
     }

@@ -56,7 +56,6 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             return new BigNumber(0)
         }
 
-        console.log(ratesUSDC.reserve0.toString(), ratesUSDC.reserve1.toString(), ratesUSDT.reserve0.toString(), ratesUSDT.reserve1.toString())
         return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
     }
 

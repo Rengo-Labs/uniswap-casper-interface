@@ -2,7 +2,7 @@ import React, {createContext, ReactNode, useContext, useState, useMemo, useEffec
 import {PairsContextProvider} from "../PairsContext";
 import PoolResponsibilities from "../../commons/PoolResponsabilities";
 import {PairData} from "../../reducers/PairsReducer";
-import {Row} from "react-table";
+import {Row, useAsyncDebounce} from "react-table";
 import {TableInstance} from "../../components/organisms/PoolModule";
 
 interface poolContextProps {
@@ -35,11 +35,17 @@ export const PoolContext = ({children}: { children: ReactNode }) => {
     const [tableInstance, setTableInstance] = useState<any>({})
     const { setGlobalFilter } = tableInstance as any as TableInstance<PairData>
 
+    const changeData = useAsyncDebounce(value => {
+      if (setGlobalFilter != undefined) {
+        setGlobalFilter(value || "")
+      }
+    }, 100)
+
     const getColumns = () => PoolResponsibilities(pairState, pairDispatch).getColumns()
     const filter = (isStaked, row) => PoolResponsibilities(pairState, pairDispatch).filter(isStaked, row)
     const filterDataReload = (row) => PoolResponsibilities(pairState, pairDispatch).filterDataReload(currentQuery, row)
     const getTVLandVolume = () => PoolResponsibilities(pairState, pairDispatch).getTVLandVolume(pairState)
-    const previousQuery = () => PoolResponsibilities(pairState, pairDispatch).changeData(setGlobalFilter, currentQuery)
+    const previousQuery = () => changeData(currentQuery)
     const sortByPriority = (rows) => PoolResponsibilities(pairState, pairDispatch).sortByPriority(rows)
 
 

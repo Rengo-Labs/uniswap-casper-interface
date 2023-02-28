@@ -598,9 +598,9 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
       variables: {
         allPairs: pairList,
       },
-      fetchPolicy: 'network-only',
-    });
-    console.log('PAIRS_BULK', current);
+      fetchPolicy: 'network-only'
+    })
+    //console.log('PAIRS_BULK', current)
 
     const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
       [b1, b2, bWeek].map(async (block) => {
@@ -609,8 +609,8 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
           fetchPolicy: 'network-only',
         });
 
-        console.log('PAIRS_HISTORICAL_BULK', result);
-        return result;
+        //console.log('PAIRS_HISTORICAL_BULK', result)
+        return result
       })
     );
     const oneDayData = oneDayResult?.data?.pairsByIdsandBlock?.reduce(

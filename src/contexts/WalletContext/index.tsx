@@ -33,8 +33,8 @@ export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 type MaybeWallet = Wallet | undefined;
 
 export interface WalletContextProps {
-  onConnectWallet2?: (name?: WalletName, ignoreError?: boolean) => Promise<void>;
-  onDisconnectWallet2?: () => Promise<void>;
+  onConnectWallet?: (name?: WalletName, ignoreError?: boolean) => Promise<void>;
+  onDisconnectWallet?: () => Promise<void>;
   walletState?: ConfigState;
   isConnected?: boolean;
   setShowConnectionPopup: (show: boolean) => void;
@@ -303,7 +303,7 @@ export const WalletContext = ({
       //onDisconnectWallet()
     });
     window.addEventListener('signer:tabUpdated', (msg) => {
-      console.log('signer:tabUpdated', msg);
+      //console.log('signer:tabUpdated', msg);
       //onConnectConfig()
     });
     window.addEventListener('signer:activeKeyChanged', async (msg) => {
@@ -319,7 +319,7 @@ export const WalletContext = ({
     });
 
     window.addEventListener('signer:initialState', (msg) => {
-      console.log('signer:initialState', msg);
+      //console.log('signer:initialState', msg);
       //connect()
     });
   }, []);
@@ -370,8 +370,8 @@ export const WalletContext = ({
   return (
     <WalletProviderContext.Provider
       value={{
-        onConnectWallet2:onConnectWallet,
-        onDisconnectWallet2:onDisconnectWallet,
+        onConnectWallet,
+        onDisconnectWallet,
         walletState: state,
         isConnected,
         setShowConnectionPopup,

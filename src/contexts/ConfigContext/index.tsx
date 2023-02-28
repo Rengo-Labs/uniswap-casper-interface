@@ -38,7 +38,6 @@ import {
   Network,
   Token,
   Wallet,
-  convertBigNumberToUIString,
   convertUIStringToBigNumber,
   log,
   WalletName,
@@ -49,9 +48,7 @@ import { ConfigState } from '../../reducers/ConfigReducers';
 import { Row, useAsyncDebounce } from 'react-table';
 import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/errors";
-import { getPath } from '../../commons/calculations'
 import { TableInstance } from "../../components/organisms/PoolModule";
-import { getPairData } from "../../commons/api/ApolloQueries";
 import store from "store2";
 import {WalletProviderContext} from "../WalletContext";
 import {TokensProviderContext} from "../TokensContext";
@@ -161,7 +158,7 @@ export const ConfigContextWithReducer = ({
 }: {
   children: ReactNode;
 }) => {
-  const {walletState, onConnectWallet2, onDisconnectWallet2} = useContext(WalletProviderContext)
+  const {walletState, onConnectWallet, onDisconnectWallet} = useContext(WalletProviderContext)
   const {refresh} = useContext(StateHashProviderContext)
   const {tokenState, tokenDispatch} = useContext(TokensProviderContext)
   const {pairState, pairDispatch, findReservesBySymbols} = useContext(PairsContextProvider)
@@ -310,112 +307,9 @@ export const ConfigContextWithReducer = ({
 
   }
 
-  async function onConnectWallet(
-    name: WalletName = WalletName.NONE,
-    ignoreError = false
-  ): Promise<void> {
-    if (state.wallet?.isConnected) {
-      return;
-    }
-
-    if (debounceConnect) {
-      return;
-    }
-
-    try {
-      //await onConnectWallet2(name, ignoreError)
-      const ret = await connect(name);
-
-      console.log("trying to connect")
-
-      console.log("trying to connect 2")
-
-      if (!ret.isConnected) {
-        return;
-      }
-      updateNotification({
-        type: NotificationType.Loading,
-        title: 'Connecting to your wallet...',
-        subtitle: '',
-        show: true,
-        chargerBar: false
-      });
-
-      dispatch({
-        type: ConfigActions.SELECT_MAIN_PURSE,
-        payload: { mainPurse: ret.mainPurse },
-      });
-      dispatch({
-        type: ConfigActions.CONNECT_WALLET,
-        payload: { wallet: ret.wallet },
-      });
-
-      await refresh(ret.wallet);
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Connected',
-        subtitle: '',
-        show: true,
-        timeToClose: 10,
-        chargerBar: true
-      });
-
-    } catch (err) {
-      log.error(`onConnectWallet error: ${err}`);
-      dismissNotification();
-      if (ignoreError) {
-        return
-      }
-
-      if (err.message.includes('make sure you have the Signer installed')) {
-        updateNotification({
-          type: NotificationType.Error,
-          title: 'This wallet is not installed.',
-          subtitle: '',
-          show: true,
-          chargerBar: true
-        })
-        return;
-      }
-
-      if (err.message === 'main purse does not exist') {
-        updateNotification({
-          type: NotificationType.Error,
-          title: 'Main purse does not exist, send CSPR to your wallet first',
-          subtitle: '',
-          show: true,
-          chargerBar: true
-        })
-        return
-      }
-
-      updateNotification({
-        type: NotificationType.Error,
-        title: 'Ooops we have an error',
-        subtitle: '',
-        show: true,
-        chargerBar: true
-      });
-    }
-  }
 
   const {isConnected, slippageToleranceSelected, mainPurse } =
     walletState;
-
-
-  // TODO  ESTO YA ESTA HOOKS/isMobileScreen
-  const handleResize = () => {
-    if (window.innerWidth < 1024) {
-      setIsMobile(true)
-    } else {
-      setIsMobile(false)
-    }
-  }
-
-  useEffect(() => {
-    window.addEventListener("resize", handleResize)
-  })
-  // TODO  ESTO YA ESTA HOOKS/isMobileScreen
 
   useEffect(() => {
     const fn = async () => {
@@ -430,36 +324,6 @@ export const ConfigContextWithReducer = ({
     };
 
     fn().catch((e) => log.error(`UPDATE_TOKENS error": ${e}`));
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('signer:connected', (msg) => {
-      console.log('signer:connected', msg);
-    });
-    window.addEventListener('signer:disconnected', (msg) => {
-      console.log('signer:disconnected', msg);
-      //onDisconnectWallet()
-    });
-    window.addEventListener('signer:tabUpdated', (msg) => {
-      console.log('signer:tabUpdated', msg);
-      //onConnectConfig()
-    });
-    window.addEventListener('signer:activeKeyChanged', async (msg) => {
-      console.log('signer:activeKeyChanged', msg);
-      setRequestConnectWallet(Math.random() * 1 ** 9);
-    });
-    window.addEventListener('signer:locked', (msg) => {
-      console.log('signer:locked', msg);
-    });
-    window.addEventListener('signer:unlocked', (msg) => {
-      console.log('signer:unlocked', msg);
-      //onConnectConfig()
-    });
-
-    window.addEventListener('signer:initialState', (msg) => {
-      console.log('signer:initialState', msg);
-      //connect()
-    });
   }, []);
 
   useEffect(() => {
@@ -573,185 +437,6 @@ export const ConfigContextWithReducer = ({
   }, 100)
   // END MOVER A UN POOL RESPONSABILITIES
 
-  // TODO REMOVER ESTE CODIGO
-  interface PairTotalReserves {
-    totalReserve0: BigNumber.Value,
-    totalReserve1: BigNumber.Value,
-  }
-
-  /*
-  async function loadPairs(): Promise<void> {
-    try {
-      const pairs = Object.values(pairState)
-      const pairTotalReserves: Record<string, PairTotalReserves> = {}
-
-      const infoResultMap: Record<string, any> = {}
-
-      try {
-        const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
-        infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
-      } catch (e) {
-        console.log(`graphql error: ${e}`)
-      }
-
-      const results = await Promise.all(pairs.map(async (pl) => {
-
-        const pairChecked = store.get(pl.name)
-        changeRowPriority(pl.name, pairChecked)
-
-        const pairDataResponse = await apiClient.getPairData(pl.contractHash)
-        const token0Decimals = tokenState.tokens[pl.token0Symbol].decimals;
-        const token1Decimals = tokenState.tokens[pl.token1Symbol].decimals;
-        const reserve0 = convertBigNumberToUIString(
-          new BigNumber(pairDataResponse.reserve0),
-          token0Decimals
-        );
-        const reserve1 = convertBigNumberToUIString(
-          new BigNumber(pairDataResponse.reserve1),
-          token1Decimals
-        );
-
-        const infoResult = infoResultMap[pl.packageHash] ?? {
-          oneWeekVolumeUSD: 0,
-          oneDayVolumeUSD: 0,
-          reserveUSD: 0,
-        }
-
-        return {
-          name: pl.name,
-          orderedName: pl.orderedName,
-          totalReserve0: reserve0,
-          totalReserve1: reserve1,
-          volume7d: new BigNumber(infoResult.oneWeekVolumeUSD).div(10**pl.decimals).toFixed(2),
-          volume1d: new BigNumber(infoResult.oneDayVolumeUSD).div(10**pl.decimals).toFixed(2),
-          totalSupply: convertBigNumberToUIString(
-            new BigNumber(pairDataResponse.totalSupply)
-          ),
-          totalLiquidityUSD: convertBigNumberToUIString(
-            new BigNumber(infoResult ? infoResult.reserveUSD : 0)
-          )
-        }
-      }))
-      for (const pl of results) {
-
-        pairDispatch({
-          type: PairActions.LOAD_PAIR,
-          payload: {
-            name: pl.name,
-            volume7d: pl.volume7d,
-            volume1d: pl.volume1d,
-            totalReserve0: pl.totalReserve0,
-            totalReserve1: pl.totalReserve1,
-            totalSupply: pl.totalSupply,
-            totalLiquidityUSD: pl.totalLiquidityUSD
-          },
-        })
-
-        pairTotalReserves[pl.orderedName] = {
-          totalReserve0: pl.totalReserve0,
-          totalReserve1: pl.totalReserve1,
-        }
-      }
-
-      console.log('pairTotalReserves', pairTotalReserves)
-
-      await loadPairsUSD(pairTotalReserves)
-    } catch (err) {
-      log.error('loadPairs', err.message);
-    }
-  }
-
-  async function loadPairsUSD(pairTotalReserves: Record<string, PairTotalReserves>): Promise<void> {
-    try {
-      const tokens = Object.values(tokenState.tokens)
-      const tokenPrices: Record<string, string> = {}
-
-      console.log("Antes", tokens)
-      for (const t of tokens) {
-        const priceUSD = findUSDRateBySymbol(t.symbolPair, pairTotalReserves).toString()
-
-        tokenDispatch({
-          type: TokenActions.LOAD_PRICE_USD,
-          payload: {
-            name: t.symbol,
-            priceUSD,
-          },
-        })
-
-        tokenPrices[t.symbol] = priceUSD
-      }
-
-      console.log("", tokenState)
-      const pairs = Object.values(pairState)
-
-      for (const p of pairs) {
-        pairDispatch({
-          type: PairActions.LOAD_PAIR_USD,
-          payload: {
-            name: p.name,
-            token0Price: tokenPrices[p.token0Symbol],
-            token1Price: tokenPrices[p.token1Symbol],
-          },
-        })
-      }
-
-    } catch (err) {
-      log.error('loadPairsUSD', err.message);
-    }
-  }
-
-  async function loadPairsUserData(wallet: Wallet, isConnected = false): Promise<void> {
-    if (!isConnected) {
-      return;
-    }
-
-    try {
-      const ps = [];
-      const pairList = Object.keys(pairState).map((x) => pairState[x]);
-      for (const pair of pairList) {
-        ps.push(
-          apiClient
-            .getERC20Allowance(
-              wallet,
-              pair.contractHash,
-            )
-            .then((response) => {
-              pairDispatch({
-                type: PairActions.ADD_ALLOWANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  allowance: convertBigNumberToUIString(
-                    new BigNumber(response)
-                  ),
-                },
-              });
-            }),
-          apiClient
-            .getERC20Balance(
-              wallet,
-              pair.contractHash,
-            )
-            .then((response) => {
-              pairDispatch({
-                type: PairActions.ADD_BALANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  balance: convertBigNumberToUIString(
-                    new BigNumber(response)
-                  ),
-                },
-              });
-            }),
-        )
-      }
-
-      await Promise.all(ps);
-    } catch (err) {
-      log.error('fillPairs', err.message);
-    }
-  }
-*/
-
   // TODO - remove this functionS / Moved to poolresponsibilities
   function onSelectFirstToken(token: string | Token): void {
     if (typeof token === 'string') {
@@ -828,33 +513,6 @@ export const ConfigContextWithReducer = ({
     }
   }
 
-  async function onDisconnectWallet(): Promise<void> {
-    try {
-      if (state.wallet) {
-        await state.wallet.disconnect();
-
-        dispatch({ type: ConfigActions.DISCONNECT_WALLET, payload: {} }),
-          updateNotification({
-            type: NotificationType.Success,
-            title: 'Your wallet is disconnected',
-            subtitle: '',
-            show: true,
-            timeToClose: 5,
-            chargerBar: true
-          });
-      }
-    } catch (error) {
-      updateNotification({
-        type: NotificationType.Error,
-        title: 'Error disconnecting wallet',
-        subtitle: '',
-        show: true,
-        timeToClose: 10,
-        chargerBar: true
-      });
-    }
-  }
-
   const refreshAll = async (): Promise<void> => {
     await refresh(state.wallet);
     changeData(currentQuery)
@@ -898,8 +556,8 @@ export const ConfigContextWithReducer = ({
   return (
     <ConfigProviderContext.Provider
       value={{
-        onConnectWallet: onConnectWallet2,
-        onDisconnectWallet: onDisconnectWallet2,
+        onConnectWallet,
+        onDisconnectWallet,
         configState: walletState,
         tokenState,
         onSelectFirstToken,

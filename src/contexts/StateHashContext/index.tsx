@@ -2,7 +2,6 @@ import {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, u
 import {casperClient} from "../ConfigContext";
 import {PairsContextProvider} from "../PairsContext";
 import {TokensProviderContext} from "../TokensContext";
-import {ConfigState} from "../../reducers/ConfigReducers";
 import {WalletProviderContext} from "../WalletContext";
 import {PoolProviderContext} from "../PoolContext";
 
@@ -25,8 +24,6 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance} = useContext(TokensProviderContext)
     const {walletState} = useContext(WalletProviderContext)
 
-    //const [configState, setConfigState] = useState<ConfigState>(null)
-    // TODO Probar cuando tengamos filtros
     const {previousQuery} = useContext(PoolProviderContext)
 
     const getLatestRootHash = useCallback(async () => {
@@ -37,19 +34,17 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         const pairsToReserves = await loadPairs(tokenState)
         await loadPairsUSD(pairsToReserves)
         return pairsToReserves
-    }, [stateHash])
+    }, [stateHash, walletState])
 
     const getTokens = useCallback(async (pairsToReserves) => {
-        //TODO wallet connection
         await loadTokensUSD(pairsToReserves, pairState)
-    }, [stateHash])
+    }, [stateHash, walletState])
 
     const loadUserData = useCallback(async () => {
         if (!walletState?.wallet) {
             return;
         }
         const isConnected = walletState.wallet.isConnected
-
         if (walletState?.wallet) {
             await loadUserPairsData(walletState?.wallet, isConnected)
             await loadTokensBalance(walletState?.wallet, isConnected)
@@ -62,30 +57,27 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     }, [stateHash, walletState])
 
     // TODO llamar cuandos sea manual
-    const refresh = useCallback(async () => {
+    const refresh = async () => {
         // si tenemos la wallet y sea manual
         await getRootHash()
-    },[])
+    }
 
     useEffect(() => {
         const loadAndRefresh = async () => {
             const pairsToReserves = await getPairs()
-            console.log("pairs completed")
             await getTokens(pairsToReserves)
             await loadUserData()
         }
 
         loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
-    },  [stateHash])
+    },  [stateHash, walletState?.wallet])
 
     const getRootHash = useCallback(async () => {
         const rootHash = await getLatestRootHash()
         if (rootHash !== stateHash) {
             setStateHash(rootHash)
         }
-    }, [])
-
-    console.log('#### stateHash value ####', stateHash)
+    }, [stateHash, walletState?.wallet])
 
     useEffect(() => {
 
