@@ -106,8 +106,6 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             }
         }
 
-        console.log('####### pathfinder ######', tA, tB, Object.values(tokenState.tokens), Object.values(pairState))
-
         // use pathfinder for multi-pool
         const path = getPath(
           tA,
