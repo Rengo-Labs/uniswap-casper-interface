@@ -1,29 +1,30 @@
 import React, { useContext } from "react"
-import { ConfigProviderContext } from "../../../../contexts/ConfigContext";
 import { SwapProviderContext } from "../../../../contexts/SwapContext";
+import {PairsContextProvider} from "../../../../contexts/PairsContext";
 
 export const TestComponent = () => {
   const { onConfirmSwapConfig, getSwapDetails } = useContext(SwapProviderContext)
-  const { findReservesBySymbols } = useContext(ConfigProviderContext)
+  const { findReservesBySymbols } = useContext(PairsContextProvider)
 
+  const tokenState = {}
   const checkSwapDetail = async () => {
     const {
       reserve0,
       reserve1,
-    } = findReservesBySymbols("TK1", "TK2")
+    } = findReservesBySymbols("TK1", "TK2", tokenState)
 
     const {
       tokensToTransfer,
       exchangeRateA,
       exchangeRateB,
     } = await getSwapDetails(
-      { symbol: "TK1" } as any, 
-      { symbol: "TK2" } as any, 
-      reserve0, 
-      reserve1, 
-      100, 
-      { symbol: "TK1" } as any, 
-      0.005, 
+      { symbol: "TK1" } as any,
+      { symbol: "TK2" } as any,
+      reserve0,
+      reserve1,
+      100,
+      { symbol: "TK1" } as any,
+      0.005,
       0.003
     )
 

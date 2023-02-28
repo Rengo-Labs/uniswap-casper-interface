@@ -4,6 +4,7 @@ import PairsResponsibilities, {PairTotalReserves} from "../../commons/PairsRespo
 import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
 import {notificationStore} from "../../store/store";
+import {TokensProviderContext} from "../TokensContext";
 
 interface PairsContextProps {
     children: ReactNode
@@ -13,13 +14,14 @@ interface PairsContext {
     pairState: Record<string, PairData>,
     pairDispatch,
     loadPairs: (tokenState) => Promise<Record<string, PairTotalReserves>>
-    loadPairsUSD: (pairsTotalReserves: Record<string, PairTotalReserves>) => Promise<void>,
+    loadPairsUSD: (pairsTotalReserves: Record<string, PairTotalReserves>, tokenState) => Promise<void>,
     loadUserPairsData: (wallet: Wallet, isConnected) => Promise<void>,
     orderedPairState,
     clearUserPairsData: (pairState) => Promise<void>,
-    findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string) => PairReserves | undefined;
-    getPoolList: (pairState: Record<string, PairData>) => any[],
-    changeRowPriority: (name: string, checked: boolean) => void
+    findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string, tokenState) => PairReserves | undefined;
+    getPoolList: () => any[],
+    changeRowPriority: (name: string, checked: boolean) => void,
+    calculateUSDtokens: (t0: string, t1: string, amount0: string | number, amount1: string | number) => string[];
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -38,8 +40,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
        return await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairs()
     }
 
-    const loadPairsUSD = async (pairsTotalReserves) => {
-        await PairsResponsibilities(pairState, pairDispatch).loadPairsBalanceUSD(pairsTotalReserves, updateNotification)
+    const loadPairsUSD = async (pairsTotalReserves, tokenState) => {
+        await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairsBalanceUSD(pairsTotalReserves, updateNotification)
     }
 
     const loadUserPairsData = async (wallet: Wallet, isConnected) => {
@@ -50,12 +52,14 @@ export const PairsContext = ({children}: PairsContextProps) => {
         await PairsResponsibilities(pairState, pairDispatch).clearUserPairsData()
     }
 
-    const findReservesBySymbols = (symbolA, symbolB) => PairsResponsibilities(pairState, pairDispatch)
+    const findReservesBySymbols = (symbolA, symbolB, tokenState) => PairsResponsibilities(pairState, pairDispatch, tokenState)
       .findReservesBySymbols(symbolA, symbolB, orderedPairState, updateNotification)
 
-    const getPoolList = (pairState) => PairsResponsibilities(pairState, pairDispatch).getList(pairState)
+    const getPoolList = () => PairsResponsibilities(pairState, pairDispatch).getList()
 
     const changeRowPriority = (name, checked) => PairsResponsibilities(pairState, pairDispatch).changeRowPriority(name, checked)
+
+    const calculateUSDtokens = (token0, token1, amount0, amount1) => PairsResponsibilities(pairState, pairDispatch).calculateUSDtokens(token0, token1, amount0, amount1)
 
     return (
         <PairsContextProvider.Provider value={{
@@ -68,7 +72,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
             clearUserPairsData,
             findReservesBySymbols,
             getPoolList,
-            changeRowPriority
+            changeRowPriority,
+            calculateUSDtokens
         }}>
             {children}
         </PairsContextProvider.Provider>

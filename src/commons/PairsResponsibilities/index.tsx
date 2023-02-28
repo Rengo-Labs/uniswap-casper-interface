@@ -150,7 +150,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 token1Decimals
             );
 
-            //TODO Chequear informacion en pares reducer.
             const infoResult = pairsMap[pl.packageHash] ?? {
                 oneWeekVoluemUSD: 0,
                 oneDayVoluemUSD: 0,
@@ -206,14 +205,12 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
 
     const loadPairs = async (): Promise<Record<string, PairTotalReserves>> => {
         try {
-            console.log('Start loadPairs from PairsResponsibility')
             const pairs = Object.values(pairState)
             const infoResultMap = await loadLatestPairsData(pairs)
             const loadPairBalances = await getGeneralPairData(pairs, infoResultMap)
 
             return await updateGeneralPairData(loadPairBalances)
         } catch (err) {
-            log.error('loadPairs from PairsResponsibility', err.message);
             return {}
         }
     }
@@ -249,13 +246,37 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         }
     }
 
-    const getList = (pairState: Record<string, PairData>): PairData[] => {
+    const getList = (): PairData[] => {
         return Object.entries(pairState).map(([k, v]) => {
             return v;
         });
     };
 
     const findReservesBySymbols = (symbolA, symbolB, orderedPairState, updateNotification) => pairFinder(pairState, tokenState).findReservesBySymbols(symbolA, symbolB, orderedPairState, updateNotification)
+
+    const calculateUSDtokens = (token0: string, token1: string, amount0: string | number, amount1: string | number): string[] => {
+        const filter = getList().filter(
+            (r) => r.token0Symbol === token0 && r.token1Symbol === token1
+        );
+        if (filter.length > 0) {
+            return [
+                new BigNumber(amount0).times(filter[0].token0Price).toFixed(2),
+                new BigNumber(amount1).times(filter[0].token1Price).toFixed(2),
+            ];
+        }
+
+        const filter2 = getList().filter(
+            (r) => r.token1Symbol === token0 && r.token0Symbol === token1
+        );
+        if (filter2.length > 0) {
+            return [
+                new BigNumber(amount0).times(filter2[0].token0Price).toFixed(2),
+                new BigNumber(amount1).times(filter2[0].token1Price).toFixed(2),
+            ];
+        }
+
+        return ['0.00', '0.00']
+    };
 
     return {
         loadPairs,
@@ -265,7 +286,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         clearUserPairsData,
         getList,
         findReservesBySymbols,
-        changeRowPriority
+        changeRowPriority,
+        calculateUSDtokens
     }
 }
 

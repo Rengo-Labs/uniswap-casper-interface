@@ -18,6 +18,7 @@ import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
 import { IconOutlineSwap, LiquidityButton, LiquidityFarmIcon, NewIcons } from "../../atoms";
 import { useNavigate } from "react-router-dom";
 import { ConfigProviderContext } from "../../../contexts/ConfigContext";
+import {TokensProviderContext} from "../../../contexts/TokensContext";
 
 export const LiquidityItem = ({ firstIcon, firstSymbol, firstLiquidity, secondIcon, secondSymbol, secondLiquidity, liquidity, perLiquidity, fullExpanded = false, children }: any) => {
   const [isExpanded, setExpanded] = useState(fullExpanded);
@@ -25,8 +26,8 @@ export const LiquidityItem = ({ firstIcon, firstSymbol, firstLiquidity, secondIc
   const {
     onSelectFirstToken,
     onSelectSecondToken,
-    tokens
-  } = useContext(ConfigProviderContext)
+    tokenState
+  } = useContext(TokensProviderContext)
   const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
   const handleOnClick = () => {
@@ -34,8 +35,8 @@ export const LiquidityItem = ({ firstIcon, firstSymbol, firstLiquidity, secondIc
   }
 
   const selectLiquidity = () => {
-    onSelectFirstToken(tokens[firstSymbol.replace('WCSPR', 'CSPR')])
-    onSelectSecondToken(tokens[secondSymbol.replace('WCSPR', 'CSPR')])
+    onSelectFirstToken(tokenState.tokens[firstSymbol.replace('WCSPR', 'CSPR')])
+    onSelectSecondToken(tokenState.tokens[secondSymbol.replace('WCSPR', 'CSPR')])
   }
 
   const goTo = (path) => {

@@ -49,6 +49,10 @@ import { LiquidityRemovingWithInputRangeModule } from "../LiquidityRemovingWithI
 import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import { globalStore } from '../../../store/store'
 import isCSPRValid from '../../../hooks/isCSPRValid'
+import {PairsContextProvider} from "../../../contexts/PairsContext";
+import {StateHashProviderContext} from "../../../contexts/StateHashContext";
+import {TokensProviderContext} from "../../../contexts/TokensContext";
+import {WalletProviderContext} from "../../../contexts/WalletContext";
 
 enum tokenType {
   tokenA = 'tokenA',
@@ -57,23 +61,14 @@ enum tokenType {
 
 const LiquidityNewModule = () => {
   const {
-    tokenState,
-    pairState,
-    onConnectWallet,
-    onSelectFirstToken,
-    onSelectSecondToken,
-    onSwitchTokens,
-    tokens,
-    firstTokenSelected,
-    secondTokenSelected,
-    isConnected,
     onIncreaseAllow,
-    getPoolList,
     gasPriceSelectedForLiquidity,
-    refreshAll,
-    calculateUSDtokens,
-    findReservesBySymbols,
-  } = useContext(ConfigProviderContext)
+  } = useContext(ConfigProviderContext);
+
+  const {
+    onConnectWallet,
+    isConnected,
+  } = useContext(WalletProviderContext);
 
   const {
     isRemovingPopupOpen,
@@ -81,8 +76,11 @@ const LiquidityNewModule = () => {
     onAddLiquidity,
     getLiquidityDetails,
   } = useContext(LiquidityProviderContext)
-  const { progressBar } = useContext(ProgressBarProviderContext)
 
+  const {pairState, calculateUSDtokens, getPoolList, findReservesBySymbols} = useContext(PairsContextProvider)
+  const {refresh} = useContext(StateHashProviderContext)
+  const { progressBar } = useContext(ProgressBarProviderContext)
+  const {tokenState, onSwitchTokens, onSelectFirstToken, onSelectSecondToken, firstTokenSelected, secondTokenSelected} = useContext(TokensProviderContext)
   const userPairData = Object.values(pairState)
 
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
@@ -113,8 +111,8 @@ const LiquidityNewModule = () => {
     const t0 = searchParams.get("token0")
     const t1 = searchParams.get("token1")
     if (t0) {
-      onSelectFirstToken(tokens[t0])
-      onSelectSecondToken(tokens[t1])
+      onSelectFirstToken(tokenState.tokens[t0])
+      onSelectSecondToken(tokenState.tokens[t1])
     }
 
     if (isRemovingPopupOpen) {
@@ -137,7 +135,7 @@ const LiquidityNewModule = () => {
     }
     progressBar(async () => {
       //lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
-      await refreshAll()
+      await refresh()
     })
   }, [isConnected]);
 
@@ -193,7 +191,7 @@ const LiquidityNewModule = () => {
 
   function onSwitchTokensHandler() {
     onSwitchTokens()
-    
+
     exchangeRateASetter(exchangeRateB)
     exchangeRateBSetter(exchangeRateA)
     amountSwapTokenASetter(amountSwapTokenB)
@@ -201,7 +199,7 @@ const LiquidityNewModule = () => {
 
     setFirstReserve(currentSReserve)
     setSecondReserve(currentFReserve)
-    
+
     setValueAUSD(valueBUSD)
     setValueBUSD(valueAUSD)
 
@@ -232,7 +230,7 @@ const LiquidityNewModule = () => {
     const {
       reserve0,
       reserve1,
-    } = findReservesBySymbols(tokenA.symbol, tokenB.symbol)
+    } = findReservesBySymbols(tokenA.symbol, tokenB.symbol, tokenState)
 
     const getLiquidityDetailP = getLiquidityDetails(
       tokenA,
@@ -299,7 +297,7 @@ const LiquidityNewModule = () => {
     handleValidate(
       parseFloat(e.target.value),
       parseFloat(firstTokenSelected.amount),
-      gasFee || 0 
+      gasFee || 0
     );
     changeTokenA(e.target.value);
   }
@@ -364,8 +362,7 @@ const LiquidityNewModule = () => {
       includes['CSPR'] = true
     }
 
-    const tokens = Object.values(tokenState.tokens)
-    const excludes = tokens.reduce((
+    const excludes = Object.values(tokenState.tokens).reduce((
       acc: string[],
       v: Token
     ): string[] => {
@@ -374,8 +371,6 @@ const LiquidityNewModule = () => {
       }
       return acc
     }, [])
-
-    // console.log('excludes', includes, excludes)
 
     onSelectFirstToken(token)
     setExcludedB(excludes)
@@ -406,8 +401,7 @@ const LiquidityNewModule = () => {
       includes['CSPR'] = true
     }
 
-    const tokens = Object.values(tokenState.tokens)
-    const excludes = tokens.reduce((
+    const excludes = Object.values(tokenState.tokens).reduce((
       acc: string[],
       v: Token
     ): string[] => {
@@ -509,7 +503,7 @@ const LiquidityNewModule = () => {
   const userPairDataNonZero = userPairData.filter(v => parseFloat(v.balance) > 0)
 
   const refreshPrices = async () => {
-    await refreshAll()
+    await refresh()
     await changeTokenA(amountSwapTokenA)
   }
 
@@ -527,7 +521,7 @@ const LiquidityNewModule = () => {
                   <FlechaIcon onClick={() => { searchModalASetter(true) }} />
                   {searchModalA && <FloatMenu
                     excludedSymbols={excludedA}
-                    tokens={tokens}
+                    tokens={tokenState.tokens}
                     onSelectToken={selectAndCloseTokenA}
                     onClick={() => { searchModalASetter(false) }}
                   />}
@@ -582,7 +576,7 @@ const LiquidityNewModule = () => {
                   <FlechaIcon onClick={() => { searchModalBSetter(true) }} />
                   {searchModalB && <FloatMenu
                     excludedSymbols={excludedB}
-                    tokens={tokens}
+                    tokens={tokenState.tokens}
                     onSelectToken={selectAndCloseTokenB}
                     onClick={() => { searchModalBSetter(false) }}
                   />}

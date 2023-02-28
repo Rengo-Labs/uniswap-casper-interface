@@ -1,12 +1,12 @@
 import React, {createContext, ReactNode, useReducer} from 'react'
-import {initialTokenState, TokenReducer} from '../../reducers/TokenReducers'
+import {initialTokenState, TokenReducer, TokenState} from '../../reducers/TokenReducers'
 import TokenResponsibilities from '../../commons/TokenResponsibilities'
 import {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Wallet} from "../../commons";
 import {notificationStore} from "../../store/store";
 
 interface TokensContext {
-    tokenState: any,
+    tokenState: TokenState,
     loadTokensUSD: (pairsTotalReserves: Record<string, PairTotalReserves>, pairs) => Promise<any>,
     loadTokensBalance: (wallet: Wallet, isConnected: boolean) => Promise<void>,
     clearTokensBalance: (tokenState) => Promise<void>,

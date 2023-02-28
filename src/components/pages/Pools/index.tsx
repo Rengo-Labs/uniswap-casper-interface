@@ -42,7 +42,7 @@ export const Pools = () => {
           </WrappedPoolTitle>
         </WrappedHeaderPool>
         <CardContainer gridRow="2" gridColumn="1/11" cardTitle="Liquidity Pools" width="85%">
-          <PoolModule columns={poolColumns} data={getPoolList(pairState)} />
+          <PoolModule columns={poolColumns} data={getPoolList()} />
         </CardContainer >
       </WrappedPool>
     </NewLayout>

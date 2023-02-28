@@ -32,7 +32,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
 
     const getPairs = useCallback(async () => {
         const pairsToReserves = await loadPairs(tokenState)
-        await loadPairsUSD(pairsToReserves)
+        await loadPairsUSD(pairsToReserves, tokenState)
         return pairsToReserves
     }, [stateHash, walletState])
 
@@ -56,7 +56,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         previousQuery()
     }, [stateHash, walletState])
 
-    // TODO llamar cuandos sea manual
+    // TODO call this function on manual refresh
     const refresh = async () => {
         // si tenemos la wallet y sea manual
         await getRootHash()

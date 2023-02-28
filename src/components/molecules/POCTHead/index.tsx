@@ -7,6 +7,8 @@ import { UpdatableCircle } from "../../atoms/UpdatableCircle";
 import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import { ProgressBarProviderContext } from "../../../contexts/ProgressBarContext";
 import { BsChevronExpand } from "react-icons/bs";
+import {StateHashProviderContext} from "../../../contexts/StateHashContext";
+import {PoolProviderContext} from "../../../contexts/PoolContext";
 
 export const Header = ({ headerGroup, header }: any) => {
   return <THeader3Styled {...headerGroup.getHeaderGroupProps()} {...header.getHeaderProps(header.getSortByToggleProps())} key={uuidv4()}>
@@ -23,17 +25,18 @@ export const Header = ({ headerGroup, header }: any) => {
 }
 
 const HeaderIcon = () => {
-  const { refreshAll, currentQuery } = useContext(ConfigProviderContext)
+  const { refresh } = useContext(StateHashProviderContext)
+  const {currentQuery} = useContext(PoolProviderContext)
   const { progressBar } = useContext(ProgressBarProviderContext)
 
   useEffect(() => {
     progressBar(async () => {
-      await refreshAll()
+      await refresh()
     })
   }, [currentQuery])
 
   const refreshPrices = async () => {
-    await refreshAll()
+    await refresh()
   }
 
   return <THeaderStyled>

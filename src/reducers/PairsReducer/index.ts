@@ -240,8 +240,6 @@ Object.values(RAW_PAIRS).map((p) => {
 
   PAIRS[p.name] = pair
 })
-
-// TODO ESTO SE VA PARA PAIR CONTEXT
 export const initialPairsState: PairState = PAIRS
 
 export enum PairActions {

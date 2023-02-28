@@ -40,6 +40,7 @@ import {
 import { INotification } from '../components/molecules/NotificationList';
 import screens from '../hooks/isMobileScreen';
 import { MenuMobileOptions } from '../constant';
+import {WalletProviderContext} from "../contexts/WalletContext";
 
 const size = 20;
 
@@ -121,7 +122,7 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
     {
       icon: CommunityIcon,
       text: MenuMobileOptions.Community,
-      component: 
+      component:
         <CommunityMenu communityOptions={settingMenuOptions} />
     },
     //{ icon: CasperIcon, text: "CasperSwap", component: null},
@@ -136,17 +137,17 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
     {
       icon: CommunityIcon,
       text: MenuMobileOptions.Community,
-      component: 
+      component:
         <CommunityMenu communityOptions={settingMenuOptions} />
     },
     //{ icon: CasperIcon, text: "CasperSwap", component: null},
   ];
 
-  const { onConnectWallet, onDisconnectWallet, configState } = useContext(
-    ConfigProviderContext
+  const { onConnectWallet, onDisconnectWallet, walletState } = useContext(
+    WalletProviderContext
   );
 
-  const { isConnected, walletAddress } = configState;
+  const { isConnected, walletAddress } = walletState;
 
   function onConnect(name: WalletName) {
     onConnectWallet(name);

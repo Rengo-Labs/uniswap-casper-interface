@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react"
+import React from "react"
 import ProgressImg from '../../../assets/newIcons/success.png'
 import {
     OverlayPopup,
@@ -8,33 +8,10 @@ import {
     PopupContent,
     PopupTitle,
     LDSRing,
-    ButtonHalfMaxContainer,
-    ButtonHalfMax,
-    InputContainer,
-    LPContainer,
-    BalanceStyled,
-    InputAmountStyled,
-    USDLabelStyled,
-    LPDetail,
-    LPTitleDetail,
-    LPLabelDetail,
-    InputStyled,
-    RemoveButtonContainer
 } from "./styles"
 import {Button} from "../../atoms"
 
-import {ConfigProviderContext} from "../../../contexts/ConfigContext"
-
 export const PopupsModule = ({isOpen, handleOpen, progress, children}: any) => {
-
-    const {
-        configState,
-    } = useContext(ConfigProviderContext)
-
-    const {
-        walletAddress
-    } = configState
-
     const closeHandler = () => {
         handleOpen(!isOpen)
     }
