@@ -9,18 +9,16 @@ import {
   GraphicContainer,
   TokenContainer,
   Content,
+  PriceValuePercent,
 } from './styles';
-import { ReactComponent as Graphic } from '../../../assets/newIcons/graphics.svg';
-import { NewIcons } from '../NewIcons';
-import { useTheme } from 'styled-components';
-import { LightThemeInterface } from '../../../contexts/ThemeContext/themes';
+import { Chart } from '../Chart';
+import { ITokenPrice } from '../../molecules/SwapStatistics';
 
 export interface ISwapStatistics {
   id: number;
   token: any; // FIXME: Set type
   price: number;
-  percent: number;
-  graphic: string;
+  tokenPrice: ITokenPrice[];
 }
 
 interface ISwapStatisticsItemProps {
@@ -28,9 +26,20 @@ interface ISwapStatisticsItemProps {
 }
 
 export const SwapStatisticsItem = ({ statistic }: ISwapStatisticsItemProps) => {
-  const theme = useTheme() as LightThemeInterface;
-  const { token, price, percent } = statistic;
-
+  const { token, tokenPrice } = statistic;
+  const chartData = tokenPrice.map((item, index) => {
+    if (index === 0) {
+      return {
+        name: `Now`,
+        price: item.nowPrice,
+      };
+    }
+    return {
+      name: `Price ${index} day ago`,
+      price: item.nowPrice,
+    };
+  });
+  console.log('chartData',chartData);
   return (
     <Wrapper>
       <Content>
@@ -40,20 +49,17 @@ export const SwapStatisticsItem = ({ statistic }: ISwapStatisticsItemProps) => {
         </TokenContainer>
         <PriceContainer>
           <PriceTitle>Price</PriceTitle>
-          <PriceValue>${price}</PriceValue>
+          <PriceValue>${tokenPrice[0].nowPrice.toFixed(4)}</PriceValue>
         </PriceContainer>
         <PriceContainer>
           <PriceTitle>24H%</PriceTitle>
-          <PriceValue percent={true}>{percent}%</PriceValue>
+          <PriceValuePercent isNegative={tokenPrice[0].percent < 0}>
+            {tokenPrice[0].percent.toFixed(4)}%
+          </PriceValuePercent>
         </PriceContainer>
       </Content>
       <GraphicContainer>
-        <NewIcons
-          Icon={Graphic}
-          height={40}
-          width={220}
-          style={{ fill: theme.NewPurpleColor }}
-        />
+        <Chart chartData={chartData.reverse()} />
       </GraphicContainer>
     </Wrapper>
   );

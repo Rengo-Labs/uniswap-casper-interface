@@ -495,16 +495,16 @@ const SwapNewModule = () => {
             <TokenSelectNSM>
               <NewTokenDetailSelectNSM>
                 <NewTokenDetailItems1NSM
-                  handleClick={() => searchModalASetter(true)}
+                  handleClick={() => searchModalBSetter(true)}
                 >
                   to
                 </NewTokenDetailItems1NSM>
                 <NewTokenDetailItems2NSM
                   src={secondTokenSelected.logoURI}
-                  handleClick={() => searchModalASetter(true)}
+                  handleClick={() => searchModalBSetter(true)}
                 />
                 <NewTokenDetailItems3NSM
-                  handleClick={() => searchModalASetter(true)}
+                  handleClick={() => searchModalBSetter(true)}
                 >
                   {secondTokenSelected.symbol}
                 </NewTokenDetailItems3NSM>
@@ -640,12 +640,7 @@ const SwapNewModule = () => {
           </ButtonSpaceNSM>
         </ContainerSwapActionsNSM>
       </ContainerInnerNSM>
-      <SwapStatistics
-        token0Price={priceA}
-        token1Price={priceB}
-        token0Per={0}
-        token1Per={0}
-      />
+      <SwapStatistics />
     </Wrapper>
   );
 };
