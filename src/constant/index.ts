@@ -5,6 +5,8 @@ export const NODE_ADDRESS = NODE_PROXY + NODE_ADDRESSES[0]
 export const DEADLINE = parseInt(process.env.REACT_APP_DEADLINE);
 export const ROUTER_CONTRACT_HASH = process.env.REACT_APP_ROUTER_CONTRACT_HASH;
 export const ROUTER_PACKAGE_HASH = process.env.REACT_APP_ROUTER_PACKAGE_HASH;
+export const INFO_SWAP_URL = process.env.REACT_APP_INFO_SWAP_URL;
+export const INFO_BLOCK_URL = process.env.REACT_APP_INFO_BLOCK_URL;
 
 export const SUPPORTED_NETWORKS = {
   blockExplorerUrl: process.env.REACT_APP_BLOCK_EXPLORER_URL,

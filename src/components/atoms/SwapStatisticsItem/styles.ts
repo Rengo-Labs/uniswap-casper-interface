@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { device } from '../../../contexts/ThemeContext/themes';
 
 interface IPriceValue {
-  percent?: boolean;
+  isNegative?: boolean;
 }
 
 export const Wrapper = styled.div`
@@ -34,7 +34,7 @@ export const Content = styled.div`
 
   @media ${device.tablet} {
     flex-wrap: nowrap;
-    justify-content: center;
+    justify-content: left;
     gap: 1.5rem;
     padding: 0 1rem;
   }
@@ -44,6 +44,7 @@ export const TokenContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1.5;
 `;
 
 export const PriceContainer = styled.div`
@@ -52,6 +53,7 @@ export const PriceContainer = styled.div`
   justify-content: flex-start;
   align-items: center;
   gap: 0.7rem;
+  flex: 1;
 `;
 
 export const Divider = styled.div`
@@ -67,18 +69,24 @@ export const PriceTitle = styled.div`
   font-family: 'Epilogue';
 `;
 
-export const PriceValue = styled.div<IPriceValue>`
+export const PriceValue = styled.div`
   font-size: 0.9rem;
-  color: ${(props) => props.percent ? props.theme.NewGreenColor : props.theme.NewGrayColor};
+  color: ${(props) => props.theme.NewGrayColor};
+  font-family: 'Epilogue';
+`;
+
+export const PriceValuePercent = styled.div<IPriceValue>`
+  font-size: 0.9rem;
+  color: ${(props) => props.isNegative ? 'red' : props.theme.NewGreenColor};
   font-family: 'Epilogue';
 `;
 
 export const GraphicContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 0 10px;
+  padding: 0;
 
   @media ${device.mobileS} {
     flex: 1;

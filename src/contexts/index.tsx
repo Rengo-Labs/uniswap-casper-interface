@@ -7,9 +7,10 @@ import { TokensContext } from './TokensContext'
 import { InitialContext } from './InitialContext'
 import { TorusContext } from './TorusContext'
 import { ConfigContextWithReducer } from './ConfigContext'
-import {ProgressBarContextWithReducer} from "./ProgressBarContext"
-import {SwapContext} from "./SwapContext";
+import { ProgressBarContextWithReducer } from "./ProgressBarContext"
+import { SwapContext } from "./SwapContext";
 import { NotificationSystem } from '../components/organisms'
+import { PopupsContainer } from '../components/PopupsContainer'
 
 
 export const BigContext = ({ children }: { children: ReactNode }) => {
@@ -24,19 +25,18 @@ export const BigContext = ({ children }: { children: ReactNode }) => {
               <TorusContext>
                 <InitialContext>
                   <TokensContext2>
-                    <PoolsContext>
-                      <LiquidityContext>
-                        <TokensContext>
-                            {children}
-                        </TokensContext>
-                      </LiquidityContext>
-                    </PoolsContext>
+                    <LiquidityContext>
+                      <TokensContext>
+                        {children}
+                      </TokensContext>
+                    </LiquidityContext>
                   </TokensContext2>
                 </InitialContext>
               </TorusContext>
             </ProgressBarContextWithReducer>
           </LiquidityContext>
         </SwapContext>
+        <PopupsContainer/>
       </ConfigContextWithReducer>
     </ThemeContext>
   )
