@@ -7,6 +7,7 @@ import { PairData } from '../../../reducers/PairsReducer'
 import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import { AnimatePresence, motion } from 'framer-motion'
 import { PoolProviderContext } from "../../../contexts/PoolContext";
+import screens from '../../../hooks/isMobileScreen';
 
 export interface POCTBodyProps {
   getTableBodyProps: (propGetter?: TableBodyPropGetter<PairData>) => TableBodyProps,
@@ -20,8 +21,8 @@ export const POCTBody = ({
   prepareRow
 }: POCTBodyProps) => {
   const { isStaked, filter, filterDataReload, mapExpandedRows, setMapExpandedRows, changeRowPriority, sortByPriority } = useContext(PoolProviderContext)
-  const {isMobile} = useContext(ConfigProviderContext)
   const { setRemovingPopup } = useContext(LiquidityProviderContext)
+  const isNotebook = screens.isNotebookScreen();
 
   const handlerClick = (tokenPair, isExpanded) => {
     mapExpandedRows[tokenPair] = isExpanded
@@ -59,7 +60,7 @@ export const POCTBody = ({
                 row={row}
                 fullExpanded={mapExpandedRows[row.original.name]}
                 onRemovingPopupListener={setRemovingPopup}
-                isMobile={isMobile}
+                isMobile={isNotebook}
                 priority={row.original.checked}
                 onClick={handlerClick}
                 onAssignPriority={changeRowPriority}

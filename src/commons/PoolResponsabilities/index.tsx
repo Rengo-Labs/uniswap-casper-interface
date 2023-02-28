@@ -1,6 +1,5 @@
 import {Row, useAsyncDebounce} from "react-table";
 import {PairActions, PairData} from "../../reducers/PairsReducer";
-import {TableInstance} from "../../components/organisms/PoolModule";
 import React from "react";
 import store from "store2";
 
@@ -9,7 +8,7 @@ interface TVLAndVolume {
     totalVolume: string,
 }
 
-const PoolResponsibilities = (pairState, pairDispatch, currentQuery, tableInstance) => {
+const PoolResponsibilities = (pairState, pairDispatch) => {
     const getColumns = () => {
         return [
             {
@@ -74,7 +73,7 @@ const PoolResponsibilities = (pairState, pairDispatch, currentQuery, tableInstan
         return row;
     };
 
-    const filterDataReload = (row: Row<PairData>): any => {
+    const filterDataReload = (currentQuery: string, row: Row<PairData>): any => {
         if (currentQuery.trim().length == 0) return true;
 
         const data = row.original
@@ -87,12 +86,15 @@ const PoolResponsibilities = (pairState, pairDispatch, currentQuery, tableInstan
         return false
     }
 
-    const { setGlobalFilter } = tableInstance as any as TableInstance<PairData>
-    const changeData = useAsyncDebounce(value => {
-        if (setGlobalFilter != undefined) {
-            setGlobalFilter(value || "")
-        }
-    }, 100)
+    const changeData = (setGlobalFilter, value) => {
+        const change = useAsyncDebounce(value => {
+            if (setGlobalFilter != undefined) {
+                setGlobalFilter(value || "")
+            }
+        }, 100)
+
+        change(value)
+    }
 
     const changeRowPriority = (name, priority) => {
         store.set(name, priority)

@@ -3,12 +3,13 @@ import {PairsContextProvider} from "../PairsContext";
 import PoolResponsibilities from "../../commons/PoolResponsabilities";
 import {PairData} from "../../reducers/PairsReducer";
 import {Row} from "react-table";
+import {TableInstance} from "../../components/organisms/PoolModule";
 
 interface poolContextProps {
-    previousQuery;
+    previousQuery: () => void;
     setCurrentQuery;
     currentQuery;
-    setTableInstance;
+    setTableInstance: (tableInstance) => void;
     tableInstance;
     columns;
     poolColumns?;
@@ -32,13 +33,14 @@ export const PoolContext = ({children}: { children: ReactNode }) => {
     const [mapExpandedRows, setMapExpandedRows] = useState([])
     const [currentQuery, setCurrentQuery] = useState("")
     const [tableInstance, setTableInstance] = useState<any>({})
+    const { setGlobalFilter } = tableInstance as any as TableInstance<PairData>
 
-    const getColumns = () => PoolResponsibilities(pairState, pairDispatch, currentQuery, tableInstance).getColumns()
-    const filter = (isStaked, row) => PoolResponsibilities(pairState, pairDispatch, currentQuery, tableInstance).filter(isStaked, row)
-    const filterDataReload = (row) => PoolResponsibilities(pairState, pairDispatch, currentQuery, tableInstance).filterDataReload(row)
-    const getTVLandVolume = () => PoolResponsibilities(pairState, pairDispatch, currentQuery, tableInstance).getTVLandVolume(pairState)
-    const previousQuery = () => PoolResponsibilities(pairState, pairDispatch, currentQuery, tableInstance).changeData(currentQuery)
-    const sortByPriority = (rows) => PoolResponsibilities(pairState, pairDispatch, currentQuery, tableInstance).sortByPriority(rows)
+    const getColumns = () => PoolResponsibilities(pairState, pairDispatch).getColumns()
+    const filter = (isStaked, row) => PoolResponsibilities(pairState, pairDispatch).filter(isStaked, row)
+    const filterDataReload = (row) => PoolResponsibilities(pairState, pairDispatch).filterDataReload(currentQuery, row)
+    const getTVLandVolume = () => PoolResponsibilities(pairState, pairDispatch).getTVLandVolume(pairState)
+    const previousQuery = () => PoolResponsibilities(pairState, pairDispatch).changeData(setGlobalFilter, currentQuery)
+    const sortByPriority = (rows) => PoolResponsibilities(pairState, pairDispatch).sortByPriority(rows)
 
 
     const columns = getColumns()

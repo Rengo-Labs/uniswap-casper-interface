@@ -108,7 +108,6 @@ export const WalletContext = ({
     amount
   ): Promise<ConnectReturn> {
     if (debounceConnect) {
-      console.log("Reentrada")
       return {
         wallet: state.wallet,
         mainPurse: state.mainPurse,
@@ -118,7 +117,6 @@ export const WalletContext = ({
       };
     }
 
-    console.log("Connecting")
     debounceConnect = true;
     let w: MaybeWallet;
 
@@ -207,7 +205,6 @@ export const WalletContext = ({
     name: WalletName = WalletName.NONE,
     ignoreError = false
   ): Promise<void> => {
-    console.log("onConnectWallet 2 ", state.wallet?.isConnected, debounceConnect)
     if (state.wallet?.isConnected) {
       return;
     }
@@ -219,7 +216,6 @@ export const WalletContext = ({
     try {
       const ret = await connect(name, new BigNumber(0));
 
-      console.log("wallet connected", state)
       if (!ret.isConnected) {
         return;
       }
@@ -332,7 +328,6 @@ export const WalletContext = ({
     const fn = async () => {
       //console.log('wat', state)
       if (state?.wallet) {
-        console.log('update', state);
         await state.wallet.getActiveKey();
         dispatch({
           type: ConfigActions.CONNECT_WALLET,

@@ -38,7 +38,7 @@ import {
   MenuOption,
 } from '../components/molecules/CommunityMenu';
 import { INotification } from '../components/molecules/NotificationList';
-import isMobileScreen from '../hooks/isMobileScreen';
+import screens from '../hooks/isMobileScreen';
 import { MenuMobileOptions } from '../constant';
 
 const size = 20;
@@ -107,7 +107,7 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [notifications, setNotifications] =
     useState<INotification[]>(notificationList);
-  const isMobile = isMobileScreen();
+  const isMobile = screens.isMobileScreen();
 
   const IconMenusMobile = [
     { icon: SwapIcon, text: 'Swap', path: '/swap' },

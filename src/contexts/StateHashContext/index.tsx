@@ -2,9 +2,9 @@ import {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, u
 import {casperClient} from "../ConfigContext";
 import {PairsContextProvider} from "../PairsContext";
 import {TokensProviderContext} from "../TokensContext";
-import {Network, Wallet, WalletName} from "../../commons";
 import {ConfigState} from "../../reducers/ConfigReducers";
 import {WalletProviderContext} from "../WalletContext";
+import {PoolProviderContext} from "../PoolContext";
 
 interface StateHashContextProps {
     children: ReactNode
@@ -21,13 +21,13 @@ export const StateHashProviderContext = createContext<StateHashContext>({} as an
 
 export const StateHashContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
-    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, orderedPairState} = useContext(PairsContextProvider)
+    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState} = useContext(PairsContextProvider)
     const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance} = useContext(TokensProviderContext)
     const {walletState} = useContext(WalletProviderContext)
 
     //const [configState, setConfigState] = useState<ConfigState>(null)
     // TODO Probar cuando tengamos filtros
-    //const {currentQuery, instance} = useContext(PoolProviderContext)
+    const {previousQuery} = useContext(PoolProviderContext)
 
     const getLatestRootHash = useCallback(async () => {
         return casperClient.getStateRootHash()
@@ -41,7 +41,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
 
     const getTokens = useCallback(async (pairsToReserves) => {
         //TODO wallet connection
-        await loadTokensUSD(pairsToReserves, pairState, orderedPairState)
+        await loadTokensUSD(pairsToReserves, pairState)
     }, [stateHash])
 
     const loadUserData = useCallback(async () => {
@@ -58,10 +58,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
             await clearTokensBalance(tokenState)
         }
 
-        //TODO REVISAR ESTO
-        // instance.changeData(currentQuery)
-
-        // TODO REVISAR LAS DEPS DEL USECALLBACK
+        previousQuery()
     }, [stateHash, walletState])
 
     // TODO llamar cuandos sea manual

@@ -3,6 +3,7 @@ import {initialPairsState, PairData, PairsReducer} from "../../reducers/PairsRed
 import PairsResponsibilities, {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
+import {notificationStore} from "../../store/store";
 
 interface PairsContextProps {
     children: ReactNode
@@ -23,8 +24,8 @@ interface PairsContext {
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
 
-
 export const PairsContext = ({children}: PairsContextProps) => {
+    const { updateNotification } = notificationStore();
     const [pairState, pairDispatch] = useReducer(
         PairsReducer,
         initialPairsState
@@ -38,7 +39,7 @@ export const PairsContext = ({children}: PairsContextProps) => {
     }
 
     const loadPairsUSD = async (pairsTotalReserves) => {
-        await PairsResponsibilities(pairState, pairDispatch).loadPairsBalanceUSD(pairsTotalReserves)
+        await PairsResponsibilities(pairState, pairDispatch).loadPairsBalanceUSD(pairsTotalReserves, updateNotification)
     }
 
     const loadUserPairsData = async (wallet: Wallet, isConnected) => {
@@ -50,7 +51,7 @@ export const PairsContext = ({children}: PairsContextProps) => {
     }
 
     const findReservesBySymbols = (symbolA, symbolB) => PairsResponsibilities(pairState, pairDispatch)
-      .findReservesBySymbols(symbolA, symbolB, orderedPairState)
+      .findReservesBySymbols(symbolA, symbolB, orderedPairState, updateNotification)
 
     const getPoolList = (pairState) => PairsResponsibilities(pairState, pairDispatch).getList(pairState)
 

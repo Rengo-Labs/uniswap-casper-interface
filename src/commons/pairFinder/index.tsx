@@ -6,11 +6,9 @@ import { PairReserves } from "../../contexts/ConfigContext";
 import { TokenState } from "../../reducers/TokenReducers";
 import { getPath } from "../calculations";
 import { NotificationType } from "../../constant";
-import { notificationStore } from "../../store/store";
 import { PairTotalReserves } from "../PairsResponsibilities";
 
 export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
-    const { updateNotification } = notificationStore();
 
     const orderedPairState = () : Record<string, PairTotalReserves> => {
         const orderedPairs: Record<string, PairTotalReserves> = {}
@@ -30,6 +28,7 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
     const findUSDRateBySymbol = (
       tokenSymbol: string,
       pairTotalReserves: Record<string, PairTotalReserves>,
+      updateNotification
     ): BigNumber => {
         let t = tokenSymbol
         if (t === 'CSPR') {
@@ -37,19 +36,19 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         }
 
         if (t === 'USDC') {
-            const ratesUSDC = findReservesBySymbols(t, 'USDT', pairTotalReserves)
+            const ratesUSDC = findReservesBySymbols(t, 'USDT', pairTotalReserves, updateNotification)
 
             return new BigNumber(ratesUSDC.reserve0).div(ratesUSDC.reserve1).plus(1).div(2)
         }
 
         if (t === 'USDT') {
-            const ratesUSDT = findReservesBySymbols(t, 'USDC', pairTotalReserves)
+            const ratesUSDT = findReservesBySymbols(t, 'USDC', pairTotalReserves, updateNotification)
 
             return new BigNumber(ratesUSDT.reserve0).div(ratesUSDT.reserve1).plus(1).div(2)
         }
 
-        const ratesUSDC = findReservesBySymbols(t, 'USDC', pairTotalReserves)
-        const ratesUSDT = findReservesBySymbols(t, 'USDT', pairTotalReserves)
+        const ratesUSDC = findReservesBySymbols(t, 'USDC', pairTotalReserves, updateNotification)
+        const ratesUSDT = findReservesBySymbols(t, 'USDT', pairTotalReserves, updateNotification)
 
         // console.log('ratesUSDC/T', ratesUSDC.reserve0.toString(), ratesUSDT.reserve0.toString())
 
@@ -73,6 +72,7 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
       tokenASymbol: string,
       tokenBSymbol: string,
       overrideReserves: Record<string, PairTotalReserves> = {},
+      updateNotification
     ): PairReserves | undefined => {
         let tA = tokenASymbol
         let tB = tokenBSymbol
