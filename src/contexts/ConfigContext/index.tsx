@@ -62,7 +62,6 @@ export const ConfigContextWithReducer = ({
 }) => {
   const {walletState} = useContext(WalletProviderContext)
   const {refresh} = useContext(StateHashProviderContext)
-  const [state] = useReducer(ConfigReducer, initialConfigState);
 
   const [progressModal, setProgressModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -86,7 +85,7 @@ export const ConfigContextWithReducer = ({
     try {
       const [deployHash, deployResult] = await signAndDeployAllowance(
         casperClient,
-        state.wallet,
+        walletState.wallet,
         contractHash,
         convertUIStringToBigNumber(amount)
       );
@@ -104,7 +103,7 @@ export const ConfigContextWithReducer = ({
         show: true,
         chargerBar: true
       });
-      refresh(state.wallet);
+      refresh(walletState.wallet);
       return true;
     } catch (err) {
       setProgressModal(false);
@@ -115,7 +114,7 @@ export const ConfigContextWithReducer = ({
         show: true,
         chargerBar: true
       });
-      refresh(state.wallet);
+      refresh(walletState.wallet);
       return false;
     }
   }
@@ -125,8 +124,8 @@ export const ConfigContextWithReducer = ({
       value={{
         slippageToleranceSelected,
         onIncreaseAllow,
-        gasPriceSelectedForSwapping: state.gasPriceSelectedForSwapping,
-        gasPriceSelectedForLiquidity: state.gasPriceSelectedForLiquidity,
+        gasPriceSelectedForSwapping: walletState.gasPriceSelectedForSwapping,
+        gasPriceSelectedForLiquidity: walletState.gasPriceSelectedForLiquidity,
         setLinkExplorer,
         setProgressModal,
         setConfirmModal,
