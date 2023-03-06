@@ -83,7 +83,7 @@ export class APIClient {
 
     const path = getPath(token0, token1).map(x => initialTokenState.tokens[x.id].packageHash)
 
-    console.log('path', path)
+    //console.log('path', path)
 
     return {
       message: '',
@@ -103,7 +103,7 @@ export class APIClient {
       responseType: 'arraybuffer',
     });
 
-    console.log('getDeployWasmData', response.data)
+    //console.log('getDeployWasmData', response.data)
 
     return response.data
   }  
@@ -141,7 +141,7 @@ export class APIClient {
 
       return result.toString()
     } catch (e) {
-      console.log(contractHash, dictionaryKey, itemKey, srh)
+      //console.log(contractHash, dictionaryKey, itemKey, srh)
       console.log('get erc20 get dictionary error', e)
       throw e
     }
@@ -236,7 +236,7 @@ export class APIClient {
         totalSupply: totalSupply?.CLValue?.isCLValue ? totalSupply?.CLValue?.value().toString() : '0'
       }
     } catch (e) {
-      console.log('get pair data error', e)
+      //console.log('get pair data error', e)
 
       return {
         reserve0: '0',
@@ -273,7 +273,7 @@ export class APIClient {
         balance,
       }
     } catch (e) {
-      console.log('get pair user data error', e)
+      //console.log('get pair user data error', e)
 
       return {
         allowance: '0',

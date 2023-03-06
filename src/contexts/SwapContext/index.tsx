@@ -67,6 +67,8 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       chargerBar: false
     });
     try {
+
+
       const [deployHash, deployResult] = await signAndDeploySwap(
         apiClient,
         casperClient,

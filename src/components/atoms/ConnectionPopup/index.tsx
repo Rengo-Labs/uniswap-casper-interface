@@ -76,6 +76,13 @@ export const ConnectionPopup = ({
                   </WalletSelectionDiv>
                   <WalletSelectionDiv
                     isSelected={false}
+                    onClick={() => onConnect(WalletName.CASPER_WALLET)}
+                  >
+                    <WalletSelectionImageStyled src={casperWallet} alt="" />
+                    <ButtonText>Casper Wallet</ButtonText>
+                  </WalletSelectionDiv>
+                  <WalletSelectionDiv
+                    isSelected={false}
                     onClick={() => onConnect(WalletName.TORUS)}
                   >
                     <WalletSelectionImageStyled src={torusWallet} alt="" />

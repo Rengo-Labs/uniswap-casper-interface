@@ -28,6 +28,7 @@ import {
 
 import { ConfigState } from '../../reducers/ConfigReducers';
 import { notificationStore } from '../../store/store';
+import {CasperWallet} from "../../commons/wallet/CasperWallet";
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
 type MaybeWallet = Wallet | undefined;
@@ -157,6 +158,14 @@ export const WalletContext = ({
           throw new Error('torus wallet error');
         }
         break;
+      case WalletName.CASPER_WALLET:
+
+        if (state.wallet?.isConnected) {
+          await state.wallet.disconnect();
+        }
+        w = new CasperWallet(NETWORK_NAME)
+        await w.connect()
+        break
       default:
         setShowConnectionPopup(true);
         return {

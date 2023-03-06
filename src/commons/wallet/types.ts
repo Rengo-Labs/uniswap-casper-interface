@@ -1,5 +1,6 @@
 export const enum WalletName {
   CASPER_SIGNER = 'Casper Signer',
+  CASPER_WALLET = 'Casper Wallet',
   TORUS = 'Torus',
   MOCK = 'Mock',
   NONE = 'none',

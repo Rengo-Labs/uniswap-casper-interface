@@ -645,8 +645,8 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
               query: PAIR_DATA_BY_ID_AND_BLOCK(pair.id, b1),
               fetchPolicy: 'cache-first',
             });
-            console.warn({ newData });
-            oneDayHistory = newData.data.pairbyIdandBlock[0];
+            //console.warn({ newData });
+            oneDayHistory = newData.data.pairbyIdandBlock[0]
           }
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
@@ -686,7 +686,7 @@ export const getPairData = async (pairList: string[] = []): Promise<Pair[]> => {
     const ethPrice = await getEthPrice();
     const result = await getBulkPairData(pairList, ethPrice);
 
-    return result;
+    return result == undefined ? [] : result
   } catch (e) {
     console.error(e);
     return [];
