@@ -3,7 +3,20 @@ import {jest} from "@jest/globals";
 
 jest.mock('axios', () => {})
 jest.mock('@toruslabs/casper-embed', () => {})
+jest.mock('../../../../store/store', () => {
+  return {
+    notificationStore: () => {
+      return {
+        updateNotification: () => {
 
+        },
+        dismissNotification: () => {
+
+        }
+      }
+    }
+  }
+})
 jest.mock('../../../../commons/wallet/Client')
 jest.mock("../../../../commons/utils/index")
 jest.mock("../../../../commons/deploys/addLiquidity", () => {

@@ -2,15 +2,9 @@ import BigNumber from 'bignumber.js';
 import React, {
   createContext,
   ReactNode, useContext,
-  useReducer,
   useState,
 } from 'react';
 import { NODE_ADDRESS, NotificationType } from '../../constant';
-
-import {
-  initialConfigState,
-  ConfigReducer,
-} from '../../reducers';
 
 const NETWORK_NAME = Network.CASPER_TESTNET;
 
