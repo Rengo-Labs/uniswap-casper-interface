@@ -81,6 +81,7 @@ export const LiquidityRemovingWithInputRangeModule = ({
   const [lpValue, setLPValue] = useState(0.00)
   const [firstValue, setFirstValue] = useState(0.00)
   const [secondValue, setSecondValue] = useState(0.00)
+  const [isProcessingTransaction, setIsProcessingTransaction] = useState(false);
 
   const {
     onIncreaseAllow,
@@ -96,10 +97,13 @@ export const LiquidityRemovingWithInputRangeModule = ({
   }
 
   async function onEnable() {
+    setIsProcessingTransaction(true)
     await onIncreaseAllow(lpValue, contractHash)
+    setIsProcessingTransaction(false);
   }
 
   const removeLiquidity = async () => {
+    setIsProcessingTransaction(true)
     await onRemoveLiquidity(lpValue,
       {
         symbol: firstSymbol.replace('WCSPR', 'CSPR'),
@@ -113,6 +117,7 @@ export const LiquidityRemovingWithInputRangeModule = ({
       slippageToleranceSelected,
       gasPriceSelectedForLiquidity,
     )
+    setIsProcessingTransaction(false)
     closeHandler()
   }
 
@@ -140,7 +145,7 @@ export const LiquidityRemovingWithInputRangeModule = ({
   }
 
   const enableButton = (value) => {
-    return isConnected && value && parseFloat(value) > 0 && value <= parseFloat(liquidity)
+    return isConnected && value && parseFloat(value) > 0 && value <= parseFloat(liquidity) && !isProcessingTransaction
   }
 
   const freeAllowanceLiq = parseFloat(allowance) - lpValue
