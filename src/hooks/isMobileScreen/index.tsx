@@ -16,4 +16,24 @@ const isMobileScreen = () => {
     return (width <= breakpoint);
 }
 
-export default isMobileScreen
+const isNotebookScreen = () => {
+    const [width, setWidth] = useState(window.innerWidth)
+    const breakpoint = 1024;
+    const handleWindowSizeChange = () => {
+        setWidth(window.innerWidth);
+    }
+
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    return (width <= breakpoint);
+}
+
+export default {
+    isMobileScreen: isMobileScreen,
+    isNotebookScreen: isNotebookScreen
+}

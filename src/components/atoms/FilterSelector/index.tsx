@@ -11,6 +11,8 @@ import {Header} from "../../molecules/POCTHead";
 import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {UpdatableCircle} from "../UpdatableCircle";
+import {PoolProviderContext} from "../../../contexts/PoolContext";
+import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 
 export const FilterSelector = ({
                                getTableProps,
@@ -22,12 +24,13 @@ export const FilterSelector = ({
     const [isOpen, setIsOpen] = useState(false);
     const toggling = () => setIsOpen(!isOpen);
 
-    const {refreshAll, currentQuery} = useContext(ConfigProviderContext)
+    const {refresh} = useContext(StateHashProviderContext)
+    const {currentQuery} = useContext(PoolProviderContext)
     const {progressBar} = useContext(ProgressBarProviderContext)
 
     useEffect(() => {
       progressBar(async () => {
-        await refreshAll()
+        await refresh()
       })
     }, [currentQuery])
 
@@ -45,7 +48,7 @@ export const FilterSelector = ({
                         <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[2]} />
                         <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[3]} />
                         <Header headerGroup={headerGroups[0]} header={headerGroups[0].headers[4]} />
-                        <ColumRight><UpdatableCircle strokeWidth={12} handler={async () => {await refreshAll()}} /></ColumRight>
+                        <ColumRight><UpdatableCircle strokeWidth={12} handler={async () => {await refresh()}} /></ColumRight>
                     </DropDownList>
                 </DropDownListContainer>
             )}

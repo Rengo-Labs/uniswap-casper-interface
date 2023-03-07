@@ -13,10 +13,9 @@ import {
 } from './styles'
 import { POCSearch, ToggleBox } from '../../molecules'
 import { POCTable } from '..'
-import { ItemSelector } from "../../atoms";
-import { ConfigProviderContext } from "../../../contexts/ConfigContext"
 import { PairData } from '../../../reducers/PairsReducer'
 import { FilterSelector } from "../../atoms/FilterSelector";
+import {PoolProviderContext} from "../../../contexts/PoolContext";
 
 export interface PoolModuleProps {
   columns: any[],
@@ -26,8 +25,7 @@ export interface PoolModuleProps {
 export interface TableInstance<D extends object> extends UseTableInstanceProps<D>, UseGlobalFiltersInstanceProps<D>, UseGlobalFiltersState<D> { }
 
 export const PoolModule = ({ columns, data }: PoolModuleProps) => {
-  const options = ["7 Days", "1 Day"]
-  const { setStaked, setTableInstance, currentQuery, setCurrentQuery } = React.useContext(ConfigProviderContext)
+  const { setStaked, setTableInstance, setCurrentQuery } = React.useContext(PoolProviderContext)
 
   const tableInstance = useTable<PairData>({ columns, data }, useFilters, useGlobalFilter, useSortBy)
   const {

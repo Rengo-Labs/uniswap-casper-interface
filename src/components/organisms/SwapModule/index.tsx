@@ -43,6 +43,10 @@ import styled from 'styled-components';
 import { SwapProviderContext } from '../../../contexts/SwapContext';
 import { globalStore } from '../../../store/store';
 import isCSPRValid from '../../../hooks/isCSPRValid';
+import {PairsContextProvider} from "../../../contexts/PairsContext";
+import {StateHashProviderContext} from "../../../contexts/StateHashContext";
+import {TokensProviderContext} from "../../../contexts/TokensContext";
+import {WalletProviderContext} from "../../../contexts/WalletContext";
 
 const Wrapper = styled.section`
   display: flex;
@@ -60,24 +64,20 @@ enum tokenType {
 
 const SwapNewModule = () => {
   const {
-    onConnectWallet,
-    onSelectFirstToken,
-    onSelectSecondToken,
-    onSwitchTokens,
-    tokens,
-    firstTokenSelected,
-    secondTokenSelected,
-    isConnected,
     onIncreaseAllow,
-    pairState,
     gasPriceSelectedForSwapping,
-    refreshAll,
-    calculateUSDtokens,
-    findReservesBySymbols,
   } = useContext(ConfigProviderContext);
+
+  const {
+    onConnectWallet,
+    isConnected,
+  } = useContext(WalletProviderContext);
   const { onConfirmSwapConfig, getSwapDetails } =
     useContext(SwapProviderContext);
   const { progressBar } = useContext(ProgressBarProviderContext);
+  const {calculateUSDtokens, pairState, findReservesBySymbols} = useContext(PairsContextProvider)
+  const {refresh} = useContext(StateHashProviderContext)
+  const {firstTokenSelected, secondTokenSelected, onSelectFirstToken, onSelectSecondToken, tokenState, onSwitchTokens} = useContext(TokensProviderContext)
 
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0);
@@ -107,8 +107,8 @@ const SwapNewModule = () => {
     const t0 = searchParams.get('token0');
     const t1 = searchParams.get('token1');
     if (t0) {
-      onSelectFirstToken(tokens[t0]);
-      onSelectSecondToken(tokens[t1]);
+      onSelectFirstToken(tokenState.tokens[t0]);
+      onSelectSecondToken(tokenState.tokens[t1]);
     }
 
     updateSwapDetail(
@@ -128,9 +128,11 @@ const SwapNewModule = () => {
       lastChanged == 'A'
         ? await changeTokenA(amountSwapTokenA)
         : await changeTokenB(amountSwapTokenB);
-      await refreshAll();
+
+      //TODO Analizar en progress bar context
+      await refresh();
     });
-  }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
+  }, [amountSwapTokenA, amountSwapTokenB]);
 
   async function onConnect() {
     onConnectWallet();
@@ -177,7 +179,8 @@ const SwapNewModule = () => {
   ) {
     const { reserve0, reserve1 } = findReservesBySymbols(
       tokenA.symbol,
-      tokenB.symbol
+      tokenB.symbol,
+        tokenState
     );
 
     const getSwapDetailResponse = await getSwapDetails(
@@ -238,7 +241,7 @@ const SwapNewModule = () => {
 
     amountSwapTokenBSetter(formatNaN(minTokenToReceive));
   }
-  
+
   const handleChange = (e) => {
     setCurrentValue(e.target.value);
     handleValidate(
@@ -370,8 +373,7 @@ const SwapNewModule = () => {
     (firstTokenSelected.symbol != 'CSPR' && freeAllowance >= 0);
 
   const refreshPrices = async () => {
-    console.log('refreshPrices', amountSwapTokenA);
-    await refreshAll();
+    await refresh()
     await changeTokenA(amountSwapTokenA);
   };
 
@@ -382,13 +384,13 @@ const SwapNewModule = () => {
       amountA,
       amountB
     );
-  
+
     const _usdA = isNaN(parseFloat(usdA)) ? "0.00" : usdA;
     const _usdB = isNaN(parseFloat(usdB)) ? "0.00" : usdB;
 
     setValueAUSD(_usdA);
     setValueBUSD(_usdB);
-    
+
     setPriceA((parseFloat(_usdA) * formatNaN(exchangeRateA)).toFixed(2));
     setPriceB((parseFloat(_usdB) * formatNaN(exchangeRateB)).toFixed(2));
   };
@@ -424,7 +426,7 @@ const SwapNewModule = () => {
                     {searchModalA && (
                       <FloatMenu
                         excludedSymbols={[secondTokenSelected.symbol]}
-                        tokens={tokens}
+                        tokens={tokenState.tokens}
                         onSelectToken={selectAndCloseTokenA}
                         onClick={() => {
                           searchModalASetter(false);
@@ -529,7 +531,7 @@ const SwapNewModule = () => {
                     {searchModalB && (
                       <FloatMenu
                         excludedSymbols={[firstTokenSelected.symbol]}
-                        tokens={tokens}
+                        tokens={tokenState.tokens}
                         onSelectToken={selectAndCloseTokenB}
                         onClick={() => {
                           searchModalBSetter(false);

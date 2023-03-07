@@ -4,6 +4,7 @@ import { Token } from '../../../commons/api/types'
 import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { SwapStatisticsItem } from '../../atoms'
 import { Wrapper, Main } from './styles'
+import {TokensProviderContext} from "../../../contexts/TokensContext";
 
 export interface ITokenPrice {
   nowPrice: number;
@@ -15,8 +16,8 @@ export const SwapStatistics = () => {
   const {
     firstTokenSelected,
     secondTokenSelected,
-    tokenState,
-  } = useContext(ConfigProviderContext)
+    tokenState
+  } = useContext(TokensProviderContext)
   const [firstTokenPercent, setFirstTokenPercent] = useState<ITokenPrice[]>([{ nowPrice: 0, percent: 0, oneDayPrice: 0 }])
   const [secondTokenPercent, setSecondTokenPercent] = useState<ITokenPrice[]>([{ nowPrice: 0, percent: 0, oneDayPrice: 0 }])
 

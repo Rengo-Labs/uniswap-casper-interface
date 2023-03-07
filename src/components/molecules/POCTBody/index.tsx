@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { TBody } from './styles'
 import { CollapsingRow } from '../'
-import { v4 as uuidv4 } from 'uuid'
 import { ConfigProviderContext } from "../../../contexts/ConfigContext"
 import { Row, TableBodyPropGetter, TableBodyProps } from 'react-table'
 import { PairData } from '../../../reducers/PairsReducer'
 import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import { AnimatePresence, motion } from 'framer-motion'
-import store from "store2";
+import { PoolProviderContext } from "../../../contexts/PoolContext";
+import screens from '../../../hooks/isMobileScreen';
 
 export interface POCTBodyProps {
   getTableBodyProps: (propGetter?: TableBodyPropGetter<PairData>) => TableBodyProps,
@@ -20,21 +20,13 @@ export const POCTBody = ({
   rows,
   prepareRow
 }: POCTBodyProps) => {
-  const { isStaked, filter, isMobile, filterDataReload, mapExpandedRows, setMapExpandedRows, changeRowPriority } = React.useContext(ConfigProviderContext)
+  const { isStaked, filter, filterDataReload, mapExpandedRows, setMapExpandedRows, changeRowPriority, sortByPriority } = useContext(PoolProviderContext)
   const { setRemovingPopup } = useContext(LiquidityProviderContext)
+  const isNotebook = screens.isNotebookScreen();
 
   const handlerClick = (tokenPair, isExpanded) => {
     mapExpandedRows[tokenPair] = isExpanded
     setMapExpandedRows(mapExpandedRows)
-  }
-
-  const sortByPriority = (rows) => {
-
-    rows.sort((row1: Row<PairData>, row2: Row<PairData>) => {
-      return store.get(row1.original.name) ? -1 : 1
-    })
-
-    return rows
   }
 
   const spring = React.useMemo(
@@ -68,7 +60,7 @@ export const POCTBody = ({
                 row={row}
                 fullExpanded={mapExpandedRows[row.original.name]}
                 onRemovingPopupListener={setRemovingPopup}
-                isMobile={isMobile}
+                isMobile={isNotebook}
                 priority={row.original.checked}
                 onClick={handlerClick}
                 onAssignPriority={changeRowPriority}

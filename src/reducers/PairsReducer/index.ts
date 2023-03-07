@@ -240,7 +240,6 @@ Object.values(RAW_PAIRS).map((p) => {
 
   PAIRS[p.name] = pair
 })
-
 export const initialPairsState: PairState = PAIRS
 
 export enum PairActions {
@@ -348,12 +347,12 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
       {
         const oldState = state[`${action.payload.name}`]
 
-        const balance = convertUIStringToBigNumber(oldState.balance)
+        //const balance = convertUIStringToBigNumber(oldState.balance)
         const totalSupply = convertUIStringToBigNumber(action.payload.totalSupply)
         const totalReserve0 = convertUIStringToBigNumber(action.payload.totalReserve0)
         const totalReserve1 = convertUIStringToBigNumber(action.payload.totalReserve1)
-        const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
-        const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
+        //const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
+        //const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
 
         return {
           ...state,
@@ -361,8 +360,8 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             ...oldState,
             volume7d: action.payload.volume7d,
             volume1d: action.payload.volume1d,
-            reserve0,
-            reserve1,
+            //reserve0,
+            //reserve1,
             totalLiquidityUSD: action.payload.totalLiquidityUSD,
             totalReserve0: convertBigNumberToUIString(totalReserve0),
             totalReserve1: convertBigNumberToUIString(totalReserve1),

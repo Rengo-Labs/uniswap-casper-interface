@@ -37,6 +37,10 @@ import { useSearchParams } from 'react-router-dom';
 import { LiquidityItem } from '../../molecules/LiquidityItem';
 import { CircleButton } from '../../molecules/POCTBody/styles';
 
+import {PairsContextProvider} from "../../../contexts/PairsContext";
+import {StateHashProviderContext} from "../../../contexts/StateHashContext";
+import {TokensProviderContext} from "../../../contexts/TokensContext";
+import {WalletProviderContext} from "../../../contexts/WalletContext";
 import { convertAllFormatsToUIFixedString, Token } from '../../../commons';
 import { BalanceInput } from '../../atoms/BalanceInputNSM';
 import { ContainerLiquidityNSM } from '../../atoms/ContainerLiquidityNSM';
@@ -55,33 +59,27 @@ enum tokenType {
 
 const LiquidityNewModule = () => {
   const {
-    tokenState,
-    pairState,
-    onConnectWallet,
-    onSelectFirstToken,
-    onSelectSecondToken,
-    onSwitchTokens,
-    tokens,
-    firstTokenSelected,
-    secondTokenSelected,
-    isConnected,
     onIncreaseAllow,
-    getPoolList,
     gasPriceSelectedForLiquidity,
-    refreshAll,
-    calculateUSDtokens,
-    findReservesBySymbols,
   } = useContext(ConfigProviderContext);
+
+  const {
+    onConnectWallet,
+    isConnected,
+  } = useContext(WalletProviderContext);
 
   const {
     isRemovingPopupOpen,
     setRemovingPopup,
     onAddLiquidity,
     getLiquidityDetails,
-  } = useContext(LiquidityProviderContext);
-  const { progressBar } = useContext(ProgressBarProviderContext);
+  } = useContext(LiquidityProviderContext)
 
-  const userPairData = Object.values(pairState);
+  const {pairState, calculateUSDtokens, getPoolList, findReservesBySymbols} = useContext(PairsContextProvider)
+  const {refresh} = useContext(StateHashProviderContext)
+  const { progressBar } = useContext(ProgressBarProviderContext)
+  const {tokenState, onSwitchTokens, onSelectFirstToken, onSelectSecondToken, firstTokenSelected, secondTokenSelected} = useContext(TokensProviderContext)
+  const userPairData = Object.values(pairState)
 
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
@@ -121,8 +119,8 @@ const LiquidityNewModule = () => {
     const t0 = searchParams.get('token0');
     const t1 = searchParams.get('token1');
     if (t0) {
-      onSelectFirstToken(tokens[t0]);
-      onSelectSecondToken(tokens[t1]);
+      onSelectFirstToken(tokenState.tokens[t0])
+      onSelectSecondToken(tokenState.tokens[t1])
     }
 
     if (isRemovingPopupOpen) {
@@ -145,8 +143,8 @@ const LiquidityNewModule = () => {
     }
     progressBar(async () => {
       //lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
-      await refreshAll();
-    });
+      await refresh()
+    })
   }, [isConnected]);
 
   useEffect(() => {
@@ -210,21 +208,21 @@ const LiquidityNewModule = () => {
   }
 
   function onSwitchTokensHandler() {
-    onSwitchTokens();
+    onSwitchTokens()
 
-    exchangeRateASetter(exchangeRateB);
-    exchangeRateBSetter(exchangeRateA);
-    amountSwapTokenASetter(amountSwapTokenB);
-    amountSwapTokenBSetter(amountSwapTokenA);
+    exchangeRateASetter(exchangeRateB)
+    exchangeRateBSetter(exchangeRateA)
+    amountSwapTokenASetter(amountSwapTokenB)
+    amountSwapTokenBSetter(amountSwapTokenA)
 
-    setFirstReserve(currentSReserve);
-    setSecondReserve(currentFReserve);
+    setFirstReserve(currentSReserve)
+    setSecondReserve(currentFReserve)
 
-    setValueAUSD(valueBUSD);
-    setValueBUSD(valueAUSD);
+    setValueAUSD(valueBUSD)
+    setValueBUSD(valueAUSD)
 
-    setExcludedA(excludedB);
-    setExcludedB(excludedA);
+    setExcludedA(excludedB)
+    setExcludedB(excludedA)
   }
 
   const calculateTotalLP = (token0, token1) => {
@@ -262,7 +260,8 @@ const LiquidityNewModule = () => {
   ) {
     const { reserve0, reserve1 } = findReservesBySymbols(
       tokenA.symbol,
-      tokenB.symbol
+      tokenB.symbol,
+      tokenState
     );
 
     const getLiquidityDetailP = getLiquidityDetails(
@@ -430,11 +429,9 @@ const LiquidityNewModule = () => {
       return acc;
     }, []);
 
-    // console.log('excludes', includes, excludes)
-
-    onSelectFirstToken(token);
-    setExcludedB(excludes);
-    searchModalASetter(false);
+    onSelectFirstToken(token)
+    setExcludedB(excludes)
+    searchModalASetter(false)
 
     const minTokenToReceive = await updateLiquidityDetail(
       token,
@@ -593,9 +590,9 @@ const LiquidityNewModule = () => {
   );
 
   const refreshPrices = async () => {
-    await refreshAll();
-    await changeTokenA(amountSwapTokenA);
-  };
+    await refresh()
+    await changeTokenA(amountSwapTokenA)
+  }
 
   return (
     <ContainerLiquidityNSM>
@@ -627,7 +624,7 @@ const LiquidityNewModule = () => {
                   {searchModalA && (
                     <FloatMenu
                       excludedSymbols={excludedA}
-                      tokens={tokens}
+                      tokens={tokenState.tokens}
                       onSelectToken={selectAndCloseTokenA}
                       onClick={() => {
                         searchModalASetter(false);
@@ -733,7 +730,7 @@ const LiquidityNewModule = () => {
                   {searchModalB && (
                     <FloatMenu
                       excludedSymbols={excludedB}
-                      tokens={tokens}
+                      tokens={tokenState.tokens}
                       onSelectToken={selectAndCloseTokenB}
                       onClick={() => {
                         searchModalBSetter(false);

@@ -1,34 +1,31 @@
-import React from 'react'
-
+import React, {useContext} from 'react'
 import { CardContainer } from '../../atoms'
 import { PoolModule } from '../../organisms'
-
-import { useNavigate } from "react-router-dom";
 import NewLayout from "../../../layout/NewLayout";
 import {
   WrappedPool,
   WrappedPoolTitle,
   TitleBox,
-  CreatePoolButton,
   WrappedHeaderPool,
   HeaderPool,
   TitleBoxWrapper
 } from "./styles";
-import { ConfigProviderContext, convertNumber } from "../../../contexts/ConfigContext";
+import { convertNumber } from "../../../contexts/ConfigContext";
 import { POCSearch3 } from "../../POCSearch3";
+import {PoolProviderContext} from "../../../contexts/PoolContext";
+import {PairsContextProvider} from "../../../contexts/PairsContext";
 
 export const Pools = () => {
-  const navigate = useNavigate()
   const {
     poolColumns,
-    getPoolList,
     tableInstance,
     setCurrentQuery,
-    getTVLandVolume,
-    currentQuery
-  } = React.useContext(ConfigProviderContext)
+    getTVLandVolume
+  } = React.useContext(PoolProviderContext)
 
-  const TVLAndVolume = getTVLandVolume()
+  const {getPoolList, pairState} = useContext(PairsContextProvider)
+
+  const TVLAndVolume = getTVLandVolume(pairState)
 
   return (
     <NewLayout title="CASPERSWAP">
@@ -40,7 +37,6 @@ export const Pools = () => {
               tableInstance &&
               <POCSearch3 tableInstance={tableInstance} setQuery={setCurrentQuery} />
             }
-
             <TitleBoxWrapper><TitleBox>TVL: ${convertNumber(parseFloat(TVLAndVolume.tvl))}</TitleBox></TitleBoxWrapper>
             <TitleBoxWrapper><TitleBox>VOLUME 7D: ${convertNumber(parseFloat(TVLAndVolume.totalVolume))}</TitleBox></TitleBoxWrapper>
           </WrappedPoolTitle>

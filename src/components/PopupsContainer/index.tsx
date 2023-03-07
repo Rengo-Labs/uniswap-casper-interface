@@ -1,20 +1,24 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { ConfigProviderContext } from "../../contexts/ConfigContext";
 import { ConnectionPopup } from "../atoms";
 import { PopupsModule } from "../organisms";
+import {WalletProviderContext} from "../../contexts/WalletContext";
 
 export const PopupsContainer = () => {
     const {
         confirmModal,
-        isConnected,
         linkExplorer,
-        onConnectWallet,
         progressModal,
         setConfirmModal,
         setProgressModal,
+    } = useContext(ConfigProviderContext);
+
+    const {
+        onConnectWallet,
+        isConnected,
         setShowConnectionPopup,
         showConnectionPopup,
-    } = useContext(ConfigProviderContext);
+    } = useContext(WalletProviderContext);
 
     return (
         <>

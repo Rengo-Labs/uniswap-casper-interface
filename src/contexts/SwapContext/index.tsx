@@ -16,6 +16,9 @@ import {
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
 import {ERROR_BLOCKCHAIN} from "../../constant/errors";
+import {TokensProviderContext} from "../TokensContext";
+import {WalletProviderContext} from "../WalletContext";
+import {StateHashProviderContext} from "../StateHashContext";
 
 export interface SwapContext {
   onConfirmSwapConfig: (
@@ -40,14 +43,14 @@ export const SwapProviderContext = createContext<SwapContext>({} as any);
 
 export const SwapContext = ({ children }: { children: ReactNode }) => {
   const {
-    firstTokenSelected,
-    secondTokenSelected,
-    refreshAll,
-    configState,
     setConfirmModal,
     setLinkExplorer,
     setProgressModal,
   } = useContext(ConfigProviderContext);
+
+  const {refresh} = useContext(StateHashProviderContext)
+  const {walletState} = useContext(WalletProviderContext)
+  const {firstTokenSelected, secondTokenSelected} = useContext(TokensProviderContext)
   const { updateNotification } = notificationStore();
 
   async function onConfirmSwapConfig(
@@ -67,14 +70,14 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       const [deployHash, deployResult] = await signAndDeploySwap(
         apiClient,
         casperClient,
-        configState.wallet,
+        walletState.wallet,
         DEADLINE,
         convertUIStringToBigNumber(amountA),
         convertUIStringToBigNumber(amountB),
         firstTokenSelected,
         secondTokenSelected,
         slippage / 100,
-        configState.mainPurse,
+        walletState.mainPurse,
         gasFee
       );
 
@@ -92,7 +95,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         show: true,
         chargerBar: true
       });
-      await refreshAll();
+      await refresh();
       return true;
     } catch (err) {
       setProgressModal(false);

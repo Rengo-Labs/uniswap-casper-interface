@@ -1,3 +1,4 @@
+import {useMemo} from 'react';
 import { NewTokenDetailItems2NSM } from '../NewTokenDetailItems2NSM';
 import { NewTokenDetailItems3NSM } from '../NewTokenDetailItems3NSM';
 import {
@@ -39,7 +40,7 @@ export const SwapStatisticsItem = ({ statistic }: ISwapStatisticsItemProps) => {
       price: item.nowPrice,
     };
   });
-  console.log('chartData',chartData);
+ // console.log('chartData',chartData);
   return (
     <Wrapper>
       <Content>
