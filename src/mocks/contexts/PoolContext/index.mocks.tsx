@@ -2,6 +2,8 @@ import React, {ReactNode, useState} from "react"
 import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import {Row} from "react-table";
 import {PairData} from "../../../reducers/PairsReducer";
+import {PoolProviderContext} from "../../../contexts/PoolContext";
+import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 
 export const TestContext = ({ children }: { children: ReactNode }) => {
 
@@ -45,5 +47,17 @@ export const TestContext = ({ children }: { children: ReactNode }) => {
     } as any}>
       {children}
     </ConfigProviderContext.Provider>
+  )
+}
+
+
+export const PoolContextMock = ({ children }: { children: ReactNode }) => {
+
+  return (
+    <PoolProviderContext.Provider value={{
+      setStaked: () => Promise<void>
+    } as any}>
+      {children}
+    </PoolProviderContext.Provider>
   )
 }

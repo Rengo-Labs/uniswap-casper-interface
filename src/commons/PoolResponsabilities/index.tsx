@@ -1,4 +1,4 @@
-import {Row, useAsyncDebounce} from "react-table";
+import {Row} from "react-table";
 import {PairActions, PairData} from "../../reducers/PairsReducer";
 import React from "react";
 import store from "store2";
