@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 
 import {fireEvent, render} from "@testing-library/react"
 import {
+  PairContextMock,
   StateHashContextMock,
   TestContext,
   TokenContextMock,
@@ -17,11 +18,13 @@ describe('Swap Context Test',() => {
       <StateHashContextMock>
         <WalletContextMock>
           <TokenContextMock>
-            <TestContext>
-              <SwapContext>
-                <TestComponent/>
-              </SwapContext>
-            </TestContext>
+            <PairContextMock>
+              <TestContext>
+                <SwapContext>
+                  <TestComponent/>
+                </SwapContext>
+              </TestContext>
+            </PairContextMock>
           </TokenContextMock>
         </WalletContextMock>
       </StateHashContextMock>
@@ -35,11 +38,13 @@ describe('Swap Context Test',() => {
       <StateHashContextMock>
         <WalletContextMock>
           <TokenContextMock>
-            <TestContext>
-              <SwapContext>
-                <TestComponent/>
-              </SwapContext>
-            </TestContext>
+            <PairContextMock>
+              <TestContext>
+                <SwapContext>
+                  <TestComponent/>
+                </SwapContext>
+              </TestContext>
+            </PairContextMock>
           </TokenContextMock>
         </WalletContextMock>
       </StateHashContextMock>

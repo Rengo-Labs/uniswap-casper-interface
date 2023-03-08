@@ -3,6 +3,7 @@ import {ConfigProviderContext} from "../../../contexts/ConfigContext"
 import {TokensProviderContext} from "../../../contexts/TokensContext"
 import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
+import {PairsContextProvider} from "../../../contexts/PairsContext";
 
 export const TestContext = ({ children }: { children: ReactNode }) => {
 
@@ -42,6 +43,26 @@ export const TokenContextMock = ({ children }: { children: ReactNode }) => {
     } as any}>
       {children}
     </TokensProviderContext.Provider>
+  )
+}
+
+export const PairContextMock = ({ children }: { children: ReactNode }) => {
+
+  const findReservesBySymbols = (tokenASymbol: string,
+                                 tokenBSymbol: string,
+                                 overrideReserves) => {
+    return {
+      reserve0: 0,
+      reserve1: 1
+    }
+  }
+
+  return (
+    <PairsContextProvider.Provider value={{
+      findReservesBySymbols
+    } as any}>
+      {children}
+    </PairsContextProvider.Provider>
   )
 }
 
