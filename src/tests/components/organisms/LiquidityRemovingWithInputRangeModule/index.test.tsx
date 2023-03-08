@@ -49,8 +49,8 @@ describe('Liquidity removing popup', () => {
     expect(labelUSD).toHaveTextContent("50.00000000")
 
     const approveAmount = await component.findByTestId("liq_enable")
-    fireEvent.click(approveAmount)
 
+    await act(async () => fireEvent.click(approveAmount))
   })
 
   test('Test 2 - it removes half liquidity pair', async () => {
