@@ -36,12 +36,11 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         }
 
         try {
-            //console.log('tokenState', tokenState)
-            const ps = Object.keys(tokenState).map((x) => {
-                const token = tokenState[x];
+            const ps = Object.keys(tokenState.tokens).map((x) => {
+                const token = tokenState.tokens[x];
 
                 //console.log('token', x, token)
-                if (tokenState[x].contractHash) {
+                if (tokenState.tokens[x].contractHash) {
                     return Promise.all([
                         apiClient
                           .getERC20Allowance(

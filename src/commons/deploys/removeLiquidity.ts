@@ -47,7 +47,7 @@ export enum RemoveLiquidityEntryPoint {
  * @returns which swap endpoint should be used
  */
  export const selectRemoveLiquidityEntryPoint = (tokenASymbol: string, tokenBSymbol: string): RemoveLiquidityEntryPoint => {
-  if (tokenASymbol === 'CSPR' || tokenBSymbol === 'CSPR') {
+  if (tokenASymbol === 'CSPR' || tokenBSymbol === 'CSPR' || tokenASymbol === 'WCSPR' || tokenBSymbol === 'WCSPR') {
     return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_CSPR
   } else if (tokenASymbol !== 'CSPR' && tokenBSymbol !== 'CSPR') {
     return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY
