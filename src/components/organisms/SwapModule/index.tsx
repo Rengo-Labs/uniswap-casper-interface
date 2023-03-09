@@ -47,6 +47,7 @@ import {PairsContextProvider} from "../../../contexts/PairsContext";
 import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
+import {getListPath } from "../../../commons/calculations/pathFinder";
 
 const Wrapper = styled.section`
   display: flex;
@@ -94,7 +95,7 @@ const SwapNewModule = () => {
   const { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification } =
     isCSPRValid();
 
-  const [lastChanged, setLastChanged] = useState('');
+  const [lastChanged, setLastChanged] = useState('A');
   const [valueAUSD, setValueAUSD] = useState('0.00');
   const [valueBUSD, setValueBUSD] = useState('0.00');
 
@@ -176,25 +177,77 @@ const SwapNewModule = () => {
     value = amountSwapTokenA,
     token = firstTokenSelected
   ) {
-    const { reserve0, reserve1 } = findReservesBySymbols(
-      tokenA.symbol,
-      tokenB.symbol,
-        tokenState
-    );
+    const isAorB = tokenA.symbol === token.symbol
+    let listPath = null
 
-    const getSwapDetailResponse = await getSwapDetails(
-      tokenA,
-      tokenB,
-      reserve0,
-      reserve1,
-      value,
-      token,
-      slippageTolerance,
-      feeToPay
-    );
+    if(isAorB) {
+      listPath = getListPath(tokenA.symbol, tokenB.symbol, Object.values(tokenState.tokens), Object.values(pairState))
+    }else  {
+      listPath = getListPath(tokenB.symbol, tokenA.symbol, Object.values(tokenState.tokens), Object.values(pairState))
+    }
+
+    console.log("listPath", listPath)
+    const pairExist = listPath.length == 0
+    console.log("pairExist / conditional", pairExist)
+    let getSwapDetailResponse = null;
+    let nextTokensToTransfer = value
+
+    if(pairExist) {
+      const { reserve0, reserve1 } = findReservesBySymbols(
+          tokenA.symbol,
+          tokenB.symbol,
+          tokenState
+      );
+      getSwapDetailResponse = await getSwapDetails(
+          tokenA,
+          tokenB,
+          reserve0,
+          reserve1,
+          value,
+          token,
+          slippageTolerance,
+          feeToPay
+      );
+
+    } else {
+      const pairListPaths = listPath
+      for (const pair of pairListPaths) {
+        const { symbol0, symbol1 } : RouterPathItem = pair
+
+        const { reserve0, reserve1 } = findReservesBySymbols(
+            symbol0,
+            symbol1,
+            tokenState
+        );
+
+        console.log("Reservas", "reserve0", reserve0.toString(), "symbol0", symbol0, "reserve1", reserve1.toString(), "symbol1", symbol1)
+
+        getSwapDetailResponse = await getSwapDetails(
+            {symbol: symbol0} as any,
+            {symbol: symbol1} as any,
+            reserve0,
+            reserve1,
+            nextTokensToTransfer,
+            {symbol: symbol0} as any,
+            slippageTolerance,
+            feeToPay
+        );
+
+        const { tokensToTransfer } =
+            getSwapDetailResponse;
+
+        console.log('////// value /////', value)
+        console.log('////// tokensToTransfer /////', parseFloat(tokensToTransfer.toString()))
+
+        nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
+        console.log("##### Swap ######", "symbol",symbol1, "tokensToReturn", nextTokensToTransfer)
+      }
+    }
 
     const { tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB } =
-      getSwapDetailResponse;
+        getSwapDetailResponse;
+
+    nextTokensToTransfer = tokensToTransfer
 
     priceImpactSetter(priceImpact);
     exchangeRateASetter(exchangeRateA);
@@ -221,13 +274,13 @@ const SwapNewModule = () => {
     );
   }
 
-  async function changeTokenA(value: string | number) {
+  async function changeTokenA(value: string | number, first = firstTokenSelected, second = secondTokenSelected) {
+    setLastChanged('A');
+
     let filteredValue = formatNaN(value);
     if (filteredValue < 0) {
       filteredValue = Math.abs(filteredValue);
     }
-
-    setLastChanged('A');
 
     amountSwapTokenASetter(filteredValue);
 
