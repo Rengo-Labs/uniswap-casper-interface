@@ -12,19 +12,19 @@ export const TestComponent = () => {
       firstReserve,
       secondReserve
     } = await getLiquidityDetails(
-      {symbol: "TK1"} as any, 
-      {symbol: "TK2"} as any,
+      {symbol: "TK1", decimals: 9} as any,
+      {symbol: "TK2", decimals: 9} as any,
       1,
       2,
       100, 
-      {symbol: "TK1"} as any, 
+      {symbol: "TK1", decimals: 9} as any,
       0.005, 
       0.003)
     expect(tokensToTransfer).toBe("200.000000000")
     expect(exchangeRateA).toBe(2)
     expect(exchangeRateB).toBe(0.5)
-    expect(firstReserve).toBe(0.001)
-    expect(secondReserve).toBe(0.002)
+    expect(firstReserve).toBe(1)
+    expect(secondReserve).toBe(2)
   }
   const checkAddLiquidity = async () => {
     const result = await onAddLiquidity(2000.00, 1000.00, 0.5, 0.003)

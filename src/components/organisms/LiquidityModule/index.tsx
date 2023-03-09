@@ -191,12 +191,13 @@ const LiquidityNewModule = () => {
     fn();
   }, []);
 
-  const calculateUSDValues = (amountA, amountB) => {
+  const calculateUSDValues = (amountA, amountB, isAorB) => {
     const [usdA, usdB] = calculateUSDtokens(
       firstTokenSelected.symbolPair,
       secondTokenSelected.symbolPair,
       amountA,
-      amountB
+      amountB,
+      isAorB
     );
 
     setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA);
@@ -296,7 +297,7 @@ const LiquidityNewModule = () => {
       setSecondReserve(firstReserve);
     }
 
-    calculateUSDValues(value, tokensToTransfer);
+    calculateUSDValues(value, tokensToTransfer, token === tokenA);
     return tokensToTransfer;
   }
 

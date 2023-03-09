@@ -2,7 +2,7 @@
 // https://github.com/getditto/dijkstra-calculator
 
 import { initialPairsState } from "../../reducers/PairsReducer";
-import { initialTokenState, TokenReducer } from "../../reducers/TokenReducers";
+import { initialTokenState } from "../../reducers/TokenReducers";
 
 /**
  * A unique identifier for the

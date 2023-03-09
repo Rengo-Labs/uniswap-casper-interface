@@ -2,7 +2,7 @@ import React, {createContext, ReactNode, useReducer} from 'react'
 import {initialTokenState, TokenReducer, TokenState} from '../../reducers/TokenReducers'
 import TokenResponsibilities from '../../commons/TokenResponsibilities'
 import {PairTotalReserves} from "../../commons/PairsResponsibilities";
-import {Wallet} from "../../commons";
+import {Token, Wallet} from "../../commons";
 import {notificationStore} from "../../store/store";
 
 interface TokensContext {
@@ -14,8 +14,8 @@ interface TokensContext {
     onSelectFirstToken,
     onSelectSecondToken,
     onSwitchTokens,
-    firstTokenSelected: any,
-    secondTokenSelected: any,
+    firstTokenSelected: Token,
+    secondTokenSelected: Token,
 }
 
 export const TokensProviderContext = createContext<TokensContext>({} as any)

@@ -2,7 +2,6 @@ import React, {
   createContext,
   ReactNode,
   useContext,
-  useReducer,
   useState,
 } from 'react';
 import {
@@ -23,7 +22,6 @@ import {
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
 import {ERROR_BLOCKCHAIN} from "../../constant/errors";
-import {PairsContextProvider} from "../PairsContext";
 import {TokensProviderContext} from "../TokensContext";
 import {StateHashProviderContext} from "../StateHashContext";
 import {WalletProviderContext} from "../WalletContext";
