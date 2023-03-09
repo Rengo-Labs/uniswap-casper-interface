@@ -494,12 +494,13 @@ const LiquidityNewModule = () => {
 
   async function validateToken(amount, token) {
     if (token === tokenType.tokenA) {
+      console.log('amount', amount)
       if (parseFloat(firstTokenSelected.amount) > gasFee) {
         amount = parseFloat(firstTokenSelected.amount) - gasFee;
         setCurrentValue(amount);
         dismissNotification();
         setDisableButton(false);
-      } else {
+      } else if(Number(amount) > 0){
         showNotification();
         setCurrentValue(amount);
       }
@@ -512,13 +513,13 @@ const LiquidityNewModule = () => {
       );
       setCurrentValue(parseFloat(minTokenToReceive));
       if (
+        parseFloat(minTokenToReceive) > 0 &&
         parseFloat(minTokenToReceive) >
         parseFloat(firstTokenSelected.amount) - gasFee
       ) {
         showNotification();
       }
     }
-
     return amount;
   }
 

@@ -247,7 +247,7 @@ const SwapNewModule = () => {
     handleValidate(
       parseFloat(e.target.value),
       parseFloat(firstTokenSelected.amount),
-      gasFee || 0
+      gasFee || 0,
     );
     changeTokenA(e.target.value);
   };
@@ -333,7 +333,7 @@ const SwapNewModule = () => {
         setCurrentValue(amount);
         dismissNotification();
         setDisableButton(false);
-      } else {
+      } else if(Number(amount) > 0){
         showNotification();
         setCurrentValue(amount);
       }
@@ -346,6 +346,7 @@ const SwapNewModule = () => {
       );
       setCurrentValue(parseFloat(minTokenToReceive));
       if (
+        parseFloat(minTokenToReceive) > 0 &&
         parseFloat(minTokenToReceive) >
         parseFloat(firstTokenSelected.amount) - gasFee
       ) {
