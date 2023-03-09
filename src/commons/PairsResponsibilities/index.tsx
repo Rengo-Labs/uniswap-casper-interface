@@ -220,6 +220,18 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         await loadPairsUSD(pairTotalReserves, pairs, updateNotification)
     }
 
+    const pairsToMap = () => {
+        const pairs = Object.values(pairState)
+        const pairTotalReserves: Record<string, PairTotalReserves> = {}
+        for (const pl of pairs) {
+            pairTotalReserves[pl.orderedName] = {
+                totalReserve0: pl.totalReserve0,
+                totalReserve1: pl.totalReserve1,
+            }
+        }
+        return pairTotalReserves
+    }
+
     const clearUserPairsData = async () => {
         const pairList = Object.keys(pairState).map((x) => pairState[x]);
         for (const pair of pairList) {
@@ -254,29 +266,46 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
 
     const findReservesBySymbols = (symbolA, symbolB, orderedPairState, updateNotification) => pairFinder(pairState, tokenState).findReservesBySymbols(symbolA, symbolB, orderedPairState, updateNotification)
 
-    const calculateUSDtokens = (token0: string, token1: string, amount0: string | number, amount1: string | number): string[] => {
-        const filter = getList().filter(
-            (r) => r.token0Symbol === token0 && r.token1Symbol === token1
-        );
-        if (filter.length > 0) {
-            return [
-                new BigNumber(amount0).times(filter[0].token0Price).toFixed(2),
-                new BigNumber(amount1).times(filter[0].token1Price).toFixed(2),
-            ];
+    const findUSDRateBySymbol = (symbol, updateNotification) => pairFinder(pairState, tokenState).findUSDRateBySymbol(symbol, pairsToMap(), updateNotification)
+
+    const calculateUSDtokens = (token0: string, token1: string, amount0: string | number, amount1: string | number, isAorB: boolean): string[] => {
+
+        let prices = []
+        let priceA = '0.00'
+        let priceB = '0.00'
+        for (const p of getList()) {
+            if (p.token0Symbol === token0 && p.token1Symbol === token1) {
+                prices = isAorB ? returnPrice(amount0, amount1, p.token0Price, p.token1Price) :
+                  returnPrice(amount0, amount1, p.token1Price, p.token0Price)
+            } else if (p.token0Symbol === token1 && p.token1Symbol === token0) {
+                prices = isAorB ? returnPrice(amount0, amount1, p.token1Price, p.token0Price) :
+                  returnPrice(amount0, amount1, p.token0Price, p.token1Price)
+            } else if (p.token0Symbol === token0 || p.token1Symbol === token0) {
+                priceA = getPrice(amount0, p, token0)
+            } else if (p.token1Symbol === token1 || p.token0Symbol === token1) {
+                priceB = getPrice(amount1, p, token1)
+            }
         }
 
-        const filter2 = getList().filter(
-            (r) => r.token1Symbol === token0 && r.token0Symbol === token1
-        );
-        if (filter2.length > 0) {
-            return [
-                new BigNumber(amount0).times(filter2[0].token0Price).toFixed(2),
-                new BigNumber(amount1).times(filter2[0].token1Price).toFixed(2),
-            ];
+        if (prices.length > 0) {
+            return prices
         }
 
-        return ['0.00', '0.00']
+        return [priceA, priceB]
     };
+
+    const getPrice = (amount, pair, tokenSymbol) => {
+        return pair.token0Symbol === tokenSymbol ?
+          new BigNumber(amount).times(pair.token0Price).toFixed(2) :
+          new BigNumber(amount).times(pair.token1Price).toFixed(2)
+    }
+
+    const returnPrice = (amount0, amount1, symbol0, symbol1) => {
+        return [
+            new BigNumber(amount0).times(symbol0).toFixed(2),
+            new BigNumber(amount1).times(symbol1).toFixed(2),
+        ]
+    }
 
     return {
         loadPairs,
@@ -287,7 +316,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         getList,
         findReservesBySymbols,
         changeRowPriority,
-        calculateUSDtokens
+        calculateUSDtokens,
+        findUSDRateBySymbol
     }
 }
 

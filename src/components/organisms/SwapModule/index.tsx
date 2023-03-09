@@ -129,7 +129,6 @@ const SwapNewModule = () => {
         ? await changeTokenA(amountSwapTokenA)
         : await changeTokenB(amountSwapTokenB);
 
-      //TODO Analizar en progress bar context
       await refresh();
     });
   }, [amountSwapTokenA, amountSwapTokenB]);
@@ -207,7 +206,7 @@ const SwapNewModule = () => {
         : 'Low Price Impact'
     );
 
-    calculateUSDValues(value, tokensToTransfer);
+    calculateUSDValues(value, tokensToTransfer, tokenA.symbolPair, tokenB.symbolPair, exchangeRateA, exchangeRateB, token.symbolPair);
     return tokensToTransfer;
   }
 
@@ -377,12 +376,15 @@ const SwapNewModule = () => {
     await changeTokenA(amountSwapTokenA);
   };
 
-  const calculateUSDValues = (amountA: string | number, amountB: string | number) => {
+  const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected) => {
+    const isA2B = symbolA == tokenSelected
+
     const [usdA, usdB] = calculateUSDtokens(
-      firstTokenSelected.symbolPair,
-      secondTokenSelected.symbolPair,
+      symbolA,
+      symbolB,
       amountA,
-      amountB
+      amountB,
+      isA2B
     );
 
     const _usdA = isNaN(parseFloat(usdA)) ? "0.00" : usdA;
@@ -391,8 +393,8 @@ const SwapNewModule = () => {
     setValueAUSD(_usdA);
     setValueBUSD(_usdB);
 
-    setPriceA((parseFloat(_usdA) * formatNaN(exchangeRateA)).toFixed(2));
-    setPriceB((parseFloat(_usdB) * formatNaN(exchangeRateB)).toFixed(2));
+    setPriceA((parseFloat(_usdA) * formatNaN(rateA)).toFixed(2));
+    setPriceB((parseFloat(_usdB) * formatNaN(rateB)).toFixed(2));
   };
 
   return (
