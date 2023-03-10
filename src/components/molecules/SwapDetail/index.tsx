@@ -31,6 +31,7 @@ interface SwapDetailProps {
   className?: string;
   fullExpanded?: boolean;
   slippageEnabled?: boolean;
+  pairPath?: any[];
 }
 
 export const SwapDetail = ({
@@ -48,6 +49,7 @@ export const SwapDetail = ({
   className = '',
   fullExpanded = true,
   slippageEnabled = false,
+  pairPath = [],
 }: SwapDetailProps) => {
   const [isExpanded, setExpanded] = useState(fullExpanded);
 
@@ -121,6 +123,7 @@ export const SwapDetail = ({
                 <RouterBox
                   tokenASymbol={firstSymbolToken}
                   tokenBSymbol={secondSymbolToken}
+                  pairPath={pairPath}
                 />
               </CollapsingRow>
             </div>

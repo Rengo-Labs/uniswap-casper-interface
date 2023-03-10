@@ -103,6 +103,7 @@ const SwapNewModule = () => {
   const [priceA, setPriceA] = useState("0.00")
   const [priceB, setPriceB] = useState("0.00")
   const [isProcessingTransaction, setIsProcessingTransaction] = useState(false);
+  const [pairPath, setPairPath] = useState([])
 
   useEffect(() => {
     const t0 = searchParams.get('token0');
@@ -111,13 +112,6 @@ const SwapNewModule = () => {
       onSelectFirstToken(tokenState.tokens[t0]);
       onSelectSecondToken(tokenState.tokens[t1]);
     }
-
-    // updateSwapDetail(
-    //   firstTokenSelected,
-    //   secondTokenSelected,
-    //   amountSwapTokenA,
-    //   lastChanged == 'A' ? firstTokenSelected : secondTokenSelected
-    // );
   }, [isConnected, pairState]);
 
   useEffect(() => {
@@ -138,7 +132,7 @@ const SwapNewModule = () => {
   }, [firstTokenSelected]);
 
   async function onConnect() {
-    onConnectWallet();
+    await onConnectWallet();
   }
 
   function onSwitchTokensHandler() {
@@ -172,25 +166,12 @@ const SwapNewModule = () => {
 
     resetAll();
   }
-
-  async function updateSwapDetail(
-    tokenA: Token,
-    tokenB: Token,
-    value = amountSwapTokenA,
-    token = firstTokenSelected
-  ) {
+  const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token) => {
     const isAorB = tokenA.symbol === token.symbol
-    let listPath = null
-
-    if(isAorB) {
-      listPath = getListPath(tokenA.symbol, tokenB.symbol, Object.values(tokenState.tokens), Object.values(pairState))
-    }else  {
-      listPath = getListPath(tokenB.symbol, tokenA.symbol, Object.values(tokenState.tokens), Object.values(pairState))
-    }
-
-    console.log("listPath", listPath)
+    const [param, param1] = isAorB ? [tokenA.symbol, tokenB.symbol] : [tokenB.symbol, tokenA.symbol]
+    const listPath = getListPath(param, param1, Object.values(tokenState.tokens), Object.values(pairState))
     const pairExist = listPath.length == 0
-    console.log("pairExist / conditional", pairExist)
+
     let getSwapDetailResponse = null;
     let nextTokensToTransfer = value
 
@@ -200,7 +181,6 @@ const SwapNewModule = () => {
           tokenB.symbol,
           tokenState
       );
-
       getSwapDetailResponse = await getSwapDetails(
           tokenA,
           tokenB,
@@ -211,19 +191,18 @@ const SwapNewModule = () => {
           slippageTolerance,
           feeToPay
       );
+      setPairPath([tokenA.symbol, tokenB.symbol])
     } else {
       const pairListPaths = listPath
+      let priceImpactAcm = 0
+      const pairPath = []
       for (const pair of pairListPaths) {
-        const { symbol0, symbol1 } : RouterPathItem = pair
-
-        const { reserve0, reserve1 } = findReservesBySymbols(
+        const {symbol0, symbol1}: RouterPathItem = pair
+        const {reserve0, reserve1} = findReservesBySymbols(
             symbol0,
             symbol1,
             tokenState
         );
-
-        console.log("Reservas", "reserve0", reserve0.toString(), "symbol0", symbol0, "reserve1", reserve1.toString(), "symbol1", symbol1)
-
         getSwapDetailResponse = await getSwapDetails(
             {symbol: symbol0} as any,
             {symbol: symbol1} as any,
@@ -235,21 +214,30 @@ const SwapNewModule = () => {
             feeToPay
         );
 
-        const { tokensToTransfer } =
-            getSwapDetailResponse;
-
-        console.log('////// value /////', value)
-        console.log('////// tokensToTransfer /////', parseFloat(tokensToTransfer.toString()))
-
+        const {tokensToTransfer, priceImpact} = getSwapDetailResponse;
+        priceImpactAcm += parseFloat(priceImpact.toString())
+        getSwapDetailResponse.priceImpact = priceImpactAcm
         nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
-        console.log("##### Swap ######", "symbol",symbol1, "tokensToReturn", nextTokensToTransfer)
+        pairPath.push(symbol0, symbol1)
       }
+      setPairPath([...new Set(pairPath)])
     }
 
+    return {
+      getSwapDetailResponse,
+    }
+  }
+
+  async function updateSwapDetail(
+    tokenA: Token,
+    tokenB: Token,
+    value = amountSwapTokenA,
+    token = firstTokenSelected
+  ) {
+    const { getSwapDetailResponse } = await calculateSwapDetailResponse(tokenA, tokenB, value, token)
     const { tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB } =
         getSwapDetailResponse;
-
-    nextTokensToTransfer = tokensToTransfer
+    const nextTokensToTransfer = tokensToTransfer;
 
     priceImpactSetter(priceImpact);
     exchangeRateASetter(exchangeRateA);
@@ -296,16 +284,6 @@ const SwapNewModule = () => {
     amountSwapTokenBSetter(formatNaN(minTokenToReceive));
   }
 
-  const handleChange = (e) => {
-    setCurrentValue(e.target.value);
-    handleValidate(
-      parseFloat(e.target.value),
-      parseFloat(firstTokenSelected.amount),
-      gasFee || 0
-    );
-    changeTokenA(e.target.value);
-  };
-
   async function changeTokenB(value) {
     setLastChanged('B');
 
@@ -319,16 +297,25 @@ const SwapNewModule = () => {
     amountSwapTokenBSetter(filteredValue);
 
     const minTokenToReceive = await updateSwapDetail(
-      firstTokenSelected,
-      secondTokenSelected,
-      filteredValue,
-      secondTokenSelected
+        firstTokenSelected,
+        secondTokenSelected,
+        filteredValue,
+        secondTokenSelected
     );
     amountSwapTokenASetter(formatNaN(minTokenToReceive));
   }
 
+  const handleChange = async (e) => {
+    setCurrentValue(e.target.value);
+    handleValidate(
+      parseFloat(e.target.value),
+      parseFloat(firstTokenSelected.amount),
+      gasFee || 0
+    );
+    await changeTokenA(e.target.value);
+  };
   const handleChangeB = async (e) => {
-    changeTokenB(e.target.value);
+    await changeTokenB(e.target.value);
     const minTokenToReceive = await updateSwapDetail(
       firstTokenSelected,
       secondTokenSelected,
@@ -428,7 +415,6 @@ const SwapNewModule = () => {
 
   const refreshPrices = async () => {
     await refresh()
-    await changeTokenA(amountSwapTokenA);
   };
 
   const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected) => {
@@ -669,6 +655,7 @@ const SwapNewModule = () => {
               slippageEnabled={true}
               slippageSetter={updateSlippageTolerance}
               fullExpanded={false}
+              pairPath={pairPath}
             />
           ) : null}
           <ButtonSpaceNSM>
