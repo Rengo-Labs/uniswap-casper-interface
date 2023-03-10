@@ -112,27 +112,30 @@ const SwapNewModule = () => {
       onSelectSecondToken(tokenState.tokens[t1]);
     }
 
-    updateSwapDetail(
-      firstTokenSelected,
-      secondTokenSelected,
-      amountSwapTokenA,
-      lastChanged == 'A' ? firstTokenSelected : secondTokenSelected
-    );
+    // updateSwapDetail(
+    //   firstTokenSelected,
+    //   secondTokenSelected,
+    //   amountSwapTokenA,
+    //   lastChanged == 'A' ? firstTokenSelected : secondTokenSelected
+    // );
   }, [isConnected, pairState]);
 
   useEffect(() => {
-    if (!isConnected) {
-      // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
-      resetAll()
-    }
     progressBar(async () => {
-      lastChanged == 'A'
-        ? await changeTokenA(amountSwapTokenA)
-        : await changeTokenB(amountSwapTokenB);
-
       await refresh();
     });
   }, [amountSwapTokenA, amountSwapTokenB]);
+
+  useEffect(() => {
+    const switchToken = async () => {
+      lastChanged == 'A'
+          ? await changeTokenA(amountSwapTokenB)
+          : await changeTokenB(amountSwapTokenA);
+    }
+
+    switchToken().catch((e) => console.log(e));
+
+  }, [firstTokenSelected]);
 
   async function onConnect() {
     onConnectWallet();
@@ -140,7 +143,6 @@ const SwapNewModule = () => {
 
   function onSwitchTokensHandler() {
     onSwitchTokens();
-
     if (lastChanged == 'A') {
       changeTokenB(amountSwapTokenA.toString());
       setLastChanged('B');
@@ -198,6 +200,7 @@ const SwapNewModule = () => {
           tokenB.symbol,
           tokenState
       );
+
       getSwapDetailResponse = await getSwapDetails(
           tokenA,
           tokenB,
@@ -208,7 +211,6 @@ const SwapNewModule = () => {
           slippageTolerance,
           feeToPay
       );
-
     } else {
       const pairListPaths = listPath
       for (const pair of pairListPaths) {
@@ -305,14 +307,14 @@ const SwapNewModule = () => {
   };
 
   async function changeTokenB(value) {
+    setLastChanged('B');
+
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
     } else if (filteredValue < 0) {
       filteredValue = Math.abs(filteredValue);
     }
-
-    setLastChanged('B');
 
     amountSwapTokenBSetter(filteredValue);
 
