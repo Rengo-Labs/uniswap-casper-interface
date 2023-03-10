@@ -194,7 +194,7 @@ const SwapNewModule = () => {
       setPairPath([tokenA.symbol, tokenB.symbol])
     } else {
       const pairListPaths = listPath
-      let priceImpactAcm = 0
+      let priceImpactAcm: any = 0
       const pairPath = []
       for (const pair of pairListPaths) {
         const {symbol0, symbol1}: RouterPathItem = pair
@@ -215,8 +215,8 @@ const SwapNewModule = () => {
         );
 
         const {tokensToTransfer, priceImpact} = getSwapDetailResponse;
-        priceImpactAcm += parseFloat(priceImpact.toString())
-        getSwapDetailResponse.priceImpact = priceImpactAcm
+        priceImpact !== '<0.01'? priceImpactAcm += parseFloat(priceImpact.toString()) : priceImpactAcm = priceImpact
+        getSwapDetailResponse.priceImpact = isNaN(priceImpactAcm)? priceImpactAcm : priceImpactAcm.toFixed(2)
         nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
         pairPath.push(symbol0, symbol1)
       }
