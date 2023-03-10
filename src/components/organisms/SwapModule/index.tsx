@@ -197,7 +197,7 @@ const SwapNewModule = () => {
       let priceImpactAcm: any = 0
       const pairPath = []
       for (const pair of pairListPaths) {
-        const {symbol0, symbol1}: RouterPathItem = pair
+        const {symbol0, symbol1} = pair
         const {reserve0, reserve1} = findReservesBySymbols(
             symbol0,
             symbol1,
