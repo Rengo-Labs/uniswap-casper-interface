@@ -379,7 +379,7 @@ const SwapNewModule = () => {
         setCurrentValue(amount);
         dismissNotification();
         setDisableButton(false);
-      } else {
+      } else if(Number(amount) > 0){
         showNotification();
         setCurrentValue(amount);
       }
@@ -392,6 +392,7 @@ const SwapNewModule = () => {
       );
       setCurrentValue(parseFloat(minTokenToReceive));
       if (
+        parseFloat(minTokenToReceive) > 0 &&
         parseFloat(minTokenToReceive) >
         parseFloat(firstTokenSelected.amount) - gasFee
       ) {
