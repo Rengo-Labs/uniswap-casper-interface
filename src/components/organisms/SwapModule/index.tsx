@@ -121,6 +121,11 @@ const SwapNewModule = () => {
   }, [amountSwapTokenA, amountSwapTokenB]);
 
   useEffect(() => {
+    // prevent unnecesary switch
+    if (lastChanged === 'A') {
+      return
+    }
+
     const switchToken = async () => {
       lastChanged == 'A'
           ? await changeTokenA(amountSwapTokenB)
