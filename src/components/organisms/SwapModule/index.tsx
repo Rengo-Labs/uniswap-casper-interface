@@ -47,6 +47,7 @@ import {PairsContextProvider} from "../../../contexts/PairsContext";
 import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
+import {getListPath } from "../../../commons/calculations/pathFinder";
 
 const Wrapper = styled.section`
   display: flex;
@@ -94,7 +95,7 @@ const SwapNewModule = () => {
   const { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification } =
     isCSPRValid();
 
-  const [lastChanged, setLastChanged] = useState('');
+  const [lastChanged, setLastChanged] = useState('A');
   const [valueAUSD, setValueAUSD] = useState('0.00');
   const [valueBUSD, setValueBUSD] = useState('0.00');
 
@@ -102,6 +103,7 @@ const SwapNewModule = () => {
   const [priceA, setPriceA] = useState("0.00")
   const [priceB, setPriceB] = useState("0.00")
   const [isProcessingTransaction, setIsProcessingTransaction] = useState(false);
+  const [pairPath, setPairPath] = useState([])
 
   useEffect(() => {
     const t0 = searchParams.get('token0');
@@ -110,36 +112,36 @@ const SwapNewModule = () => {
       onSelectFirstToken(tokenState.tokens[t0]);
       onSelectSecondToken(tokenState.tokens[t1]);
     }
-
-    updateSwapDetail(
-      firstTokenSelected,
-      secondTokenSelected,
-      amountSwapTokenA,
-      lastChanged == 'A' ? firstTokenSelected : secondTokenSelected
-    );
   }, [isConnected, pairState]);
 
   useEffect(() => {
-    if (!isConnected) {
-      // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
-      resetAll()
-    }
     progressBar(async () => {
-      lastChanged == 'A'
-        ? await changeTokenA(amountSwapTokenA)
-        : await changeTokenB(amountSwapTokenB);
-
       await refresh();
     });
   }, [amountSwapTokenA, amountSwapTokenB]);
 
+  useEffect(() => {
+    // prevent unnecesary switch
+    if (lastChanged === 'A') {
+      return
+    }
+
+    const switchToken = async () => {
+      lastChanged == 'A'
+          ? await changeTokenA(amountSwapTokenB)
+          : await changeTokenB(amountSwapTokenA);
+    }
+
+    switchToken().catch((e) => console.log(e));
+
+  }, [firstTokenSelected]);
+
   async function onConnect() {
-    onConnectWallet();
+    await onConnectWallet();
   }
 
   function onSwitchTokensHandler() {
     onSwitchTokens();
-
     if (lastChanged == 'A') {
       changeTokenB(amountSwapTokenA.toString());
       setLastChanged('B');
@@ -169,6 +171,67 @@ const SwapNewModule = () => {
 
     resetAll();
   }
+  const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token) => {
+    const isAorB = tokenA.symbol === token.symbol
+    const [param, param1] = isAorB ? [tokenA.symbol, tokenB.symbol] : [tokenB.symbol, tokenA.symbol]
+    const listPath = getListPath(param, param1, Object.values(tokenState.tokens), Object.values(pairState))
+    const pairExist = listPath.length == 0
+
+    let getSwapDetailResponse = null;
+    let nextTokensToTransfer = value
+
+    if(pairExist) {
+      const { reserve0, reserve1 } = findReservesBySymbols(
+          tokenA.symbol,
+          tokenB.symbol,
+          tokenState
+      );
+      getSwapDetailResponse = await getSwapDetails(
+          tokenA,
+          tokenB,
+          reserve0,
+          reserve1,
+          value,
+          token,
+          slippageTolerance,
+          feeToPay
+      );
+      setPairPath([tokenA.symbol, tokenB.symbol])
+    } else {
+      const pairListPaths = listPath
+      let priceImpactAcm: any = 0
+      const pairPath = []
+      for (const pair of pairListPaths) {
+        const {symbol0, symbol1} = pair
+        const {reserve0, reserve1} = findReservesBySymbols(
+            symbol0,
+            symbol1,
+            tokenState
+        );
+        getSwapDetailResponse = await getSwapDetails(
+            {symbol: symbol0} as any,
+            {symbol: symbol1} as any,
+            reserve0,
+            reserve1,
+            nextTokensToTransfer,
+            {symbol: symbol0} as any,
+            slippageTolerance,
+            feeToPay
+        );
+
+        const {tokensToTransfer, priceImpact} = getSwapDetailResponse;
+        priceImpact !== '<0.01'? priceImpactAcm += parseFloat(priceImpact.toString()) : priceImpactAcm = priceImpact
+        getSwapDetailResponse.priceImpact = isNaN(priceImpactAcm)? priceImpactAcm : priceImpactAcm.toFixed(2)
+        nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
+        pairPath.push(symbol0, symbol1)
+      }
+      setPairPath([...new Set(pairPath)])
+    }
+
+    return {
+      getSwapDetailResponse,
+    }
+  }
 
   async function updateSwapDetail(
     tokenA: Token,
@@ -176,25 +239,10 @@ const SwapNewModule = () => {
     value = amountSwapTokenA,
     token = firstTokenSelected
   ) {
-    const { reserve0, reserve1 } = findReservesBySymbols(
-      tokenA.symbol,
-      tokenB.symbol,
-        tokenState
-    );
-
-    const getSwapDetailResponse = await getSwapDetails(
-      tokenA,
-      tokenB,
-      reserve0,
-      reserve1,
-      value,
-      token,
-      slippageTolerance,
-      feeToPay
-    );
-
+    const { getSwapDetailResponse } = await calculateSwapDetailResponse(tokenA, tokenB, value, token)
     const { tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB } =
-      getSwapDetailResponse;
+        getSwapDetailResponse;
+    const nextTokensToTransfer = tokensToTransfer;
 
     priceImpactSetter(priceImpact);
     exchangeRateASetter(exchangeRateA);
@@ -221,13 +269,13 @@ const SwapNewModule = () => {
     );
   }
 
-  async function changeTokenA(value: string | number) {
+  async function changeTokenA(value: string | number, first = firstTokenSelected, second = secondTokenSelected) {
+    setLastChanged('A');
+
     let filteredValue = formatNaN(value);
     if (filteredValue < 0) {
       filteredValue = Math.abs(filteredValue);
     }
-
-    setLastChanged('A');
 
     amountSwapTokenASetter(filteredValue);
 
@@ -241,17 +289,9 @@ const SwapNewModule = () => {
     amountSwapTokenBSetter(formatNaN(minTokenToReceive));
   }
 
-  const handleChange = (e) => {
-    setCurrentValue(e.target.value);
-    handleValidate(
-      parseFloat(e.target.value),
-      parseFloat(firstTokenSelected.amount),
-      gasFee || 0,
-    );
-    changeTokenA(e.target.value);
-  };
-
   async function changeTokenB(value) {
+    setLastChanged('B');
+
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
@@ -259,21 +299,28 @@ const SwapNewModule = () => {
       filteredValue = Math.abs(filteredValue);
     }
 
-    setLastChanged('B');
-
     amountSwapTokenBSetter(filteredValue);
 
     const minTokenToReceive = await updateSwapDetail(
-      firstTokenSelected,
-      secondTokenSelected,
-      filteredValue,
-      secondTokenSelected
+        firstTokenSelected,
+        secondTokenSelected,
+        filteredValue,
+        secondTokenSelected
     );
     amountSwapTokenASetter(formatNaN(minTokenToReceive));
   }
 
+  const handleChange = async (e) => {
+    setCurrentValue(e.target.value);
+    handleValidate(
+      parseFloat(e.target.value),
+      parseFloat(firstTokenSelected.amount),
+      gasFee || 0
+    );
+    await changeTokenA(e.target.value);
+  };
   const handleChangeB = async (e) => {
-    changeTokenB(e.target.value);
+    await changeTokenB(e.target.value);
     const minTokenToReceive = await updateSwapDetail(
       firstTokenSelected,
       secondTokenSelected,
@@ -374,7 +421,6 @@ const SwapNewModule = () => {
 
   const refreshPrices = async () => {
     await refresh()
-    await changeTokenA(amountSwapTokenA);
   };
 
   const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected) => {
@@ -615,6 +661,7 @@ const SwapNewModule = () => {
               slippageEnabled={true}
               slippageSetter={updateSlippageTolerance}
               fullExpanded={false}
+              pairPath={pairPath}
             />
           ) : null}
           <ButtonSpaceNSM>
