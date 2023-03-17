@@ -4,10 +4,11 @@ import {RouterContainer, RouterRow, RouterColumnLeft, RouterColumnRight} from '.
 
 interface RouterBoxProps {
     tokenASymbol:string,
-    tokenBSymbol:string
+    tokenBSymbol:string,
+    pairPath?: any[]
 }
 
-export const RouterBox = ({ tokenASymbol, tokenBSymbol }:RouterBoxProps) => {
+export const RouterBox = ({ tokenASymbol, tokenBSymbol, pairPath }:RouterBoxProps) => {
     return (
         <>
             {
@@ -19,7 +20,9 @@ export const RouterBox = ({ tokenASymbol, tokenBSymbol }:RouterBoxProps) => {
             }
             <RouterRow>
                 <RouterColumnLeft>Route</RouterColumnLeft>
-                <RouterColumnRight>{tokenASymbol} {` > `} {tokenBSymbol}</RouterColumnRight>
+                {pairPath && pairPath.length > 0 ?
+                    <RouterColumnRight>{pairPath.map((item, index) => index === pairPath.length -1 ? (`${item}`) : (`${item} >`))}</RouterColumnRight> :
+                    <RouterColumnRight>{tokenASymbol} {` > `} {tokenBSymbol}</RouterColumnRight>}
             </RouterRow>
         </>
     )

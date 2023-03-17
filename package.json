@@ -9,7 +9,7 @@
     "build-production": "npx env-cmd -f .env.production react-app-rewired build",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "test": "react-app-rewired test",
+    "test": "react-app-rewired test --maxWorkers=50%",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"

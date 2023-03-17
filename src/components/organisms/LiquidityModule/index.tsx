@@ -191,12 +191,13 @@ const LiquidityNewModule = () => {
     fn();
   }, []);
 
-  const calculateUSDValues = (amountA, amountB) => {
+  const calculateUSDValues = (amountA, amountB, isAorB) => {
     const [usdA, usdB] = calculateUSDtokens(
       firstTokenSelected.symbolPair,
       secondTokenSelected.symbolPair,
       amountA,
-      amountB
+      amountB,
+      isAorB
     );
 
     setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA);
@@ -296,7 +297,7 @@ const LiquidityNewModule = () => {
       setSecondReserve(firstReserve);
     }
 
-    calculateUSDValues(value, tokensToTransfer);
+    calculateUSDValues(value, tokensToTransfer, token === tokenA);
     return tokensToTransfer;
   }
 
@@ -494,12 +495,13 @@ const LiquidityNewModule = () => {
 
   async function validateToken(amount, token) {
     if (token === tokenType.tokenA) {
+      console.log('amount', amount)
       if (parseFloat(firstTokenSelected.amount) > gasFee) {
         amount = parseFloat(firstTokenSelected.amount) - gasFee;
         setCurrentValue(amount);
         dismissNotification();
         setDisableButton(false);
-      } else {
+      } else if(Number(amount) > 0){
         showNotification();
         setCurrentValue(amount);
       }
@@ -512,13 +514,13 @@ const LiquidityNewModule = () => {
       );
       setCurrentValue(parseFloat(minTokenToReceive));
       if (
+        parseFloat(minTokenToReceive) > 0 &&
         parseFloat(minTokenToReceive) >
         parseFloat(firstTokenSelected.amount) - gasFee
       ) {
         showNotification();
       }
     }
-
     return amount;
   }
 
