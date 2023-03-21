@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { getPercentChangeByToken } from '../../../commons/api/ApolloQueries'
 import { Token } from '../../../commons/api/types'
-import { ConfigProviderContext } from '../../../contexts/ConfigContext'
 import { SwapStatisticsItem } from '../../atoms'
 import { Wrapper, Main } from './styles'
 import {TokensProviderContext} from "../../../contexts/TokensContext";
