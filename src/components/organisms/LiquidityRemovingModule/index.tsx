@@ -90,6 +90,7 @@ export const LiquidityRemovingModule = ({
       secondLiquidity,
       slippageToleranceSelected,
       gasPriceSelectedForLiquidity,
+      false
     )
     closeHandler()
   }

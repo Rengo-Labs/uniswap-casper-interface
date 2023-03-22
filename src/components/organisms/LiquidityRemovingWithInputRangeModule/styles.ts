@@ -83,7 +83,7 @@ export const LPContainer = styled.div`
     padding: 15px 5px;
 `
 
-export const PriceContainer = styled.div`
+export const PriceContainer = styled.div<any>`
     display: flex;
     flex-direction: row;
     border: 0px solid black;
@@ -91,7 +91,7 @@ export const PriceContainer = styled.div`
     background-color: white;
     margin-left: 23px;
     margin-right: 23px;
-    margin-bottom: 18px;
+    margin-bottom: ${props => props.bottom};
     height: 36px;
     padding: 10px 5px;
     font-family: 'EpilogueLight';
