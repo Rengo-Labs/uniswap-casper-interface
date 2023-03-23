@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import {ToggleTitle, WrapToggle} from "./styles";
 import {CustomToggle} from "../../atoms";
 
-export const ToggleBox = ({setStaked}: any)  => {
+export const ToggleBox = ({title = 'Show staked', setStaked}: any)  => {
     const [isChecked, setChecked] = useState(false)
 
     const handleOnClick = () => {
@@ -14,7 +14,7 @@ export const ToggleBox = ({setStaked}: any)  => {
 
     return (
         <WrapToggle>
-            <ToggleTitle>Show staked</ToggleTitle>
+            <ToggleTitle>{title}</ToggleTitle>
             <CustomToggle id={uuidv4()} onChange={handleOnClick} isChecked={isChecked} />
         </WrapToggle>
     );

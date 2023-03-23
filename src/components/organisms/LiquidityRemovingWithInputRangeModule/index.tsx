@@ -29,6 +29,7 @@ import { ConfigProviderContext } from "../../../contexts/ConfigContext"
 import { InputRange } from "../../atoms/InputRange"
 import { LiquidityProviderContext } from "../../../contexts/LiquidityContext"
 import BigNumber from "bignumber.js";
+import {ToggleBox} from "../../molecules";
 
 export interface LiquidityRemovingWithInputRangeProps {
   isConnected: boolean,
@@ -81,7 +82,8 @@ export const LiquidityRemovingWithInputRangeModule = ({
   const [lpValue, setLPValue] = useState(0.00)
   const [firstValue, setFirstValue] = useState(0.00)
   const [secondValue, setSecondValue] = useState(0.00)
-  const [isProcessingTransaction, setIsProcessingTransaction] = useState(false);
+  const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
+  const [refundCSPR, setRefundCSPR] = useState(false)
 
   const {
     onIncreaseAllow,
@@ -116,6 +118,7 @@ export const LiquidityRemovingWithInputRangeModule = ({
       secondValue,
       slippageToleranceSelected,
       gasPriceSelectedForLiquidity,
+      refundCSPR
     )
     setIsProcessingTransaction(false)
     closeHandler()
@@ -223,7 +226,13 @@ export const LiquidityRemovingWithInputRangeModule = ({
                     </TColumn1Right>
                   </TColumn1>
                 </LPContainer>
-                <PriceContainer>
+                {
+                  (firstSymbol === 'WCSPR' || secondSymbol==='WCSPR' ) &&
+                    <PriceContainer bottom='0' style={{justifyContent: "center"}}>
+                        <ToggleBox title="Refund in (WCSPR/CSPR)" setStaked={setRefundCSPR} />
+                    </PriceContainer>
+                }
+                <PriceContainer bottom='18px'>
                   <PriceLabel>Price</PriceLabel>
                   <PriceTokenLabel>
                     <PriceRowLabel>1 {firstSymbol} = {secondPrice.slice(0, 11)} {secondSymbol}</PriceRowLabel>

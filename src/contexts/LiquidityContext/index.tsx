@@ -41,6 +41,7 @@ export interface LiquidityContext {
     amountB: number | string,
     slippage: number,
     gasFee: number,
+    refundCSPR: boolean
   ) => Promise<boolean>;
   getLiquidityDetails: (
     tokenA: Token,
@@ -142,6 +143,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     amountB: number | string,
     slippage: number,
     gasFee: number,
+    refundCSPR: boolean
   ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
@@ -165,6 +167,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         slippage / 100,
         walletState.mainPurse,
         gasFee,
+        refundCSPR
       );
 
       setProgressModal(true);

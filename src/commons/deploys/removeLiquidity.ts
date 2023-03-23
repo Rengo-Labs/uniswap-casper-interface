@@ -46,10 +46,10 @@ export enum RemoveLiquidityEntryPoint {
  * 
  * @returns which swap endpoint should be used
  */
- export const selectRemoveLiquidityEntryPoint = (tokenASymbol: string, tokenBSymbol: string): RemoveLiquidityEntryPoint => {
-  if (tokenASymbol === 'CSPR' || tokenBSymbol === 'CSPR' || tokenASymbol === 'WCSPR' || tokenBSymbol === 'WCSPR') {
+ export const selectRemoveLiquidityEntryPoint = (tokenASymbol: string, tokenBSymbol: string, refundCSPR: boolean): RemoveLiquidityEntryPoint => {
+  if (refundCSPR && (tokenASymbol === 'CSPR' || tokenBSymbol === 'CSPR' || tokenASymbol === 'WCSPR' || tokenBSymbol === 'WCSPR')) {
     return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_CSPR
-  } else if (tokenASymbol !== 'CSPR' && tokenBSymbol !== 'CSPR') {
+  } else if (!refundCSPR || tokenASymbol !== 'CSPR' && tokenBSymbol !== 'CSPR') {
     return RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY
   }
 }
@@ -84,11 +84,13 @@ export enum RemoveLiquidityEntryPoint {
   slippage: number,
   mainPurse: string,
   gasFee: number,
+  refundCSPR: boolean
 ): Promise<[string, GetDeployResult]> => {
   try {
     const publicKey = wallet.publicKey;
-    const entryPoint = selectRemoveLiquidityEntryPoint(tokenA.symbol, tokenB.symbol)
+    const entryPoint = selectRemoveLiquidityEntryPoint(tokenA.symbol, tokenB.symbol, refundCSPR)
 
+    console.log("entryPoint", entryPoint, refundCSPR)
     switch (entryPoint) {
       case RemoveLiquidityEntryPoint.REMOVE_LIQUIDITY_CSPR:
         console.log('removeLiquidityCSPR', tokenA, tokenB)
