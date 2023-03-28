@@ -136,9 +136,10 @@ export enum AddLiquidityEntryPoint {
           Uint8Array.from(Buffer.from(tokenB.packageHash.slice(5), "hex"))
         )
         
-        return await casperClient.signAndDeployWasm(
+        return await casperClient.signAndDeployContractCall(
           wallet,
-          await apiClient.getDeployWasmData(),
+          ROUTER_CONTRACT_HASH,
+          entryPoint,
           RuntimeArgs.fromMap({
             token_a: new CLKey(tokenAContract),
             token_b: new CLKey(tokenBContract),

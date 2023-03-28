@@ -179,6 +179,7 @@ const SwapNewModule = () => {
 
     let getSwapDetailResponse = null;
     let nextTokensToTransfer = value
+    gasFeeSetter(gasPriceSelectedForSwapping)
 
     if(pairExist) {
       const { reserve0, reserve1 } = findReservesBySymbols(
@@ -225,6 +226,8 @@ const SwapNewModule = () => {
         nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
         pairPath.push(symbol0, symbol1)
       }
+      //base swap cost + listPath.length -1 * hop cost
+      gasFeeSetter(gasPriceSelectedForSwapping + (listPath.length -1) * 30)
       setPairPath([...new Set(pairPath)])
     }
 

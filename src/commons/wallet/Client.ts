@@ -2,7 +2,6 @@ import { Buffer } from 'buffer'
 import {
   CasperClient,
   CLPublicKey,
-  decodeBase16,
   DeployUtil,
   GetDeployResult,
   RuntimeArgs,
@@ -12,7 +11,6 @@ import BigNumber from 'bignumber.js';
 import { Wallet } from './Wallet'
 import { Network } from './types'
 import { log, sleep } from '../utils'
-import {ROUTER_PACKAGE_HASH} from "../../constant";
 
 /**
  * Client for working with Casper network
@@ -255,15 +253,15 @@ export class Client {
     }
   }
 
-  /**
-   * Create and sign the deploy
-   * 
-   * @param wallet wallet for signing
-   * @param deployItem item to deploy
-   * @param gas how much gas to use for this call
-   * 
-   * @returns a signed deploy 
-   */
+/**
+ * Create and sign the deploy
+ *
+ * @param wallet wallet for signing
+ * @param deployItem item to deploy
+ * @param gas how much gas to use for this call
+ *
+ * @returns a signed deploy
+ */
   async makeAndSignDeploy(wallet: Wallet, deployItem: DeployUtil.ExecutableDeployItem, gas: BigNumber): Promise<DeployUtil.Deploy> {
     try {
       // Create the Deploy using wasm + args
