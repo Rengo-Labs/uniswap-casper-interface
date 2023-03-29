@@ -67,6 +67,7 @@ const SwapNewModule = () => {
   const {
     onIncreaseAllow,
     gasPriceSelectedForSwapping,
+    gasFeeHop,
   } = useContext(ConfigProviderContext);
 
   const {
@@ -227,7 +228,7 @@ const SwapNewModule = () => {
         pairPath.push(symbol0, symbol1)
       }
       //base swap cost + listPath.length -1 * hop cost
-      gasFeeSetter(gasPriceSelectedForSwapping + (listPath.length -1) * 30)
+      gasFeeSetter(gasPriceSelectedForSwapping + (listPath.length -1) * gasFeeHop)
       setPairPath([...new Set(pairPath)])
     }
 

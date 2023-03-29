@@ -33,6 +33,7 @@ export interface ConfigContext {
   // To Delete
   gasPriceSelectedForSwapping?: number;
   gasPriceSelectedForLiquidity?: number;
+  gasFeeHop?: number,
   setLinkExplorer?: (link: string) => void;
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
@@ -120,6 +121,7 @@ export const ConfigContextWithReducer = ({
         onIncreaseAllow,
         gasPriceSelectedForSwapping: walletState.gasPriceSelectedForSwapping,
         gasPriceSelectedForLiquidity: walletState.gasPriceSelectedForLiquidity,
+        gasFeeHop: walletState.gasFeeHop,
         setLinkExplorer,
         setProgressModal,
         setConfirmModal,
