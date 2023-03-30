@@ -67,7 +67,7 @@ const SwapNewModule = () => {
   const {
     onIncreaseAllow,
     gasPriceSelectedForSwapping,
-    gasFeeHop,
+    adjustedGas,
   } = useContext(ConfigProviderContext);
 
   const {
@@ -180,7 +180,6 @@ const SwapNewModule = () => {
 
     let getSwapDetailResponse = null;
     let nextTokensToTransfer = value
-    gasFeeSetter(gasPriceSelectedForSwapping)
 
     if(pairExist) {
       const { reserve0, reserve1 } = findReservesBySymbols(
@@ -227,10 +226,11 @@ const SwapNewModule = () => {
         nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
         pairPath.push(symbol0, symbol1)
       }
-      //base swap cost + listPath.length -1 * hop cost
-      gasFeeSetter(gasPriceSelectedForSwapping + (listPath.length -1) * gasFeeHop)
       setPairPath([...new Set(pairPath)])
     }
+
+    //base swap cost + listPath.length -1 * hop cost
+    gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol ,pairExist ? 0 : (listPath.length -1)))
 
     return {
       getSwapDetailResponse,

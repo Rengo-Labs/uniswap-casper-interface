@@ -33,7 +33,7 @@ export interface ConfigContext {
   // To Delete
   gasPriceSelectedForSwapping?: number;
   gasPriceSelectedForLiquidity?: number;
-  gasFeeHop?: number,
+  adjustedGas?: (baseGas, symbolA, symbolB, gasFeeHop) => number;
   setLinkExplorer?: (link: string) => void;
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
@@ -114,6 +114,12 @@ export const ConfigContextWithReducer = ({
     }
   }
 
+  const adjustedGas = (baseGas, symbolA, symbolB, numberHop) => {
+    const totalGas = baseGas + numberHop * walletState.gasFeeHop
+
+    return symbolA === 'CSPR' || symbolB === 'CSPR' ? totalGas + walletState.wasmGasFee : totalGas
+  }
+
   return (
     <ConfigProviderContext.Provider
       value={{
@@ -121,7 +127,7 @@ export const ConfigContextWithReducer = ({
         onIncreaseAllow,
         gasPriceSelectedForSwapping: walletState.gasPriceSelectedForSwapping,
         gasPriceSelectedForLiquidity: walletState.gasPriceSelectedForLiquidity,
-        gasFeeHop: walletState.gasFeeHop,
+        adjustedGas,
         setLinkExplorer,
         setProgressModal,
         setConfirmModal,
