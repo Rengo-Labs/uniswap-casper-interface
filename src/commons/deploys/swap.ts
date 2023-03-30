@@ -106,9 +106,10 @@ export const signAndDeploySwap = async (
     switch (entryPoint) {
       case SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS:
         // When swapping token to token
-        return await casperClient.signAndDeployWasm(
+        return await casperClient.signAndDeployContractCall(
           wallet,
-          await apiClient.getDeployWasmData(),
+          ROUTER_CONTRACT_HASH,
+          entryPoint,
           RuntimeArgs.fromMap({
             amount_in: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_UP)),
             amount_out_min: CLValueBuilder.u256(new BigNumber(amountOut).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),

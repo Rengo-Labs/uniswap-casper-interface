@@ -10,7 +10,9 @@ export type ConfigState = {
   visualModeSelected?: string,
   slippageToleranceSelected?: number,
   gasPriceSelectedForSwapping?: number,
-  gasPriceSelectedForLiquidity?: number
+  gasPriceSelectedForLiquidity?: number,
+  gasFeeHop?: number,
+  wasmGasFee?: number
 }
 
 export const initialConfigState: ConfigState = {
@@ -23,7 +25,9 @@ export const initialConfigState: ConfigState = {
   visualModeSelected: process.env.REACT_APP_VISUAL_MODEL_SELECTED,
   slippageToleranceSelected: parseFloat(process.env.REACT_APP_SLIPPAGE_TOLERANCE_SELECTED),
   gasPriceSelectedForSwapping: parseInt(process.env.REACT_APP_GAS_PRICE_FOR_SWAPPING),
-  gasPriceSelectedForLiquidity: parseInt(process.env.REACT_APP_GAS_PRICE_FOR_LIQUIDITY)
+  gasPriceSelectedForLiquidity: parseInt(process.env.REACT_APP_GAS_PRICE_FOR_LIQUIDITY),
+  gasFeeHop: parseFloat(process.env.REACT_APP_GAS_FEE_HOP),
+  wasmGasFee: parseFloat(process.env.REACT_APP_WASM_GAS_FEE)
 };
 
 export enum ConfigActions {

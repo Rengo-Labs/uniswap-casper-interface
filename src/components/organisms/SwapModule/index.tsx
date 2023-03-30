@@ -67,6 +67,7 @@ const SwapNewModule = () => {
   const {
     onIncreaseAllow,
     gasPriceSelectedForSwapping,
+    adjustedGas,
   } = useContext(ConfigProviderContext);
 
   const {
@@ -227,6 +228,9 @@ const SwapNewModule = () => {
       }
       setPairPath([...new Set(pairPath)])
     }
+
+    //base swap cost + listPath.length -1 * hop cost
+    gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol ,pairExist ? 0 : (listPath.length -1)))
 
     return {
       getSwapDetailResponse,
