@@ -166,9 +166,7 @@ const SwapNewModule = () => {
       gasFee
     );
 
-    if(onwaiting) {
-      setIsProcessingTransaction(false);
-    }
+    setIsProcessingTransaction(false);
 
     resetAll();
   }
@@ -702,7 +700,19 @@ const SwapNewModule = () => {
                   disableButton
                 }
                 handler={async () => {
+                  console.log("currentCondition", disableButton ||
+                    amountSwapTokenA <= 0 ||
+                    amountSwapTokenB <= 0 ||
+                    amountSwapTokenA > parseFloat(firstTokenSelected.amount) ||
+                    isProcessingTransaction ||
+                    disableButton)
                   await onConfirmSwap();
+                  console.log("LastCondition", disableButton ||
+                    amountSwapTokenA <= 0 ||
+                    amountSwapTokenB <= 0 ||
+                    amountSwapTokenA > parseFloat(firstTokenSelected.amount) ||
+                    isProcessingTransaction ||
+                    disableButton)
                 }}
               />
             )}
