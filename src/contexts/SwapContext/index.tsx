@@ -68,7 +68,6 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     });
     try {
 
-
       const [deployHash, deployResult] = await signAndDeploySwap(
         apiClient,
         casperClient,
@@ -101,7 +100,6 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (err) {
       setProgressModal(false);
-      console.log('onConfirmSwapConfig');
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,

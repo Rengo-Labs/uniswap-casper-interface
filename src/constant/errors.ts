@@ -75,7 +75,7 @@ export const ERROR_BLOCKCHAIN = {
     message: "Error: Deploy argument is invalid."
   },
   "Error: Contract execution: Out of gas error": {
-    message: "Error: Insufficient gas."
+    message: "Insufficient gas."
   },
   "TypeError: Cannot read properties of undefined (reading 'deploy')": {
     message: "Error: The wallet is disconnected."
