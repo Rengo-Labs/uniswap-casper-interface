@@ -11,6 +11,7 @@ import BigNumber from 'bignumber.js';
 import { Wallet } from './Wallet'
 import { Network } from './types'
 import { log, sleep } from '../utils'
+import {ERROR_BLOCKCHAIN} from "../../constant/errors";
 
 /**
  * Client for working with Casper network
@@ -145,7 +146,7 @@ export class Client {
    * 
    * @returns the an array with deploy and deploy result or throw error
    */
-  async waitForDeployExecution(deployHash: string, ticks = 1000): Promise<[DeployUtil.Deploy, GetDeployResult]> {
+  async waitForDeployExecution(deployHash: string, ticks = 90): Promise<[DeployUtil.Deploy, GetDeployResult]> {
     const casperClient = this.casperClient
 
     let i = 0
@@ -166,9 +167,12 @@ export class Client {
           await sleep(1000)
         }
       } catch (e){
+        if (ERROR_BLOCKCHAIN[`${e}`] != null) {
+          throw Error(ERROR_BLOCKCHAIN[`${e}`].message)
+        }
         i++
         await sleep(1000)
-      }      
+      }
     }
     throw Error("Timeout after " + i + "s. Something's wrong");
   }
