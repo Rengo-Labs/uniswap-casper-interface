@@ -25,19 +25,19 @@ import {
   NewNavigationCC,
   CasperIcons,
   ContainerMobile,
-} from '../components/atoms';
+} from '../components/old/atoms';
 import { useNavigate } from 'react-router-dom';
 import { ConfigProviderContext } from '../contexts/ConfigContext';
 import { WalletName } from '../commons';
 import {
   SettingMenu,
   MobileMenu,
-} from '../components/molecules';
+} from '../components/old/molecules';
 import {
   CommunityMenu,
   MenuOption,
-} from '../components/molecules/CommunityMenu';
-import { INotification } from '../components/molecules/NotificationList';
+} from '../components/old/molecules/CommunityMenu';
+import { INotification } from '../components/old/molecules/NotificationList';
 import screens from '../hooks/isMobileScreen';
 import { MenuMobileOptions } from '../constant';
 import {WalletProviderContext} from "../contexts/WalletContext";

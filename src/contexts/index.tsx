@@ -8,17 +8,16 @@ import {TorusContext} from './TorusContext'
 import {ConfigContextWithReducer} from './ConfigContext'
 import {ProgressBarContextWithReducer} from "./ProgressBarContext"
 import {SwapContext} from "./SwapContext";
-import {NotificationSystem} from '../components/organisms'
-import {PopupsContainer} from '../components/PopupsContainer'
+import {NotificationSystem} from '../components/old/organisms'
+import {PopupsContainer} from '../components/old/PopupsContainer'
 import {StateHashContext} from './StateHashContext'
 import {PairsContext} from "./PairsContext";
 import {PoolContext} from "./PoolContext";
 import {WalletContext} from "./WalletContext";
-
+import {UiProvider} from 'rengo-ui-kit';
 export const BigContext = ({children}: { children: ReactNode }) => {
-
     return (
-        <ThemeContext>
+        <UiProvider>
             <TokensContext>
                 <PairsContext>
                     <PoolContext>
@@ -48,6 +47,6 @@ export const BigContext = ({children}: { children: ReactNode }) => {
                     </PoolContext>
                 </PairsContext>
             </TokensContext>
-        </ThemeContext>
+        </UiProvider>
     )
 }

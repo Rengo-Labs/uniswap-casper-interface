@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render, fireEvent } from '@testing-library/react'
 import "../../../../mocks/components/organisms/LiquidityRemovingPopupModule/index.mock"
 import {StateHashContextMock, TestContext} from "../../../../mocks/contexts/LiquidityContext/index.mocks"
-import { LiquidityRemovingWithInputRangeModule } from "../../../../components/organisms/LiquidityRemovingWithInputRangeModule"
+import { LiquidityRemovingWithInputRangeModule } from "../../../../components/old/organisms/LiquidityRemovingWithInputRangeModule"
 import { act } from 'react-dom/test-utils'
 
 import React from "react";
@@ -14,7 +14,7 @@ describe('Liquidity removing popup', () => {
     const component = render(
       <TestContext>
         <LiquidityContext>
-          <LiquidityRemovingWithInputRangeModule 
+          <LiquidityRemovingWithInputRangeModule
             isConnected={true}
             openedPopup={false}
             firstSymbol="WETH"

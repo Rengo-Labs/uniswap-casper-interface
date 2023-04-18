@@ -3,7 +3,7 @@ import {PairsContextProvider} from "../PairsContext";
 import PoolResponsibilities from "../../commons/PoolResponsabilities";
 import {PairData} from "../../reducers/PairsReducer";
 import {Row, useAsyncDebounce} from "react-table";
-import {TableInstance} from "../../components/organisms/PoolModule";
+import {TableInstance} from "../../components/old/organisms/PoolModule";
 
 interface poolContextProps {
     previousQuery: () => void;

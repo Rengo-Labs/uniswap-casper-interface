@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import {BrowserRouter as Router} from 'react-router-dom';
 import {render, fireEvent} from '@testing-library/react'
-import {PoolModule} from "../../../../components/organisms/PoolModule";
+import {PoolModule} from "../../../../components/old/organisms/PoolModule";
 
 import {jest} from "@jest/globals";
 jest.mock('axios', () => {})

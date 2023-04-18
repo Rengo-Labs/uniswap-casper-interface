@@ -18,7 +18,7 @@ jest.mock('../../../../store/store', () => {
 })
 jest.mock('axios', () => {})
 jest.mock('@toruslabs/casper-embed', () => {})
-import {CollapsingBox} from "../../../../components/molecules/CollapsingBox";
+import {CollapsingBox} from "../../../../components/old/molecules/CollapsingBox";
 
 describe("Test for swap details", () => {
 
