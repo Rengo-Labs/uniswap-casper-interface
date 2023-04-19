@@ -3,7 +3,7 @@ import {
   CLKey,
   CLPublicKey,
   CLByteArray,
-  PUBLIC_KEY_ID,
+  PUBLIC_KEY_TYPE,
 } from 'casper-js-sdk';
 
 export type RecipientType = CLPublicKey | CLAccountHash | CLByteArray;
@@ -15,7 +15,7 @@ export type RecipientType = CLPublicKey | CLAccountHash | CLByteArray;
  * @returns a CLKey encoding the public key
  */
  export const createRecipientAddress = (recipient: RecipientType): CLKey => {
-  if (recipient.clType().toString() === PUBLIC_KEY_ID) {
+  if (recipient.clType().toString() === PUBLIC_KEY_TYPE) {
     return new CLKey(new CLAccountHash((recipient as CLPublicKey).toAccountHash()));
   } else {
     return new CLKey(recipient);
