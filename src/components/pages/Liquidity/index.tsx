@@ -1,8 +1,9 @@
 import React from 'react';
+import Layout from "../../../layout";
 export const Liquidity = () => {
     return (
-        <div>
-            Liquidity
-        </div>
+        <Layout>
+            <div>Liquidity</div>
+        </Layout>
     );
 }

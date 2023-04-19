@@ -1,8 +1,9 @@
 import React from 'react';
+import Layout from "../../../layout";
 export const Tokens = () => {
     return (
-        <div>
-            <h1>Tokens</h1>
-        </div>
+        <Layout>
+            <div>Tokens</div>
+        </Layout>
     )
 }
