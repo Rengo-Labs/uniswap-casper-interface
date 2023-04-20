@@ -9,9 +9,6 @@ import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WrappedMolecule, WrappedTemplate} from "./styles";
 
-// TODO REMOVE ONLY FOR TEST
-import {Container, Row, Column} from 'rengo-ui-kit'
-
 export const SwapTemplate = () => {
     const {
         onIncreaseAllow,
@@ -58,24 +55,6 @@ export const SwapTemplate = () => {
             <WrappedMolecule>
                 My liquidity
             </WrappedMolecule>
-
-            <Container className="m-3 p-4">
-                <Row>
-                    <Column props={{xs: 12, md: 6}}>
-                        <p>
-                            <b>Swap graphics</b>
-                        </p>
-                    </Column>
-                    <Column props={{xs: 12, md: 6}}>
-                        <p>
-                            <b>Swap token</b>
-                        </p>
-                    </Column>
-                    <Column props={{xs: 12, md: 12}}>
-                        <p>Pool Table</p>
-                    </Column>
-                </Row>
-            </Container>
         </WrappedTemplate>
 
     )
