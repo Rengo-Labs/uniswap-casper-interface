@@ -11,6 +11,7 @@ import poolIcon from "../assets/newDesignIcons/pool-icon.svg";
 import casperWallet from "../assets/newDesignIcons/casper-wallet.svg";
 import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
 import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
+import casperLogo from "../assets/newDesignIcons/type_logo.svg";
 
 
 export interface ILayoutProps {
@@ -91,6 +92,7 @@ const Layout = ({ children }: ILayoutProps) => {
         title="casperswap"
         links={routes}
         menuIcon={casperIcon}
+        casperIcon={casperLogo}
         rightAction={rightAction}
         toggle={{
           isActive: selectedTheme === "dark",
