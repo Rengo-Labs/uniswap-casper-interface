@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-
 import { useSearchParams } from 'react-router-dom';
-
 import {formatNaN, getListPath, Token} from '../../../commons';
 import { globalStore } from '../../../store/store';
 import isCSPRValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
-import arrowIcon from '../../../assets/newIcons/flecha.svg'
 import BigNumber from 'bignumber.js';
+import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
 
 interface TokenSwapperProps {
   onIncreaseAllow,
