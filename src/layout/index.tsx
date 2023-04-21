@@ -11,7 +11,7 @@ import poolIcon from "../assets/newDesignIcons/pool-icon.svg";
 import casperWallet from "../assets/newDesignIcons/casper-wallet.svg";
 import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
 import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
-import { ChildrenContainer, Container, NavbarContainer } from "./styles";
+import casperLogo from "../assets/newDesignIcons/type_logo.svg";
 
 
 export interface ILayoutProps {
@@ -100,32 +100,28 @@ const Layout = ({ children }: ILayoutProps) => {
   };
 
   return (
-    <Container>
-        <Menu
-          ref={menuRef}
-          casperIcon={''}
-          title=""
-          links={routes}
-          menuIcon={casperLogo}
-          rightAction={rightAction}
-          toggle={{
-            isActive: selectedTheme === "dark",
-            toggle: () =>
-              toggleTheme(selectedTheme === "dark" ? "default" : "dark"),
-            labelText: "",
-            variant: ToggleVariant.ThemeSwitcher,
-          }}
-        />
-
-        <WalletConnection
-          closeCallback={handleConnectionPopup}
-          wallets={WALLETS_DATA}
-          isOpen={showConnectionPopup}
-        />
-      <ChildrenContainer menuHeight={menuHeight}>
-        {children}
-      </ChildrenContainer>
-    </Container>
+    <div>
+      <Menu
+        title="casperswap"
+        links={routes}
+        menuIcon={casperIcon}
+        casperIcon={casperLogo}
+        rightAction={rightAction}
+        toggle={{
+          isActive: selectedTheme === "dark",
+          toggle: () =>
+            toggleTheme(selectedTheme === "dark" ? "default" : "dark"),
+          labelText: "",
+          variant: ToggleVariant.ThemeSwitcher,
+        }}
+      />
+      <WalletConnection
+        closeCallback={handleConnectionPopup}
+        wallets={WALLETS_DATA}
+        isOpen={showConnectionPopup}
+      />
+      {children}
+    </div>
   );
 };
 
