@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Menu, UIProviderContext, ToggleVariant, WalletConnection } from "rengo-ui-kit";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +11,7 @@ import poolIcon from "../assets/newDesignIcons/pool-icon.svg";
 import casperWallet from "../assets/newDesignIcons/casper-wallet.svg";
 import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
 import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
+import { ChildrenContainer, Container, NavbarContainer } from "./styles";
 
 
 export interface ILayoutProps {
@@ -46,10 +47,18 @@ export const WALLETS_DATA = [
   ]
 
 const Layout = ({ children }: ILayoutProps) => {
+  const menuRef = useRef(null);
   const navigate = useNavigate();
+  const [menuHeight, setMenuHeight] = useState(0);
   const { selectedTheme, toggleTheme } = useContext<ContextProps>(UIProviderContext);
-    const [showConnectionPopup, setShowConnectionPopup] = React.useState(false);
+  const [showConnectionPopup, setShowConnectionPopup] = React.useState(false);
 
+    useEffect(() => {
+      // Get height of menu
+      const height = menuRef.current?.offsetHeight;
+      setMenuHeight(height);
+    }, [menuRef]);
+    
     const handleConnectionPopup = () => {
         setShowConnectionPopup(!showConnectionPopup);
     };
@@ -91,27 +100,32 @@ const Layout = ({ children }: ILayoutProps) => {
   };
 
   return (
-    <div>
-      <Menu
-        title="casperswap"
-        links={routes}
-        menuIcon={casperIcon}
-        rightAction={rightAction}
-        toggle={{
-          isActive: selectedTheme === "dark",
-          toggle: () =>
-            toggleTheme(selectedTheme === "dark" ? "default" : "dark"),
-          labelText: "",
-          variant: ToggleVariant.ThemeSwitcher,
-        }}
-      />
-      <WalletConnection
-        closeCallback={handleConnectionPopup}
-        wallets={WALLETS_DATA}
-        isOpen={showConnectionPopup}
-      />
-      {children}
-    </div>
+    <Container>
+        <Menu
+          ref={menuRef}
+          casperIcon={''}
+          title=""
+          links={routes}
+          menuIcon={casperLogo}
+          rightAction={rightAction}
+          toggle={{
+            isActive: selectedTheme === "dark",
+            toggle: () =>
+              toggleTheme(selectedTheme === "dark" ? "default" : "dark"),
+            labelText: "",
+            variant: ToggleVariant.ThemeSwitcher,
+          }}
+        />
+
+        <WalletConnection
+          closeCallback={handleConnectionPopup}
+          wallets={WALLETS_DATA}
+          isOpen={showConnectionPopup}
+        />
+      <ChildrenContainer menuHeight={menuHeight}>
+        {children}
+      </ChildrenContainer>
+    </Container>
   );
 };
 
