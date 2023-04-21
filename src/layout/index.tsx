@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
-import { Menu, UIProviderContext, ToggleVariant, WalletConnection } from "rengo-ui-kit";
-import { useNavigate } from "react-router-dom";
+import React, {useContext} from "react";
+import {Menu, UIProviderContext, ToggleVariant, WalletConnection} from "rengo-ui-kit";
+import {useNavigate} from "react-router-dom";
 
 import casperIcon from "../assets/newDesignIcons/casperIcon.svg";
 // import walletIcon from '../assets/newDesignIcons/wallet-icon.svg'
@@ -14,100 +14,100 @@ import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
 
 
 export interface ILayoutProps {
-  children?: React.ReactElement;
+    children?: React.ReactElement;
 }
 
 export const WALLETS_DATA = [
     {
-      id: 1,
-      name: 'Casper Signer',
-      icon: casperWallet,
+        id: 1,
+        name: 'Casper Signer',
+        icon: casperWallet,
     },
     {
-      id: 2,
-      name: 'Casper Wallet',
-      icon: casperWallet,
+        id: 2,
+        name: 'Casper Wallet',
+        icon: casperWallet,
     },
     {
-      id: 3,
-      name: 'Ledger',
-      icon: ledgerWallet,
+        id: 3,
+        name: 'Ledger',
+        icon: ledgerWallet,
     },
     {
-      id: 4,
-      name: 'Torus Wallet',
-      icon: torusWallet,
+        id: 4,
+        name: 'Torus Wallet',
+        icon: torusWallet,
     },
-  ]
+]
 
-const Layout = ({ children }: ILayoutProps) => {
-  const navigate = useNavigate();
-  const { selectedTheme, toggleTheme } = useContext(UIProviderContext);
+const Layout = ({children}: ILayoutProps) => {
+    const navigate = useNavigate();
+    const {selectedTheme, toggleTheme} = useContext(UIProviderContext);
     const [showConnectionPopup, setShowConnectionPopup] = React.useState(false);
 
     const handleConnectionPopup = () => {
         setShowConnectionPopup(!showConnectionPopup);
     };
 
-  const routes = [
-    {
-      icon: swapIcon,
-      page: "Swap",
-      path: "/swap",
-      onAction: () => navigate("/swap"),
-    },
-    {
-      icon: liquidityIcon,
-      page: "Liquidity",
-      path: "/liquidity",
-      onAction: () => navigate("/liquidity"),
-    },
-    {
-      icon: balanceIcon,
-      page: "Balance",
-      path: "/balance",
-      onAction: () => navigate("/balance"),
-    },
-    {
-      icon: poolIcon,
-      page: "Pool",
-      path: "/pools",
-      onAction: () => navigate("/pools"),
-    },
-  ];
+    const routes = [
+        {
+            icon: swapIcon,
+            page: "Swap",
+            path: "/swap",
+            onAction: () => navigate("/swap"),
+        },
+        {
+            icon: liquidityIcon,
+            page: "Liquidity",
+            path: "/liquidity",
+            onAction: () => navigate("/liquidity"),
+        },
+        {
+            icon: balanceIcon,
+            page: "Balance",
+            path: "/balance",
+            onAction: () => navigate("/balance"),
+        },
+        {
+            icon: poolIcon,
+            page: "Pool",
+            path: "/pools",
+            onAction: () => navigate("/pools"),
+        },
+    ];
 
-  const rightAction = {
-    startIcon: balanceIcon,
-    title: "Connect Wallet",
-    background: "#7AEDD4",
-    color: "#715FF5",
-    onAction: () => setShowConnectionPopup(true),
-    endIcon: balanceIcon,
-  };
+    const rightAction = {
+        startIcon: balanceIcon,
+        title: "Connect Wallet",
+        background: "#7AEDD4",
+        color: "#715FF5",
+        onAction: () => setShowConnectionPopup(true),
+        endIcon: balanceIcon,
+    };
 
-  return (
-    <div>
-      <Menu
-        title="casperswap"
-        links={routes}
-        menuIcon={casperIcon}
-        rightAction={rightAction}
-        toggle={{
-          isActive: selectedTheme === "dark",
-          toggle: () =>
-            toggleTheme(selectedTheme === "dark" ? "default" : "dark"),
-          labelText: "",
-          variant: ToggleVariant.ThemeSwitcher,
-        }}
-      />
-      <WalletConnection
-        closeCallback={handleConnectionPopup}
-        wallets={WALLETS_DATA}
-        isOpen={showConnectionPopup}
-      />
-      {children}
-    </div>
-  );
+    return (
+        <div>
+            <Menu
+                title="casperswap"
+                links={routes}
+                menuIcon={casperIcon}
+                rightAction={rightAction}
+                toggle={{
+                    isActive: selectedTheme === "dark",
+                    toggle: () =>
+                        toggleTheme(selectedTheme === "dark" ? "default" : "dark"),
+                    labelText: "",
+                    variant: ToggleVariant.ThemeSwitcher,
+                }}
+            />
+            <WalletConnection
+                closeCallback={handleConnectionPopup}
+                wallets={WALLETS_DATA}
+                isOpen={showConnectionPopup}
+            />
+            {children}
+        </div>
+    );
 };
 
 export default Layout;

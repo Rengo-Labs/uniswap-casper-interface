@@ -12,6 +12,7 @@ export const WrappedMolecule = styled.div`
     flex-direction: column;
     width: 90%;
     align-self: center;
+    margin-top: 100px;
     
     @media ${device.mobileL} {
         flex-direction: row;
