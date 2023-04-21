@@ -7,6 +7,7 @@ export const ROUTER_CONTRACT_HASH = process.env.REACT_APP_ROUTER_CONTRACT_HASH;
 export const ROUTER_PACKAGE_HASH = process.env.REACT_APP_ROUTER_PACKAGE_HASH;
 export const INFO_SWAP_URL = process.env.REACT_APP_INFO_SWAP_URL;
 export const INFO_BLOCK_URL = process.env.REACT_APP_INFO_BLOCK_URL;
+export const API_BLOCKCHAIN_INFO = process.env.REACT_APP_API_BLOCKCHAIN_INFO;
 
 export const SUPPORTED_NETWORKS = {
   blockExplorerUrl: process.env.REACT_APP_BLOCK_EXPLORER_URL,

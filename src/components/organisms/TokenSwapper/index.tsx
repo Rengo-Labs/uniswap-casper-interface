@@ -1,5 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { useSearchParams } from 'react-router-dom';
+
 import {formatNaN, getListPath, Token} from '../../../commons';
 import { globalStore } from '../../../store/store';
 import isCSPRValid from '../../../hooks/isCSPRValid';
@@ -7,17 +9,11 @@ import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import arrowIcon from '../../../assets/newIcons/flecha.svg'
 import BigNumber from 'bignumber.js';
 
-enum tokenType {
-  tokenA = 'tokenA',
-  tokenB = 'tokenB',
-}
-
 interface TokenSwapperProps {
   onIncreaseAllow,
   gasPriceSelectedForSwapping,
   onConnectWallet,
   isConnected,
-  onConfirmSwapConfig,
   getSwapDetails,
   progressBar,
   getProgress,
@@ -30,7 +26,8 @@ interface TokenSwapperProps {
   onSelectFirstToken,
   onSelectSecondToken,
   tokenState,
-  onSwitchTokens
+  onSwitchTokens,
+  onActionConfirm
 }
 
 const TokenSwapper = ({
@@ -38,7 +35,6 @@ const TokenSwapper = ({
                         gasPriceSelectedForSwapping,
                         onConnectWallet,
                         isConnected,
-                        onConfirmSwapConfig,
                         getSwapDetails,
                         progressBar,
                         getProgress,
@@ -49,7 +45,8 @@ const TokenSwapper = ({
                         firstTokenSelected, secondTokenSelected,
                         onSelectFirstToken,
                         onSelectSecondToken, tokenState,
-                        onSwitchTokens
+                        onSwitchTokens,
+                        onActionConfirm
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState(false)
@@ -127,17 +124,6 @@ const TokenSwapper = ({
   function resetAll() {
     amountSwapTokenASetter(0);
     amountSwapTokenBSetter(0);
-  }
-
-  async function onConfirmSwap() {
-    await onConfirmSwapConfig(
-        amountSwapTokenA,
-        amountSwapTokenB,
-        slippageTolerance,
-        gasFee
-    );
-
-    resetAll();
   }
 
   const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token) => {
@@ -389,7 +375,7 @@ const TokenSwapper = ({
                 }}}>`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`</Button>
           )}
           {isApproved && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onConfirmSwap()}}>SWAP</Button>
+              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB, slippageTolerance, gasFee)}}>SWAP</Button>
           )}
         </div>
         {openPoolDialog && (

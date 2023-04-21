@@ -27,6 +27,16 @@ export const SwapTemplate = () => {
     const {refresh} = useContext(StateHashProviderContext)
     const {firstTokenSelected, secondTokenSelected, onSelectFirstToken, onSelectSecondToken, tokenState, onSwitchTokens} = useContext(TokensProviderContext)
 
+    const onActionConfirm = async (amountA, amountB, slippage, gas) => {
+        await onConfirmSwapConfig(
+          amountA,
+          amountB,
+          slippage,
+          gas
+        );
+
+        refresh();
+    }
 
     return (
         <WrappedTemplate>
@@ -40,7 +50,6 @@ export const SwapTemplate = () => {
                         gasPriceSelectedForSwapping={gasPriceSelectedForSwapping}
                         onConnectWallet={onConnectWallet}
                         isConnected={isConnected}
-                        onConfirmSwapConfig={onConfirmSwapConfig}
                         getSwapDetails={getSwapDetails}
                         progressBar={progressBar}
                         getProgress={getProgress}
@@ -54,6 +63,7 @@ export const SwapTemplate = () => {
                         onSelectSecondToken={onSelectSecondToken}
                         tokenState={tokenState}
                         onSwitchTokens={onSwitchTokens}
+                        onActionConfirm={onActionConfirm}
                     />
                 </div>
             </WrappedMolecule>
