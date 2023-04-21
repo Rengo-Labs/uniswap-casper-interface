@@ -1,15 +1,10 @@
 import React from 'react';
 import Layout from '../../../layout';
-import TokenSwapper from "../../organisms/TokenSwapper";
+import {SwapTemplate} from "../../templates";
 export const Swap = () => {
-  return (
-      <Layout>
-        <div style={{display: "flex"}}>
-          <div style={{flex: "1"}}></div>
-          <div style={{flex: "1"}}>
-            <TokenSwapper />
-          </div>
-        </div>
-      </Layout>
-  )
+    return (
+        <Layout>
+            <SwapTemplate />
+        </Layout>
+    )
 };
