@@ -3,7 +3,7 @@ import Layout from '../../../layout';
 export const Swap = () => {
   return (
       <Layout>
-            <div>Swap</div>
+            <div style={{marginTop: '88px'}}>Swap</div>
       </Layout>
   )
 };
