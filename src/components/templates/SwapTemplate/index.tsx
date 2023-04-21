@@ -1,5 +1,6 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import TokenSwapper from "../../organisms/TokenSwapper";
+import SwapDetail from "../../organisms/SwapDetail";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
 import {SwapProviderContext} from "../../../contexts/SwapContext";
@@ -21,15 +22,18 @@ export const SwapTemplate = () => {
     } = useContext(WalletProviderContext);
     const { onConfirmSwapConfig, getSwapDetails } =
         useContext(SwapProviderContext);
-    const { progressBar } = useContext(ProgressBarProviderContext);
+    const { progressBar, getProgress } = useContext(ProgressBarProviderContext);
     const {calculateUSDtokens, pairState, findReservesBySymbols} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {firstTokenSelected, secondTokenSelected, onSelectFirstToken, onSelectSecondToken, tokenState, onSwitchTokens} = useContext(TokensProviderContext)
 
+
     return (
         <WrappedTemplate>
             <WrappedMolecule>
-                <div style={{flex: "1"}}>Chart</div>
+                <div style={{flex: "1"}}>
+                     <SwapDetail />
+                </div>
                 <div style={{flex: "1"}}>
                     <TokenSwapper
                         onIncreaseAllow={onIncreaseAllow}
@@ -39,6 +43,7 @@ export const SwapTemplate = () => {
                         onConfirmSwapConfig={onConfirmSwapConfig}
                         getSwapDetails={getSwapDetails}
                         progressBar={progressBar}
+                        getProgress={getProgress}
                         calculateUSDtokens={calculateUSDtokens}
                         pairState={pairState}
                         findReservesBySymbols={findReservesBySymbols}
@@ -52,10 +57,6 @@ export const SwapTemplate = () => {
                     />
                 </div>
             </WrappedMolecule>
-            <WrappedMolecule>
-                My liquidity
-            </WrappedMolecule>
         </WrappedTemplate>
-
     )
 };

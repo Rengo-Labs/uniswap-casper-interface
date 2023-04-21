@@ -1,5 +1,3 @@
-import BigNumber from 'bignumber.js';
-
 import React, { useContext, useEffect, useState } from 'react';
 import { ConfigProviderContext } from '../../../contexts/ConfigContext';
 
