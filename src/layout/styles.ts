@@ -1,16 +1,9 @@
 import styled from 'styled-components'
 
-export const Container = styled.div`
+export const Container = styled.div<{selectedTheme: string}>`
   width: 100%;
-  /* background: tomato;
-  display: flex;
-  flex-direction: column; */
-`;
-
-export const NavbarContainer = styled.div`
-  width: 100%;
-  /* position: relative; */
-  /* position: fixed; */
+  height: 100%;
+  background: ${({ selectedTheme }) => selectedTheme === 'default' ? '#E5F5FC': '#241E52'};
 `;
 
 export const ChildrenContainer = styled.div<{menuHeight: number}>`
