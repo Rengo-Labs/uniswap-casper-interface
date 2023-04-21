@@ -7,14 +7,20 @@ import swapIcon from '../assets/newIcons/swapIcon.svg'
 import liquidityIcon from '../assets/newIcons/liquidityIcon.svg'
 import poolIcon from '../assets/newIcons/poolIcon.svg'
 import walletIcon from '../assets/newIcons/wallet-icon.svg'
+import { NavbarContainer } from './styles';
 
 export interface ILayoutProps {
     children?: React.ReactElement;
 }
 
+interface ContextProps {
+  selectedTheme: string
+  toggleTheme: (theme: string) => void
+}
+
 const Layout = ({children}: ILayoutProps) => {
     const navigate = useNavigate();
-    const {selectedTheme, toggleTheme} = useContext(UIProviderContext)
+    const {selectedTheme, toggleTheme} = useContext<ContextProps>(UIProviderContext)
 
     const routes = [
         {icon: swapIcon, page: 'Swap', path: '/swap', onAction: () => navigate('/swap')},
@@ -32,22 +38,24 @@ const Layout = ({children}: ILayoutProps) => {
     }
 
     return (
-        <div>
+        <>
+          <NavbarContainer>
             <Menu
-                title='CASPERSWAP'
-                isMobile={true}
-                links={routes}
-                menuIcon={casperIcon}
-                rightAction={rightAction}
-                toggle={{
-                    isActive: selectedTheme === 'dark',
-                    toggle: () => toggleTheme(selectedTheme === 'dark' ? 'default' : 'dark'),
-                    labelText: '',
-                    variant: ToggleVariant.ThemeSwitcher
-                }}
+              title='CASPERSWAP'
+              isMobile={true}
+              links={routes}
+              menuIcon={casperIcon}
+              rightAction={rightAction}
+              toggle={{
+                  isActive: selectedTheme === 'dark',
+                  toggle: () => toggleTheme(selectedTheme === 'dark' ? 'default' : 'dark'),
+                  labelText: '',
+                  variant: ToggleVariant.ThemeSwitcher
+              }}
             />
+          </NavbarContainer>
             {children}
-        </div>
+        </>
     );
 }
 
