@@ -321,6 +321,47 @@ const TokenSwapper = ({
     setPriceB((parseFloat(_usdB) * formatNaN(rateB)).toFixed(2));
   };
 
+  //TODO This conversion is only to test
+  const tokenListData = Object.values(tokenState.tokens).map((token) => {
+    const {chainId, name, amount, logoURI}: any = token;
+    return (
+        {
+          id: chainId,
+          name: name,
+          fullName: name,
+          amount: amount,
+          tokenImg: logoURI
+        }
+    );
+  });
+
+  const popularTokens = Object.values(tokenState.tokens).map((token) => {
+    const {chainId, name, amount, logoURI}: any = token;
+    return (
+        {
+          id: chainId,
+          name: name,
+          fullName: name,
+          amount: amount,
+          tokenImg: logoURI
+        }
+    );
+  });
+
+  async function selectAndCloseTokenA(token: Token): Promise<void> {
+    if (token.symbol === secondTokenSelected.symbol) {
+      return;
+    }
+    onSelectFirstToken(token);
+    setOpenPoolDialog(false);
+    // const minTokenToReceive = await updateSwapDetail(
+    //     token,
+    //     secondTokenSelected,
+    //     amountSwapTokenA,
+    //     token
+    // );
+    // amountSwapTokenBSetter(formatNaN(minTokenToReceive));
+  }
 
   return (
       <div style={{display: "flex", flexDirection: "column", padding: "8px 32px 8px 32px", gap: "10px"}}>
@@ -379,8 +420,9 @@ const TokenSwapper = ({
         {openPoolDialog && (
             <CreatePoolDialog
                 closeCallback={() => setOpenPoolDialog(false)}
-                tokenListData={Object.values(tokenState.tokens) as any}
-                popularTokensData={Object.values(tokenState.tokens) as any}
+                tokenListData={tokenListData}
+                popularTokensData={popularTokens}
+                onSelectToken={() => selectAndCloseTokenA}
             />
         )}
       </div>
