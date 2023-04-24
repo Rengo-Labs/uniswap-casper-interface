@@ -14,13 +14,11 @@ export const ChildrenContainer = styled.div<{ menuHeight: number, isMobile: bool
 /* Double column styles */
 export const DoubleColumnContainer = styled.section<{ isMobile: boolean }>`
   width: 100%;
-  display: grid;
+  display: ${({isMobile}) => isMobile ? 'flex' : 'grid'};
   grid-template-columns: ${({isMobile}) => isMobile ? 'repeat(1, 1fr)' : 'repeat(2, 1fr)'};
   gap: ${({isMobile}) => isMobile ? '40px' : '20px'};
   margin-bottom: ${({isMobile}) => isMobile ? '39px' : '71px'};
-  &:nth-child(1) {
-    order: ${({isMobile}) => isMobile ? '-1' : '2'};
-  }
+  flex-direction: column-reverse;
 `;
 
 export const TitleContainer = styled.div<{isMobile: boolean}>`
