@@ -1,9 +1,8 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useState, useRef} from "react";
 import {Menu, ToggleVariant, UIProviderContext, WalletConnection} from "rengo-ui-kit";
 import {useNavigate} from "react-router-dom";
 
 import casperIcon from "../assets/newDesignIcons/casperIcon.svg";
-// import walletIcon from '../assets/newDesignIcons/wallet-icon.svg'
 import casperTitle from '../assets/newDesignIcons/casperTitle.svg'
 import swapIcon from "../assets/newDesignIcons/swap-icon.svg";
 import liquidityIcon from "../assets/newDesignIcons/liquidity.svg";
@@ -12,18 +11,23 @@ import poolIcon from "../assets/newDesignIcons/pool-icon.svg";
 import casperWallet from "../assets/newDesignIcons/casper-wallet.svg";
 import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
 import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
+import { ChildrenContainer, Container } from "./styles";
 import {WalletProviderContext} from '../contexts/WalletContext'
 import {WalletName} from "../commons";
 import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
-
 
 export interface ILayoutProps {
     children?: React.ReactElement;
 }
 
+interface ContextProps {
+    selectedTheme: string
+    toggleTheme: (theme: string) => void
+}
+
 const Layout = ({children}: ILayoutProps) => {
     const navigate = useNavigate();
-    const {selectedTheme, toggleTheme} = useContext(UIProviderContext);
+    const { selectedTheme, toggleTheme } = useContext<ContextProps>(UIProviderContext);
     const [showConnectionPopup, setShowConnectionPopup] = React.useState(false);
     const {onConnectWallet, isConnected, walletState} = useContext(WalletProviderContext)
     const [rightAction, setRightAction] = useState({
@@ -37,6 +41,9 @@ const Layout = ({children}: ILayoutProps) => {
         onActionConnected: null,
         endIcon: balanceIcon,
     } as OptAction);
+
+    const menuRef = useRef(null);
+    const [menuHeight, setMenuHeight] = useState(0);
 
     useEffect(() => {
         if(isConnected) {
@@ -114,8 +121,9 @@ const Layout = ({children}: ILayoutProps) => {
     ];
 
     return (
-        <div>
+        <Container selectedTheme={selectedTheme}>
             <Menu
+                ref={menuRef}
                 casperIcon={casperTitle}
                 title="casperswap"
                 links={routes}
@@ -135,8 +143,10 @@ const Layout = ({children}: ILayoutProps) => {
                 isOpen={showConnectionPopup}
                 linkCallback={() => {}}
             />
+            <ChildrenContainer menuHeight={menuHeight}>
             {children}
-        </div>
+            </ChildrenContainer>
+        </Container>
     );
 };
 
