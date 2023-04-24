@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Menu, UIProviderContext, ToggleVariant, WalletConnection } from "rengo-ui-kit";
+import { createGlobalStyle } from 'styled-components';
+import { Menu, UIProviderContext, ToggleVariant, WalletConnection, useDeviceType } from "rengo-ui-kit";
 import { useNavigate } from "react-router-dom";
 
 import casperIcon from "../assets/newDesignIcons/casperIcon.svg";
@@ -13,6 +14,7 @@ import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
 import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
 import casperLogo from "../assets/newDesignIcons/type_logo.svg";
 import { ChildrenContainer, Container } from "./styles";
+import { DeviceType } from "rengo-ui-kit/lib/hooks/types";
 
 
 export interface ILayoutProps {
@@ -24,6 +26,16 @@ interface ContextProps {
   toggleTheme: (theme: string) => void
 }
 
+enum AvailableThemes {
+  Dark = 'dark',
+  Default = 'default'
+}
+
+const GlobalStyle = createGlobalStyle<{ selectedTheme: string}>`
+  body {
+    background-color: ${({ selectedTheme }) => selectedTheme === AvailableThemes.Default ? '#E5F5FC': '#241E52' };
+  }
+`;
 
 const WALLETS_DATA = [
   {
@@ -58,6 +70,9 @@ const Layout = ({ children }: ILayoutProps) => {
   const { selectedTheme, toggleTheme } = useContext<ContextProps>(UIProviderContext);
   const [menuHeight, setMenuHeight] = useState(0);
   const [showConnectionPopup, setShowConnectionPopup] = React.useState(false);
+
+  const deviceType = useDeviceType()
+  const isMobile = deviceType === 'mobile'
 
   useEffect(() => {
     const height = menuRef.current?.offsetHeight;
@@ -108,6 +123,7 @@ const Layout = ({ children }: ILayoutProps) => {
 
   return (
     <Container selectedTheme={selectedTheme}>
+      <GlobalStyle selectedTheme={selectedTheme} />
       <Menu
         ref={menuRef}
         title="casperswap"
@@ -116,9 +132,9 @@ const Layout = ({ children }: ILayoutProps) => {
         casperIcon={casperLogo}
         rightAction={rightAction}
         toggle={{
-          isActive: selectedTheme === "dark",
+          isActive: selectedTheme === AvailableThemes.Dark,
           toggle: () =>
-            toggleTheme(selectedTheme === "dark" ? "default" : "dark"),
+            toggleTheme(selectedTheme === AvailableThemes.Dark ? AvailableThemes.Default : AvailableThemes.Dark),
           labelText: "",
           variant: ToggleVariant.ThemeSwitcher,
         }}
@@ -128,7 +144,9 @@ const Layout = ({ children }: ILayoutProps) => {
         wallets={WALLETS_DATA}
         isOpen={showConnectionPopup}
       />
-      <ChildrenContainer menuHeight={menuHeight}>
+      <ChildrenContainer
+        menuHeight={menuHeight}
+        isMobile={isMobile}>
         {children}
       </ChildrenContainer>
     </Container>

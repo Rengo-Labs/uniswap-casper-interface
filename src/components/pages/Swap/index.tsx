@@ -3,7 +3,11 @@ import Layout from '../../../layout';
 export const Swap = () => {
   return (
       <Layout>
-            <div style={{marginTop: '88px'}}>Swap</div>
+            <div >Swap
+            <div style={{height: '888px'}}>=====</div>
+            <div style={{height: '888px'}}>=====</div>
+            <div style={{height: '888px'}}>===</div>
+            </div>
       </Layout>
   )
 };
