@@ -1,7 +1,14 @@
+import { ReactNode } from 'react'
 import { SingleColumnContainer } from './styles'
 
-export const SingleColumn = (children) => {
+interface SingleColumnProps {
+  children: ReactNode
+  isMobile: boolean
+}
+export const SingleColumn = ({ children, isMobile }: SingleColumnProps) => {
   return (
-    <SingleColumnContainer>{ children }</SingleColumnContainer>
+    <SingleColumnContainer isMobile={isMobile}>
+      {children}
+    </SingleColumnContainer>
   )
 }

@@ -13,11 +13,17 @@ export const ChildrenContainer = styled.div<{menuHeight: number, isMobile: boole
 `;
 
 /* Double column styles */
-export const DoubleColumnContainer = styled.section`
+export const DoubleColumnContainer = styled.section<{ isMobile: boolean}>`
   width: 100%;
+  display: grid;
+  grid-template-columns: ${({ isMobile }) => isMobile ? 'repeat(1, 1fr)' : 'repeat(2, 1fr)' } ;
+  gap: ${({ isMobile }) => isMobile ? '40px' : '20px'};
+  background: lightblue;
+  margin-bottom: ${({ isMobile }) => isMobile ? '39px' : '71px' };
 `;
 
 /* Single column styles */
-export const SingleColumnContainer = styled.section`
+export const SingleColumnContainer = styled.section<{ isMobile: boolean}>`
   width: 100%;
+  margin-bottom: ${({ isMobile }) => isMobile ? '40px' : '50px' };
 `;
