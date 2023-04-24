@@ -18,7 +18,6 @@ export const DoubleColumnContainer = styled.section<{ isMobile: boolean}>`
   display: grid;
   grid-template-columns: ${({ isMobile }) => isMobile ? 'repeat(1, 1fr)' : 'repeat(2, 1fr)' } ;
   gap: ${({ isMobile }) => isMobile ? '40px' : '20px'};
-  background: lightblue;
   margin-bottom: ${({ isMobile }) => isMobile ? '39px' : '71px' };
 `;
 
