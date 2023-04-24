@@ -6,11 +6,12 @@ import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 import {PairsContextProvider} from "../../../contexts/PairsContext";
 import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
-import {WrappedMolecule, WrappedTemplate} from "./styles";
 import BigNumber from "bignumber.js";
 import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
+import {SingleColumn} from "../../../layout/SingleColumn";
+import {DoubleColumn} from "../../../layout/DoubleColumn";
 
-export const LiquidityTemplate = () => {
+export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
         gasPriceSelectedForSwapping,
@@ -20,9 +21,9 @@ export const LiquidityTemplate = () => {
         onConnectWallet,
         isConnected,
     } = useContext(WalletProviderContext);
-    const { onAddLiquidity, getLiquidityDetails } =
+    const {onAddLiquidity, getLiquidityDetails} =
         useContext(LiquidityProviderContext);
-    const { progressBar, getProgress } = useContext(ProgressBarProviderContext);
+    const {progressBar, getProgress} = useContext(ProgressBarProviderContext);
     const {calculateUSDtokens, pairState, findReservesBySymbols, getPoolList} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {
@@ -37,36 +38,36 @@ export const LiquidityTemplate = () => {
 
     async function onLiquidity(amountA, amountB, slippageTolerance, gasFee) {
         await onAddLiquidity(
-          amountA,
-          amountB,
-          slippageTolerance,
-          gasFee
+            amountA,
+            amountB,
+            slippageTolerance,
+            gasFee
         );
         refresh();
     }
 
     async function updateLiquidityDetail(
-      tokenA,
-      tokenB,
-      value = 0,
-      token = firstTokenSelected,
-      slippageTolerance
+        tokenA,
+        tokenB,
+        value = 0,
+        token = firstTokenSelected,
+        slippageTolerance
     ) {
-        const { reserve0, reserve1 } = findReservesBySymbols(
-          tokenA.symbol,
-          tokenB.symbol,
-          tokenState
+        const {reserve0, reserve1} = findReservesBySymbols(
+            tokenA.symbol,
+            tokenB.symbol,
+            tokenState
         );
 
         const getLiquidityDetailP = getLiquidityDetails(
-          tokenA,
-          tokenB,
-          reserve0,
-          reserve1,
-          value,
-          token,
-          slippageTolerance,
-          gasPriceSelectedForSwapping
+            tokenA,
+            tokenB,
+            reserve0,
+            reserve1,
+            value,
+            token,
+            slippageTolerance,
+            gasPriceSelectedForSwapping
         );
         const ps = [getLiquidityDetailP];
 
@@ -97,36 +98,35 @@ export const LiquidityTemplate = () => {
 
     const calculateTotalLP = (token0, token1) => {
         const filter = getPoolList().filter(
-          (r) => r.token0Symbol === token0 && r.token1Symbol === token1
+            (r) => r.token0Symbol === token0 && r.token1Symbol === token1
         );
         if (filter.length > 0) {
             const userLP = new BigNumber(filter[0].totalSupply).toFixed(
-              filter[0].decimals
+                filter[0].decimals
             );
             return userLP;
         }
 
         const filter2 = getPoolList().filter(
-          (r) => r.token1Symbol === token0 && r.token0Symbol === token1
+            (r) => r.token1Symbol === token0 && r.token0Symbol === token1
         );
         if (filter2.length > 0) {
             const userLP = new BigNumber(filter2[0].totalSupply).toFixed(
-              filter2[0].decimals
+                filter2[0].decimals
             );
             return userLP;
         }
     }
 
     return (
-        <WrappedTemplate>
-            <WrappedMolecule>
-                <div style={{flex: "1"}}>
-                     <LiquidityDetail />
-                </div>
-                <div style={{flex: "1"}}>
-
-                </div>
-            </WrappedMolecule>
-        </WrappedTemplate>
+        <>
+            <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
+                <LiquidityDetail/>
+                <div>test</div>
+            </DoubleColumn>
+            <SingleColumn isMobile={isMobile}>
+                <div>single column</div>
+            </SingleColumn>
+        </>
     )
 };

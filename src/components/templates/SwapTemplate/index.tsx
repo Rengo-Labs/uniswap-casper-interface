@@ -10,8 +10,10 @@ import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WrappedMolecule, WrappedTemplate} from "./styles";
 import {getListPath, Token} from "../../../commons";
+import {DoubleColumn} from '../../../layout/DoubleColumn';
+import {SingleColumn} from '../../../layout/SingleColumn';
 
-export const SwapTemplate = () => {
+export const SwapTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
         gasPriceSelectedForSwapping,
@@ -21,9 +23,9 @@ export const SwapTemplate = () => {
         onConnectWallet,
         isConnected,
     } = useContext(WalletProviderContext);
-    const { onConfirmSwapConfig, getSwapDetails } =
+    const {onConfirmSwapConfig, getSwapDetails} =
         useContext(SwapProviderContext);
-    const { progressBar, getProgress } = useContext(ProgressBarProviderContext);
+    const {progressBar, getProgress} = useContext(ProgressBarProviderContext);
     const {calculateUSDtokens, pairState, findReservesBySymbols} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {
@@ -40,25 +42,25 @@ export const SwapTemplate = () => {
 
     const onActionConfirm = async (amountA, amountB, slippage, gas) => {
         await onConfirmSwapConfig(
-          amountA,
-          amountB,
-          slippage,
-          gas
+            amountA,
+            amountB,
+            slippage,
+            gas
         );
 
         refresh();
     }
 
     async function updateSwapDetail(
-      tokenA: Token,
-      tokenB: Token,
-      value = 0,
-      token = firstTokenSelected,
-      slippage
+        tokenA: Token,
+        tokenB: Token,
+        value = 0,
+        token = firstTokenSelected,
+        slippage
     ) {
-        const { getSwapDetailResponse } = await calculateSwapDetailResponse(tokenA, tokenB, value, token, slippage)
-        const { tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath } =
-          getSwapDetailResponse;
+        const {getSwapDetailResponse} = await calculateSwapDetailResponse(tokenA, tokenB, value, token, slippage)
+        const {tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath} =
+            getSwapDetailResponse;
 
         return {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact, routePath};
     }
@@ -72,21 +74,21 @@ export const SwapTemplate = () => {
         let getSwapDetailResponse = null;
         let nextTokensToTransfer = value
 
-        if(pairExist) {
-            const { reserve0, reserve1 } = findReservesBySymbols(
-              tokenA.symbol,
-              tokenB.symbol,
-              tokenState
+        if (pairExist) {
+            const {reserve0, reserve1} = findReservesBySymbols(
+                tokenA.symbol,
+                tokenB.symbol,
+                tokenState
             );
             getSwapDetailResponse = await getSwapDetails(
-              tokenA,
-              tokenB,
-              reserve0,
-              reserve1,
-              value,
-              token,
-              slippage,
-              gasPriceSelectedForSwapping
+                tokenA,
+                tokenB,
+                reserve0,
+                reserve1,
+                value,
+                token,
+                slippage,
+                gasPriceSelectedForSwapping
             );
             setPairPath([tokenA.symbol, tokenB.symbol])
         } else {
@@ -96,24 +98,24 @@ export const SwapTemplate = () => {
             for (const pair of pairListPaths) {
                 const {symbol0, symbol1} = pair
                 const {reserve0, reserve1} = findReservesBySymbols(
-                  symbol0,
-                  symbol1,
-                  tokenState
+                    symbol0,
+                    symbol1,
+                    tokenState
                 );
                 getSwapDetailResponse = await getSwapDetails(
-                  {symbol: symbol0} as any,
-                  {symbol: symbol1} as any,
-                  reserve0,
-                  reserve1,
-                  nextTokensToTransfer,
-                  {symbol: symbol0} as any,
-                  slippage,
-                  gasPriceSelectedForSwapping
+                    {symbol: symbol0} as any,
+                    {symbol: symbol1} as any,
+                    reserve0,
+                    reserve1,
+                    nextTokensToTransfer,
+                    {symbol: symbol0} as any,
+                    slippage,
+                    gasPriceSelectedForSwapping
                 );
 
                 const {tokensToTransfer, priceImpact} = getSwapDetailResponse
-                priceImpact !== '<0.01'? priceImpactAcm += parseFloat(priceImpact.toString()) : priceImpactAcm = priceImpact
-                getSwapDetailResponse.priceImpact = isNaN(priceImpactAcm)? priceImpactAcm : priceImpactAcm.toFixed(2)
+                priceImpact !== '<0.01' ? priceImpactAcm += parseFloat(priceImpact.toString()) : priceImpactAcm = priceImpact
+                getSwapDetailResponse.priceImpact = isNaN(priceImpactAcm) ? priceImpactAcm : priceImpactAcm.toFixed(2)
                 nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
                 pairPath.push(symbol0, symbol1)
             }
@@ -126,41 +128,37 @@ export const SwapTemplate = () => {
     }
 
     return (
-        <WrappedTemplate>
-            <WrappedMolecule>
-                <div style={{flex: "1"}}>
-                     <SwapDetail
-                         firstTokenImg={firstTokenSelected?.logoURI || ''}
-                            secondTokenImg={secondTokenSelected?.logoURI || ''}
-                            firstSelectedToken={firstTokenSelected}
-                            gasFee={gasPriceSelectedForSwapping}
-                            secondSelectedToken={secondTokenSelected}
-                            slippageTolerance={0.005}
-                     />
-                </div>
-                <div style={{flex: "1"}}>
-                    <TokenSwapper
-                        onIncreaseAllow={onIncreaseAllow}
-                        gasPriceSelectedForSwapping={gasPriceSelectedForSwapping}
-                        onConnectWallet={onConnectWallet}
-                        isConnected={isConnected}
-                        progressBar={progressBar}
-                        getProgress={getProgress}
-                        calculateUSDtokens={calculateUSDtokens}
-                        pairState={pairState}
-                        refresh={refresh}
-                        firstTokenSelected={firstTokenSelected}
-                        secondTokenSelected={secondTokenSelected}
-                        onSelectFirstToken={onSelectFirstToken}
-                        onSelectSecondToken={onSelectSecondToken}
-                        tokenState={tokenState}
-                        onSwitchTokens={onSwitchTokens}
-                        onActionConfirm={onActionConfirm}
-                        filterPopupTokens={filterPopupTokens}
-                        updateDetail={updateSwapDetail}
-                    />
-                </div>
-            </WrappedMolecule>
-        </WrappedTemplate>
+        <>
+            <DoubleColumn isMobile={isMobile} title="Swap">
+                <SwapDetail
+                    firstTokenImg={firstTokenSelected?.logoURI || ''}
+                    secondTokenImg={secondTokenSelected?.logoURI || ''}
+                    firstSelectedToken={firstTokenSelected}
+                    gasFee={gasPriceSelectedForSwapping}
+                    secondSelectedToken={secondTokenSelected}
+                    slippageTolerance={0.005}
+                />
+                <TokenSwapper
+                    onIncreaseAllow={onIncreaseAllow}
+                    gasPriceSelectedForSwapping={gasPriceSelectedForSwapping}
+                    onConnectWallet={onConnectWallet}
+                    isConnected={isConnected}
+                    progressBar={progressBar}
+                    getProgress={getProgress}
+                    calculateUSDtokens={calculateUSDtokens}
+                    pairState={pairState}
+                    refresh={refresh}
+                    firstTokenSelected={firstTokenSelected}
+                    secondTokenSelected={secondTokenSelected}
+                    onSelectFirstToken={onSelectFirstToken}
+                    onSelectSecondToken={onSelectSecondToken}
+                    tokenState={tokenState}
+                    onSwitchTokens={onSwitchTokens}
+                    onActionConfirm={onActionConfirm}
+                    filterPopupTokens={filterPopupTokens}
+                    updateDetail={updateSwapDetail}
+                />
+            </DoubleColumn>
+        </>
     )
 };
