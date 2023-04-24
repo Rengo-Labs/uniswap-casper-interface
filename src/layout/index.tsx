@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Menu, UIProviderContext, ToggleVariant, WalletConnection } from "rengo-ui-kit";
 import { useNavigate } from "react-router-dom";
 
@@ -12,44 +12,64 @@ import casperWallet from "../assets/newDesignIcons/casper-wallet.svg";
 import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
 import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
 import casperLogo from "../assets/newDesignIcons/type_logo.svg";
+import { ChildrenContainer, Container } from "./styles";
 
 
 export interface ILayoutProps {
   children?: React.ReactElement;
 }
 
-export const WALLETS_DATA = [
-    {
-      id: 1,
-      name: 'Casper Signer',
-      icon: casperWallet,
-    },
-    {
-      id: 2,
-      name: 'Casper Wallet',
-      icon: casperWallet,
-    },
-    {
-      id: 3,
-      name: 'Ledger',
-      icon: ledgerWallet,
-    },
-    {
-      id: 4,
-      name: 'Torus Wallet',
-      icon: torusWallet,
-    },
-  ]
+interface ContextProps {
+  selectedTheme: string
+  toggleTheme: (theme: string) => void
+}
+
+
+const WALLETS_DATA = [
+  {
+    id: 1,
+    name: 'Casper Signer',
+    icon: casperWallet,
+    onConnect: () => console.log('Casper Signer'),
+  },
+  {
+    id: 2,
+    name: 'Casper Wallet',
+    icon: casperWallet,
+    onConnect: () => console.log('Casper Wallet'),
+  },
+  {
+    id: 3,
+    name: 'Ledger',
+    icon: ledgerWallet,
+    onConnect: () => console.log('Ledger'),
+  },
+  {
+    id: 4,
+    name: 'Torus Wallet',
+    icon: torusWallet,
+    onConnect: () => console.log('Torus Wallet'),
+  },
+]
 
 const Layout = ({ children }: ILayoutProps) => {
+  const menuRef = useRef(null);
   const navigate = useNavigate();
-  const { selectedTheme, toggleTheme } = useContext(UIProviderContext);
-    const [showConnectionPopup, setShowConnectionPopup] = React.useState(false);
+  const { selectedTheme, toggleTheme } = useContext<ContextProps>(UIProviderContext);
+  const [menuHeight, setMenuHeight] = useState(0);
+  const [showConnectionPopup, setShowConnectionPopup] = React.useState(false);
 
-    const handleConnectionPopup = () => {
-        setShowConnectionPopup(!showConnectionPopup);
-    };
+  useEffect(() => {
+    const height = menuRef.current?.offsetHeight;
+    
+    setMenuHeight(height);
+  }, [menuRef]);
+  
+  const handleConnectionPopup = () => {
+      setShowConnectionPopup(!showConnectionPopup);
+  };
 
+    
   const routes = [
     {
       icon: swapIcon,
@@ -87,8 +107,9 @@ const Layout = ({ children }: ILayoutProps) => {
   };
 
   return (
-    <div>
+    <Container selectedTheme={selectedTheme}>
       <Menu
+        ref={menuRef}
         title="casperswap"
         links={routes}
         menuIcon={casperIcon}
@@ -107,8 +128,10 @@ const Layout = ({ children }: ILayoutProps) => {
         wallets={WALLETS_DATA}
         isOpen={showConnectionPopup}
       />
-      {children}
-    </div>
+      <ChildrenContainer menuHeight={menuHeight}>
+        {children}
+      </ChildrenContainer>
+    </Container>
   );
 };
 
