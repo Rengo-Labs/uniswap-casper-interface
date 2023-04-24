@@ -29,6 +29,7 @@ import {
 import { ConfigState } from '../../reducers/ConfigReducers';
 import { notificationStore } from '../../store/store';
 import {CasperWallet} from "../../commons/wallet/CasperWallet";
+import useConnectionPopUp from "../../hooks/useConnectionPopUp";
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
 type MaybeWallet = Wallet | undefined;
@@ -75,8 +76,9 @@ export const WalletContext = ({
   const [state, dispatch] = useReducer(ConfigReducer, initialConfigState);
 
   const { updateNotification, dismissNotification } = notificationStore();
+  const {showConnectionPopup, setShowConnectionPopup} = useConnectionPopUp();
 
-  const [showConnectionPopup, setShowConnectionPopup] = useState(false);
+
   const [requestConnectWallet, setRequestConnectWallet] = useState(0);
 
   let debounceConnect = false;

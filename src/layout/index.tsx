@@ -13,6 +13,10 @@ import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
 import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
 import casperLogo from "../assets/newDesignIcons/type_logo.svg";
 import { ChildrenContainer, Container } from "./styles";
+import {WalletProviderContext} from "../contexts/WalletContext";
+import {WalletName} from "../commons";
+import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
+
 export interface ILayoutProps {
   children?: React.ReactElement;
 }
@@ -32,43 +36,38 @@ const GlobalStyle = createGlobalStyle<{ selectedTheme: string}>`
     background-color: ${({ selectedTheme }) => selectedTheme === AvailableThemes.Default ? '#E5F5FC': '#241E52' };
   }
 `;
-
-const WALLETS_DATA = [
-  {
-    id: 1,
-    name: 'Casper Signer',
-    icon: casperWallet,
-    onConnect: () => console.log('Casper Signer'),
-  },
-  {
-    id: 2,
-    name: 'Casper Wallet',
-    icon: casperWallet,
-    onConnect: () => console.log('Casper Wallet'),
-  },
-  {
-    id: 3,
-    name: 'Ledger',
-    icon: ledgerWallet,
-    onConnect: () => console.log('Ledger'),
-  },
-  {
-    id: 4,
-    name: 'Torus Wallet',
-    icon: torusWallet,
-    onConnect: () => console.log('Torus Wallet'),
-  },
-]
-
 const Layout = ({ children }: ILayoutProps) => {
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const { selectedTheme, toggleTheme } = useContext<ContextProps>(UIProviderContext);
   const [menuHeight, setMenuHeight] = useState(0);
-  const [showConnectionPopup, setShowConnectionPopup] = React.useState(false);
+  const [rightAction, setRightAction] = useState({
+    startIcon: casperWallet,
+    title: "Connect Wallet",
+    background: "#7AEDD4",
+    color: "#715FF5",
+    onAction: () => setShowConnectionPopup(true),
+    isWalletConnected: false,
+    walletAddress: null,
+    onActionConnected: null,
+    endIcon: balanceIcon,
+  } as OptAction);
+
+
+  const {
+    onConnectWallet,
+    isConnected,
+    showConnectionPopup,
+    setShowConnectionPopup,
+    walletState
+  } = useContext(WalletProviderContext);
 
   const deviceType = useDeviceType()
   const isMobile = deviceType === 'mobile'
+
+  const handleWalletOptions = () => {
+    console.log("Abrir popup de opciones")
+  }
 
   useEffect(() => {
     const height = menuRef.current?.offsetHeight;
@@ -76,9 +75,44 @@ const Layout = ({ children }: ILayoutProps) => {
     setMenuHeight(height);
   }, [menuRef]);
 
-  const handleConnectionPopup = () => {
-      setShowConnectionPopup(!showConnectionPopup);
-  };
+  useEffect(() => {
+    if(isConnected) {
+      setRightAction(prevState => ({
+        ...prevState,
+        isWalletConnected: isConnected,
+        walletAddress: walletState.walletAddress,
+        onActionConnected: () => handleWalletOptions()
+      }))
+      setShowConnectionPopup(false)
+    }
+  }, [isConnected])
+
+  const WALLETS_DATA = [
+    {
+      id: 1,
+      name: 'Casper Signer',
+      icon: casperWallet,
+      onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
+    },
+    {
+      id: 2,
+      name: 'Casper Wallet',
+      icon: casperWallet,
+      onConnect: () => onConnectWallet(WalletName.CASPER_WALLET)
+    },
+    {
+      id: 3,
+      name: 'Ledger',
+      icon: ledgerWallet,
+      onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
+    },
+    {
+      id: 4,
+      name: 'Torus Wallet',
+      icon: torusWallet,
+      onConnect: () => onConnectWallet(WalletName.TORUS)
+    },
+  ]
 
 
   const routes = [
@@ -108,15 +142,6 @@ const Layout = ({ children }: ILayoutProps) => {
     },
   ];
 
-  const rightAction = {
-    startIcon: balanceIcon,
-    title: "Connect Wallet",
-    background: "#7AEDD4",
-    color: "#715FF5",
-    onAction: () => setShowConnectionPopup(true),
-    endIcon: balanceIcon,
-  };
-
   return (
     <Container selectedTheme={selectedTheme}>
       <GlobalStyle selectedTheme={selectedTheme} />
@@ -136,7 +161,7 @@ const Layout = ({ children }: ILayoutProps) => {
         }}
       />
       <WalletConnection
-        closeCallback={handleConnectionPopup}
+        closeCallback={() => setShowConnectionPopup(!showConnectionPopup)}
         wallets={WALLETS_DATA}
         isOpen={showConnectionPopup}
       />

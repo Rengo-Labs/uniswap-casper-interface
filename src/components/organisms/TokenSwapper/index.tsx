@@ -58,7 +58,6 @@ const TokenSwapper = ({
   const [exchangeRateB, exchangeRateBSetter] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentValue, setCurrentValue] = useState<number>(0);
-
   const { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification } =
       isCSPRValid();
 
@@ -269,7 +268,7 @@ const TokenSwapper = ({
   }
 
   return (
-      <div style={{display: "flex", flexDirection: "column", padding: "8px 32px 8px 32px", gap: "10px"}}>
+      <div style={{display: "flex", flexDirection: "column", gap: "16px"}}>
         <CoinCard title='From'
                   startIcon={firstTokenSelected.logoURI}
                   endIcon={arrowIcon}

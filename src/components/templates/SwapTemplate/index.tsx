@@ -8,10 +8,8 @@ import {ProgressBarProviderContext} from "../../../contexts/ProgressBarContext";
 import {PairsContextProvider} from "../../../contexts/PairsContext";
 import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
-import {WrappedMolecule, WrappedTemplate} from "./styles";
 import {getListPath, Token} from "../../../commons";
 import {DoubleColumn} from '../../../layout/DoubleColumn';
-import {SingleColumn} from '../../../layout/SingleColumn';
 
 export const SwapTemplate = ({isMobile}) => {
     const {

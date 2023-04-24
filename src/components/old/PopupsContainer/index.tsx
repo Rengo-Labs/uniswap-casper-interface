@@ -36,15 +36,15 @@ export const PopupsContainer = () => {
                 </a>{" "}
                 was successful.
             </PopupsModule>
-            <ConnectionPopup
-                isConnected={isConnected}
-                isOpened={showConnectionPopup}
-                onToggle={() => setShowConnectionPopup(!showConnectionPopup)}
-                title="Connect your wallet to CasperSwap"
-                onClose={() => setShowConnectionPopup(false)}
-                onConnect={onConnectWallet}
-                showButton={false}
-            />
+            {/*<ConnectionPopup*/}
+            {/*    isConnected={isConnected}*/}
+            {/*    isOpened={showConnectionPopup}*/}
+            {/*    onToggle={() => setShowConnectionPopup(!showConnectionPopup)}*/}
+            {/*    title="Connect your wallet to CasperSwap"*/}
+            {/*    onClose={() => setShowConnectionPopup(false)}*/}
+            {/*    onConnect={onConnectWallet}*/}
+            {/*    showButton={false}*/}
+            {/*/>*/}
         </>
     );
 }
