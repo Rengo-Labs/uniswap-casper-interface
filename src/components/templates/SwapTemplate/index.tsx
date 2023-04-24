@@ -129,7 +129,14 @@ export const SwapTemplate = () => {
         <WrappedTemplate>
             <WrappedMolecule>
                 <div style={{flex: "1"}}>
-                     <SwapDetail />
+                     <SwapDetail
+                         firstTokenImg={firstTokenSelected?.logoURI || ''}
+                            secondTokenImg={secondTokenSelected?.logoURI || ''}
+                            firstSelectedToken={firstTokenSelected}
+                            gasFee={gasPriceSelectedForSwapping}
+                            secondSelectedToken={secondTokenSelected}
+                            slippageTolerance={0.005}
+                     />
                 </div>
                 <div style={{flex: "1"}}>
                     <TokenSwapper

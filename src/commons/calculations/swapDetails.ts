@@ -27,20 +27,19 @@ export interface SwapDetails {
  * @param reserve1 second token reserve in pair
  * @param inputValue input tokens
  * @param token input token types matching one of tokenA or tokenB
- * @param slippage decimal slippage
  * @param fee decimal fee
- * 
+ *
  * @return SwapDetails
  */
 export const calculateSwapDetails = async (
-    apiClient: APIClient, 
-    tokenA: Token, 
-    tokenB: Token, 
+    apiClient: APIClient,
+    tokenA: Token,
+    tokenB: Token,
     reserve0: BigNumber.Value,
     reserve1: BigNumber.Value,
-    inputValueRaw: BigNumber.Value, 
-    token: Token, 
-    slippage = 0.005, 
+    inputValueRaw: BigNumber.Value,
+    token: Token,
+    slippage = 0.005,
     fee = 0.003
 ): Promise<SwapDetails> => {
   try {     
@@ -84,9 +83,9 @@ export const calculateSwapDetails = async (
         inputExchangeRate = outputLiquidity.div(inputLiquidity)
         outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
       }
-      
-      // console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
-      
+
+      console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
+
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
 
