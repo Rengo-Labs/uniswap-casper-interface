@@ -9,6 +9,7 @@ import {PairsContextProvider} from "../../../contexts/PairsContext";
 import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WrappedMolecule, WrappedTemplate} from "./styles";
+import {getListPath, Token} from "../../../commons";
 
 export const SwapTemplate = () => {
     const {
@@ -25,7 +26,17 @@ export const SwapTemplate = () => {
     const { progressBar, getProgress } = useContext(ProgressBarProviderContext);
     const {calculateUSDtokens, pairState, findReservesBySymbols} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
-    const {firstTokenSelected, secondTokenSelected, onSelectFirstToken, onSelectSecondToken, tokenState, onSwitchTokens} = useContext(TokensProviderContext)
+    const {
+        firstTokenSelected,
+        secondTokenSelected,
+        onSelectFirstToken,
+        onSelectSecondToken,
+        tokenState,
+        onSwitchTokens,
+        filterPopupTokens
+    } = useContext(TokensProviderContext)
+
+    const [pairPath, setPairPath] = useState([])
 
     const onActionConfirm = async (amountA, amountB, slippage, gas) => {
         await onConfirmSwapConfig(
@@ -36,6 +47,82 @@ export const SwapTemplate = () => {
         );
 
         refresh();
+    }
+
+    async function updateSwapDetail(
+      tokenA: Token,
+      tokenB: Token,
+      value = 0,
+      token = firstTokenSelected,
+      slippage
+    ) {
+        const { getSwapDetailResponse } = await calculateSwapDetailResponse(tokenA, tokenB, value, token, slippage)
+        const { tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath } =
+          getSwapDetailResponse;
+
+        return {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact, routePath};
+    }
+
+    const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token, slippage) => {
+        const isAorB = tokenA.symbol === token.symbol
+        const [param, param1] = isAorB ? [tokenA.symbol, tokenB.symbol] : [tokenB.symbol, tokenA.symbol]
+        const listPath = getListPath(param, param1, Object.values(tokenState.tokens), Object.values(pairState))
+        const pairExist = listPath.length == 0
+
+        let getSwapDetailResponse = null;
+        let nextTokensToTransfer = value
+
+        if(pairExist) {
+            const { reserve0, reserve1 } = findReservesBySymbols(
+              tokenA.symbol,
+              tokenB.symbol,
+              tokenState
+            );
+            getSwapDetailResponse = await getSwapDetails(
+              tokenA,
+              tokenB,
+              reserve0,
+              reserve1,
+              value,
+              token,
+              slippage,
+              gasPriceSelectedForSwapping
+            );
+            setPairPath([tokenA.symbol, tokenB.symbol])
+        } else {
+            const pairListPaths = listPath
+            let priceImpactAcm: any = 0
+            const pairPath = []
+            for (const pair of pairListPaths) {
+                const {symbol0, symbol1} = pair
+                const {reserve0, reserve1} = findReservesBySymbols(
+                  symbol0,
+                  symbol1,
+                  tokenState
+                );
+                getSwapDetailResponse = await getSwapDetails(
+                  {symbol: symbol0} as any,
+                  {symbol: symbol1} as any,
+                  reserve0,
+                  reserve1,
+                  nextTokensToTransfer,
+                  {symbol: symbol0} as any,
+                  slippage,
+                  gasPriceSelectedForSwapping
+                );
+
+                const {tokensToTransfer, priceImpact} = getSwapDetailResponse
+                priceImpact !== '<0.01'? priceImpactAcm += parseFloat(priceImpact.toString()) : priceImpactAcm = priceImpact
+                getSwapDetailResponse.priceImpact = isNaN(priceImpactAcm)? priceImpactAcm : priceImpactAcm.toFixed(2)
+                nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
+                pairPath.push(symbol0, symbol1)
+            }
+            setPairPath([...new Set(pairPath)])
+        }
+
+        return {
+            getSwapDetailResponse
+        }
     }
 
     return (
@@ -50,12 +137,10 @@ export const SwapTemplate = () => {
                         gasPriceSelectedForSwapping={gasPriceSelectedForSwapping}
                         onConnectWallet={onConnectWallet}
                         isConnected={isConnected}
-                        getSwapDetails={getSwapDetails}
                         progressBar={progressBar}
                         getProgress={getProgress}
                         calculateUSDtokens={calculateUSDtokens}
                         pairState={pairState}
-                        findReservesBySymbols={findReservesBySymbols}
                         refresh={refresh}
                         firstTokenSelected={firstTokenSelected}
                         secondTokenSelected={secondTokenSelected}
@@ -64,6 +149,8 @@ export const SwapTemplate = () => {
                         tokenState={tokenState}
                         onSwitchTokens={onSwitchTokens}
                         onActionConfirm={onActionConfirm}
+                        filterPopupTokens={filterPopupTokens}
+                        updateDetail={updateSwapDetail}
                     />
                 </div>
             </WrappedMolecule>
