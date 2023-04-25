@@ -315,14 +315,16 @@ const TokenSwapper = ({
                       -freeAllowance,
                       firstTokenSelected.contractHash
                   );
-                }}}>`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`</Button>
+                }}}>
+                `Approve ${-freeAllowance} ${firstTokenSelected.symbol}`
+              </Button>
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB, slippageTolerance, gasFee)}}>SWAP</Button>
           )}
         </div>
-        {openPoolDialog.open && (
             <CreatePoolDialog
+                isOpen={openPoolDialog.open}
                 closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
                 tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol])}
                 popularTokensData={popularTokens}
@@ -331,7 +333,6 @@ const TokenSwapper = ({
                 }}
                 onSelectFavoriteToken={(name, value) => console.log("Is favorite", name, value)}
             />
-        )}
       </div>
   );
 };
