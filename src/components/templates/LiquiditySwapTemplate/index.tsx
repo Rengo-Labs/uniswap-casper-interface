@@ -19,15 +19,20 @@ export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
         gasPriceSelectedForLiquidity,
-    } = useContext(ConfigProviderContext);
+    } = useContext(ConfigProviderContext)
 
     const {
         onConnectWallet,
         isConnected,
-    } = useContext(WalletProviderContext);
-    const {onAddLiquidity, getLiquidityDetails} =
-        useContext(LiquidityProviderContext);
-    const {progressBar, getProgress} = useContext(ProgressBarProviderContext);
+    } = useContext(WalletProviderContext)
+
+    const {
+        isRemovingPopupOpen,
+        setRemovingPopup,
+        onAddLiquidity,
+        getLiquidityDetails
+    } = useContext(LiquidityProviderContext)
+    const {progressBar, getProgress} = useContext(ProgressBarProviderContext)
     const {calculateUSDtokens, pairState, findReservesBySymbols, getPoolList} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {
@@ -37,16 +42,17 @@ export const LiquidityTemplate = ({isMobile}) => {
         onSelectSecondToken,
         tokenState,
         onSwitchTokens,
-        filterPopupTokens
+        filterTokenPairsByToken
     } = useContext(TokensProviderContext)
 
     const [searchParams, setSearchParams] = useSearchParams()
     const [totalLiquidity, setTotalLiquidity] = useState('0')
-    const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity);
-    const { slippageTolerance, updateSlippageTolerance } = globalStore();
+    const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
+    const { slippageTolerance, updateSlippageTolerance } = globalStore()
     const [userPairDataNonZero, userPairDataNonZeroSetter] = useState([])
-    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
-    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
+    const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen);
 
     const loadUserLP = useCallback(() => {
         const userPairs = Object.values(pairState).filter(
@@ -87,19 +93,17 @@ export const LiquidityTemplate = ({isMobile}) => {
             onSelectSecondToken(tokenState.tokens[t1])
         }
 
-        /*
         if (isRemovingPopupOpen) {
-            setOpenedRemoving(true);
-            setRemovingPopup(false);
+            setOpenedRemoving(true)
+            setRemovingPopup(false)
         }
 
         updateLiquidityDetail(
           firstTokenSelected,
           secondTokenSelected,
           amountSwapTokenA,
-          lastChanged == 'A' ? firstTokenSelected : secondTokenSelected
-        );
-        */
+          firstTokenSelected
+        )
     }, [isConnected, pairState]);
 
     async function onLiquidity(amountA, amountB) {
@@ -109,9 +113,9 @@ export const LiquidityTemplate = ({isMobile}) => {
             slippageTolerance,
             gasFee
         );
-        refresh();
-        amountSwapTokenASetter(0);
-        amountSwapTokenBSetter(0);
+        refresh()
+        amountSwapTokenASetter(0)
+        amountSwapTokenBSetter(0)
     }
 
     async function updateLiquidityDetail(
@@ -158,7 +162,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         }*/
 
         //calculateUSDValues(value, tokensToTransfer, token === tokenA);
-        return tokensToTransfer;
+        return {tokensToTransfer, exchangeRateA, exchangeRateB};
     }
 
     const calculateTotalLP = (token0, token1) => {
@@ -190,7 +194,6 @@ export const LiquidityTemplate = ({isMobile}) => {
                 <LiquiditySwapper onIncreaseAllow={onIncreaseAllow}
                                   onConnectWallet={onConnectWallet}
                                   isConnected={isConnected}
-                                  progressBar={progressBar}
                                   getProgress={getProgress}
                                   refresh={refresh}
                                   calculateUSDtokens={calculateUSDtokens}
@@ -201,8 +204,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   onSelectSecondToken={onSelectSecondToken}
                                   tokenState={tokenState}
                                   onSwitchTokens={onSwitchTokens}
-                                  onActionConfirm={onAddLiquidity}
-                                  filterPopupTokens={filterPopupTokens}
+                                  onActionConfirm={onLiquidity}
+                                  filterPopupTokens={filterTokenPairsByToken}
                                   updateDetail={updateLiquidityDetail}
                                   calculateTotalLP={calculateTotalLP}
                                   setTotalLiquidity={setTotalLiquidity}

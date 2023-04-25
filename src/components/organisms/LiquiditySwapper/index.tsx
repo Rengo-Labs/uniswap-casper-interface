@@ -1,11 +1,9 @@
-import React, {useContext, useEffect, useState} from 'react';
-import { useSearchParams } from 'react-router-dom';
-import {formatNaN, getListPath, Token} from '../../../commons';
+import React, {useEffect, useState} from 'react';
+import {Token} from '../../../commons';
 import isCSPRValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
 import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
-import {LiquidityProviderContext} from "../../../contexts/LiquidityContext"
 import {PairState} from "../../../reducers/PairsReducer";
 import {TokenState} from "../../../reducers/TokenReducers";
 
@@ -18,7 +16,6 @@ interface LiquiditySwapperProps {
   onIncreaseAllow,
   onConnectWallet,
   isConnected,
-  progressBar,
   getProgress,
   refresh,
   calculateUSDtokens,
@@ -45,7 +42,6 @@ const LiquiditySwapper = ({
                         onIncreaseAllow,
                         onConnectWallet,
                         isConnected,
-                        progressBar,
                         getProgress,
                         refresh,
                         calculateUSDtokens,
@@ -66,15 +62,6 @@ const LiquiditySwapper = ({
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
 
-  const {
-    isRemovingPopupOpen,
-    setRemovingPopup,
-    onAddLiquidity,
-    getLiquidityDetails,
-  } = useContext(LiquidityProviderContext)
-
-  const userPairData = Object.values(pairState)
-
   const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
   const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
   const [excludedA, setExcludedA] = useState<string[]>([
@@ -83,11 +70,10 @@ const LiquiditySwapper = ({
   const [excludedB, setExcludedB] = useState<string[]>([
     firstTokenSelected.symbolPair,
   ]);
-  const [feeToPay, feeToPaySetter] = useState<any>(0.03);
+
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0);
 
-  const [searchParams, setSearchParams] = useSearchParams();
   const [currentFReserve, setFirstReserve] = useState(0);
   const [currentSReserve, setSecondReserve] = useState(0);
 
@@ -183,7 +169,7 @@ const LiquiditySwapper = ({
     setLastChanged('A');
 
     amountSwapTokenASetter(filteredValue);
-    const minTokenToReceive = await updateDetail(
+    const {minTokenToReceive, exchangeRateA, exchangeRateB} = await updateDetail(
       firstTokenSelected,
       secondTokenSelected,
       filteredValue,
@@ -191,6 +177,7 @@ const LiquiditySwapper = ({
     );
 
     calculateUSDValues(filteredValue, minTokenToReceive, true)
+    setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
     amountSwapTokenBSetter(minTokenToReceive);
 
@@ -211,6 +198,16 @@ const LiquiditySwapper = ({
     changeTokenA(value);
   };
 
+  const setUSDByTokens = (rateA, rateB, value) => {
+    if (value) {
+      exchangeRateASetter(rateA)
+      exchangeRateBSetter(rateB)
+    } else {
+      exchangeRateASetter(rateB);
+      exchangeRateBSetter(rateA);
+    }
+  }
+
   async function changeTokenB(value: string) {
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
@@ -222,14 +219,15 @@ const LiquiditySwapper = ({
     setLastChanged('B');
 
     amountSwapTokenBSetter(filteredValue);
-    const minTokenToReceive = await updateDetail(
+    const {tokensToTransfer, exchangeRateA, exchangeRateB} = await updateDetail(
       firstTokenSelected,
       secondTokenSelected,
       filteredValue,
       secondTokenSelected
     );
-    amountSwapTokenASetter(minTokenToReceive);
-    calculateUSDValues(filteredValue, minTokenToReceive, false)
+    amountSwapTokenASetter(tokensToTransfer);
+    calculateUSDValues(filteredValue, tokensToTransfer, false)
+    setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
     const totalLP = calculateTotalLP(
       firstTokenSelected.symbolPair,
@@ -240,14 +238,14 @@ const LiquiditySwapper = ({
 
   const handleChangeB = async (value) => {
     changeTokenB(value);
-    const minTokenToReceive = await updateDetail(
+    const {tokensToTransfer} = await updateDetail(
       firstTokenSelected,
       secondTokenSelected,
       parseFloat(value),
       secondTokenSelected
     );
     handleValidate(
-      parseFloat(minTokenToReceive),
+      parseFloat(tokensToTransfer),
       parseFloat(firstTokenSelected.amount),
       gasFee || 0
     );
@@ -305,13 +303,13 @@ const LiquiditySwapper = ({
     onSelectFirstToken(token)
     setExcludedB(excludes)
 
-    const minTokenToReceive = await updateDetail(
+    const {tokensToTransfer} = await updateDetail(
       token,
       secondTokenSelected,
       amountSwapTokenA,
       token
     );
-    amountSwapTokenBSetter(minTokenToReceive);
+    amountSwapTokenBSetter(tokensToTransfer);
   }
 
   async function selectAndCloseTokenB(token: Token): Promise<void> {
@@ -351,13 +349,13 @@ const LiquiditySwapper = ({
     onSelectSecondToken(token);
     setExcludedA(excludes)
 
-    const minTokenToReceive = await updateDetail(
+    const {tokensToTransfer} = await updateDetail(
       firstTokenSelected,
       token,
       amountSwapTokenB,
       token
     );
-    amountSwapTokenASetter(minTokenToReceive);
+    amountSwapTokenASetter(tokensToTransfer);
   }
 
   async function validateToken(amount, token) {
@@ -373,16 +371,16 @@ const LiquiditySwapper = ({
         setCurrentValue(amount);
       }
     } else if (token == tokenType.tokenB) {
-      const minTokenToReceive = await updateDetail(
+      const {tokensToTransfer} = await updateDetail(
         firstTokenSelected,
         secondTokenSelected,
         parseFloat(amount),
         secondTokenSelected
       );
-      setCurrentValue(parseFloat(minTokenToReceive));
+      setCurrentValue(parseFloat(tokensToTransfer));
       if (
-        parseFloat(minTokenToReceive) > 0 &&
-        parseFloat(minTokenToReceive) >
+        parseFloat(tokensToTransfer) > 0 &&
+        parseFloat(tokensToTransfer) >
         parseFloat(firstTokenSelected.amount) - gasFee
       ) {
         showNotification();
@@ -531,7 +529,7 @@ const LiquiditySwapper = ({
         {openPoolDialog.open && (
             <CreatePoolDialog
                 closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-                tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol])}
+                tokenListData={filterPopupTokens(openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
                 popularTokensData={popularTokens}
                 onSelectToken={(name) => {
                   selectAndCloseToken(tokenState.tokens[name])

@@ -1,10 +1,9 @@
-import {ReactNode, useState, createContext, useReducer, useEffect, useContext} from "react";
+import {ReactNode, createContext, useReducer} from "react";
 import {initialPairsState, PairData, PairsReducer} from "../../reducers/PairsReducer";
 import PairsResponsibilities, {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
 import {notificationStore} from "../../store/store";
-import {TokensProviderContext} from "../TokensContext";
 
 interface PairsContextProps {
     children: ReactNode
