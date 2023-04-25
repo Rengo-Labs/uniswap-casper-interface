@@ -34,7 +34,11 @@ interface LiquiditySwapperProps {
   updateDetail,
   calculateTotalLP,
   setTotalLiquidity,
-  gasPriceSelectedForLiquidity
+  gasPriceSelectedForLiquidity,
+  amountSwapTokenA,
+  amountSwapTokenASetter,
+  amountSwapTokenB,
+  amountSwapTokenBSetter
 }
 
 const LiquiditySwapper = ({
@@ -102,17 +106,6 @@ const LiquiditySwapper = ({
   } = isCSPRValid();
 
   useEffect(() => {
-    if (!isConnected) {
-      // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
-      resetAll();
-    }
-    progressBar(async () => {
-      //lastChanged == 'A' ? await changeTokenA(amountSwapTokenA) : await changeTokenB(amountSwapTokenB)
-      await refresh()
-    })
-  }, [isConnected]);
-
-  useEffect(() => {
     const fn = async () => {
       let tSymbol = '';
       const includes: Record<string, boolean> = {};
@@ -174,11 +167,6 @@ const LiquiditySwapper = ({
     setExcludedB(excludedA)
   }
 
-  function resetAll() {
-    amountSwapTokenASetter(0);
-    amountSwapTokenBSetter(0);
-  }
-
   async function requestIncreaseAllowance(amount, contractHash) {
     await onIncreaseAllow(amount, contractHash)
     await updateDetail(firstTokenSelected, secondTokenSelected)
@@ -201,6 +189,9 @@ const LiquiditySwapper = ({
       filteredValue,
       firstTokenSelected
     );
+
+    calculateUSDValues(filteredValue, minTokenToReceive, true)
+
     amountSwapTokenBSetter(minTokenToReceive);
 
     const totalLP = calculateTotalLP(
@@ -238,6 +229,7 @@ const LiquiditySwapper = ({
       secondTokenSelected
     );
     amountSwapTokenASetter(minTokenToReceive);
+    calculateUSDValues(filteredValue, minTokenToReceive, false)
 
     const totalLP = calculateTotalLP(
       firstTokenSelected.symbolPair,
@@ -356,8 +348,6 @@ const LiquiditySwapper = ({
       return acc;
     }, []);
 
-    // console.log('excludes', includes, excludes)
-
     onSelectSecondToken(token);
     setExcludedA(excludes)
 
@@ -459,7 +449,20 @@ const LiquiditySwapper = ({
         tokenImg: logoURI
       }
     );
-  });
+  })
+
+  const calculateUSDValues = (amountA, amountB, isAorB) => {
+    const [usdA, usdB] = calculateUSDtokens(
+      firstTokenSelected.symbolPair,
+      secondTokenSelected.symbolPair,
+      amountA,
+      amountB,
+      isAorB
+    );
+
+    setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA);
+    setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB);
+  }
 
   return (
       <div style={{display: "flex", flexDirection: "column", padding: "8px 32px 8px 32px", gap: "10px"}}>
@@ -509,7 +512,7 @@ const LiquiditySwapper = ({
                       -freeAllowanceA,
                       firstTokenSelected.contractHash
                   );
-                }}}>`Approve ${-freeAllowanceA} ${firstTokenSelected.symbol}`</Button>
+                }}}>Approve {freeAllowanceA} {firstTokenSelected.symbol}</Button>
           )}
 
           {!isApprovedB && isConnected && (
@@ -518,7 +521,7 @@ const LiquiditySwapper = ({
                       -freeAllowanceB,
                       secondTokenSelected.contractHash
                   );
-                }}}>`Approve ${-freeAllowanceB} ${firstTokenSelected.symbol}`</Button>
+                }}}>Approve {freeAllowanceB} {secondTokenSelected.symbol}</Button>
           )}
 
           {isApprovedA && isApprovedB && isConnected && (

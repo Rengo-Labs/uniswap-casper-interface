@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import TokenSwapper from "../../organisms/TokenSwapper";
 import SwapDetail from "../../organisms/SwapDetail";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
@@ -62,6 +62,10 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     // end Details requirements
+
+    useEffect(() => {
+
+    }, [amountSwapTokenA, amountSwapTokenB])
 
     const onActionConfirm = async (amountA, amountB, slippage, gas) => {
         await onConfirmSwapConfig(
@@ -185,6 +189,10 @@ export const SwapTemplate = ({isMobile}) => {
                     onActionConfirm={onActionConfirm}
                     filterPopupTokens={filterPopupTokens}
                     updateDetail={updateSwapDetail}
+                    amountSwapTokenA={amountSwapTokenA}
+                    amountSwapTokenASetter={amountSwapTokenASetter}
+                    amountSwapTokenB={amountSwapTokenB}
+                    amountSwapTokenBSetter={amountSwapTokenBSetter}
                 />
             </DoubleColumn>
         </>

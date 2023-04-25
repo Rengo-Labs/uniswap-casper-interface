@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import LiquidityDetail from "../../organisms/LiquidityDetail";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
@@ -13,6 +13,7 @@ import {DoubleColumn} from "../../../layout/DoubleColumn";
 import {useSearchParams} from "react-router-dom";
 import {globalStore} from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
+import {LPContainer} from 'rengo-ui-kit'
 
 export const LiquidityTemplate = ({isMobile}) => {
     const {
@@ -43,6 +44,40 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [totalLiquidity, setTotalLiquidity] = useState('0')
     const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity);
     const { slippageTolerance, updateSlippageTolerance } = globalStore();
+    const [userPairDataNonZero, userPairDataNonZeroSetter] = useState([])
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
+
+    const loadUserLP = useCallback(() => {
+        const userPairs = Object.values(pairState).filter(
+          (v) => parseFloat(v.balance) > 0
+        ).map((i) => {
+            return {
+                icon: i.token1Icon,
+                isFavorite: false,
+                firstSymbol: i.token0Symbol,
+                secondSymbol: i.token1Symbol,
+                firstAmount: i.reserve0,
+                secondAmount: i.reserve1,
+                userLP: i.liquidity,
+                totalLP: i.totalLiquidityUSD,
+                onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => () => console.log("Optiones", action, firstSymbol, secondSymbol)
+            }
+        })
+        userPairDataNonZeroSetter(userPairs)
+
+    }, [userPairDataNonZero])
+
+    useEffect(() => {
+        if (!isConnected) {
+            // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
+            refresh()
+        }
+        loadUserLP()
+        progressBar(async () => {
+            await refresh()
+        })
+    }, [isConnected, pairState])
 
     useEffect(() => {
         const t0 = searchParams.get('token0');
@@ -75,14 +110,15 @@ export const LiquidityTemplate = ({isMobile}) => {
             gasFee
         );
         refresh();
+        amountSwapTokenASetter(0);
+        amountSwapTokenBSetter(0);
     }
 
     async function updateLiquidityDetail(
         tokenA,
         tokenB,
         value = 0,
-        token = firstTokenSelected,
-        slippageTolerance
+        token = firstTokenSelected
     ) {
         const {reserve0, reserve1} = findReservesBySymbols(
             tokenA.symbol,
@@ -170,11 +206,20 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   updateDetail={updateLiquidityDetail}
                                   calculateTotalLP={calculateTotalLP}
                                   setTotalLiquidity={setTotalLiquidity}
-                                  gasPriceSelectedForLiquidity={gasPriceSelectedForLiquidity} />
+                                  gasPriceSelectedForLiquidity={gasPriceSelectedForLiquidity}
+                                  amountSwapTokenA={amountSwapTokenA}
+                                  amountSwapTokenASetter={amountSwapTokenASetter}
+                                  amountSwapTokenB={amountSwapTokenB}
+                                  amountSwapTokenBSetter={amountSwapTokenBSetter}
+                />
             </DoubleColumn>
-            <SingleColumn isMobile={isMobile}>
-                <div>single column</div>
-            </SingleColumn>
+            {
+                isConnected && userPairDataNonZero.length > 0 &&
+              <SingleColumn isMobile={isMobile}>
+                  <LPContainer title="My Liquidity"
+                               lpTokens={userPairDataNonZero} />
+              </SingleColumn>
+            }
         </>
     )
 };

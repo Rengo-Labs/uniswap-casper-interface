@@ -25,7 +25,11 @@ interface TokenSwapperProps {
   onSwitchTokens,
   onActionConfirm,
   filterPopupTokens,
-  updateDetail
+  updateDetail,
+  amountSwapTokenA,
+  amountSwapTokenASetter,
+  amountSwapTokenB,
+  amountSwapTokenBSetter
 }
 
 const TokenSwapper = ({
@@ -46,13 +50,15 @@ const TokenSwapper = ({
                         onSwitchTokens,
                         onActionConfirm,
                         filterPopupTokens,
-                        updateDetail
+                        updateDetail,
+                        amountSwapTokenA,
+                        amountSwapTokenASetter,
+                        amountSwapTokenB,
+                        amountSwapTokenBSetter
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
-  const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0);
-  const [amountSwapTokenB, amountSwapTokenBSetter] = useState<number>(0);
   const [feeToPay, feeToPaySetter] = useState<number>(0.03);
   const [exchangeRateA, exchangeRateASetter] = useState<number>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<number>(0);
