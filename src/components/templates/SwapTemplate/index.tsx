@@ -10,6 +10,9 @@ import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {getListPath, Token} from "../../../commons";
 import {DoubleColumn} from '../../../layout/DoubleColumn';
+import {calculateMinimumTokenReceived} from '../../../contexts/PriceImpactContext';
+import isCSPRValid from "../../../hooks/isCSPRValid";
+import {globalStore} from "../../../store/store";
 
 export const SwapTemplate = ({isMobile}) => {
     const {
@@ -36,7 +39,29 @@ export const SwapTemplate = ({isMobile}) => {
         filterPopupTokens
     } = useContext(TokensProviderContext)
 
+
+    // Details requirements
+
+    const { handleValidate } =
+        isCSPRValid();
+
     const [pairPath, setPairPath] = useState([])
+    const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
+    const [currentValue, setCurrentValue] = useState<number>(0);
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0);
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<number>(0);
+    const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] =
+        useState<string>('');
+    const [priceImpact, priceImpactSetter] = useState<number | string>(0);
+    const { slippageTolerance, updateSlippageTolerance } = globalStore()
+
+    const handleChangeGasFee = (value) => {
+        const gasFeeValue = value ? parseFloat(value) : 0;
+        gasFeeSetter(value);
+        handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
+    }
+
+    // end Details requirements
 
     const onActionConfirm = async (amountA, amountB, slippage, gas) => {
         await onConfirmSwapConfig(
@@ -129,12 +154,22 @@ export const SwapTemplate = ({isMobile}) => {
         <>
             <DoubleColumn isMobile={isMobile} title="Swap">
                 <SwapDetail
-                    firstTokenImg={firstTokenSelected?.logoURI || ''}
-                    secondTokenImg={secondTokenSelected?.logoURI || ''}
+                    firstTokenImg={firstTokenSelected.logoURI || ''}
+                    secondTokenImg={secondTokenSelected.logoURI || ''}
                     firstSelectedToken={firstTokenSelected}
                     gasFee={gasPriceSelectedForSwapping}
                     secondSelectedToken={secondTokenSelected}
-                    slippageTolerance={0.005}
+                    slippageTolerance={slippageTolerance}
+                    calculateMinimumTokenReceived={calculateMinimumTokenReceived}
+                    firstSymbolToken={firstTokenSelected.symbol}
+                    firstTokenAmount={amountSwapTokenA}
+                    gasFeeSetter={gasFeeSetter}
+                    pairPath={pairPath}
+                    priceImpact={Number(priceImpact)}
+                    priceImpactMessage={defaultPriceImpactLabel}
+                    secondSymbolToken={secondTokenSelected.symbol}
+                    secondTokenAmount={amountSwapTokenB}
+                    slippageSetter={updateSlippageTolerance}
                 />
                 <TokenSwapper
                     onIncreaseAllow={onIncreaseAllow}
