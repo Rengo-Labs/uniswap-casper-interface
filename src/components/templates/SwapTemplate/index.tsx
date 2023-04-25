@@ -78,17 +78,16 @@ export const SwapTemplate = ({isMobile}) => {
         tokenA: Token,
         tokenB: Token,
         value = 0,
-        token = firstTokenSelected,
-        slippage
+        token = firstTokenSelected
     ) {
-        const {getSwapDetailResponse} = await calculateSwapDetailResponse(tokenA, tokenB, value, token, slippage)
+        const {getSwapDetailResponse} = await calculateSwapDetailResponse(tokenA, tokenB, value, token)
         const {tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath} =
             getSwapDetailResponse;
 
         return {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact, routePath};
     }
 
-    const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token, slippage) => {
+    const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token) => {
         const isAorB = tokenA.symbol === token.symbol
         const [param, param1] = isAorB ? [tokenA.symbol, tokenB.symbol] : [tokenB.symbol, tokenA.symbol]
         const listPath = getListPath(param, param1, Object.values(tokenState.tokens), Object.values(pairState))
@@ -109,9 +108,7 @@ export const SwapTemplate = ({isMobile}) => {
                 reserve0,
                 reserve1,
                 value,
-                token,
-                slippage,
-                gasPriceSelectedForSwapping
+                token
             );
             setPairPath([tokenA.symbol, tokenB.symbol])
         } else {
@@ -131,9 +128,7 @@ export const SwapTemplate = ({isMobile}) => {
                     reserve0,
                     reserve1,
                     nextTokensToTransfer,
-                    {symbol: symbol0} as any,
-                    slippage,
-                    gasPriceSelectedForSwapping
+                    {symbol: symbol0} as any
                 );
 
                 const {tokensToTransfer, priceImpact} = getSwapDetailResponse

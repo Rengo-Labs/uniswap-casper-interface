@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import LiquidityDetail from "../../organisms/LiquidityDetail";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
@@ -10,11 +10,14 @@ import BigNumber from "bignumber.js";
 import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 import {SingleColumn} from "../../../layout/SingleColumn";
 import {DoubleColumn} from "../../../layout/DoubleColumn";
+import {useSearchParams} from "react-router-dom";
+import {globalStore} from "../../../store/store";
+import LiquiditySwapper from "../../organisms/LiquiditySwapper";
 
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
-        gasPriceSelectedForSwapping,
+        gasPriceSelectedForLiquidity,
     } = useContext(ConfigProviderContext);
 
     const {
@@ -36,7 +39,35 @@ export const LiquidityTemplate = ({isMobile}) => {
         filterPopupTokens
     } = useContext(TokensProviderContext)
 
-    async function onLiquidity(amountA, amountB, slippageTolerance, gasFee) {
+    const [searchParams, setSearchParams] = useSearchParams()
+    const [totalLiquidity, setTotalLiquidity] = useState('0')
+    const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity);
+    const { slippageTolerance, updateSlippageTolerance } = globalStore();
+
+    useEffect(() => {
+        const t0 = searchParams.get('token0');
+        const t1 = searchParams.get('token1');
+        if (t0) {
+            onSelectFirstToken(tokenState.tokens[t0])
+            onSelectSecondToken(tokenState.tokens[t1])
+        }
+
+        /*
+        if (isRemovingPopupOpen) {
+            setOpenedRemoving(true);
+            setRemovingPopup(false);
+        }
+
+        updateLiquidityDetail(
+          firstTokenSelected,
+          secondTokenSelected,
+          amountSwapTokenA,
+          lastChanged == 'A' ? firstTokenSelected : secondTokenSelected
+        );
+        */
+    }, [isConnected, pairState]);
+
+    async function onLiquidity(amountA, amountB) {
         await onAddLiquidity(
             amountA,
             amountB,
@@ -65,9 +96,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             reserve0,
             reserve1,
             value,
-            token,
-            slippageTolerance,
-            gasPriceSelectedForSwapping
+            token
         );
         const ps = [getLiquidityDetailP];
 
@@ -122,7 +151,26 @@ export const LiquidityTemplate = ({isMobile}) => {
         <>
             <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
                 <LiquidityDetail/>
-                <div>test</div>
+                <LiquiditySwapper onIncreaseAllow={onIncreaseAllow}
+                                  onConnectWallet={onConnectWallet}
+                                  isConnected={isConnected}
+                                  progressBar={progressBar}
+                                  getProgress={getProgress}
+                                  refresh={refresh}
+                                  calculateUSDtokens={calculateUSDtokens}
+                                  pairState={pairState}
+                                  firstTokenSelected={firstTokenSelected}
+                                  secondTokenSelected={secondTokenSelected}
+                                  onSelectFirstToken={onSelectFirstToken}
+                                  onSelectSecondToken={onSelectSecondToken}
+                                  tokenState={tokenState}
+                                  onSwitchTokens={onSwitchTokens}
+                                  onActionConfirm={onAddLiquidity}
+                                  filterPopupTokens={filterPopupTokens}
+                                  updateDetail={updateLiquidityDetail}
+                                  calculateTotalLP={calculateTotalLP}
+                                  setTotalLiquidity={setTotalLiquidity}
+                                  gasPriceSelectedForLiquidity={gasPriceSelectedForLiquidity} />
             </DoubleColumn>
             <SingleColumn isMobile={isMobile}>
                 <div>single column</div>

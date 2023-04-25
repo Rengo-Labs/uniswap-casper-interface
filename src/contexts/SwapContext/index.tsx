@@ -34,8 +34,8 @@ export interface SwapContext {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage: number,
-    fee: number
+    slippage?: number,
+    fee?: number
   ) => Promise<SwapDetails>;
 }
 
