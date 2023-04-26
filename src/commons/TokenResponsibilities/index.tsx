@@ -158,6 +158,44 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         tokenDispatch({ type: TokenActions.SWITCH_TOKENS });
     }
 
+    //TODO adjust the response from the UI KIT to manage the same structure here
+    const filterPopupTokens = (tokensToExclude: any[]): any[] => {
+        let _filteredTokens = Object.values(tokenState.tokens).map((v, k) => v)
+        if (tokensToExclude.length > 0) {
+            tokensToExclude.map((symbol) => {
+                _filteredTokens = _filteredTokens.filter((token) => {
+                    // CSPR <=> WCSPR cases
+                    if (symbol === 'CSPR' && token.symbol === 'WCSPR') {
+                        return
+                    }
+
+                    if (symbol === 'WCSPR' && token.symbol === 'CSPR') {
+                        return
+                    }
+
+                    // main case
+                    if (symbol !== token.symbol) {
+                        return token
+                    }
+                })
+
+            })
+        }
+        console.log(_filteredTokens)
+        return _filteredTokens.map((token) => {
+            const {chainId, symbol, name, amount, logoURI}: any = token;
+            return (
+              {
+                  id: chainId,
+                  name: symbol,
+                  fullName: name,
+                  amount: amount,
+                  tokenImg: logoURI
+              }
+            );
+        })
+    }
+
 
     return {
         loadTokenUSD,
@@ -166,6 +204,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         onSelectFirstToken,
         onSelectSecondToken,
         onSwitchTokens,
+        filterPopupTokens,
     }
 
 }

@@ -16,6 +16,7 @@ interface TokensContext {
     onSwitchTokens,
     firstTokenSelected: Token,
     secondTokenSelected: Token,
+    filterPopupTokens: (excludedTokens: any[]) => any[]
 }
 
 export const TokensProviderContext = createContext<TokensContext>({} as any)
@@ -49,6 +50,10 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
         return TokenResponsibilities(tokenState, tokenDispatch).onSwitchTokens()
     }
 
+    const filterPopupTokens = (excludedTokens: any[]) : any[] => {
+      return TokenResponsibilities(tokenState, tokenDispatch).filterPopupTokens(excludedTokens)
+    }
+
     return (
         <TokensProviderContext.Provider
             value={{
@@ -62,6 +67,7 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 onSwitchTokens,
                 firstTokenSelected: tokenState.tokens[tokenState.firstTokenSelected],
                 secondTokenSelected: tokenState.tokens[tokenState.secondTokenSelected],
+                filterPopupTokens,
             }}>
             {children}
         </TokensProviderContext.Provider>
