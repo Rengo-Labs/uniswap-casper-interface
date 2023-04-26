@@ -61,12 +61,6 @@ export const SwapTemplate = ({isMobile}) => {
         handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
     }
 
-    // end Details requirements
-
-    useEffect(() => {
-
-    }, [amountSwapTokenA, amountSwapTokenB])
-
     const onActionConfirm = async (amountA, amountB, slippage, gas) => {
         await onConfirmSwapConfig(
             amountA,

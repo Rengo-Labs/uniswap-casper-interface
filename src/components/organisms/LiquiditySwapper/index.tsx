@@ -53,13 +53,15 @@ const LiquiditySwapper = ({
                             onActionConfirm,
                             filterPopupTokens,
                             updateDetail,
-                            gasPriceSelectedForLiquidity
+                            gasPriceSelectedForLiquidity,
+                            amountSwapTokenA,
+                            amountSwapTokenASetter,
+                            amountSwapTokenB,
+                            amountSwapTokenBSetter
                           }: LiquiditySwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
 
-  const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0);
-  const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0);
   const [excludedA, setExcludedA] = useState<string[]>([
     secondTokenSelected.symbolPair,
   ]);
@@ -210,7 +212,7 @@ const LiquiditySwapper = ({
       secondTokenSelected
     );
     amountSwapTokenASetter(tokensToTransfer);
-    calculateUSDValues(filteredValue, tokensToTransfer, false)
+    calculateUSDValues(filteredValue, tokensToTransfer, true)
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
   }
@@ -448,7 +450,7 @@ const LiquiditySwapper = ({
       {openPoolDialog.open && (
         <CreatePoolDialog
           closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-          tokenListData={filterPopupTokens(openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
+          tokenListData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
           popularTokensData={popularTokens}
           onSelectToken={(name) => {
             selectAndCloseToken(tokenState.tokens[name])

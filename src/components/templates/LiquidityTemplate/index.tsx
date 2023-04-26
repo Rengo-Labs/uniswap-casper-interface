@@ -170,7 +170,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         )
         setTotalSupply(totalLP)
 
-        amountSwapTokenBSetter(tokensToTransfer)
+        //amountSwapTokenBSetter(tokensToTransfer)
         return {tokensToTransfer, exchangeRateA, exchangeRateB};
     }
 

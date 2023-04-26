@@ -292,7 +292,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         }
 
         return [priceA, priceB]
-    };
+    }
 
     const getPrice = (amount, pair, tokenSymbol) => {
         return pair.token0Symbol === tokenSymbol ?

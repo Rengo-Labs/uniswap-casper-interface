@@ -134,7 +134,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     inputValue: BigNumber.Value,
     token: Token,
     slippage = 0.005,
-    fee = 0.003
+    fee = 0.03
   ): Promise<SwapDetails> {
     return calculateSwapDetails(
       apiClient,
