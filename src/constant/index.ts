@@ -20,6 +20,7 @@ export const SUPPORTED_NETWORKS = {
   networkKey: process.env.REACT_APP_NETWORK_KEY
 };
 
+export const PLATFORM_GAS_FEE = parseFloat(process.env.REACT_APP_SITE_GAS_FEE) + parseFloat(process.env.REACT_APP_DEVELOPERS_GAS_FEE)
 export const TWITTER_URL = process.env.REACT_APP_TWITTER_URL;
 export const DISCORD_URL = process.env.REACT_APP_DISCORD_URL;
 export const TELEGRAM_URL = process.env.REACT_APP_TELEGRAM_URL;

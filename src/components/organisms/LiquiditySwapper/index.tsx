@@ -365,7 +365,8 @@ const LiquiditySwapper = ({
         name: symbol,
         fullName: name,
         amount: amount,
-        tokenImg: logoURI
+        tokenImg: logoURI,
+        favorite: false
       }
     );
   })

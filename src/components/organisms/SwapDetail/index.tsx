@@ -5,13 +5,14 @@ interface SwapDetailProps {
     firstTokenImg: string;
     secondTokenImg: string;
     firstSelectedToken: any;
-    gasFee: number;
+    platformGasFee: number;
     secondSelectedToken: any;
     slippageTolerance: number;
     calculateMinimumTokenReceived: any;
     firstSymbolToken: string,
     firstTokenAmount: number,
-    gasFeeSetter: any,
+    networkGasFee: any,
+    networkGasFeeSetter: any,
     pairPath: any[],
     priceImpact: string|number,
     priceImpactMessage: string,
@@ -24,13 +25,14 @@ const SwapDetail = ({
                         firstTokenImg,
                         secondTokenImg,
                         firstSelectedToken,
-                        gasFee,
+                        platformGasFee,
                         secondSelectedToken,
                         slippageTolerance,
                         calculateMinimumTokenReceived,
                         firstSymbolToken,
                         firstTokenAmount,
-                        gasFeeSetter,
+                        networkGasFee,
+                        networkGasFeeSetter,
                         pairPath,
                         priceImpact,
                         priceImpactMessage,
@@ -45,13 +47,14 @@ const SwapDetail = ({
                 firstTokenImg={firstTokenImg}
                 secondTokenImg={secondTokenImg}
                 firstSelectedToken={firstSelectedToken}
-                gasFee={gasFee}
+                platformGasFee={platformGasFee}
                 secondSelectedToken={secondSelectedToken}
                 slippageTolerance={slippageTolerance}
                 calculateMinimumTokenReceived={calculateMinimumTokenReceived}
                 firstSymbolToken={firstSymbolToken}
                 firstTokenAmount={firstTokenAmount}
-                gasFeeSetter={gasFeeSetter}
+                networkGasFee={networkGasFee}
+                networkGasFeeSetter={networkGasFeeSetter}
                 pairPath={pairPath}
                 priceImpact={priceImpact}
                 priceImpactMessage={priceImpactMessage}

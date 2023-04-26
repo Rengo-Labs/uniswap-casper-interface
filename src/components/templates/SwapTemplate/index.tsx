@@ -13,11 +13,13 @@ import {DoubleColumn} from '../../../layout/DoubleColumn';
 import {calculateMinimumTokenReceived} from '../../../contexts/PriceImpactContext';
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {globalStore} from "../../../store/store";
+import {PLATFORM_GAS_FEE} from '../../../constant'
 
 export const SwapTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
         gasPriceSelectedForSwapping,
+        adjustedGas
     } = useContext(ConfigProviderContext);
 
     const {
@@ -146,6 +148,7 @@ export const SwapTemplate = ({isMobile}) => {
             setPairPath([...new Set(pairPath)])
         }
 
+        gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol ,pairExist ? 0 : (listPath.length -1)))
         return {
             getSwapDetailResponse
         }
@@ -158,13 +161,14 @@ export const SwapTemplate = ({isMobile}) => {
                     firstTokenImg={firstTokenSelected.logoURI || ''}
                     secondTokenImg={secondTokenSelected.logoURI || ''}
                     firstSelectedToken={firstTokenSelected}
-                    gasFee={gasPriceSelectedForSwapping}
+                    platformGasFee={PLATFORM_GAS_FEE}
                     secondSelectedToken={secondTokenSelected}
                     slippageTolerance={slippageTolerance}
                     calculateMinimumTokenReceived={calculateMinimumTokenReceived}
                     firstSymbolToken={firstTokenSelected.symbol}
                     firstTokenAmount={amountSwapTokenA}
-                    gasFeeSetter={handleChangeGasFee}
+                    networkGasFee={gasFee}
+                    networkGasFeeSetter={handleChangeGasFee}
                     pairPath={pairPath}
                     priceImpact={priceImpact}
                     priceImpactMessage={defaultPriceImpactLabel}
@@ -174,7 +178,7 @@ export const SwapTemplate = ({isMobile}) => {
                 />
                 <TokenSwapper
                     onIncreaseAllow={onIncreaseAllow}
-                    gasPriceSelectedForSwapping={gasPriceSelectedForSwapping}
+                    gasPriceSelectedForSwapping={gasFee}
                     onConnectWallet={onConnectWallet}
                     isConnected={isConnected}
                     progressBar={progressBar}

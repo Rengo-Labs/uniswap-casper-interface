@@ -59,7 +59,6 @@ const TokenSwapper = ({
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
-  const [feeToPay, feeToPaySetter] = useState<number>(0.03);
   const [exchangeRateA, exchangeRateASetter] = useState<number>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -115,12 +114,6 @@ const TokenSwapper = ({
       changeTokenA(amountSwapTokenB.toString());
       setLastChanged('A');
     }
-  }
-
-  //TODO COmpartido
-  function resetAll() {
-    amountSwapTokenASetter(0);
-    amountSwapTokenBSetter(0);
   }
 
   async function requestIncreaseAllowance(amount, contractHash) {
@@ -189,7 +182,7 @@ const TokenSwapper = ({
     handleValidate(
         parseFloat(e),
         parseFloat(firstTokenSelected.amount),
-        gasFee || 0
+        gasPriceSelectedForSwapping || 0
     );
     await changeTokenA(e)
   };
@@ -206,7 +199,7 @@ const TokenSwapper = ({
     handleValidate(
         parseFloat(tokensToTransfer),
         parseFloat(firstTokenSelected.amount),
-        gasFee || 0
+        gasPriceSelectedForSwapping || 0
     )
   }
 
@@ -237,7 +230,6 @@ const TokenSwapper = ({
         amountB,
         isA2B
     )
-    console.log("Par", usdA, usdB)
 
     const _usdA = isNaN(parseFloat(usdA)) ? "0.00" : usdA;
     const _usdB = isNaN(parseFloat(usdB)) ? "0.00" : usdB;
@@ -254,7 +246,8 @@ const TokenSwapper = ({
           name: symbol,
           fullName: name,
           amount: amount,
-          tokenImg: logoURI
+          tokenImg: logoURI,
+          favorite: false
         }
     );
   });
@@ -324,7 +317,7 @@ const TokenSwapper = ({
                 }}}>`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`</Button>
           )}
           {isApproved && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB, slippageTolerance, gasFee)}}>SWAP</Button>
+              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB)}}>SWAP</Button>
           )}
         </div>
         {openPoolDialog.open && (

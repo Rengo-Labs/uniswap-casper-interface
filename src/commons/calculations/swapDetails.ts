@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { APIClient, Token } from '../api'
 import { log } from '../utils'
+import {PLATFORM_GAS_FEE} from "../../constant";
 
 /**
  * Swap details
@@ -40,7 +41,7 @@ export const calculateSwapDetails = async (
     inputValueRaw: BigNumber.Value,
     token: Token,
     slippage = 0.005,
-    fee = 0.003
+    fee = PLATFORM_GAS_FEE
 ): Promise<SwapDetails> => {
   try {     
       const isA2B = token.symbol == tokenA.symbol
@@ -83,8 +84,6 @@ export const calculateSwapDetails = async (
         inputExchangeRate = outputLiquidity.div(inputLiquidity)
         outputExchangeRate = new BigNumber(1).div(inputExchangeRate)
       }
-
-      console.log('exchange rates', inputExchangeRate.toString(), outputExchangeRate.toString())
 
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate

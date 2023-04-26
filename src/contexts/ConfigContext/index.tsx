@@ -36,6 +36,7 @@ export interface ConfigContext {
   setLinkExplorer?: (link: string) => void;
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
+  adjustedGas?: (baseGas, symbolA, symbolB, numberHop) => number
 }
 export interface PairReserves {
   reserve0: BigNumber.Value
@@ -113,6 +114,12 @@ export const ConfigContextWithReducer = ({
     }
   }
 
+  const adjustedGas = (baseGas, symbolA, symbolB, numberHop) => {
+    const totalGas = baseGas + numberHop * walletState.gasFeeHop
+
+    return symbolA === 'CSPR' || symbolB === 'CSPR' ? totalGas + walletState.wasmGasFee : totalGas
+  }
+
   return (
     <ConfigProviderContext.Provider
       value={{
@@ -126,6 +133,7 @@ export const ConfigContextWithReducer = ({
         confirmModal,
         linkExplorer,
         progressModal,
+        adjustedGas
       }}
     >
       {children}
