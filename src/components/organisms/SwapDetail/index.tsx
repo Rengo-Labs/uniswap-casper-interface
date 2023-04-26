@@ -13,7 +13,7 @@ interface SwapDetailProps {
     firstTokenAmount: number,
     gasFeeSetter: any,
     pairPath: any[],
-    priceImpact: number,
+    priceImpact: string|number,
     priceImpactMessage: string,
     secondSymbolToken: string,
     secondTokenAmount: number,

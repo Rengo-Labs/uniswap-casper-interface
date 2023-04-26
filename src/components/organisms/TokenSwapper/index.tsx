@@ -336,6 +336,7 @@ const TokenSwapper = ({
                   selectAndCloseToken(tokenState.tokens[name])
                 }}
                 onSelectFavoriteToken={(name, value) => console.log("Is favorite", name, value)}
+                isOpen={openPoolDialog.open}
             />
         )}
       </div>

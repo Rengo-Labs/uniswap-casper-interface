@@ -88,6 +88,14 @@ export const SwapTemplate = ({isMobile}) => {
         const {tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath} =
             getSwapDetailResponse;
 
+        // TODO REVIEW DETAILS
+        priceImpactSetter(priceImpact);
+        defaultPriceImpactLabelSetter(
+            parseFloat(priceImpact as any) > 1
+                ? 'Price Impact Warning'
+                : 'Low Price Impact'
+        );
+
         return {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact, routePath};
     }
 
@@ -162,9 +170,9 @@ export const SwapTemplate = ({isMobile}) => {
                     calculateMinimumTokenReceived={calculateMinimumTokenReceived}
                     firstSymbolToken={firstTokenSelected.symbol}
                     firstTokenAmount={amountSwapTokenA}
-                    gasFeeSetter={gasFeeSetter}
+                    gasFeeSetter={handleChangeGasFee}
                     pairPath={pairPath}
-                    priceImpact={Number(priceImpact)}
+                    priceImpact={priceImpact}
                     priceImpactMessage={defaultPriceImpactLabel}
                     secondSymbolToken={secondTokenSelected.symbol}
                     secondTokenAmount={amountSwapTokenB}
