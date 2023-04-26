@@ -56,6 +56,7 @@ export const SwapTemplate = ({isMobile}) => {
         useState<string>('');
     const [priceImpact, priceImpactSetter] = useState<number | string>(0);
     const { slippageTolerance, updateSlippageTolerance } = globalStore()
+    const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
 
     const handleChangeGasFee = (value) => {
         const gasFeeValue = value ? parseFloat(value) : 0;
@@ -64,6 +65,7 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const onActionConfirm = async (amountA, amountB, slippage, gas) => {
+        setIsProcessingTransaction(true)
         await onConfirmSwapConfig(
             amountA,
             amountB,
@@ -72,6 +74,7 @@ export const SwapTemplate = ({isMobile}) => {
         );
 
         refresh();
+        setIsProcessingTransaction(false)
     }
 
     async function updateSwapDetail(
@@ -199,6 +202,7 @@ export const SwapTemplate = ({isMobile}) => {
                     amountSwapTokenASetter={amountSwapTokenASetter}
                     amountSwapTokenB={amountSwapTokenB}
                     amountSwapTokenBSetter={amountSwapTokenBSetter}
+                    isProcessingTransaction={isProcessingTransaction}
                 />
             </DoubleColumn>
         </>

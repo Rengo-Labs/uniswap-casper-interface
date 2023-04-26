@@ -52,9 +52,10 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [userPairDataNonZero, userPairDataNonZeroSetter] = useState([])
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
-    const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen)
-    const [currentFReserve, setFirstReserve] = useState(0);
-    const [currentSReserve, setSecondReserve] = useState(0);
+    //const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen)
+    const [currentFReserve, setFirstReserve] = useState(0)
+    const [currentSReserve, setSecondReserve] = useState(0)
+    const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
 
     const loadUserLP = useCallback(() => {
         const userPairs = Object.values(pairState).filter(
@@ -94,10 +95,11 @@ export const LiquidityTemplate = ({isMobile}) => {
             onSelectSecondToken(tokenState.tokens[t1])
         }
 
+        /*
         if (isRemovingPopupOpen) {
             setOpenedRemoving(true)
             setRemovingPopup(false)
-        }
+        }*/
 
         updateLiquidityDetail(
           firstTokenSelected,
@@ -108,6 +110,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     }, [isConnected, pairState]);
 
     async function onLiquidity(amountA, amountB) {
+        setIsProcessingTransaction(true)
         await onAddLiquidity(
             amountA,
             amountB,
@@ -117,6 +120,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         refresh()
         amountSwapTokenASetter(0)
         amountSwapTokenBSetter(0)
+        setIsProcessingTransaction(false)
     }
 
     async function updateLiquidityDetail(
@@ -232,6 +236,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   amountSwapTokenASetter={amountSwapTokenASetter}
                                   amountSwapTokenB={amountSwapTokenB}
                                   amountSwapTokenBSetter={amountSwapTokenBSetter}
+                                  isProcessingTransaction={isProcessingTransaction}
                 />
             </DoubleColumn>
             {

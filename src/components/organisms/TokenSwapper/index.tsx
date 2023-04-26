@@ -29,7 +29,8 @@ interface TokenSwapperProps {
   amountSwapTokenA,
   amountSwapTokenASetter,
   amountSwapTokenB,
-  amountSwapTokenBSetter
+  amountSwapTokenBSetter,
+  isProcessingTransaction
 }
 
 const TokenSwapper = ({
@@ -54,7 +55,8 @@ const TokenSwapper = ({
                         amountSwapTokenA,
                         amountSwapTokenASetter,
                         amountSwapTokenB,
-                        amountSwapTokenBSetter
+                        amountSwapTokenBSetter,
+                        isProcessingTransaction
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -314,10 +316,17 @@ const TokenSwapper = ({
                       -freeAllowance,
                       firstTokenSelected.contractHash
                   );
-                }}}>`Approve ${-freeAllowance} ${firstTokenSelected.symbol}`</Button>
+                }}}>Approve ${-freeAllowance} ${firstTokenSelected.symbol}</Button>
           )}
           {isApproved && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB)}}>SWAP</Button>
+              <Button type={"large"} props={{
+                disabled: disableButton ||
+                  amountSwapTokenA <= 0 ||
+                  amountSwapTokenB <= 0 ||
+                  amountSwapTokenA > parseFloat(firstTokenSelected.amount) ||
+                  isProcessingTransaction ||
+                  disableButton,
+                style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB)}}>SWAP</Button>
           )}
         </div>
         {openPoolDialog.open && (
