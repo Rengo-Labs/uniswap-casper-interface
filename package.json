@@ -49,7 +49,6 @@
     "react-table": "^7.8.0",
     "react-toggle-button": "^2.2.0",
     "recharts": "^2.4.3",
-    "rengo-ui-kit": "/Users/raul.villca/Desktop/wks/test/Rengo-UI-Kit",
     "store2": "^2.14.2",
     "styled-components": "^5.3.6",
     "ts-results": "^3.3.0",
@@ -57,7 +56,8 @@
     "uuid": "^9.0.0",
     "web-vitals": "^3.1.1",
     "web3-core": "^1.8.1",
-    "zustand": "^4.3.2"
+    "zustand": "^4.3.2",
+    "rengo-ui-kit": "https://github.com/Rengo-Labs/Rengo-UI-Kit.git#feat/lib-integration"
   },
   "browserslist": {
     "production": [

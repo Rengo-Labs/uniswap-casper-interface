@@ -385,7 +385,7 @@ const LiquiditySwapper = ({
   }
 
   return (
-    <div style={{display: "flex", flexDirection: "column", padding: "8px 32px 8px 32px", gap: "10px"}}>
+    <div style={{display: "flex", flexDirection: "column", gap: "10px"}}>
       <CoinCard title='From'
                 startIcon={firstTokenSelected.logoURI}
                 endIcon={arrowIcon}
