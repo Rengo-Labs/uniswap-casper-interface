@@ -1,2 +1,2 @@
 export { SwapTemplate } from './SwapTemplate'
-export { LiquidityTemplate } from './LiquiditySwapTemplate'
+export { LiquidityTemplate } from './LiquidityTemplate'

@@ -46,13 +46,15 @@ export const LiquidityTemplate = ({isMobile}) => {
     } = useContext(TokensProviderContext)
 
     const [searchParams, setSearchParams] = useSearchParams()
-    const [totalLiquidity, setTotalLiquidity] = useState('0')
+    const [totalSupply, setTotalSupply] = useState('0')
     const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
     const { slippageTolerance, updateSlippageTolerance } = globalStore()
     const [userPairDataNonZero, userPairDataNonZeroSetter] = useState([])
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
-    const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen);
+    const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen)
+    const [currentFReserve, setFirstReserve] = useState(0);
+    const [currentSReserve, setSecondReserve] = useState(0);
 
     const loadUserLP = useCallback(() => {
         const userPairs = Object.values(pairState).filter(
@@ -76,7 +78,6 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     useEffect(() => {
         if (!isConnected) {
-            // TODO - Investigate why we have the amountSwapTokenA or amountSwapTokenB with NAN value instead of zeros
             refresh()
         }
         loadUserLP()
@@ -161,7 +162,15 @@ export const LiquidityTemplate = ({isMobile}) => {
             setSecondReserve(firstReserve);
         }*/
 
-        //calculateUSDValues(value, tokensToTransfer, token === tokenA);
+        setFirstReserve(firstReserve);
+        setSecondReserve(secondReserve);
+        const totalLP = calculateTotalLP(
+          firstTokenSelected.symbolPair,
+          secondTokenSelected.symbolPair
+        )
+        setTotalSupply(totalLP)
+
+        amountSwapTokenBSetter(tokensToTransfer)
         return {tokensToTransfer, exchangeRateA, exchangeRateB};
     }
 
@@ -190,7 +199,18 @@ export const LiquidityTemplate = ({isMobile}) => {
     return (
         <>
             <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
-                <LiquidityDetail/>
+                <LiquidityDetail
+                  firstSymbol={firstTokenSelected.symbol}
+                  secondSymbol={secondTokenSelected.symbol}
+                  maxAmount={`${amountSwapTokenB}`}
+                  firstTotalLiquidity={currentFReserve / 10 ** firstTokenSelected.decimals}
+                  secondTotalLiquidity={currentSReserve / 10 ** secondTokenSelected.decimals}
+                  totalSupply={totalSupply}
+                  slippage={slippageTolerance}
+                  networkFee={gasFee}
+                  setSlippage={updateSlippageTolerance}
+                  setNetworkFee={gasFeeSetter}
+                />
                 <LiquiditySwapper onIncreaseAllow={onIncreaseAllow}
                                   onConnectWallet={onConnectWallet}
                                   isConnected={isConnected}
@@ -207,8 +227,6 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   onActionConfirm={onLiquidity}
                                   filterPopupTokens={filterTokenPairsByToken}
                                   updateDetail={updateLiquidityDetail}
-                                  calculateTotalLP={calculateTotalLP}
-                                  setTotalLiquidity={setTotalLiquidity}
                                   gasPriceSelectedForLiquidity={gasPriceSelectedForLiquidity}
                                   amountSwapTokenA={amountSwapTokenA}
                                   amountSwapTokenASetter={amountSwapTokenASetter}

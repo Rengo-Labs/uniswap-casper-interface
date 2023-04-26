@@ -29,8 +29,6 @@ interface LiquiditySwapperProps {
   onActionConfirm,
   filterPopupTokens,
   updateDetail,
-  calculateTotalLP,
-  setTotalLiquidity,
   gasPriceSelectedForLiquidity,
   amountSwapTokenA,
   amountSwapTokenASetter,
@@ -39,26 +37,24 @@ interface LiquiditySwapperProps {
 }
 
 const LiquiditySwapper = ({
-                        onIncreaseAllow,
-                        onConnectWallet,
-                        isConnected,
-                        getProgress,
-                        refresh,
-                        calculateUSDtokens,
-                        pairState,
-                        firstTokenSelected,
-                        secondTokenSelected,
-                        onSelectFirstToken,
-                        onSelectSecondToken,
-                        tokenState,
-                        onSwitchTokens,
-                        onActionConfirm,
-                        filterPopupTokens,
-                        updateDetail,
-                        calculateTotalLP,
-                        setTotalLiquidity,
-                        gasPriceSelectedForLiquidity
-                      }: LiquiditySwapperProps) => {
+                            onIncreaseAllow,
+                            onConnectWallet,
+                            isConnected,
+                            getProgress,
+                            refresh,
+                            calculateUSDtokens,
+                            pairState,
+                            firstTokenSelected,
+                            secondTokenSelected,
+                            onSelectFirstToken,
+                            onSelectSecondToken,
+                            tokenState,
+                            onSwitchTokens,
+                            onActionConfirm,
+                            filterPopupTokens,
+                            updateDetail,
+                            gasPriceSelectedForLiquidity
+                          }: LiquiditySwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
 
@@ -73,9 +69,6 @@ const LiquiditySwapper = ({
 
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0);
-
-  const [currentFReserve, setFirstReserve] = useState(0);
-  const [currentSReserve, setSecondReserve] = useState(0);
 
   const [lastChanged, setLastChanged] = useState('');
   const [valueAUSD, setValueAUSD] = useState('0');
@@ -143,9 +136,6 @@ const LiquiditySwapper = ({
     amountSwapTokenASetter(amountSwapTokenB)
     amountSwapTokenBSetter(amountSwapTokenA)
 
-    setFirstReserve(currentSReserve)
-    setSecondReserve(currentFReserve)
-
     setValueAUSD(valueBUSD)
     setValueBUSD(valueAUSD)
 
@@ -169,32 +159,26 @@ const LiquiditySwapper = ({
     setLastChanged('A');
 
     amountSwapTokenASetter(filteredValue);
-    const {minTokenToReceive, exchangeRateA, exchangeRateB} = await updateDetail(
+    const {tokensToTransfer, exchangeRateA, exchangeRateB} = await updateDetail(
       firstTokenSelected,
       secondTokenSelected,
       filteredValue,
       firstTokenSelected
     );
 
-    calculateUSDValues(filteredValue, minTokenToReceive, true)
+    calculateUSDValues(filteredValue, tokensToTransfer, true)
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
-    amountSwapTokenBSetter(minTokenToReceive);
-
-    const totalLP = calculateTotalLP(
-      firstTokenSelected.symbolPair,
-      secondTokenSelected.symbolPair
-    );
-    setTotalLiquidity(totalLP);
+    amountSwapTokenBSetter(tokensToTransfer);
   }
 
   const handleChangeA = (value) => {
-    setCurrentValue(value);
+    setCurrentValue(value)
     handleValidate(
       parseFloat(value),
       parseFloat(firstTokenSelected.amount),
       gasFee || 0
-    );
+    )
     changeTokenA(value);
   };
 
@@ -229,11 +213,6 @@ const LiquiditySwapper = ({
     calculateUSDValues(filteredValue, tokensToTransfer, false)
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
-    const totalLP = calculateTotalLP(
-      firstTokenSelected.symbolPair,
-      secondTokenSelected.symbolPair
-    );
-    setTotalLiquidity(totalLP);
   }
 
   const handleChangeB = async (value) => {
@@ -271,44 +250,14 @@ const LiquiditySwapper = ({
       return;
     }
 
-    const includes: Record<string, boolean> = {};
-    const pairs = Object.values(pairState);
-    for (const pair of pairs) {
-      if (
-        pair.token0Symbol === token.symbol ||
-        pair.token0Symbol === token.symbolPair
-      ) {
-        includes[pair.token1Symbol] = true;
-      }
-      if (
-        pair.token1Symbol === token.symbol ||
-        pair.token1Symbol === token.symbolPair
-      ) {
-        includes[pair.token0Symbol] = true;
-      }
-    }
-
-    if (includes['WCSPR']) {
-      includes['CSPR'] = true;
-    }
-
-    const tokens = Object.values(tokenState.tokens);
-    const excludes = tokens.reduce((acc: string[], v: Token): string[] => {
-      if (!includes[v.symbol]) {
-        acc.push(v.symbol);
-      }
-      return acc;
-    }, []);
-
     onSelectFirstToken(token)
-    setExcludedB(excludes)
 
     const {tokensToTransfer} = await updateDetail(
       token,
       secondTokenSelected,
       amountSwapTokenA,
       token
-    );
+    )
     amountSwapTokenBSetter(tokensToTransfer);
   }
 
@@ -317,45 +266,15 @@ const LiquiditySwapper = ({
       return;
     }
 
-    const includes: Record<string, boolean> = {};
-    const pairs = Object.values(pairState);
-    for (const pair of pairs) {
-      if (
-        pair.token0Symbol === token.symbol ||
-        pair.token0Symbol === token.symbolPair
-      ) {
-        includes[pair.token1Symbol] = true;
-      }
-      if (
-        pair.token1Symbol === token.symbol ||
-        pair.token1Symbol === token.symbolPair
-      ) {
-        includes[pair.token0Symbol] = true;
-      }
-    }
-
-    if (includes['WCSPR']) {
-      includes['CSPR'] = true;
-    }
-
-    const tokens = Object.values(tokenState.tokens);
-    const excludes = tokens.reduce((acc: string[], v: Token): string[] => {
-      if (!includes[v.symbol]) {
-        acc.push(v.symbol);
-      }
-      return acc;
-    }, []);
-
-    onSelectSecondToken(token);
-    setExcludedA(excludes)
+    onSelectSecondToken(token)
 
     const {tokensToTransfer} = await updateDetail(
       firstTokenSelected,
       token,
       amountSwapTokenB,
       token
-    );
-    amountSwapTokenASetter(tokensToTransfer);
+    )
+    amountSwapTokenASetter(tokensToTransfer)
   }
 
   async function validateToken(amount, token) {
@@ -463,82 +382,82 @@ const LiquiditySwapper = ({
   }
 
   return (
-      <div style={{display: "flex", flexDirection: "column", padding: "8px 32px 8px 32px", gap: "10px"}}>
-        <CoinCard title='From'
-                  startIcon={firstTokenSelected.logoURI}
-                  endIcon={arrowIcon}
-                  value={amountA}
-                  placeholder={''}
-                  onChangeToken={() => setOpenPoolDialog(prevState => ({...prevState, firstSelector: true, open: true}))}
-                  onChangeValue={handleChangeA}
-                  tokenName={firstTokenSelected.symbol}
-                  tokenBalance={firstTokenSelected.amount}
-                  tokenPrice={valueAUSD}
-                  iconSize='36px'
-        />
+    <div style={{display: "flex", flexDirection: "column", padding: "8px 32px 8px 32px", gap: "10px"}}>
+      <CoinCard title='From'
+                startIcon={firstTokenSelected.logoURI}
+                endIcon={arrowIcon}
+                value={amountA}
+                placeholder={''}
+                onChangeToken={() => setOpenPoolDialog(prevState => ({...prevState, firstSelector: true, open: true}))}
+                onChangeValue={handleChangeA}
+                tokenName={firstTokenSelected.symbol}
+                tokenBalance={firstTokenSelected.amount}
+                tokenPrice={valueAUSD}
+                iconSize='36px'
+      />
 
 
-        <ExchangeRates exchangeRateA={exchangeRateA}
-                       tokenASymbol={firstTokenSelected.symbol}
-                       exchangeRateB={exchangeRateB}
-                       tokenBSymbol={secondTokenSelected.symbol}
-                       handleClickSwap={() => onSwitchTokensHandler()}
-                       strokeWidth={12}
-                       clearProgress={() => console.log("No se que hace?")}
-                       getProgress={() => getProgress}
-                       handlerButtonCircle={() => refreshPrices()}/>
+      <ExchangeRates exchangeRateA={exchangeRateA}
+                     tokenASymbol={firstTokenSelected.symbol}
+                     exchangeRateB={exchangeRateB}
+                     tokenBSymbol={secondTokenSelected.symbol}
+                     handleClickSwap={() => onSwitchTokensHandler()}
+                     strokeWidth={12}
+                     clearProgress={() => console.log("No se que hace?")}
+                     getProgress={() => getProgress}
+                     handlerButtonCircle={() => refreshPrices()}/>
 
-        <CoinCard title='To'
-                  startIcon={secondTokenSelected.logoURI}
-                  endIcon={arrowIcon}
-                  value={amountB}
-                  placeholder={''}
-                  onChangeToken={() => setOpenPoolDialog(prevState => ({...prevState, firstSelector: false, open: true}))}
-                  onChangeValue={handleChangeB}
-                  tokenName={secondTokenSelected.symbol}
-                  tokenBalance={secondTokenSelected.amount}
-                  tokenPrice={valueBUSD}
-                  iconSize='36px'
-        />
-        <div style={{display: "flex", justifyContent: "right"}}>
-          {!isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onConnectWallet()}}>Connect Wallet</Button>
-          )}
-          {!isApprovedA && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => async () => {
-                  await requestIncreaseAllowance(
-                      -freeAllowanceA,
-                      firstTokenSelected.contractHash
-                  );
-                }}}>Approve {freeAllowanceA} {firstTokenSelected.symbol}</Button>
-          )}
+      <CoinCard title='To'
+                startIcon={secondTokenSelected.logoURI}
+                endIcon={arrowIcon}
+                value={amountB}
+                placeholder={''}
+                onChangeToken={() => setOpenPoolDialog(prevState => ({...prevState, firstSelector: false, open: true}))}
+                onChangeValue={handleChangeB}
+                tokenName={secondTokenSelected.symbol}
+                tokenBalance={secondTokenSelected.amount}
+                tokenPrice={valueBUSD}
+                iconSize='36px'
+      />
+      <div style={{display: "flex", justifyContent: "right"}}>
+        {!isConnected && (
+          <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onConnectWallet()}}>Connect Wallet</Button>
+        )}
+        {!isApprovedA && isConnected && (
+          <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => async () => {
+              await requestIncreaseAllowance(
+                -freeAllowanceA,
+                firstTokenSelected.contractHash
+              );
+            }}}>Approve {freeAllowanceA} {firstTokenSelected.symbol}</Button>
+        )}
 
-          {!isApprovedB && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => async () => {
-                  await requestIncreaseAllowance(
-                      -freeAllowanceB,
-                      secondTokenSelected.contractHash
-                  );
-                }}}>Approve {freeAllowanceB} {secondTokenSelected.symbol}</Button>
-          )}
+        {!isApprovedB && isConnected && (
+          <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => async () => {
+              await requestIncreaseAllowance(
+                -freeAllowanceB,
+                secondTokenSelected.contractHash
+              );
+            }}}>Approve {freeAllowanceB} {secondTokenSelected.symbol}</Button>
+        )}
 
-          {isApprovedA && isApprovedB && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB)}}>Add Liquidity</Button>
-          )}
-        </div>
-        {openPoolDialog.open && (
-            <CreatePoolDialog
-                closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-                tokenListData={filterPopupTokens(openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
-                popularTokensData={popularTokens}
-                onSelectToken={(name) => {
-                  selectAndCloseToken(tokenState.tokens[name])
-                }}
-                onSelectFavoriteToken={(name, value) => console.log("Is favorite", name, value)}
-                isOpen={openPoolDialog.open}
-            />
+        {isApprovedA && isApprovedB && isConnected && (
+          <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB)}}>Add Liquidity</Button>
         )}
       </div>
+      {openPoolDialog.open && (
+        <CreatePoolDialog
+          closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
+          tokenListData={filterPopupTokens(openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
+          popularTokensData={popularTokens}
+          onSelectToken={(name) => {
+            selectAndCloseToken(tokenState.tokens[name])
+          }}
+          onSelectFavoriteToken={(name, value) => console.log("Is favorite", name, value)}
+          isOpen={openPoolDialog.open}
+        />
+      )}
+    </div>
   );
 };
 
