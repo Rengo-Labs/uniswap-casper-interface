@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import TokenSwapper from "../../organisms/TokenSwapper";
 import SwapDetail from "../../organisms/SwapDetail";
 import {ConfigProviderContext} from "../../../contexts/ConfigContext";
@@ -13,11 +13,13 @@ import {DoubleColumn} from '../../../layout/DoubleColumn';
 import {calculateMinimumTokenReceived} from '../../../contexts/PriceImpactContext';
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {globalStore} from "../../../store/store";
+import {PLATFORM_GAS_FEE} from '../../../constant'
 
 export const SwapTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
         gasPriceSelectedForSwapping,
+        adjustedGas
     } = useContext(ConfigProviderContext);
 
     const {
@@ -54,6 +56,7 @@ export const SwapTemplate = ({isMobile}) => {
         useState<string>('');
     const [priceImpact, priceImpactSetter] = useState<number | string>(0);
     const { slippageTolerance, updateSlippageTolerance } = globalStore()
+    const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
 
     const handleChangeGasFee = (value) => {
         const gasFeeValue = value ? parseFloat(value) : 0;
@@ -61,9 +64,8 @@ export const SwapTemplate = ({isMobile}) => {
         handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
     }
 
-    // end Details requirements
-
     const onActionConfirm = async (amountA, amountB, slippage, gas) => {
+        setIsProcessingTransaction(true)
         await onConfirmSwapConfig(
             amountA,
             amountB,
@@ -72,23 +74,31 @@ export const SwapTemplate = ({isMobile}) => {
         );
 
         refresh();
+        setIsProcessingTransaction(false)
     }
 
     async function updateSwapDetail(
         tokenA: Token,
         tokenB: Token,
         value = 0,
-        token = firstTokenSelected,
-        slippage
+        token = firstTokenSelected
     ) {
-        const {getSwapDetailResponse} = await calculateSwapDetailResponse(tokenA, tokenB, value, token, slippage)
+        const {getSwapDetailResponse} = await calculateSwapDetailResponse(tokenA, tokenB, value, token)
         const {tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath} =
             getSwapDetailResponse;
+
+        // TODO REVIEW DETAILS
+        priceImpactSetter(priceImpact);
+        defaultPriceImpactLabelSetter(
+            parseFloat(priceImpact as any) > 1
+                ? 'Price Impact Warning'
+                : 'Low Price Impact'
+        );
 
         return {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact, routePath};
     }
 
-    const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token, slippage) => {
+    const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token) => {
         const isAorB = tokenA.symbol === token.symbol
         const [param, param1] = isAorB ? [tokenA.symbol, tokenB.symbol] : [tokenB.symbol, tokenA.symbol]
         const listPath = getListPath(param, param1, Object.values(tokenState.tokens), Object.values(pairState))
@@ -109,9 +119,7 @@ export const SwapTemplate = ({isMobile}) => {
                 reserve0,
                 reserve1,
                 value,
-                token,
-                slippage,
-                gasPriceSelectedForSwapping
+                token
             );
             setPairPath([tokenA.symbol, tokenB.symbol])
         } else {
@@ -131,9 +139,7 @@ export const SwapTemplate = ({isMobile}) => {
                     reserve0,
                     reserve1,
                     nextTokensToTransfer,
-                    {symbol: symbol0} as any,
-                    slippage,
-                    gasPriceSelectedForSwapping
+                    {symbol: symbol0} as any
                 );
 
                 const {tokensToTransfer, priceImpact} = getSwapDetailResponse
@@ -145,6 +151,7 @@ export const SwapTemplate = ({isMobile}) => {
             setPairPath([...new Set(pairPath)])
         }
 
+        gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol ,pairExist ? 0 : (listPath.length -1)))
         return {
             getSwapDetailResponse
         }
@@ -157,15 +164,16 @@ export const SwapTemplate = ({isMobile}) => {
                     firstTokenImg={firstTokenSelected.logoURI || ''}
                     secondTokenImg={secondTokenSelected.logoURI || ''}
                     firstSelectedToken={firstTokenSelected}
-                    gasFee={gasPriceSelectedForSwapping}
+                    platformGasFee={PLATFORM_GAS_FEE}
                     secondSelectedToken={secondTokenSelected}
                     slippageTolerance={slippageTolerance}
                     calculateMinimumTokenReceived={calculateMinimumTokenReceived}
                     firstSymbolToken={firstTokenSelected.symbol}
                     firstTokenAmount={amountSwapTokenA}
-                    gasFeeSetter={gasFeeSetter}
+                    networkGasFee={gasFee}
+                    networkGasFeeSetter={handleChangeGasFee}
                     pairPath={pairPath}
-                    priceImpact={Number(priceImpact)}
+                    priceImpact={priceImpact}
                     priceImpactMessage={defaultPriceImpactLabel}
                     secondSymbolToken={secondTokenSelected.symbol}
                     secondTokenAmount={amountSwapTokenB}
@@ -173,7 +181,7 @@ export const SwapTemplate = ({isMobile}) => {
                 />
                 <TokenSwapper
                     onIncreaseAllow={onIncreaseAllow}
-                    gasPriceSelectedForSwapping={gasPriceSelectedForSwapping}
+                    gasPriceSelectedForSwapping={gasFee}
                     onConnectWallet={onConnectWallet}
                     isConnected={isConnected}
                     progressBar={progressBar}
@@ -190,6 +198,11 @@ export const SwapTemplate = ({isMobile}) => {
                     onActionConfirm={onActionConfirm}
                     filterPopupTokens={filterPopupTokens}
                     updateDetail={updateSwapDetail}
+                    amountSwapTokenA={amountSwapTokenA}
+                    amountSwapTokenASetter={amountSwapTokenASetter}
+                    amountSwapTokenB={amountSwapTokenB}
+                    amountSwapTokenBSetter={amountSwapTokenBSetter}
+                    isProcessingTransaction={isProcessingTransaction}
                 />
             </DoubleColumn>
         </>

@@ -7,7 +7,7 @@ import {
   SwapDetails,
   Token,
 } from '../../commons';
-import { DEADLINE, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
+import {DEADLINE, NotificationType, PLATFORM_GAS_FEE, SUPPORTED_NETWORKS} from '../../constant';
 import {
   apiClient,
   casperClient,
@@ -34,8 +34,8 @@ export interface SwapContext {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage: number,
-    fee: number
+    slippage?: number,
+    fee?: number
   ) => Promise<SwapDetails>;
 }
 
@@ -134,7 +134,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     inputValue: BigNumber.Value,
     token: Token,
     slippage = 0.005,
-    fee = 0.003
+    fee = PLATFORM_GAS_FEE
   ): Promise<SwapDetails> {
     return calculateSwapDetails(
       apiClient,
@@ -144,8 +144,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       reserve1,
       inputValue,
       token,
-      slippage,
-      fee
+      slippage
     );
   }
 

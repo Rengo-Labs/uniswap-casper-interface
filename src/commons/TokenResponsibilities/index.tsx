@@ -6,6 +6,7 @@ import {apiClient, casperClient} from "../../contexts/ConfigContext";
 import {Wallet} from "../wallet";
 import {Token} from "../api";
 import {pairFinder} from "../pairFinder";
+import {PairState} from "../../reducers/PairsReducer";
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
@@ -196,6 +197,27 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         })
     }
 
+    const filterTokenPairsByToken = (token, pairState: PairState) => {
+        const result = Object.values(pairState)
+          .filter(pl => {
+              return pl.token0Symbol.includes(token) || pl.token1Symbol.includes(token)
+          })
+          .map((pl) => {
+              return pl.token1Symbol.includes(token) ? tokenState.tokens[pl.token0Symbol] : tokenState.tokens[pl.token1Symbol]
+          })
+        return result.map((token) => {
+            const {chainId, symbol, name, amount, logoURI}: any = token;
+            return (
+              {
+                  id: chainId,
+                  name: symbol,
+                  fullName: name,
+                  amount: amount,
+                  tokenImg: logoURI
+              }
+            );
+        })
+    }
 
     return {
         loadTokenUSD,
@@ -205,6 +227,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         onSelectSecondToken,
         onSwitchTokens,
         filterPopupTokens,
+        filterTokenPairsByToken
     }
 
 }

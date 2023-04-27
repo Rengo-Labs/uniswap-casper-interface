@@ -1,14 +1,24 @@
 import { ReactNode } from 'react'
-import { SingleColumnContainer } from './styles'
+import {SingleColumnContainer, Subtitle, Title, TitleContainer} from './styles'
+import {useTheme} from "styled-components";
 
 interface SingleColumnProps {
   children: ReactNode
-  isMobile: boolean
+  isMobile: boolean,
+  title?: string,
+  subTitle?: string
 }
-export const SingleColumn = ({ children, isMobile }: SingleColumnProps) => {
+export const SingleColumn = ({ children, isMobile, title, subTitle }: SingleColumnProps) => {
+  const theme = useTheme();
   return (
-    <SingleColumnContainer isMobile={isMobile}>
-      {children}
-    </SingleColumnContainer>
+      <>
+        <TitleContainer isMobile={isMobile}>
+          {title && <Title isMobile={isMobile} theme={theme}>{title}</Title>}
+          {subTitle && <Subtitle isMobile={isMobile} theme={theme}>{subTitle}</Subtitle>}
+        </TitleContainer>
+        <SingleColumnContainer isMobile={isMobile}>
+          {children}
+        </SingleColumnContainer>
+      </>
   )
 }

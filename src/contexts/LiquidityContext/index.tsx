@@ -50,8 +50,8 @@ export interface LiquidityContext {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage: number,
-    fee: number
+    slippage?: number,
+    fee?: number
   ) => Promise<LiquidityDetails>;
   isRemovingPopupOpen?: boolean;
   setRemovingPopup?: any;
