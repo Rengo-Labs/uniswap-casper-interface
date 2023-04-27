@@ -13,8 +13,9 @@ import {DoubleColumn} from "../../../layout/DoubleColumn";
 import {useSearchParams} from "react-router-dom";
 import {globalStore} from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
-import {LPContainer} from 'rengo-ui-kit'
-
+import {LPContainer, RemoveLiquidityDialog} from 'rengo-ui-kit';
+import {useNavigate} from "react-router";
+import {ILiquidityPoolState} from "rengo-ui-kit/src/components/molecules/RemoveLiquidityDialog/types";
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -56,6 +57,55 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [currentFReserve, setFirstReserve] = useState(0)
     const [currentSReserve, setSecondReserve] = useState(0)
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
+    const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState(false)
+    const [removeLiquidityData, setRemoveLiquidityData] = useState([])
+    const Navigator = useNavigate()
+    const handleRemoveLiquidity = () => {
+        setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
+    }
+    const handleNavigate = (item) => {
+        Navigator(`/swap?token0=${item.token0Symbol}&token1=${item.token1Symbol}`)
+    }
+    const actions = (item, action, firstSymbol, secondSymbol) => {
+        if (action === 'AddLiquidity') {
+            onSelectFirstToken(tokenState.tokens[firstSymbol])
+            onSelectSecondToken(tokenState.tokens[secondSymbol])
+        }
+
+        if (action === 'DeleteLP') {
+            const data = [
+                {
+                    id: 'd3jd92d',
+                    tokenNames: [item.token0Symbol, item.token1Symbol],
+                    tokenNameSymbols: [item.token0Symbol, item.token1Symbol],
+                    amount: item.balance,
+                    tokenImg: item.token0Icon
+                },
+                {
+                    id: 'c9c843b',
+                    tokenNames: [item.token0Name],
+                    tokenNameSymbols: [item.token0Symbol],
+                    amount: item.totalReserve0,
+                    tokenImg:  item.token0Icon
+                },
+                {
+                    id: '1qwski4',
+                    tokenNames: [item.token1Name],
+                    tokenNameSymbols: [item.token1Symbol],
+                    amount: item.totalReserve1,
+                    tokenImg:  item.token1Icon
+                }
+            ]
+            console.log("item", item)
+            console.log("data", data)
+            setRemoveLiquidityData(data)
+            handleRemoveLiquidity()
+        }
+
+        if (action === 'Swap') {
+            handleNavigate(item)
+        }
+    }
 
     const loadUserLP = useCallback(() => {
         const userPairs = Object.values(pairState).filter(
@@ -70,12 +120,13 @@ export const LiquidityTemplate = ({isMobile}) => {
                 secondAmount: i.reserve1,
                 userLP: i.liquidity,
                 totalLP: i.totalLiquidityUSD,
-                onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => () => console.log("Optiones", action, firstSymbol, secondSymbol)
+                onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
             }
         })
         userPairDataNonZeroSetter(userPairs)
 
     }, [userPairDataNonZero])
+
 
     useEffect(() => {
         if (!isConnected) {
@@ -199,9 +250,17 @@ export const LiquidityTemplate = ({isMobile}) => {
             return userLP;
         }
     }
-
+    // TODO cambiar el remove liquidity para que reciba los parametros correctos
+    // TODO revisar el componente para pasarle 2 imagen en caso de ser par
     return (
         <>
+            <RemoveLiquidityDialog
+                id='remove-liquidity-dialog'
+                isOpen={showRemoveLiquidityDialog}
+                // @ts-ignore
+                onClose={handleRemoveLiquidity}
+                liquidityPoolData={removeLiquidityData}
+            />
             <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
                 <LiquidityDetail
                   firstSymbol={firstTokenSelected.symbol}

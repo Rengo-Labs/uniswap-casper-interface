@@ -32,10 +32,10 @@ export const BalanceTemplate = ({isMobile}) => {
     }, [tokenState.tokens, isConnected])
 
     return (
-        <div>
+        <>
             <SingleColumn isMobile={isMobile} title="My Balance">
                 <BalanceTable data={data}/>
             </SingleColumn>
-        </div>
+        </>
     );
 }
