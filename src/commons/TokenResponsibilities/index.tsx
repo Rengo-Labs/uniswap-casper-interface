@@ -224,13 +224,13 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         })
     }
 
-    const getHistoricalTokenPrices = (packageHash: string) => {
+    const getHistoricalTokenPrices = async (packageHash: string) => {
         return getHistoricalTokenPricesByPackageHash(packageHash)
     }
 
-    const getHistoricalTokensChartPrices = (packageHash0: string, packageHash1: string) => {
-        const chart0 = getHistoricalTokenPricesByPackageHash(packageHash0)
-        const chart1 = getHistoricalTokenPricesByPackageHash(packageHash1)
+    const getHistoricalTokensChartPrices = async (packageHash0: string, packageHash1: string) => {
+        const chart0 = await getHistoricalTokenPricesByPackageHash(packageHash0)
+        const chart1 = await getHistoricalTokenPricesByPackageHash(packageHash1)
 
         if (chart1.length < chart0.length) return []
 
