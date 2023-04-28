@@ -7,7 +7,7 @@ import {PairsContextProvider} from "../../../contexts/PairsContext";
 
 export const BalanceTemplate = ({isMobile}) => {
     const {isConnected} = useContext(WalletProviderContext)
-    const {tokenState, getBalancesProfit} = useContext(TokensProviderContext)
+    const {tokenState, getBalancesProfit, getHistoricalTokenPrices, getHistoricalTokensChartPrices} = useContext(TokensProviderContext)
     const {getGlobalChart} = useContext(PairsContextProvider)
     const [data, setData] = useState([])
 
@@ -15,7 +15,7 @@ export const BalanceTemplate = ({isMobile}) => {
         return Promise.all(Object.values(tokenState.tokens).map(async (token) => {
           const {symbol, name, amount, logoURI, packageHash}: any = token;
           const data = await getBalancesProfit(packageHash)
-
+          //getHistoricalTokenPrices(packageHash)
           return (
             {
               id: symbol,

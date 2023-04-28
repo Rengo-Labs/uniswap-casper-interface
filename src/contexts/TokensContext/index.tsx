@@ -21,8 +21,9 @@ interface TokensContext {
     filterPopupTokens: (excludedTokens: any[]) => any[],
     filterTokenPairsByToken: (token: Token, pairState: PairState) => any[]
     resetTokens: () => void,
-    getHistoricalTokenPrices?: (contractHash: string) => Promise<any>,
-    getBalancesProfit?: (contractHash: string) => Promise<TokenProfit>
+    getHistoricalTokenPrices?: (packageHash: string) => Promise<any>,
+    getBalancesProfit?: (packageHash: string) => Promise<TokenProfit>,
+    getHistoricalTokensChartPrices?: (packageHash0: string, packageHash1: string) => Promise<any[]>
 }
 
 export const TokensProviderContext = createContext<TokensContext>({} as any)
@@ -75,6 +76,10 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
       return TokenResponsibilities(tokenState, tokenDispatch).getBalancesProfit(packageHash)
     }
 
+    const getHistoricalTokensChartPrices = async (packageHash0: string, packageHash1: string): Promise<any> => {
+      return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokensChartPrices(packageHash0, packageHash1)
+    }
+
     return (
         <TokensProviderContext.Provider
             value={{
@@ -92,7 +97,8 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 filterTokenPairsByToken,
                 resetTokens,
                 getHistoricalTokenPrices,
-                getBalancesProfit
+                getBalancesProfit,
+                getHistoricalTokensChartPrices
             }}>
             {children}
         </TokensProviderContext.Provider>

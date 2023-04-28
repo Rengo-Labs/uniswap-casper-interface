@@ -9,7 +9,7 @@ import {pairFinder} from "../pairFinder";
 import {PairState} from "../../reducers/PairsReducer";
 import {
     getBalanceProfitByContractHash,
-    getHistoricalTokenPricesByContractHash,
+    getHistoricalTokenPricesByPackageHash,
     TokenProfit
 } from "../api/ApolloQueries";
 
@@ -225,7 +225,21 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     const getHistoricalTokenPrices = (packageHash: string) => {
-        return getHistoricalTokenPricesByContractHash(packageHash)
+        return getHistoricalTokenPricesByPackageHash(packageHash)
+    }
+
+    const getHistoricalTokensChartPrices = (packageHash0: string, packageHash1: string) => {
+        const chart0 = getHistoricalTokenPricesByPackageHash(packageHash0)
+        const chart1 = getHistoricalTokenPricesByPackageHash(packageHash1)
+
+        if (chart1.length < chart0.length) return []
+
+        return chart0.map((item, idx)=> {
+            return {
+                date: item.date,
+                priceUSD: item.priceUSD / chart1[idx].priceUSD
+            }
+        })
     }
 
     const getBalancesProfit = (packageHash: string): Promise<TokenProfit> => {
@@ -242,7 +256,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         filterPopupTokens,
         filterTokenPairsByToken,
         getHistoricalTokenPrices,
-        getBalancesProfit
+        getBalancesProfit,
+        getHistoricalTokensChartPrices
     }
 
 }

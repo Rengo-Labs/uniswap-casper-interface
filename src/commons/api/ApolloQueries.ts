@@ -731,7 +731,7 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
     );
     return pairData;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -748,7 +748,7 @@ const getPairDataByDays = async (pairPackageHash, skip) => {
     console.log('PAIR_CHART', result)
     return result
   } catch (e) {
-    console.log(e)
+    console.error(e)
     return null
   }
 }
@@ -770,7 +770,7 @@ const getDailyGlobalChartByDate = async (oldestDateToFetch, skip) => {
       fetchPolicy: 'cache-first',
     })
   } catch (e) {
-    console.log("findDailyGlobalChart", e)
+    console.error("findDailyGlobalChart", e)
     return null
   }
 }
@@ -883,7 +883,7 @@ const getChartData = async (oldestDateToFetch, offsetData) => {
       checked = true
     }
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
   return [data, weeklyData]
 }
@@ -905,7 +905,7 @@ const getTokenDataByDays = async (tokenPackageHash, skip = 0): Promise<any> => {
     })
     return result
   } catch (e) {
-    console.log(e)
+    console.error(e)
     return null
   }
 }
@@ -981,7 +981,7 @@ const getTokenChartData = async (tokenPackageHash) => {
     }
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
   return data
 }
@@ -1056,7 +1056,7 @@ const getPairChartData = async (pairPackageHash) => {
 
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 
   return data
@@ -1081,11 +1081,19 @@ export const getPairData = async (pairList: string[] = []): Promise<Pair[]> => {
   }
 };
 
-export const getHistoricalTokenPricesByContractHash = async (packageHash: string) => {
+export const getHistoricalTokenPricesByPackageHash = async (packageHash: string): Promise<any[]> => {
   try {
 
     const result = await getTokenDataByDays(packageHash.slice(5))
-    return result.data.tokendaydatas
+    console.log(result.data.tokendaydatas)
+    const list = result.data.tokendaydatas as any[]
+    return list.map( i => {
+      return {
+        date: i.date,
+        priceUSD: i.priceUSD,
+        percentage: getProfit(i, 1)
+      }
+    })
   } catch (e) {
     console.error(e)
     return []
