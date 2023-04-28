@@ -3,10 +3,12 @@ import {SingleColumn} from "../../../layout/SingleColumn";
 import {BalanceTable} from "rengo-ui-kit";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
+import {PairsContextProvider} from "../../../contexts/PairsContext";
 
 export const BalanceTemplate = ({isMobile}) => {
     const {isConnected} = useContext(WalletProviderContext)
     const {tokenState, getBalancesProfit} = useContext(TokensProviderContext)
+    const {getGlobalChart} = useContext(PairsContextProvider)
     const [data, setData] = useState([])
 
     const getBalance = async (tokenState) => {
@@ -31,10 +33,10 @@ export const BalanceTemplate = ({isMobile}) => {
 
     useEffect(() => {
       getBalance(tokenState).then(r => {
+        getGlobalChart()
         setData(r)
         console.log(r)
       })
-      console.log(data)
     }, [tokenState, isConnected])
 
     return (

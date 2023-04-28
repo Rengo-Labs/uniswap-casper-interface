@@ -23,6 +23,8 @@ interface PairsContext {
     calculateUSDtokens: (t0: string, t1: string, amount0: string | number, amount1: string | number, isAorB: boolean) => string[];
     findUSDPairBySymbols: (t0: string, t1: string, amount0: string | number, amount1: string | number, tokenState) => string[];
     resetPairs: () => void;
+    getPairChart: (pairPackageHash: string) => Promise<any>,
+    getGlobalChart: () => Promise<any>,
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -69,6 +71,14 @@ export const PairsContext = ({children}: PairsContextProps) => {
       return [priceA.toString(), priceB.toString()]
     }
 
+    const getPairChart = async (pairPackageHash): Promise<any> => {
+      return PairsResponsibilities(pairState, pairDispatch).getPairChart(pairPackageHash)
+    }
+
+    const getGlobalChart = async (): Promise<any> => {
+      return PairsResponsibilities(pairState, pairDispatch).getGlobalChart()
+    }
+
     return (
         <PairsContextProvider.Provider value={{
             pairState,
@@ -83,7 +93,9 @@ export const PairsContext = ({children}: PairsContextProps) => {
             changeRowPriority,
             calculateUSDtokens,
             findUSDPairBySymbols,
-            resetPairs
+            resetPairs,
+            getPairChart,
+            getGlobalChart
         }}>
             {children}
         </PairsContextProvider.Provider>

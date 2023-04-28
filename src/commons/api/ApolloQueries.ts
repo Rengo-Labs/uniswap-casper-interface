@@ -310,6 +310,20 @@ export const PAIR_CHART = gql`
   }
 `
 
+export const GLOBAL_CHART = gql`
+  query uniswapdaydatasbydate($startTime: String!, $skip: Int!) {
+    uniswapdaydatasbydate(first: 1000, skip: $skip, date: $startTime) {
+      id
+      date
+      totalVolumeUSD
+      dailyVolumeUSD
+      dailyVolumeETH
+      totalLiquidityUSD
+      totalLiquidityETH
+    }
+  }
+`
+
 export function getTimestampsForChanges() {
   const utcCurrentTime = dayjs.utc();
   const t1 = utcCurrentTime.subtract(1, 'day').startOf('minute').unix();
@@ -721,6 +735,160 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
   }
 }
 
+const getPairDataByDays = async (pairPackageHash, skip) => {
+  try {
+    const result = await v2client.query({
+      query: PAIR_CHART,
+      variables: {
+        pairAddress: pairPackageHash,
+        skip,
+      },
+      fetchPolicy: 'cache-first',
+    })
+    console.log('PAIR_CHART', result)
+    return result
+  } catch (e) {
+    console.log(e)
+    return null
+  }
+}
+
+/**
+ * Get historical data for volume and liquidity used in global charts
+ * on main page
+ * @param {*} oldestDateToFetch // start of window to fetch from
+ */
+
+const getDailyGlobalChartByDate = async (oldestDateToFetch, skip) => {
+  try {
+    return await v2client.query({
+      query: GLOBAL_CHART,
+      variables: {
+        startTime: oldestDateToFetch.toString(),
+        skip,
+      },
+      fetchPolicy: 'cache-first',
+    })
+  } catch (e) {
+    console.log("findDailyGlobalChart", e)
+    return null
+  }
+}
+
+let checked = false
+
+const getChartData = async (oldestDateToFetch, offsetData) => {
+  let data = []
+  const weeklyData = []
+  const utcEndTime = dayjs.utc()
+  let skip = 0
+  let allFound = false
+
+  try {
+    // console.log("oldestDateToFetch", oldestDateToFetch);
+    const date = '1654158705'
+    // console.log("oldestDateToFetch", oldestDateToFetch);
+    while (!allFound) {
+      const result = await getDailyGlobalChartByDate(oldestDateToFetch, skip)
+      console.log('GLOBAL_CHART', result)
+      skip += 1000
+      data = data.concat(result.data.uniswapdaydatasbydate)
+      // console.log("deta", data);
+
+      if (result.data.uniswapdaydatasbydate.length < 1000) {
+        allFound = true
+      }
+    }
+
+    if (data && data.length != 0) {
+      const dayIndexSet = new Set()
+      const dayIndexArray = []
+      const oneDay = 24 * 60 * 60
+
+      // for each day, parse the daily volume and format for chart array
+      data.forEach((dayData, i) => {
+        // add the day index to the set of days
+        dayIndexSet.add(Math.floor(data[i].date / oneDay))
+        dayIndexArray.push(data[i])
+        dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD)
+        dayData.dailyVolumeUSDValue = parseFloat(String(dayData.dailyVolumeUSD / 10 ** 9))
+      })
+
+      // fill in empty days ( there will be no day datas if no trades made that day )
+      let timestamp = data[0].date ? data[0].date : oldestDateToFetch
+      console.log("data[0]", data);
+      console.log("dayIndexArray", dayIndexArray);
+      let latestLiquidityUSD = data[0].totalLiquidityUSD
+      let latestDayDats = data[0].mostLiquidTokens
+      let index = 1
+      while (timestamp < utcEndTime.unix() - oneDay) {
+        const nextDay = timestamp + oneDay
+        const currentDayIndex = Math.floor(nextDay / oneDay)
+        if (!dayIndexSet.has(currentDayIndex)) {
+          data.push({
+            date: nextDay,
+            dailyVolumeUSD: 0,
+            dailyVolumeUSDValue: 0,
+            totalLiquidityUSD: latestLiquidityUSD,
+            totalLiquidityUSDValue: latestLiquidityUSD / 10 ** 9,
+            mostLiquidTokens: latestDayDats,
+          })
+        } else {
+          latestLiquidityUSD = dayIndexArray[index].totalLiquidityUSD
+          latestDayDats = dayIndexArray[index].mostLiquidTokens
+          index = index + 1
+        }
+        timestamp = nextDay
+      }
+    }
+
+    // format weekly data for weekly sized chunks
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
+
+    let startIndexWeekly = -1
+    let currentWeek = -1
+
+    data.forEach((entry, i) => {
+      const date = data[i].date
+
+      // hardcoded fix for offset volume
+      offsetData &&
+      !checked &&
+      offsetData.map((dayData) => {
+        // console.log("dayData[date].dailyVolumeUSD", dayData[date].dailyVolumeUSD);
+        // console.log("data[i].dailyVolumeUSD", data[i].dailyVolumeUSD);
+        if (dayData[date]) {
+          data[i].dailyVolumeUSD = parseFloat(data[i].dailyVolumeUSD) - parseFloat(dayData[date].dailyVolumeUSD)
+          data[i].dailyVolumeUSDValue =
+            parseFloat(String(data[i].dailyVolumeUSD / 10 ** 9)) - parseFloat(String(dayData[date].dailyVolumeUSD / 10 ** 9))
+        }
+        return true
+      })
+
+      // @ts-ignore
+      const week = dayjs.utc(dayjs.unix(data[i].date)).week()
+      if (week !== currentWeek) {
+        currentWeek = week
+        startIndexWeekly++
+      }
+      weeklyData[startIndexWeekly] = weeklyData[startIndexWeekly] || {}
+      weeklyData[startIndexWeekly].date = data[i].date
+      weeklyData[startIndexWeekly].weeklyVolumeUSD =
+        (weeklyData[startIndexWeekly].weeklyVolumeUSD ?? 0) + data[i].dailyVolumeUSD
+      weeklyData[startIndexWeekly].weeklyVolumeUSDValue =
+        (weeklyData[startIndexWeekly].weeklyVolumeUSD / 10 ** 9 ?? 0) + data[i].dailyVolumeUSD / 10 ** 9
+    })
+
+    if (!checked) {
+      checked = true
+    }
+  } catch (e) {
+    console.log(e)
+  }
+  return [data, weeklyData]
+}
+
+
 /**
  * Get the historical token prices by passing the token package hash
  * @param {*} oldestDateToFetch // start of window to fetch from
@@ -828,15 +996,7 @@ const getPairChartData = async (pairPackageHash) => {
     let allFound = false
     let skip = 0
     while (!allFound) {
-      const result = await v2client.query({
-        query: PAIR_CHART,
-        variables: {
-          pairAddress: pairPackageHash,
-          skip,
-        },
-        fetchPolicy: 'cache-first',
-      })
-      console.log('PAIR_CHART', result)
+      const result = await getPairDataByDays(pairPackageHash, skip)
       for (let index = 0; index < result.data.pairdaydatasbypairAddress.length; index++) {
         result.data.pairdaydatasbypairAddress[index].reserveUSDValue =
           result.data.pairdaydatasbypairAddress[index].reserveUSD / 10 ** 9
@@ -957,4 +1117,28 @@ export const getBalanceProfitByContractHash = async (packageHash: string): Promi
       'thirtyDays': 0.00,
     } as TokenProfit
   }
+}
+
+export const findPairChartData = async (pairPackageHash) => {
+  const result = await getPairChartData(pairPackageHash)
+  console.log("pairCharData", result)
+}
+
+export const findDailyGlobalChart = async () => {
+
+  const utcEndTime = dayjs.utc().subtract(1, 'year').endOf('day').unix() - 1
+  const result = await getDailyGlobalChartByDate(utcEndTime, 0)
+  const listData = result.data.uniswapdaydatasbydate as any[]
+  return listData.map(i => {
+    return {
+      dailyVolumeETH: parseFloat(i.dailyVolumeETH) / 10**9,
+      dailyVolumeUSD: parseFloat(i.dailyVolumeUSD) / 10**9,
+      //Format date to show a better idx on the chart
+      date: i.data,
+      id: i.id,
+      totalLiquidityETH: parseFloat(i.totalLiquidityETH) / 10**9,
+      totalLiquidityUSD: parseFloat(i.totalLiquidityUSD) / 10**9,
+      totalVolumeUSD: parseFloat(i.totalVolumeUSD) / 10**9
+    }
+  })
 }
