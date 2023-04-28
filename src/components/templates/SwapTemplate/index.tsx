@@ -203,6 +203,7 @@ export const SwapTemplate = ({isMobile}) => {
                     amountSwapTokenB={amountSwapTokenB}
                     amountSwapTokenBSetter={amountSwapTokenBSetter}
                     isProcessingTransaction={isProcessingTransaction}
+                    clearProgress={refresh}
                 />
             </DoubleColumn>
         </>

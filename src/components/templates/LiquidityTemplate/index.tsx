@@ -15,7 +15,6 @@ import {globalStore} from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
 import {LPContainer, RemoveLiquidityDialog} from 'rengo-ui-kit';
 import {useNavigate} from "react-router";
-import {ILiquidityPoolState} from "rengo-ui-kit/src/components/molecules/RemoveLiquidityDialog/types";
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -76,7 +75,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             const data = [
                 {
                     id: 'd3jd92d',
-                    tokenNames: [item.token0Symbol, item.token1Symbol],
+                    tokenNames: [item.token0Name, item.token1Name],
                     tokenNameSymbols: [item.token0Symbol, item.token1Symbol],
                     amount: item.balance,
                     tokenImg: item.token0Icon
@@ -151,7 +150,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             setOpenedRemoving(true)
             setRemovingPopup(false)
         }*/
-
+        // TODO set information?
         updateLiquidityDetail(
           firstTokenSelected,
           secondTokenSelected,
@@ -296,6 +295,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   amountSwapTokenB={amountSwapTokenB}
                                   amountSwapTokenBSetter={amountSwapTokenBSetter}
                                   isProcessingTransaction={isProcessingTransaction}
+                                  clearProgress={refresh}
                 />
             </DoubleColumn>
             {

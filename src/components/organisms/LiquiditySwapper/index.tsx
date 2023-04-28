@@ -35,6 +35,7 @@ interface LiquiditySwapperProps {
   amountSwapTokenB,
   amountSwapTokenBSetter,
   isProcessingTransaction
+  clearProgress
 }
 
 const LiquiditySwapper = ({
@@ -59,7 +60,8 @@ const LiquiditySwapper = ({
                             amountSwapTokenASetter,
                             amountSwapTokenB,
                             amountSwapTokenBSetter,
-                            isProcessingTransaction
+                            isProcessingTransaction,
+                            clearProgress
                           }: LiquiditySwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -398,7 +400,7 @@ const LiquiditySwapper = ({
                      tokenBSymbol={secondTokenSelected.symbol}
                      handleClickSwap={() => onSwitchTokensHandler()}
                      strokeWidth={12}
-                     clearProgress={() => console.log("No se que hace?")}
+                     clearProgress={() => clearProgress()}
                      getProgress={() => getProgress}
                      handlerButtonCircle={() => refreshPrices()}/>
 

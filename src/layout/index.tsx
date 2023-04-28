@@ -42,7 +42,7 @@ const Layout = ({children}: ILayoutProps) => {
     const navigate = useNavigate();
     const {selectedTheme, toggleTheme} = useContext<ContextProps>(UIProviderContext);
     const [menuHeight, setMenuHeight] = useState(0);
-    const [rightAction, setRightAction] = useState({
+    const rightActionInit = {
         startIcon: casperWallet,
         title: "Connect Wallet",
         background: "#7AEDD4",
@@ -52,10 +52,12 @@ const Layout = ({children}: ILayoutProps) => {
         walletAddress: null,
         onActionConnected: null,
         endIcon: balanceIcon,
-    } as OptAction);
+    } as OptAction
+    const [rightAction, setRightAction] = useState(rightActionInit);
 
     const {
         onConnectWallet,
+        onDisconnectWallet,
         isConnected,
         showConnectionPopup,
         setShowConnectionPopup,
@@ -75,6 +77,10 @@ const Layout = ({children}: ILayoutProps) => {
         setShowWalletOptions(!showWalletOptions);
     }
 
+    const handleDisconnectWallet = async () => {
+        await onDisconnectWallet();
+    }
+
     useEffect(() => {
         const height = menuRef.current?.offsetHeight;
 
@@ -90,17 +96,23 @@ const Layout = ({children}: ILayoutProps) => {
                 onActionConnected: () => handleWalletOptions()
             }))
             setShowConnectionPopup(false)
+        }else {
+            setRightAction(prevState => ({
+                ...prevState,
+                ...rightActionInit
+            }))
         }
     }, [isConnected])
 
     const WALLET_CONNECTED_OPTIONS = [
-        {
-            id: 'dmx0031b2b421',
-            key: 'account',
-            name: 'My Account',
-            iconName: 'Copy',
-            type: 'Redirect',
-        },
+        // TODO commented out for now, will be added later
+        // {
+        //     id: 'dmx0031b2b421',
+        //     key: 'account',
+        //     name: 'My Account',
+        //     iconName: 'Copy',
+        //     type: 'Redirect',
+        // },
         {
             id: '3d23f23xxx88nf',
             key: 'wallet',
@@ -108,13 +120,13 @@ const Layout = ({children}: ILayoutProps) => {
             iconName: 'Copy',
             type: 'copy',
         },
-        {
-            id: '1x9x9900jjwoa',
-            key: 'transactions',
-            name: 'Recent Transactions',
-            iconName: 'Clock',
-            type: 'redirect',
-        },
+        // {
+        //     id: '1x9x9900jjwoa',
+        //     key: 'transactions',
+        //     name: 'Recent Transactions',
+        //     iconName: 'Clock',
+        //     type: 'redirect',
+        // },
         {
             id: '0zokxj8h82nndl',
             key: 'disconnect',
@@ -122,6 +134,7 @@ const Layout = ({children}: ILayoutProps) => {
             iconName: '',
             icon: lineBreakIcon,
             type: 'redirect',
+            onClick: () => onDisconnectWallet()
         },
     ]
 
@@ -182,7 +195,7 @@ const Layout = ({children}: ILayoutProps) => {
             icon: settingIcon,
             page: "Settings",
             path: "#",
-            onAction: () => handleSettings(),
+            onAction: () => handleDisconnectWallet(),
         },
     ];
 

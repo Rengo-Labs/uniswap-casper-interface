@@ -1,5 +1,5 @@
 import React, {createContext, ReactNode, useReducer} from 'react'
-import {initialTokenState, TokenReducer, TokenState} from '../../reducers/TokenReducers'
+import {initialTokenState, TokenActions, TokenReducer, TokenState} from '../../reducers/TokenReducers'
 import TokenResponsibilities from '../../commons/TokenResponsibilities'
 import {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Token, Wallet} from "../../commons";
@@ -19,6 +19,7 @@ interface TokensContext {
     secondTokenSelected: Token,
     filterPopupTokens: (excludedTokens: any[]) => any[],
     filterTokenPairsByToken: (token: Token, pairState: PairState) => any[]
+    resetTokens: () => void,
 }
 
 export const TokensProviderContext = createContext<TokensContext>({} as any)
@@ -28,6 +29,8 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
         TokenReducer,
         initialTokenState
     );
+
+    const resetTokens = () => tokenDispatch({ type: TokenActions.RESET });
     const loadTokensUSD = async (pairsTotalReserves, pairs): Promise<any> => {
         return TokenResponsibilities(tokenState, tokenDispatch).loadTokenUSD(pairsTotalReserves, pairs, updateNotification)
     }
@@ -74,7 +77,8 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 firstTokenSelected: tokenState.tokens[tokenState.firstTokenSelected],
                 secondTokenSelected: tokenState.tokens[tokenState.secondTokenSelected],
                 filterPopupTokens,
-                filterTokenPairsByToken
+                filterTokenPairsByToken,
+                resetTokens
             }}>
             {children}
         </TokensProviderContext.Provider>

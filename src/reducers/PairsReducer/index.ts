@@ -247,8 +247,9 @@ export enum PairActions {
   ADD_ALLOWANCE_TO_PAIR = 'ADD_ALLOWANCE_TO_PAIR',
   LOAD_PAIR = 'LOAD_PAIR',
   LOAD_PAIR_USD = 'LOAD_PAIR_USD',
-  CHANGE_PRIORITY = 'CHANGE_PRIORITY'
+  CHANGE_PRIORITY = 'CHANGE_PRIORITY',
   //LOAD_USER_PAIR = 'LOAD_USER_PAIR',
+  RESET = 'RESET'
 }
 
 export type PairActionBalancePayload = {
@@ -307,7 +308,9 @@ export type PairAction = {
 }/* | {
   type: PairActions.LOAD_USER_PAIR,
   payload: PairActionLoadUserPairPayLoad,
-}*/
+}*/ | {
+    type: PairActions.RESET,
+    }
 
 export function PairsReducer(state: PairState, action: PairAction): PairState {
   switch (action.type) {
@@ -402,6 +405,11 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           }
         }
       }
+      case PairActions.RESET: {
+        return initialPairsState
+      }
+    default:
+      return state;
     /* case PairActions.LOAD_USER_PAIR:
       return {
         ...state,

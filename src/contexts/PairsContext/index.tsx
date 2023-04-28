@@ -1,5 +1,5 @@
 import {ReactNode, createContext, useReducer} from "react";
-import {initialPairsState, PairData, PairsReducer} from "../../reducers/PairsReducer";
+import {initialPairsState, PairActions, PairData, PairsReducer} from "../../reducers/PairsReducer";
 import PairsResponsibilities, {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
@@ -22,6 +22,7 @@ interface PairsContext {
     changeRowPriority: (name: string, checked: boolean) => void,
     calculateUSDtokens: (t0: string, t1: string, amount0: string | number, amount1: string | number, isAorB: boolean) => string[];
     findUSDPairBySymbols: (t0: string, t1: string, amount0: string | number, amount1: string | number, tokenState) => string[];
+    resetPairs: () => void;
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -33,8 +34,9 @@ export const PairsContext = ({children}: PairsContextProps) => {
         initialPairsState
     );
 
-    const orderedPairState: Record<string, PairTotalReserves> = PairsResponsibilities(pairState, pairDispatch).orderedPairState()
+    const resetPairs = () => pairDispatch({ type: PairActions.RESET });
 
+    const orderedPairState: Record<string, PairTotalReserves> = PairsResponsibilities(pairState, pairDispatch).orderedPairState()
 
     const loadPairs = async (tokenState): Promise<Record<string, PairTotalReserves>> => {
        return await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairs()
@@ -80,7 +82,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
             getPoolList,
             changeRowPriority,
             calculateUSDtokens,
-            findUSDPairBySymbols
+            findUSDPairBySymbols,
+            resetPairs
         }}>
             {children}
         </PairsContextProvider.Provider>

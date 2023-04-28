@@ -20,8 +20,8 @@ export const StateHashProviderContext = createContext<StateHashContext>({} as an
 
 export const StateHashContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
-    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState} = useContext(PairsContextProvider)
-    const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance} = useContext(TokensProviderContext)
+    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, resetPairs} = useContext(PairsContextProvider)
+    const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance, resetTokens} = useContext(TokensProviderContext)
     const {walletState} = useContext(WalletProviderContext)
 
     const {previousQuery} = useContext(PoolProviderContext)
@@ -42,17 +42,22 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
 
     const loadUserData = useCallback(async () => {
         if (!walletState?.wallet) {
+            // TODO clean data, check pool page
+            resetPairs()
+            resetTokens()
+
             return;
         }
         const isConnected = walletState.wallet.isConnected
         if (walletState?.wallet) {
             await loadUserPairsData(walletState?.wallet, isConnected)
             await loadTokensBalance(walletState?.wallet, isConnected)
-        } else {
-            await clearUserPairsData(pairState)
-            await clearTokensBalance(tokenState)
         }
-
+        // TODO this part of code delays more than reset data
+        //else {
+            //await clearUserPairsData(pairState)
+            //await clearTokensBalance(tokenState)
+        //}
         previousQuery()
     }, [stateHash, walletState])
 

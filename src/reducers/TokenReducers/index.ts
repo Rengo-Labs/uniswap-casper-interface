@@ -141,6 +141,7 @@ export enum TokenActions {
   LOAD_ALLOWANCE = "LOAD_ALLOWANCE",
   LOAD_PRICE_USD = "LOAD_PRICE_USD",
   SWITCH_TOKENS = "SWITCH_TOKENS",
+  RESET = "RESET",
 }
 
 export type TokenAction = {
@@ -177,6 +178,8 @@ export type TokenAction = {
   },
 } | {
   type: TokenActions.SWITCH_TOKENS,
+} | {
+    type: TokenActions.RESET,
 }
 
 export function TokenReducer(state: TokenState, action: TokenAction) {
@@ -232,6 +235,8 @@ export function TokenReducer(state: TokenState, action: TokenAction) {
         firstTokenSelected: state.secondTokenSelected,
         secondTokenSelected: state.firstTokenSelected,
       };
+    case TokenActions.RESET:
+        return initialTokenState;
     default:
       return state;
   }
