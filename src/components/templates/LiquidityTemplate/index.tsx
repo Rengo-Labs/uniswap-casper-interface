@@ -15,6 +15,7 @@ import {globalStore} from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
 import {LPContainer, RemoveLiquidityDialog} from 'rengo-ui-kit';
 import {useNavigate} from "react-router";
+import {PairData} from "../../../reducers/PairsReducer";
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -57,7 +58,22 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [currentSReserve, setSecondReserve] = useState(0)
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
     const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState(false)
-    const [removeLiquidityData, setRemoveLiquidityData] = useState([])
+    const [removeLiquidityData, setRemoveLiquidityData] = useState({
+        id: '',
+        tokenName: '',
+        liquidity: '',
+        allowance: '',
+        firstIcon: '',
+        firstName: '',
+        firstSymbol: '',
+        firstLiquidity: '',
+        firstRate: '',
+        secondIcon: '',
+        secondName: '',
+        secondSymbol: '',
+        secondLiquidity: '',
+        secondRate: ''
+    } as any)
     const Navigator = useNavigate()
     const handleRemoveLiquidity = () => {
         setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
@@ -72,31 +88,25 @@ export const LiquidityTemplate = ({isMobile}) => {
         }
 
         if (action === 'DeleteLP') {
-            const data = [
-                {
-                    id: 'd3jd92d',
-                    tokenNames: [item.token0Name, item.token1Name],
-                    tokenNameSymbols: [item.token0Symbol, item.token1Symbol],
-                    amount: item.balance,
-                    tokenImg: item.token0Icon
-                },
-                {
-                    id: 'c9c843b',
-                    tokenNames: [item.token0Name],
-                    tokenNameSymbols: [item.token0Symbol],
-                    amount: item.totalReserve0,
-                    tokenImg:  item.token0Icon
-                },
-                {
-                    id: '1qwski4',
-                    tokenNames: [item.token1Name],
-                    tokenNameSymbols: [item.token1Symbol],
-                    amount: item.totalReserve1,
-                    tokenImg:  item.token1Icon
-                }
-            ]
-            console.log("item", item)
-            console.log("data", data)
+            const pairData = (pairState.pairs[`${firstSymbol}-${secondSymbol}`] ??
+              pairState.pairs[`${secondSymbol}-${firstSymbol}`]) as PairData
+
+            const data = {
+                id: pairData.packageHash,
+                tokenName: pairData.name,
+                liquidity: pairData.balance,
+                allowance: pairData.allowance,
+                firstIcon: pairData.token0Icon,
+                firstName: pairData.token0Name,
+                firstSymbol: pairData.token0Symbol,
+                firstLiquidity: pairData.reserve0,
+                firstRate: parseFloat(pairData.reserve0) / parseFloat(pairData.reserve1),
+                secondIcon: pairData.token1Icon,
+                secondName: pairData.token1Name,
+                secondSymbol: pairData.token1Symbol,
+                secondLiquidity: pairData.reserve1,
+                secondRate: parseFloat(pairData.reserve1) / parseFloat(pairData.reserve0)
+            }
             setRemoveLiquidityData(data)
             handleRemoveLiquidity()
         }

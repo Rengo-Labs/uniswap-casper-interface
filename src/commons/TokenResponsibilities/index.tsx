@@ -232,6 +232,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         const chart0 = await getHistoricalTokenPricesByPackageHash(packageHash0)
         const chart1 = await getHistoricalTokenPricesByPackageHash(packageHash1)
 
+        console.log("charts", chart0, chart1)
         if (chart1.length < chart0.length) return []
 
         return chart0.map((item, idx)=> {

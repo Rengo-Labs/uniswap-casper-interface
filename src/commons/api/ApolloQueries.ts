@@ -1085,7 +1085,6 @@ export const getHistoricalTokenPricesByPackageHash = async (packageHash: string)
   try {
 
     const result = await getTokenDataByDays(packageHash.slice(5))
-    console.log(result.data.tokendaydatas)
     const list = result.data.tokendaydatas as any[]
     return list.map( i => {
       return {
