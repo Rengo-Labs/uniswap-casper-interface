@@ -58,7 +58,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
       })
     }
   }, [])
-  
+
   return (
     <div>
       <SingleColumn isMobile={isMobile} title="Liquidity Pool">
