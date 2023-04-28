@@ -6,30 +6,36 @@ import {WalletProviderContext} from "../../../contexts/WalletContext";
 
 export const BalanceTemplate = ({isMobile}) => {
     const {isConnected} = useContext(WalletProviderContext)
-    const {tokenState} = useContext(TokensProviderContext)
+    const {tokenState, getBalancesProfit} = useContext(TokensProviderContext)
     const [data, setData] = useState([])
-    const getBalance = (tokenState) => {
-        return Object.values(tokenState.tokens).map((token) => {
-            const {symbol, name, amount, logoURI}: any = token;
-            return (
-                {
-                    id: symbol,
-                    crypto: name,
-                    cryptoIcon: logoURI,
-                    mycrypto: amount,
-                    '24h': '0.00%',
-                    '7d': '0.00%',
-                    '15d': '0.00%',
-                    '30d': '0.00%'
-                }
-            );
-        })
+
+    const getBalance = async (tokenState) => {
+        return Promise.all(Object.values(tokenState.tokens).map(async (token) => {
+          const {symbol, name, amount, logoURI, packageHash}: any = token;
+          const data = await getBalancesProfit(packageHash)
+
+          return (
+            {
+              id: symbol,
+              crypto: name,
+              cryptoIcon: logoURI,
+              mycrypto: amount,
+              '24h': data.yesterday.toFixed(2) + " %",
+              '7d': data.sevenDays.toFixed(2) + " %",
+              '15d': data.fifteenDays.toFixed(2) + " %",
+              '30d': data.thirtyDays.toFixed(2) + " %"
+            }
+          );
+        }))
     }
 
     useEffect(() => {
-        const list = getBalance(tokenState);
-        setData(list)
-    }, [tokenState.tokens, isConnected])
+      getBalance(tokenState).then(r => {
+        setData(r)
+        console.log(r)
+      })
+      console.log(data)
+    }, [tokenState, isConnected])
 
     return (
         <>

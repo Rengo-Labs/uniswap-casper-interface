@@ -6,7 +6,7 @@ import {
   InMemoryCache,
 } from '@apollo/client';
 import { INFO_SWAP_URL, INFO_BLOCK_URL } from '../../constant';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc';
 import { Pair, PairByIdAndBlock } from './types';
 
@@ -24,6 +24,17 @@ interface BasicData {
     name: string;
     symbol: string;
   };
+}
+
+interface ChartData {
+  id: any
+  date: any
+  totalVolumeUSD: any
+  dailyVolumeUSD: any
+  dailyVolumeETH: any
+  totalLiquidityUSD: any
+  totalLiquidityETH: any
+  dailyVolumeUSDValue?: any
 }
 
 // Override data return from graph - usually because proxy token has changed
@@ -269,8 +280,38 @@ export const GET_BLOCK = (timestampFrom, timestampTo) => {
   return gql(queryString);
 };
 
+export const TOKEN_CHART = gql`
+  query tokendaydatas($tokenAddr: String!, $skip: Int!) {
+    tokendaydatas(first: 1000, skip: $skip, token: $tokenAddr) {
+      id
+      date
+      priceUSD
+      totalLiquidityToken
+      totalLiquidityUSD
+      totalLiquidityETH
+      dailyVolumeETH
+      dailyVolumeToken
+      dailyVolumeUSD
+    }
+  }
+`
+
+// PAIR chart to show
+export const PAIR_CHART = gql`
+  query pairdaydatasbypairAddress($pairAddress: String!, $skip: Int!) {
+    pairdaydatasbypairAddress(first: 1000, skip: $skip, pairAddress: $pairAddress) {
+      id
+      date
+      dailyVolumeToken0
+      dailyVolumeToken1
+      dailyVolumeUSD
+      reserveUSD
+    }
+  }
+`
+
 export function getTimestampsForChanges() {
-  const utcCurrentTime = dayjs();
+  const utcCurrentTime = dayjs.utc();
   const t1 = utcCurrentTime.subtract(1, 'day').startOf('minute').unix();
   const t2 = utcCurrentTime.subtract(2, 'day').startOf('minute').unix();
   const t3 = utcCurrentTime.subtract(3, 'day').startOf('minute').unix();
@@ -523,7 +564,7 @@ export async function getBlockFromTimestamp(timestamp: number) {
  * Gets the current price  of ETH, 24 hour price, and % change between them
  */
 const getEthPrice = async () => {
-  const utcCurrentTime = dayjs();
+  const utcCurrentTime = dayjs.utc();
   const utcOneDayBack = utcCurrentTime
     .subtract(1, 'day')
     .startOf('minute')
@@ -600,7 +641,6 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
       },
       fetchPolicy: 'network-only'
     })
-    //console.log('PAIRS_BULK', current)
 
     const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
       [b1, b2, bWeek].map(async (block) => {
@@ -681,6 +721,194 @@ async function getBulkPairData(pairList: string[], ethPrice: number[]) {
   }
 }
 
+/**
+ * Get the historical token prices by passing the token package hash
+ * @param {*} oldestDateToFetch // start of window to fetch from
+ */
+const getTokenDataByDays = async (tokenPackageHash, skip = 0): Promise<any> => {
+  try {
+    const result = await v2client.query({
+      query: TOKEN_CHART,
+      variables: {
+        tokenAddr: tokenPackageHash,
+        skip,
+      },
+      fetchPolicy: 'cache-first',
+    })
+    return result
+  } catch (e) {
+    console.log(e)
+    return null
+  }
+}
+
+const getTokenChartData = async (tokenPackageHash) => {
+  let data = []
+  const utcEndTime = dayjs.utc()
+  const utcStartTime = utcEndTime.subtract(1, 'year')
+  const startTime = utcStartTime.startOf('minute').unix() - 1
+
+  try {
+    let allFound = false
+    let skip = 0
+    while (!allFound) {
+
+      const result = await getTokenDataByDays(tokenPackageHash, skip)
+      if (result.data.tokendaydatas.length < 1000) {
+        allFound = true
+      }
+      for (let index = 0; index < result.data.tokendaydatas.length; index++) {
+        // result.data.tokendaydatas[index].reserveUSDValue = result.data.tokendaydatas[index].reserveUSD / 10 ** 9;
+        result.data.tokendaydatas[index].dailyVolumeUSDValue = result.data.tokendaydatas[index].dailyVolumeUSD / 10 ** 9
+        result.data.tokendaydatas[index].totalLiquidityUSDValue =
+          result.data.tokendaydatas[index].totalLiquidityUSD / 10 ** 9
+        result.data.tokendaydatas[index].totalLiquidityTokenValue =
+          result.data.tokendaydatas[index].totalLiquidityToken / 10 ** 9
+      }
+
+      skip += 1000
+      data = data.concat(result.data.tokendaydatas)
+    }
+
+    const dayIndexSet = new Set()
+    const dayIndexArray = []
+    const oneDay = 24 * 60 * 60
+    data.forEach((dayData, i) => {
+      // add the day index to the set of days
+      dayIndexSet.add((data[i].date / oneDay).toFixed(0))
+      dayIndexArray.push(data[i])
+      dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD)
+      dayData.dailyVolumeUSDValue = parseFloat(dayData.dailyVolumeUSDValue)
+    })
+
+    // fill in empty days
+    let timestamp = data[0] && data[0].date ? data[0].date : startTime
+    let latestLiquidityUSD = data[0] && data[0].totalLiquidityUSD
+    let latestLiquidityUSDValue = data[0] && data[0].totalLiquidityUSD / 10 ** 9
+    let latestPriceUSD = data[0] && data[0].priceUSD
+    let latestPairDatas = data[0] && data[0].mostLiquidPairs
+    let index = 1
+    while (timestamp < utcEndTime.startOf('minute').unix() - oneDay) {
+      const nextDay = timestamp + oneDay
+      const currentDayIndex = (nextDay / oneDay).toFixed(0)
+      if (!dayIndexSet.has(currentDayIndex)) {
+        data.push({
+          date: nextDay,
+          dayString: nextDay,
+          dailyVolumeUSD: 0,
+          dailyVolumeUSDValue: 0,
+          priceUSD: latestPriceUSD,
+          totalLiquidityUSD: latestLiquidityUSD,
+          totalLiquidityUSDValue: latestLiquidityUSDValue,
+          mostLiquidPairs: latestPairDatas,
+        })
+      } else {
+        latestLiquidityUSD = dayIndexArray[index].totalLiquidityUSD
+        latestLiquidityUSDValue = dayIndexArray[index].totalLiquidityUSD / 10 ** 9
+        latestPriceUSD = dayIndexArray[index].priceUSD
+        latestPairDatas = dayIndexArray[index].mostLiquidPairs
+        index = index + 1
+      }
+      timestamp = nextDay
+    }
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
+  } catch (e) {
+    console.log(e)
+  }
+  return data
+}
+
+const getPairChartData = async (pairPackageHash) => {
+  let data = []
+  const utcEndTime = dayjs.utc()
+  const utcStartTime = utcEndTime.subtract(1, 'year').startOf('minute')
+  const startTime = utcStartTime.unix() - 1
+
+  try {
+    let allFound = false
+    let skip = 0
+    while (!allFound) {
+      const result = await v2client.query({
+        query: PAIR_CHART,
+        variables: {
+          pairAddress: pairPackageHash,
+          skip,
+        },
+        fetchPolicy: 'cache-first',
+      })
+      console.log('PAIR_CHART', result)
+      for (let index = 0; index < result.data.pairdaydatasbypairAddress.length; index++) {
+        result.data.pairdaydatasbypairAddress[index].reserveUSDValue =
+          result.data.pairdaydatasbypairAddress[index].reserveUSD / 10 ** 9
+        result.data.pairdaydatasbypairAddress[index].dailyVolumeUSDValue =
+          result.data.pairdaydatasbypairAddress[index].dailyVolumeUSD / 10 ** 9
+      }
+
+      skip += 1000
+      data = data.concat(result.data.pairdaydatasbypairAddress)
+      if (result.data.pairdaydatasbypairAddress.length < 1000) {
+        allFound = true
+      }
+      // console.log("data1", data1);
+    }
+
+    const dayIndexSet = new Set()
+    const dayIndexArray = []
+    const oneDay = 24 * 60 * 60
+    data.forEach((dayData, i) => {
+      // console.log("dayData.reserveUSD", dayData);
+      // console.log("data[i]", data[i]);
+      // add the day index to the set of days
+      dayIndexSet.add((data[i].date / oneDay).toFixed(0))
+      dayIndexArray.push(data[i])
+      dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD)
+      dayData.dailyVolumeUSDValue = parseFloat(dayData.dailyVolumeUSDValue)
+      dayData.reserveUSD = parseFloat(dayData.reserveUSD)
+      dayData.reserveUSDValue = parseFloat(dayData.reserveUSDValue)
+    })
+
+    if (data[0]) {
+      // fill in empty days
+      let timestamp = data[0].date ? data[0].date : startTime
+      let latestLiquidityUSD = data[0].reserveUSD
+      let latestLiquidityUSDValue = data[0].reserveUSD / 10 ** 9
+      let index = 1
+      while (timestamp < utcEndTime.unix() - oneDay) {
+        const nextDay = timestamp + oneDay
+        const currentDayIndex = (nextDay / oneDay).toFixed(0)
+        if (!dayIndexSet.has(currentDayIndex)) {
+          data.push({
+            date: nextDay,
+            dayString: nextDay,
+            dailyVolumeUSD: 0,
+            dailyVolumeUSDValue: 0,
+            reserveUSD: latestLiquidityUSD,
+            reserveUSDValue: latestLiquidityUSDValue,
+          })
+        } else {
+          latestLiquidityUSD = dayIndexArray[index].reserveUSD
+          latestLiquidityUSDValue = dayIndexArray[index].reserveUSD / 10 ** 9
+          index = index + 1
+        }
+        timestamp = nextDay
+      }
+    }
+
+    data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
+  } catch (e) {
+    console.log(e)
+  }
+
+  return data
+}
+
+const getProfit = (tokenData, days) => {
+  if (tokenData.length > days) {
+    return ((tokenData[0].priceUSD / tokenData[days].priceUSD) -1) * 100
+  }
+  return 0.00
+}
+
 export const getPairData = async (pairList: string[] = []): Promise<Pair[]> => {
   try {
     const ethPrice = await getEthPrice();
@@ -692,3 +920,41 @@ export const getPairData = async (pairList: string[] = []): Promise<Pair[]> => {
     return [];
   }
 };
+
+export const getHistoricalTokenPricesByContractHash = async (packageHash: string) => {
+  try {
+
+    const result = await getTokenDataByDays(packageHash.slice(5))
+    return result.data.tokendaydatas
+  } catch (e) {
+    console.error(e)
+    return []
+  }
+}
+
+export interface TokenProfit {
+  yesterday: number,
+  sevenDays: number,
+  fifteenDays: number,
+  thirtyDays: number,
+}
+
+export const getBalanceProfitByContractHash = async (packageHash: string): Promise<TokenProfit> => {
+  try {
+    const profit = await getTokenDataByDays(packageHash.slice(5))
+    return {
+      'yesterday': getProfit(profit.data.tokendaydatas, 1),
+      'sevenDays': getProfit(profit.data.tokendaydatas, 7),
+      'fifteenDays': getProfit(profit.data.tokendaydatas, 15),
+      'thirtyDays': getProfit(profit.data.tokendaydatas, 30),
+    } as TokenProfit
+  } catch (e) {
+    console.error(e)
+    return {
+      'yesterday': 0.00,
+      'sevenDays': 0.00,
+      'fifteenDays': 0.00,
+      'thirtyDays': 0.00,
+    } as TokenProfit
+  }
+}
