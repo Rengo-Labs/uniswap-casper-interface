@@ -10,6 +10,7 @@ import { convertNumber } from "../../../contexts/ConfigContext";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
 import { StateHashProviderContext } from "../../../contexts/StateHashContext";
+import { getLocalStorageData, setLocalStorageData } from "../../../commons/utils/persistData";
 
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
@@ -26,6 +27,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [showStakedOnlyOnTable, setShowStakedOnlyOnTable] = useState<boolean>(false)
 
   const finalData = data.map((item) => ({
+    name: item.name,
     pool: `${item.token0Symbol} - ${item.token1Symbol}`,
     token0Icon: item.token0Icon,
     token1Icon: item.token1Icon,
@@ -59,6 +61,12 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     }
   }, [])
 
+  const handleFavorite = (name: string) => {
+    const prevData = getLocalStorageData('pool')
+    
+    setLocalStorageData('pool', [...prevData, name])
+  }
+
   return (
     <div>
       <SingleColumn isMobile={isMobile} title="Liquidity Pool">
@@ -82,6 +90,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
             handleView={handleView}
             query={query}
             showStakedOnly={showStakedOnlyOnTable}
+            handleFavorite={handleFavorite}
           />
         </Container>
       </SingleColumn>
