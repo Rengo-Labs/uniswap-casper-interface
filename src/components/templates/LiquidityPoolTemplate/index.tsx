@@ -4,54 +4,26 @@ import usdcTokenIcon from "../../../assets/swapIcons/btc.png";
 import { Container, SubHeader } from "./styles";
 import { useTheme } from "styled-components";
 import { PairsContextProvider } from "../../../contexts/PairsContext";
+import { ProgressBarProviderContext } from "../../../contexts/ProgressBarContext";
 import { useContext, useEffect, useState } from "react";
 import { convertNumber } from "../../../contexts/ConfigContext";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
-
-export const POOL_TABLE_DATA = [
-  {
-    id: 1,
-    token1Icon: usdcTokenIcon,
-    token2Icon: usdcTokenIcon,
-    pool: "WETH-CSPR",
-    liquidity: "4,653,213",
-    volumen7d: "4,653,213",
-    fees7d: "4,653,213",
-    apr: "4,653,213",
-  },
-  {
-    id: 2,
-    token1Icon: usdcTokenIcon,
-    token2Icon: usdcTokenIcon,
-    pool: "WETH-CSPR",
-    liquidity: "4,653,213",
-    volumen7d: "4,453,213",
-    fees7d: "4,053,213",
-    apr: "4,653,213",
-  },
-  {
-    id: 3,
-    token1Icon: usdcTokenIcon,
-    token2Icon: usdcTokenIcon,
-    pool: "WETH-CSPR",
-    liquidity: "4,653,213",
-    volumen7d: "4,153,213",
-    fees7d: "4,853,213",
-    apr: "4,653,213",
-  },
-];
+import { StateHashProviderContext } from "../../../contexts/StateHashContext";
 
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
-  const { getPoolList, pairState } = useContext(PairsContextProvider);
+  const { getPoolList } = useContext(PairsContextProvider);
+  const {refresh} = useContext(StateHashProviderContext)
+  const { 
+    progressBar,
+    clearProgress,
+    getProgress } = useContext(ProgressBarProviderContext);
+
   const data = getPoolList();
   const navigate = useNavigate();
   const [query, setQuery] = useState<string>("");
-
-  const handleOnlyShowStaked = (showStaked: boolean) => {
-    console.log("handleOnlyShowStaked", showStaked);
-  };
+  const [showStakedOnlyOnTable, setShowStakedOnlyOnTable] = useState<boolean>(false)
 
   const finalData = data.map((item) => ({
     pool: `${item.token0Symbol} - ${item.token1Symbol}`,
@@ -61,6 +33,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     volume7d: item.volume7dUSD || "0",
     fees7d: `${new BigNumber(item.volume7d).times(0.003).toFixed(2)}`,
     apr: "0 %",
+    balance: item.balance
   }));
 
   const goTo = (path: string, pool: string) => {
@@ -74,6 +47,18 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const handleTrash = () => {};
   const handleView = () => {};
 
+  useEffect(() => {
+    progressBar(async () => {
+      await refresh()
+    })
+  
+    return () => {
+      progressBar(async () => {
+        await refresh()
+      })
+    }
+  }, [])
+  
   return (
     <div>
       <SingleColumn isMobile={isMobile} title="Liquidity Pool">
@@ -81,8 +66,14 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           <SubHeader theme={theme}>
             Earn yield on trading by providing liquidity
           </SubHeader>
-          <input value={query} onChange={(e) => setQuery(e.target.value)} />
-          <LPSearch handleOnlyShowStaked={handleOnlyShowStaked} />
+          
+          <LPSearch
+            handleOnlyShowStaked={setShowStakedOnlyOnTable}
+            handleSearch={setQuery}
+            handleReloadButton={async () => clearProgress()}
+            getProgress={() => getProgress}
+            clearProgress={() => console.log('clear progress pending')} />
+
           <PoolTable
             data={finalData}
             handleSwap={goTo}
@@ -90,6 +81,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
             handleTrash={handleTrash}
             handleView={handleView}
             query={query}
+            showStakedOnly={showStakedOnlyOnTable}
           />
         </Container>
       </SingleColumn>
