@@ -1,21 +1,18 @@
 import store from 'store2'
 import { log } from '../utils'
-
 import {
   CasperServiceByJsonRPC,
   CLPublicKey,
   DeployUtil,
   Signer,
 } from 'casper-js-sdk'
-
 import {
-  Wallet, 
+  Wallet,
 } from './Wallet'
-
 import { Network, WalletName } from './types'
 import { NODE_ADDRESS } from '../../constant'
-
 export const CASPERSIGNER_PUBKEY_KEY = 'cs-pubk'
+import {globalStore} from "../../store/store";
 
 export enum CasperSignerEvents {
   CONNECT = 'signer:connected',
@@ -82,9 +79,9 @@ export class CasperSignerWallet implements Wallet{
     return this._publicKey?.toAccountHashStr() ?? ''
   }
 
-  /** 
+  /**
    * Async try and connect to the current wallet
-   * 
+   *
    * @returns the the public key on success or throw error
    */
   async connect(): Promise<string> {
@@ -98,7 +95,7 @@ export class CasperSignerWallet implements Wallet{
     }
 
     try {
-      // check if we're connected 
+      // check if we're connected
       const signerIsConnected = await Signer.isConnected()
 
       // if it is connected then set connect to true
@@ -120,7 +117,7 @@ export class CasperSignerWallet implements Wallet{
         // if there is a connect event handler then stop listening to it
         if (this._connectEventHandler) {
           window.removeEventListener(
-            CasperSignerEvents.CONNECT, 
+            CasperSignerEvents.CONNECT,
             this._connectEventHandler,
           )
         }
@@ -128,17 +125,17 @@ export class CasperSignerWallet implements Wallet{
         // if there is a disconnect event handler then stop listening to it
         if (this._disconnectEventHandler) {
           window.removeEventListener(
-            CasperSignerEvents.DISCONNECT, 
+            CasperSignerEvents.DISCONNECT,
             this._disconnectEventHandler,
           )
         }
-        
+
         // create a new connect event handler
         this._connectEventHandler = async (msg) => {
           try {
             // get the active key
             const key = await this.getActiveKey()
-            
+
             this._isConnected = true
             log.info('CasperSigner: Connected')
             this._connectEventHandler = undefined
@@ -159,18 +156,18 @@ export class CasperSignerWallet implements Wallet{
 
         // start litening to connect
         window.addEventListener(
-          CasperSignerEvents.CONNECT, 
-          this._connectEventHandler, 
+          CasperSignerEvents.CONNECT,
+          this._connectEventHandler,
           { once: true },
         )
-        
+
         // start listening to disconnect
         window.addEventListener(
-          CasperSignerEvents.DISCONNECT, 
-          this._disconnectEventHandler, 
+          CasperSignerEvents.DISCONNECT,
+          this._disconnectEventHandler,
           { once: true },
         )
-      })      
+      })
 
       // finally try and connect
       Signer.sendConnectionRequest()
@@ -186,9 +183,9 @@ export class CasperSignerWallet implements Wallet{
     }
   }
 
-  /** 
+  /**
    * Async try and read the active key
-   * 
+   *
    * @returns the the public key hex on success or throw error
    */
   async getActiveKey(): Promise<string> {
@@ -203,10 +200,10 @@ export class CasperSignerWallet implements Wallet{
 
     return key
   }
-  
-  /** 
+
+  /**
    * Async try and disconnect from the current wallet
-   * 
+   *
    * @returns a promise for pass/fail
    */
   async disconnect(): Promise<void> {
@@ -218,7 +215,7 @@ export class CasperSignerWallet implements Wallet{
       return Signer.disconnectFromSite()
     } catch (err) {
       log.error(`Casper Signer - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
-      
+
       // rethrow error
       throw err
     }
@@ -226,9 +223,9 @@ export class CasperSignerWallet implements Wallet{
 
   /**
    * Sign a deploy
-   * 
+   *
    * @params deploy Deploy to sign
-   * 
+   *
    * @returns a signed deploy
    */
   async sign(deploy: DeployUtil.Deploy): Promise<DeployUtil.Deploy> {
@@ -251,17 +248,19 @@ export class CasperSignerWallet implements Wallet{
       throw err
     }
   }
-  
+
   /**
    * Deploy a signed deploy
-   * 
+   *
    * @params deploy Signed deploy to deploy
-   * 
+   *
    * @returns a deploy hash
    */
   async deploy(signedDeploy: DeployUtil.Deploy): Promise<string> {
     try {
-      const casperService = new CasperServiceByJsonRPC(NODE_ADDRESS)
+      // TODO: check if the node url global store is set
+      const { nodeUrl } = globalStore()
+      const casperService = new CasperServiceByJsonRPC(nodeUrl || NODE_ADDRESS)
       return (await casperService.deploy(signedDeploy)).deploy_hash
     } catch (err) {
       log.error(`Casper Signer - signAndDeploy error: ${err}`)

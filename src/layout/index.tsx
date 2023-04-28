@@ -17,6 +17,7 @@ import {ChildrenContainer, Container} from "./styles";
 import {WalletProviderContext} from "../contexts/WalletContext";
 import {WalletName} from "../commons";
 import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
+import {globalStore} from "../store/store";
 
 export interface ILayoutProps {
     children?: React.ReactElement;
@@ -64,14 +65,20 @@ const Layout = ({children}: ILayoutProps) => {
         walletState
     } = useContext(WalletProviderContext);
 
+    const { slippageTolerance, updateSlippageTolerance, nodeUrl, updateNodeUrl } = globalStore()
+
     const deviceType = useDeviceType()
     const isMobile = deviceType === 'mobile'
 
     const [showSettings, setShowSettings] = useState(false);
     const [showWalletOptions, setShowWalletOptions] = useState(false);
 
-    const handleSettings = () => {
+    const handleShowSettings = () => {
         setShowSettings(!showSettings);
+    }
+
+    const handleShowWallet = () => {
+        setShowConnectionPopup(!showConnectionPopup)
     }
     const handleWalletOptions = () => {
         setShowWalletOptions(!showWalletOptions);
@@ -79,6 +86,12 @@ const Layout = ({children}: ILayoutProps) => {
 
     const handleDisconnectWallet = async () => {
         await onDisconnectWallet();
+    }
+
+    const handleSaveSettings = (slippageTolerance, customNodeUr) => {
+        updateSlippageTolerance(slippageTolerance)
+        updateNodeUrl(customNodeUr)
+        handleShowSettings()
     }
 
     useEffect(() => {
@@ -134,7 +147,7 @@ const Layout = ({children}: ILayoutProps) => {
             iconName: '',
             icon: lineBreakIcon,
             type: 'redirect',
-            onClick: () => onDisconnectWallet()
+            onClick: () => handleDisconnectWallet()
         },
     ]
 
@@ -195,7 +208,7 @@ const Layout = ({children}: ILayoutProps) => {
             icon: settingIcon,
             page: "Settings",
             path: "#",
-            onAction: () => handleDisconnectWallet(),
+            onAction: () => handleShowSettings(),
         },
     ];
 
@@ -218,16 +231,16 @@ const Layout = ({children}: ILayoutProps) => {
                 }}
             />
             <WalletConnection
-                closeCallback={() => setShowConnectionPopup(!showConnectionPopup)}
+                closeCallback={handleShowWallet}
                 wallets={WALLETS_DATA}
                 isOpen={showConnectionPopup}
             />
             <Settings
                 isOpen={showSettings}
-                handleClose={handleSettings}
-                handleSave={() => console.log("Guardar")}
-                customNodeUrlValue=''
-                slippageToleranceValue={0.5}
+                handleClose={handleShowSettings}
+                handleSave={handleSaveSettings}
+                customNodeUrlValue={nodeUrl}
+                slippageToleranceValue={slippageTolerance}
             />
             <WalletConnectedOptions
                 closeCallback={handleWalletOptions}
