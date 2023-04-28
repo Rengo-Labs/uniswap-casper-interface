@@ -5,6 +5,7 @@ import {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Token, Wallet} from "../../commons";
 import {notificationStore} from "../../store/store";
 import {PairState} from "../../reducers/PairsReducer";
+import {TokenProfit} from "../../commons/api/ApolloQueries";
 
 interface TokensContext {
     tokenState: TokenState,
@@ -20,6 +21,8 @@ interface TokensContext {
     filterPopupTokens: (excludedTokens: any[]) => any[],
     filterTokenPairsByToken: (token: Token, pairState: PairState) => any[]
     resetTokens: () => void,
+    getHistoricalTokenPrices?: (contractHash: string) => Promise<any>,
+    getBalancesProfit?: (contractHash: string) => Promise<TokenProfit>
 }
 
 export const TokensProviderContext = createContext<TokensContext>({} as any)
@@ -31,6 +34,7 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
     );
 
     const resetTokens = () => tokenDispatch({ type: TokenActions.RESET });
+
     const loadTokensUSD = async (pairsTotalReserves, pairs): Promise<any> => {
         return TokenResponsibilities(tokenState, tokenDispatch).loadTokenUSD(pairsTotalReserves, pairs, updateNotification)
     }
@@ -63,6 +67,14 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
       return TokenResponsibilities(tokenState, tokenDispatch).filterTokenPairsByToken(token, pairState)
     }
 
+    const getHistoricalTokenPrices = async (packageHash: string): Promise<any> => {
+      return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokenPrices(packageHash)
+    }
+
+    const getBalancesProfit = async (packageHash: string): Promise<any> => {
+      return TokenResponsibilities(tokenState, tokenDispatch).getBalancesProfit(packageHash)
+    }
+
     return (
         <TokensProviderContext.Provider
             value={{
@@ -78,7 +90,9 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 secondTokenSelected: tokenState.tokens[tokenState.secondTokenSelected],
                 filterPopupTokens,
                 filterTokenPairsByToken,
-                resetTokens
+                resetTokens,
+                getHistoricalTokenPrices,
+                getBalancesProfit
             }}>
             {children}
         </TokensProviderContext.Provider>

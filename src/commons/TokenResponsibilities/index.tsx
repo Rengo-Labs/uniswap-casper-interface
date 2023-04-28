@@ -7,6 +7,11 @@ import {Wallet} from "../wallet";
 import {Token} from "../api";
 import {pairFinder} from "../pairFinder";
 import {PairState} from "../../reducers/PairsReducer";
+import {
+    getBalanceProfitByContractHash,
+    getHistoricalTokenPricesByContractHash,
+    TokenProfit
+} from "../api/ApolloQueries";
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
@@ -219,6 +224,14 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         })
     }
 
+    const getHistoricalTokenPrices = (packageHash: string) => {
+        return getHistoricalTokenPricesByContractHash(packageHash)
+    }
+
+    const getBalancesProfit = (packageHash: string): Promise<TokenProfit> => {
+        return getBalanceProfitByContractHash(packageHash)
+    }
+
     return {
         loadTokenUSD,
         updateBalances,
@@ -227,7 +240,9 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         onSelectSecondToken,
         onSwitchTokens,
         filterPopupTokens,
-        filterTokenPairsByToken
+        filterTokenPairsByToken,
+        getHistoricalTokenPrices,
+        getBalancesProfit
     }
 
 }
