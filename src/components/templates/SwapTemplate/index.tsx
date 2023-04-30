@@ -38,7 +38,8 @@ export const SwapTemplate = ({isMobile}) => {
         onSelectSecondToken,
         tokenState,
         onSwitchTokens,
-        filterPopupTokens
+        filterPopupTokens,
+        getHistoricalTokensChartPrices
     } = useContext(TokensProviderContext)
 
 
@@ -57,11 +58,42 @@ export const SwapTemplate = ({isMobile}) => {
     const [priceImpact, priceImpactSetter] = useState<number | string>(0);
     const { slippageTolerance, updateSlippageTolerance } = globalStore()
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
+    const [showChart0, setShowChart0] = useState(true)
+    const [showChart1, setShowChart1] = useState(true)
+    const [chartData,  setChartData] = useState([
+        {
+            priceUSD: 0,
+            percentage: 0,
+            name: '',
+            token0price: 0,
+            token1price: 0
+        }
+    ])
+
+    useEffect(() => {
+        handleGetChartData().then(() => console.log('chart data updated'))
+    }, [firstTokenSelected, secondTokenSelected])
 
     const handleChangeGasFee = (value) => {
         const gasFeeValue = value ? parseFloat(value) : 0;
         gasFeeSetter(value);
         handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
+    }
+
+    const handleGetChartData = async () => {
+        const chartData = await getHistoricalTokensChartPrices(firstTokenSelected.packageHash, secondTokenSelected.packageHash)
+        console.log('$$$ chart data $$$$', chartData)
+        if(chartData.length > 0) {
+            setChartData(chartData)
+        }
+    }
+
+    const handlesShowChart0 = () => {
+        setShowChart0(!showChart0)
+    }
+
+    const handleShowChart1 = () => {
+        setShowChart1(!showChart1)
     }
 
     const onActionConfirm = async (amountA, amountB, slippage, gas) => {
@@ -178,6 +210,17 @@ export const SwapTemplate = ({isMobile}) => {
                     secondSymbolToken={secondTokenSelected.symbol}
                     secondTokenAmount={amountSwapTokenB}
                     slippageSetter={updateSlippageTolerance}
+                    //chart
+                    chartData={chartData}
+                    xAxisName='name'
+                    todayPrice={`${chartData[0]?.priceUSD}`}
+                    yesterdayPrice={`${chartData[0].percentage}`}
+                    chart0Name='token0price'
+                    chart1Name='token1price'
+                    onClickButton0={handlesShowChart0}
+                    onClickButton1={handleShowChart1}
+                    showChart0={showChart0}
+                    showChart1={showChart1}
                 />
                 <TokenSwapper
                     onIncreaseAllow={onIncreaseAllow}

@@ -57,8 +57,56 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [currentSReserve, setSecondReserve] = useState(0)
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
     const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState(false)
-    const [removeLiquidityData, setRemoveLiquidityData] = useState([])
+    const [removeLiquidityData, setRemoveLiquidityData] = useState({
+        id: 'd3jd92d',
+        tokenName: 'CSPR',
+        liquidity: '0',
+        allowance: '0',
+        firstIcon: '',
+        firstName: 'CSPR',
+        firstSymbol: 'CSPR',
+        firstLiquidity: '0',
+        firstRate: '0',
+        secondIcon: '',
+        secondName: 'WETH',
+        secondSymbol: 'WETH',
+        secondLiquidity: '0',
+        secondRate: '0',
+    })
+    const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
+    const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(false)
+    const [removeLiquidityButtonEnabled, setRemoveLiquidityButtonEnabled] = useState(false)
+    const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
+    const [removeLiquidiyCalculation, setRemoveLiquidityCalculation] = useState({
+        lpAmount: 0,
+        firstAmount: 0,
+        secondAmount: 0
+    })
     const Navigator = useNavigate()
+
+    const handleChangeInput = (value) => {
+        setRemoveLiquidityInput(value)
+        handleRemoveCalculation(value)
+    }
+    const handleRemoveLiquidityToggle = (e) => {
+        setRemoveLiquidityToggle(e.target.checked)
+    }
+
+    const handleRemoveCalculation = (value) => {
+        const inputPercent = new BigNumber(removeLiquidityInput / 100)
+        const lpAmount = new BigNumber(removeLiquidityData.liquidity).multipliedBy(inputPercent)
+        const firstAmount = new BigNumber(removeLiquidityData.firstLiquidity).multipliedBy(inputPercent)
+        const secondAmount = new BigNumber(removeLiquidityData.secondLiquidity).multipliedBy(inputPercent)
+        const newVar = (prevState) => ({
+            ...prevState,
+            lpAmount: lpAmount.toNumber().toFixed(2),
+            firstAmount: firstAmount.toNumber().toFixed(2),
+            secondAmount: secondAmount.toNumber().toFixed(2)
+        });
+
+        setRemoveLiquidityCalculation(newVar)
+    }
+
     const handleRemoveLiquidity = () => {
         setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
     }
@@ -72,32 +120,29 @@ export const LiquidityTemplate = ({isMobile}) => {
         }
 
         if (action === 'DeleteLP') {
-            const data = [
-                {
-                    id: 'd3jd92d',
-                    tokenNames: [item.token0Name, item.token1Name],
-                    tokenNameSymbols: [item.token0Symbol, item.token1Symbol],
-                    amount: item.balance,
-                    tokenImg: item.token0Icon
-                },
-                {
-                    id: 'c9c843b',
-                    tokenNames: [item.token0Name],
-                    tokenNameSymbols: [item.token0Symbol],
-                    amount: item.totalReserve0,
-                    tokenImg:  item.token0Icon
-                },
-                {
-                    id: '1qwski4',
-                    tokenNames: [item.token1Name],
-                    tokenNameSymbols: [item.token1Symbol],
-                    amount: item.totalReserve1,
-                    tokenImg:  item.token1Icon
-                }
-            ]
             console.log("item", item)
+
+            const data = {
+                id: 'd3jd92d',
+                tokenName: item.name,
+                liquidity: item.balance,
+                allowance: item.allowance,
+                firstIcon: item.token0Icon,
+                firstName: item.token0Name,
+                firstSymbol: item.token0Symbol,
+                firstLiquidity: item.totalReserve0,
+                firstRate: '',
+                secondIcon: item.token1Icon,
+                secondName: item.token1Symbol,
+                secondSymbol: item.token1Symbol,
+                secondLiquidity: item.totalReserve1,
+                secondRate: '',
+            }
             console.log("data", data)
-            setRemoveLiquidityData(data)
+            setRemoveLiquidityData((prevState) => ({
+                ...prevState,
+                ...data
+            }))
             handleRemoveLiquidity()
         }
 
@@ -254,11 +299,17 @@ export const LiquidityTemplate = ({isMobile}) => {
     return (
         <>
             <RemoveLiquidityDialog
-                id='remove-liquidity-dialog'
-                isOpen={showRemoveLiquidityDialog}
                 // @ts-ignore
-                onClose={handleRemoveLiquidity}
-                liquidityPoolData={removeLiquidityData}
+                closeCallback={handleRemoveLiquidity}
+                liquidityPoolData={removeLiquidityData as any}
+                isOpen={showRemoveLiquidityDialog}
+                disabledButton={removeLiquidityButtonEnabled}
+                disabledAllowanceButton={removeLiquidityAllowanceEnabled}
+                isRemoveLiquidityCSPR={removeLiquidityToggle}
+                handleChangeInput={handleChangeInput}
+                handleToggle={handleRemoveLiquidityToggle}
+                handleRemoveLiquidity={handleRemoveLiquidity}
+                calculatedAmounts={removeLiquidiyCalculation}
             />
             <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
                 <LiquidityDetail

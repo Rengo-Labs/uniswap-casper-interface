@@ -1056,7 +1056,7 @@ const getPairChartData = async (pairPackageHash) => {
 
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1))
   } catch (e) {
-    console.error(e)
+    console.error('getPairChartData',e)
   }
 
   return data
@@ -1076,16 +1076,14 @@ export const getPairData = async (pairList: string[] = []): Promise<Pair[]> => {
 
     return result == undefined ? [] : result
   } catch (e) {
-    console.error(e);
+    console.error('getPairData', e);
     return [];
   }
 };
 
 export const getHistoricalTokenPricesByPackageHash = async (packageHash: string): Promise<any[]> => {
   try {
-
     const result = await getTokenDataByDays(packageHash.slice(5))
-    console.log(result.data.tokendaydatas)
     const list = result.data.tokendaydatas as any[]
     return list.map( i => {
       return {
@@ -1095,7 +1093,7 @@ export const getHistoricalTokenPricesByPackageHash = async (packageHash: string)
       }
     })
   } catch (e) {
-    console.error(e)
+    console.error("getHistoricalTokenPricesByPackageHash", e)
     return []
   }
 }
