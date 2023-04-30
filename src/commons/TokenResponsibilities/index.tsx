@@ -1,5 +1,5 @@
 import React from "react";
-import {TokenActions, TokenState} from "../../reducers/TokenReducers";
+import { TokenActions, TokenState} from "../../reducers/TokenReducers";
 import BigNumber from "bignumber.js";
 import {convertBigNumberToUIString, log} from "../utils";
 import {apiClient, casperClient} from "../../contexts/ConfigContext";
@@ -49,40 +49,40 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                 if (tokenState.tokens[x].contractHash) {
                     return Promise.all([
                         apiClient
-                            .getERC20Allowance(
-                                wallet,
-                                token.contractHash
-                            )
-                            .then((response) => {
-                                //console.log('allowance', token, response)
-                                tokenDispatch({
-                                    type: TokenActions.LOAD_ALLOWANCE,
-                                    payload: {
-                                        name: x,
-                                        allowance: convertBigNumberToUIString(
-                                            new BigNumber(response)
-                                        ),
-                                    },
-                                });
-                            }),
+                          .getERC20Allowance(
+                            wallet,
+                            token.contractHash
+                          )
+                          .then((response) => {
+                              //console.log('allowance', token, response)
+                              tokenDispatch({
+                                  type: TokenActions.LOAD_ALLOWANCE,
+                                  payload: {
+                                      name: x,
+                                      allowance: convertBigNumberToUIString(
+                                        new BigNumber(response)
+                                      ),
+                                  },
+                              });
+                          }),
                         apiClient
-                            .getERC20Balance(
-                                wallet,
-                                token.contractHash
-                            )
-                            .then((response) => {
-                                //console.log('balance', token, response)
-                                console.log(x, convertBigNumberToUIString(new BigNumber(response)).toString())
-                                tokenDispatch({
-                                    type: TokenActions.LOAD_BALANCE,
-                                    payload: {
-                                        name: x,
-                                        amount: convertBigNumberToUIString(
-                                            new BigNumber(response)
-                                        ),
-                                    },
-                                });
-                            }),
+                          .getERC20Balance(
+                            wallet,
+                            token.contractHash
+                          )
+                          .then((response) => {
+                              //console.log('balance', token, response)
+                              console.log(x, convertBigNumberToUIString(new BigNumber(response)).toString())
+                              tokenDispatch({
+                                  type: TokenActions.LOAD_BALANCE,
+                                  payload: {
+                                      name: x,
+                                      amount: convertBigNumberToUIString(
+                                        new BigNumber(response)
+                                      ),
+                                  },
+                              });
+                          }),
                     ]);
                 } else {
                     return casperClient.getBalance(wallet).then((balance) => {
@@ -112,7 +112,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     payload: {
                         name: x,
                         allowance: convertBigNumberToUIString(
-                            new BigNumber(0)
+                          new BigNumber(0)
                         ),
                     },
                 })
@@ -122,7 +122,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     payload: {
                         name: x,
                         amount: convertBigNumberToUIString(
-                            new BigNumber(0)
+                          new BigNumber(0)
                         ),
                     },
                 })
@@ -140,7 +140,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
     const onSelectFirstToken = (token: string | Token): void => {
         if (typeof token === 'string') {
-            tokenDispatch({type: TokenActions.SELECT_FIRST_TOKEN, payload: token});
+            tokenDispatch({ type: TokenActions.SELECT_FIRST_TOKEN, payload: token });
         } else {
             tokenDispatch({
                 type: TokenActions.SELECT_FIRST_TOKEN,
@@ -149,9 +149,9 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         }
     }
 
-    const onSelectSecondToken = (token: string | Token): void => {
+    const onSelectSecondToken = (token: string | Token): void  => {
         if (typeof token === 'string') {
-            tokenDispatch({type: TokenActions.SELECT_SECOND_TOKEN, payload: token});
+            tokenDispatch({ type: TokenActions.SELECT_SECOND_TOKEN, payload: token });
         } else {
             tokenDispatch({
                 type: TokenActions.SELECT_SECOND_TOKEN,
@@ -161,7 +161,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     const onSwitchTokens = (): void => {
-        tokenDispatch({type: TokenActions.SWITCH_TOKENS});
+        tokenDispatch({ type: TokenActions.SWITCH_TOKENS });
     }
 
     //TODO adjust the response from the UI KIT to manage the same structure here
@@ -191,35 +191,35 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         return _filteredTokens.map((token) => {
             const {chainId, symbol, name, amount, logoURI}: any = token;
             return (
-                {
-                    id: chainId,
-                    name: symbol,
-                    fullName: name,
-                    amount: amount,
-                    tokenImg: logoURI
-                }
+              {
+                  id: chainId,
+                  name: symbol,
+                  fullName: name,
+                  amount: amount,
+                  tokenImg: logoURI
+              }
             );
         })
     }
 
     const filterTokenPairsByToken = (token, pairState: PairState) => {
         const result = Object.values(pairState)
-            .filter(pl => {
-                return pl.token0Symbol.includes(token) || pl.token1Symbol.includes(token)
-            })
-            .map((pl) => {
-                return pl.token1Symbol.includes(token) ? tokenState.tokens[pl.token0Symbol] : tokenState.tokens[pl.token1Symbol]
-            })
+          .filter(pl => {
+              return pl.token0Symbol.includes(token) || pl.token1Symbol.includes(token)
+          })
+          .map((pl) => {
+              return pl.token1Symbol.includes(token) ? tokenState.tokens[pl.token0Symbol] : tokenState.tokens[pl.token1Symbol]
+          })
         return result.map((token) => {
             const {chainId, symbol, name, amount, logoURI}: any = token;
             return (
-                {
-                    id: chainId,
-                    name: symbol,
-                    fullName: name,
-                    amount: amount,
-                    tokenImg: logoURI
-                }
+              {
+                  id: chainId,
+                  name: symbol,
+                  fullName: name,
+                  amount: amount,
+                  tokenImg: logoURI
+              }
             );
         })
     }

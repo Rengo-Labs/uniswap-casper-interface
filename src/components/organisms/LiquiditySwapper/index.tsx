@@ -449,7 +449,7 @@ const LiquiditySwapper = ({
         <CreatePoolDialog
           closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
           tokenListData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
-          popularTokensData={popularTokens}
+          popularTokensData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
           onSelectToken={(name) => {
             selectAndCloseToken(tokenState.tokens[name])
           }}

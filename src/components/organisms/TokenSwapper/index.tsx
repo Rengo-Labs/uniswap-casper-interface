@@ -318,7 +318,7 @@ const TokenSwapper = ({
                       -freeAllowance,
                       firstTokenSelected.contractHash
                   );
-                }}}>Approve ${-freeAllowance} ${firstTokenSelected.symbol}</Button>
+                }}}>Approve {-freeAllowance} {firstTokenSelected.symbol}</Button>
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{
@@ -335,7 +335,7 @@ const TokenSwapper = ({
             <CreatePoolDialog
                 closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
                 tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol])}
-                popularTokensData={popularTokens}
+                popularTokensData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol])}
                 onSelectToken={(name) => {
                   selectAndCloseToken(tokenState.tokens[name])
                 }}

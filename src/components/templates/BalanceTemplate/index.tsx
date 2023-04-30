@@ -16,6 +16,8 @@ export const BalanceTemplate = ({isMobile}) => {
           const {symbol, name, amount, logoURI, packageHash}: any = token;
           const data = await getBalancesProfit(packageHash)
           //getHistoricalTokenPrices(packageHash)
+          const result = await getHistoricalTokensChartPrices("hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a", "hash-28eed3da2b123334c7913d84c4aea0ed426fd268d29410cb12c6bc8a453183f6")
+          console.log("Grafico", result)
           return (
             {
               id: symbol,
