@@ -30,7 +30,8 @@ export const LiquidityTemplate = ({isMobile}) => {
         isRemovingPopupOpen,
         setRemovingPopup,
         onAddLiquidity,
-        getLiquidityDetails
+        getLiquidityDetails,
+        onRemoveLiquidity
     } = useContext(LiquidityProviderContext)
     const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext)
     const {calculateUSDtokens, pairState, findReservesBySymbols, getPoolList} = useContext(PairsContextProvider)
@@ -77,7 +78,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(false)
     const [removeLiquidityButtonEnabled, setRemoveLiquidityButtonEnabled] = useState(false)
     const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
-    const [removeLiquidiyCalculation, setRemoveLiquidityCalculation] = useState({
+    const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState({
         lpAmount: 0,
         firstAmount: 0,
         secondAmount: 0
@@ -89,7 +90,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         handleRemoveCalculation(value)
     }
     const handleRemoveLiquidityToggle = (e) => {
-        setRemoveLiquidityToggle(e.target.checked)
+        setRemoveLiquidityToggle(e)
     }
 
     const handleRemoveCalculation = (value) => {
@@ -107,9 +108,23 @@ export const LiquidityTemplate = ({isMobile}) => {
         setRemoveLiquidityCalculation(newVar)
     }
 
-    const handleRemoveLiquidity = () => {
+    const handleRemoveLiquidity = async () => {
         setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
     }
+
+    const onActionRemove = async () => {
+        await onRemoveLiquidity(
+          removeLiquidityCalculation.lpAmount,
+          firstTokenSelected,
+          secondTokenSelected,
+          removeLiquidityCalculation.firstAmount,
+          removeLiquidityCalculation.secondAmount,
+          slippageTolerance,
+          gasFee,
+          removeLiquidityToggle)
+        setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
+    }
+
     const handleNavigate = (item) => {
         Navigator(`/swap?token0=${item.token0Symbol}&token1=${item.token1Symbol}`)
     }
@@ -306,8 +321,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                 isRemoveLiquidityCSPR={removeLiquidityToggle}
                 handleChangeInput={handleChangeInput}
                 handleToggle={handleRemoveLiquidityToggle}
-                handleRemoveLiquidity={handleRemoveLiquidity}
-                calculatedAmounts={removeLiquidiyCalculation}
+                handleRemoveLiquidity={onActionRemove}
+                calculatedAmounts={removeLiquidityCalculation}
             />
             <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
                 <LiquidityDetail

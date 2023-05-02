@@ -315,7 +315,7 @@ const TokenSwapper = ({
               <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onConnectWallet()}}>Connect Wallet</Button>
           )}
           {!isApproved && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => async () => {
+              <Button type={"large"} props={{style: {width: 'auto'}, onClick: async () => {
                   await requestIncreaseAllowance(
                       -freeAllowance,
                       firstTokenSelected.contractHash
