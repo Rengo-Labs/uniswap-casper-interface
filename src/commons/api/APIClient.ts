@@ -187,7 +187,7 @@ export class APIClient {
    */
    async getPairData(contractHash: string, stateRootHash?: string): Promise<PairDataResponse> {
      // TODO: check if the node url global store is set
-     const { nodeUrl } = globalStore()
+    const nodeUrl = globalStore.getState().nodeUrl;
     // set up the service
     const casperService = new CasperServiceByJsonRPC(nodeUrl || NODE_ADDRESS)
 

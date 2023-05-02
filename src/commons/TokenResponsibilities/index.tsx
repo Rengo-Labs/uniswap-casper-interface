@@ -246,14 +246,10 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
             })
         }
 
-        console.log('@@@@@@@@ dateFiltered', chart0[0])
-
         const date = dateFiltered.map((item) => {
             const date = new Date(item)
             return `${date.getDate()}/${date.getMonth() + 1}`
         })
-
-        console.log('@@@@@@@@ price', chart0[0]?.priceUSD)
 
         const priceUSD = chart0 && chart0.length ? parseFloat(chart0[0]?.priceUSD).toFixed(2) : 0
         const percentage = chart0 && chart0.length ? parseFloat(chart0[0]?.percentage).toFixed(2) : 0

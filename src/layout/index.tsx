@@ -212,6 +212,11 @@ const Layout = ({children}: ILayoutProps) => {
         },
     ];
 
+    const handleExternalLink = () => {
+        const link = "https://docs.casperswap.xyz/the-casperswap-protocol-1/how-to-make-a-swap-on-casperswap"
+        window.open(link, '_blank')
+    }
+
     return (
         <Container selectedTheme={selectedTheme}>
             <GlobalStyle selectedTheme={selectedTheme}/>
@@ -234,6 +239,7 @@ const Layout = ({children}: ILayoutProps) => {
                 closeCallback={handleShowWallet}
                 wallets={WALLETS_DATA}
                 isOpen={showConnectionPopup}
+                linkCallback={handleExternalLink}
             />
             <Settings
                 isOpen={showSettings}

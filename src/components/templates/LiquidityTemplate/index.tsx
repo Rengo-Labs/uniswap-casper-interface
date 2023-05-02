@@ -151,9 +151,9 @@ export const LiquidityTemplate = ({isMobile}) => {
         }
     }
 
-    const loadUserLP = useCallback(() => {
+    const loadUserLP = () => {
         const userPairs = Object.values(pairState).filter(
-          (v) => parseFloat(v.balance) > 0
+            (v) => parseFloat(v.balance) > 0
         ).map((i) => {
             return {
                 icon: i.token1Icon,
@@ -168,9 +168,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             }
         })
         userPairDataNonZeroSetter(userPairs)
-
-    }, [userPairDataNonZero])
-
+    }
 
     useEffect(() => {
         if (!isConnected) {

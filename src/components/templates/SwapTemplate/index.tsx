@@ -28,7 +28,7 @@ export const SwapTemplate = ({isMobile}) => {
     } = useContext(WalletProviderContext);
     const {onConfirmSwapConfig, getSwapDetails} =
         useContext(SwapProviderContext);
-    const {progressBar, getProgress} = useContext(ProgressBarProviderContext);
+    const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext);
     const {calculateUSDtokens, pairState, findReservesBySymbols} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {
@@ -41,13 +41,9 @@ export const SwapTemplate = ({isMobile}) => {
         filterPopupTokens,
         getHistoricalTokensChartPrices
     } = useContext(TokensProviderContext)
-
-
     // Details requirements
-
     const { handleValidate } =
         isCSPRValid();
-
     const [pairPath, setPairPath] = useState([])
     const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
     const [currentValue, setCurrentValue] = useState<number>(0);
@@ -82,7 +78,6 @@ export const SwapTemplate = ({isMobile}) => {
 
     const handleGetChartData = async () => {
         const chartData = await getHistoricalTokensChartPrices(firstTokenSelected.packageHash, secondTokenSelected.packageHash)
-        console.log('$$$ chart data $$$$', chartData)
         if(chartData.length > 0) {
             setChartData(chartData)
         }
@@ -246,7 +241,7 @@ export const SwapTemplate = ({isMobile}) => {
                     amountSwapTokenB={amountSwapTokenB}
                     amountSwapTokenBSetter={amountSwapTokenBSetter}
                     isProcessingTransaction={isProcessingTransaction}
-                    clearProgress={refresh}
+                    clearProgress={clearProgress}
                 />
             </DoubleColumn>
         </>

@@ -274,7 +274,7 @@ export class CasperWallet implements Wallet{
   async deploy(signedDeploy: DeployUtil.Deploy): Promise<string> {
     try {
       // TODO: check if the node url global store is set
-      const { nodeUrl } = globalStore()
+      const nodeUrl = globalStore.getState().nodeUrl;
       const casperService = new CasperServiceByJsonRPC(nodeUrl || NODE_ADDRESS)
       return (await casperService.deploy(signedDeploy)).deploy_hash
     } catch (err) {

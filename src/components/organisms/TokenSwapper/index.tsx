@@ -183,7 +183,8 @@ const TokenSwapper = ({
   //TODO Compartido
   const handleChangeA = async (e) => {
     setCurrentValue(e)
-    handleValidate(
+    // TODO: check if we need to show this when wallet is not connected
+      handleValidate(
         parseFloat(e),
         parseFloat(firstTokenSelected.amount),
         gasPriceSelectedForSwapping || 0
@@ -200,7 +201,8 @@ const TokenSwapper = ({
         parseFloat(e),
         secondTokenSelected
     )
-    handleValidate(
+      // TODO check if we need to show this when wallet is not connected
+      handleValidate(
         parseFloat(tokensToTransfer),
         parseFloat(firstTokenSelected.amount),
         gasPriceSelectedForSwapping || 0
