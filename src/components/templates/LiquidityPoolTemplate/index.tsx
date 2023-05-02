@@ -33,6 +33,24 @@ interface IPoolDetailRow {
   isFavorite?: boolean;
 }
 
+const poolDetailsRowDefault = {
+  token0Icon: "",
+  token1Icon: "",
+  token0Symbol: "",
+  token1Symbol: "",
+  yourLiquidity: "",
+  assetsPooled: {
+    asset0: "",
+    asset1: "",
+  },
+  yourShare: "",
+  liqudiity: "",
+  volume7D: "",
+  fees7D: "",
+  apr: "",
+  isFavorite: false,
+}
+
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
   const { getPoolList } = useContext(PairsContextProvider);
@@ -47,23 +65,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [showStakedOnlyOnTable, setShowStakedOnlyOnTable] =
     useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
-  const [poolDetailRow, setPoolDetailRow] = useState<IPoolDetailRow>({
-    token0Icon: "",
-    token1Icon: "",
-    token0Symbol: "",
-    token1Symbol: "",
-    yourLiquidity: "",
-    assetsPooled: {
-      asset0: "",
-      asset1: "",
-    },
-    yourShare: "",
-    liqudiity: "",
-    volume7D: "",
-    fees7D: "",
-    apr: "",
-    isFavorite: false,
-  });
+  const [poolDetailRow, setPoolDetailRow] = useState<IPoolDetailRow>(poolDetailsRowDefault);
   const [finalData, setFinalData] = useState<any[]>(
     data.map((item) => ({
       name: item.name,
@@ -80,21 +82,9 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   );
 
   const handleShowPoolDetails = () => {
-    setShowPoolDetails(false);
+    setPoolDetailRow(poolDetailsRowDefault)
+    setShowPoolDetails(prev => !prev);
   };
-
-  // const finalData = data.map((item) => ({
-  //   name: item.name,
-  //   pool: `${item.token0Symbol} - ${item.token1Symbol}`,
-  //   token0Icon: item.token0Icon,
-  //   token1Icon: item.token1Icon,
-  //   liquidity: convertNumber(parseFloat(item.totalLiquidityUSD)),
-  //   volume7d: item.volume7dUSD || "0",
-  //   fees7d: `${new BigNumber(item.volume7d).times(0.003).toFixed(2)}`,
-  //   apr: "0",
-  //   balance: item.balance,
-  //   isFavorite: getLocalStorageData('pool')?.includes(item.name)
-  // }));
 
   const goTo = (path: string, pool: string) => {
     const tokens = pool.split("-");
@@ -139,31 +129,34 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     };
   }, []);
 
-  const uppdateFinalData = (name: string, isFavorite: boolean) => {
-    setFinalData((prev) => {
-      const newFinalData = prev.map((item) => {
-        if (item.name === name) {
-          return { ...item, isFavorite };
+  const updateTableData = (name: string, isFavorite: boolean) => {
+    const newFinalData = finalData.map(item => {
+      if (item.name === name) {
+        return {
+          ...item,
+          isFavorite: !isFavorite
         }
-        return item;
-      });
-      return newFinalData;
-    });
-  };
+        
+      }
+      return item
+    })
+
+    setFinalData(newFinalData)
+  }
+
+  const updateLocalStorage = (name: string, currentPersistedData: string[], isFavorite: boolean) => {
+    const newLocalStorageData = isFavorite ? currentPersistedData.filter(item => item !== name) : [...currentPersistedData, name]
+    setLocalStorageData("pool", newLocalStorageData);
+  }
 
   const handleFavorite = (name: string) => {
-    const prevData: string[] = getLocalStorageData("pool");
-
-    if (prevData?.includes(name)) {
-      const newData = prevData.filter((item) => item !== name);
-      setLocalStorageData("pool", newData);
-      setPoolDetailRow((prev) => ({ ...prev, isFavorite: false }));
-      uppdateFinalData(name, false);
-      return;
-    }
-    setLocalStorageData("pool", prevData ? [...prevData, name] : [name]);
-    setPoolDetailRow((prev) => ({ ...prev, isFavorite: true }));
-    uppdateFinalData(name, true);
+    const currentPersistedData: string[] = getLocalStorageData("pool");
+    const isPresent = currentPersistedData.includes(name)
+ 
+    updateTableData(name, isPresent)
+    setPoolDetailRow({...poolDetailRow, isFavorite: !isPresent })
+    
+    updateLocalStorage(name, currentPersistedData, isPresent)
   };
 
   return (
