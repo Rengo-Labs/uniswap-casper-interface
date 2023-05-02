@@ -32,7 +32,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         onAddLiquidity,
         getLiquidityDetails
     } = useContext(LiquidityProviderContext)
-    const {progressBar, getProgress} = useContext(ProgressBarProviderContext)
+    const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext)
     const {calculateUSDtokens, pairState, findReservesBySymbols, getPoolList} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {
@@ -344,7 +344,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   amountSwapTokenB={amountSwapTokenB}
                                   amountSwapTokenBSetter={amountSwapTokenBSetter}
                                   isProcessingTransaction={isProcessingTransaction}
-                                  clearProgress={refresh}
+                                  clearProgress={clearProgress}
                 />
             </DoubleColumn>
             {
