@@ -66,7 +66,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [poolDetailRow, setPoolDetailRow] = useState<IPoolDetailRow>(poolDetailsRowDefault);
-  const [finalData, setFinalData] = useState<any[]>(
+  const [tableData, setTableData] = useState<any[]>(
     data.map((item) => ({
       name: item.name,
       pool: `${item.token0Symbol} - ${item.token1Symbol}`,
@@ -130,7 +130,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   }, []);
 
   const updateTableData = (name: string, isFavorite: boolean) => {
-    const newFinalData = finalData.map(item => {
+    const newTableData = tableData.map(item => {
       if (item.name === name) {
         return {
           ...item,
@@ -141,7 +141,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
       return item
     })
 
-    setFinalData(newFinalData)
+    setTableData(newTableData)
   }
 
   const updateLocalStorage = (name: string, currentPersistedData: string[], isFavorite: boolean) => {
@@ -176,7 +176,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           />
 
           <PoolTable
-            data={finalData}
+            data={tableData}
             handleSwap={goTo}
             handleAddLiquidity={goTo}
             handleTrash={handleTrash}
