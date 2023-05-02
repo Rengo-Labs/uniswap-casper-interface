@@ -171,7 +171,8 @@ export const LiquidityTemplate = ({isMobile}) => {
             (v) => parseFloat(v.balance) > 0
         ).map((i) => {
             return {
-                icon: i.token1Icon,
+                firstTokenIcon: i.token0Icon,
+                secondTokenIcon: i.token1Icon,
                 isFavorite: false,
                 firstSymbol: i.token0Symbol,
                 secondSymbol: i.token1Symbol,
