@@ -91,13 +91,13 @@ export const SwapTemplate = ({isMobile}) => {
         setShowChart1(!showChart1)
     }
 
-    const onActionConfirm = async (amountA, amountB, slippage, gas) => {
+    const onActionConfirm = async (amountA, amountB) => {
         setIsProcessingTransaction(true)
         await onConfirmSwapConfig(
             amountA,
             amountB,
-            slippage,
-            gas
+            slippageTolerance,
+            gasFee
         );
 
         refresh();
