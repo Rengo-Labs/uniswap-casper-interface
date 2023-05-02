@@ -91,16 +91,25 @@ export const SwapTemplate = ({isMobile}) => {
         setShowChart1(!showChart1)
     }
 
+    const resetTokenValues =  () => {
+        amountSwapTokenASetter(0);
+        amountSwapTokenBSetter(0);
+    }
+
     const onActionConfirm = async (amountA, amountB) => {
         setIsProcessingTransaction(true)
-        await onConfirmSwapConfig(
+        const isValid = await onConfirmSwapConfig(
             amountA,
             amountB,
             slippageTolerance,
             gasFee
         );
 
-        refresh();
+        if (isValid) {
+            resetTokenValues();
+        }
+
+        await refresh();
         setIsProcessingTransaction(false)
     }
 
