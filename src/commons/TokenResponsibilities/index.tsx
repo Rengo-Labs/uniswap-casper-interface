@@ -255,10 +255,13 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         const percentage = chart0 && chart0.length ? parseFloat(chart0[0]?.percentage).toFixed(2) : 0
 
         return date.map((item, index) => {
+            const token0price = chart0 && chart0.length && parseFloat(chart0[index]?.priceUSD).toFixed(2) || 0
+            const token1price =  chart1 && chart1.length && parseFloat(chart1[index]?.priceUSD).toFixed(2) || 0
+
             return {
                 name: item,
-                token0price: chart0[index]?.priceUSD || 0,
-                token1price: chart1[index]?.priceUSD || 0,
+                token0price: token0price,
+                token1price: token1price,
                 priceUSD: priceUSD,
                 percentage: percentage
             }

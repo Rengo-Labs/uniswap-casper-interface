@@ -60,9 +60,7 @@ const SwapDetail = ({
                         showChart0,
                         showChart1
                     }: SwapDetailProps) => {
-    // TODO we need to get all the information and connect with the components
-    //const container = document.getElementById('swap-detail');
-    //console.log(container?.clientWidth, container?.clientHeight)
+    const container = document.getElementById('swap-tabs');
     return (
         <>
             <SwapTabs
@@ -94,6 +92,7 @@ const SwapDetail = ({
                 onClickButton1={onClickButton1}
                 showChart0={showChart0}
                 showChart1={showChart1}
+                charWidth={container?.clientWidth}
                 />
         </>
     )
