@@ -94,7 +94,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     }
 
     const handleRemoveCalculation = (value) => {
-        const inputPercent = new BigNumber(removeLiquidityInput / 100)
+        const inputPercent = new BigNumber(removeLiquidityInput).dividedBy(100)
         const lpAmount = new BigNumber(removeLiquidityData.liquidity).multipliedBy(inputPercent)
         const firstAmount = new BigNumber(removeLiquidityData.firstLiquidity).multipliedBy(inputPercent)
         const secondAmount = new BigNumber(removeLiquidityData.secondLiquidity).multipliedBy(inputPercent)
@@ -108,7 +108,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         setRemoveLiquidityCalculation(newVar)
     }
 
-    const handleRemoveLiquidity = async () => {
+    const handleRemoveLiquidity =  () => {
         setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
     }
 
@@ -308,8 +308,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             return userLP;
         }
     }
-    // TODO cambiar el remove liquidity para que reciba los parametros correctos
-    // TODO revisar el componente para pasarle 2 imagen en caso de ser par
+
     return (
         <>
             <RemoveLiquidityDialog
