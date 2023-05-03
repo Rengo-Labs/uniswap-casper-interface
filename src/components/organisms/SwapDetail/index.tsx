@@ -93,6 +93,7 @@ const SwapDetail = ({
                 showChart0={showChart0}
                 showChart1={showChart1}
                 charWidth={container?.clientWidth}
+                tabDefault={2}
                 />
         </>
     )

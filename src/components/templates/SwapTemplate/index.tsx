@@ -50,7 +50,7 @@ export const SwapTemplate = ({isMobile}) => {
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0);
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<number>(0);
     const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] =
-        useState<string>('');
+        useState<string>('Low Price Impact');
     const [priceImpact, priceImpactSetter] = useState<number | string>(0);
     const { slippageTolerance, updateSlippageTolerance } = globalStore()
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
