@@ -152,26 +152,27 @@ const Layout = ({children}: ILayoutProps) => {
     ]
 
     const WALLETS_DATA = [
+        // TODO we will add ledger wallet later, first option is casper wallet
         {
             id: 1,
-            name: 'Casper Signer',
-            icon: casperWallet,
-            onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
-        },
-        {
-            id: 2,
             name: 'Casper Wallet',
             icon: casperWallet,
             onConnect: () => onConnectWallet(WalletName.CASPER_WALLET)
         },
         {
-            id: 3,
-            name: 'Ledger',
-            icon: ledgerWallet,
+            id: 2,
+            name: 'Casper Signer',
+            icon: casperWallet,
             onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
         },
+        // {
+        //     id: 3,
+        //     name: 'Ledger',
+        //     icon: ledgerWallet,
+        //     onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
+        // },
         {
-            id: 4,
+            id: 3,
             name: 'Torus Wallet',
             icon: torusWallet,
             onConnect: () => onConnectWallet(WalletName.TORUS)
