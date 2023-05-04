@@ -105,8 +105,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     const clearUserTokensData = async () => {
-        Object.keys(tokenState).map((x) => {
-            if (tokenState[x].contractHash) {
+        Object.keys(tokenState.tokens).map((x) => {
+            if (tokenState.tokens[x].contractHash) {
                 tokenDispatch({
                     type: TokenActions.LOAD_ALLOWANCE,
                     payload: {
