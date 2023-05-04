@@ -203,6 +203,7 @@ const Layout = ({children}: ILayoutProps) => {
                     labelText: "",
                     variant: ToggleVariant.ThemeSwitcher,
                 }}
+                handleRedirect={() => navigate("/")}
             />
             <WalletConnection
                 closeCallback={() => setShowConnectionPopup(!showConnectionPopup)}
