@@ -255,6 +255,18 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                     ),
                 },
             })
+
+            pairDispatch({
+                type: PairActions.LOAD_PAIR_USD,
+                payload: {
+                    name: pair.name,
+                    token0Price: "0",
+                    token1Price: "0",
+                    balance: convertBigNumberToUIString(
+                      new BigNumber(0)
+                    ),
+                },
+            })
         }
     }
 
