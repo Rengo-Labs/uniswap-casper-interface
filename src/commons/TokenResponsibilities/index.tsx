@@ -187,7 +187,6 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
             })
         }
-        console.log(_filteredTokens)
         return _filteredTokens.map((token) => {
             const {chainId, symbol, name, amount, logoURI}: any = token;
             return (
