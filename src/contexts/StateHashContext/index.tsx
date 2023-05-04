@@ -41,25 +41,19 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     }, [stateHash, walletState])
 
     const loadUserData = useCallback(async () => {
-        if (!walletState?.wallet) {
-            // TODO clean data, check pool page
-            resetPairs()
-            resetTokens()
 
-            return;
-        }
-        const isConnected = walletState.wallet.isConnected
+        const isConnected = walletState.wallet?.isConnected ?? false
         if (walletState?.wallet) {
             await loadUserPairsData(walletState?.wallet, isConnected)
             await loadTokensBalance(walletState?.wallet, isConnected)
         }
         // TODO this part of code delays more than reset data
-        //else {
-            //await clearUserPairsData(pairState)
-            //await clearTokensBalance(tokenState)
-        //}
+        else {
+            await clearUserPairsData(pairState)
+            await clearTokensBalance(tokenState)
+        }
         previousQuery()
-    }, [stateHash, walletState])
+    }, [stateHash, walletState.wallet?.isConnected])
 
     // TODO call this function on manual refresh
     const refresh = async () => {
@@ -75,7 +69,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         }
 
         loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
-    },  [stateHash, walletState?.wallet])
+    },  [stateHash, walletState?.wallet?.isConnected])
 
     const getRootHash = useCallback(async () => {
         const rootHash = await getLatestRootHash()
