@@ -1,11 +1,11 @@
 import React, {useContext} from "react";
 import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
-import {Settings, WalletConnectedOptions, WalletConnection, Notification} from "rengo-ui-kit";
+import {Settings, WalletConnectedOptions, WalletConnection} from "rengo-ui-kit";
 import casperWallet from "../../../assets/newDesignIcons/casper-wallet.svg";
 import {WalletName} from "../../../commons";
 import torusWallet from "../../../assets/newDesignIcons/torus-wallet.svg";
-import {globalStore, notificationStore} from "../../../store/store";
+import {globalStore} from "../../../store/store";
 import lineBreakIcon from "../../../assets/newDesignIcons/linkbreak.svg";
 export const PopupsContainer = () => {
     const {

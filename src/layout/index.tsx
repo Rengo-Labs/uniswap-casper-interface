@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {Menu, UIProviderContext, ToggleVariant, WalletConnection, useDeviceType, Settings, WalletConnectedOptions} from "rengo-ui-kit";
+import {Menu, UIProviderContext, ToggleVariant, useDeviceType} from "rengo-ui-kit";
 import {createGlobalStyle} from 'styled-components';
 import {useNavigate} from "react-router-dom";
 import casperIcon from "../assets/newDesignIcons/casperIcon.svg";
@@ -9,13 +9,9 @@ import balanceIcon from "../assets/newDesignIcons/wallet.svg";
 import poolIcon from "../assets/newDesignIcons/pool-icon.svg";
 import settingIcon from "../assets/newDesignIcons/setting-icon.svg";
 import casperWallet from "../assets/newDesignIcons/casper-wallet.svg";
-import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
-import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
 import casperLogo from "../assets/newDesignIcons/type_logo.svg";
-import lineBreakIcon from "../assets/newDesignIcons/linkbreak.svg";
 import {ChildrenContainer, Container} from "./styles";
 import {WalletProviderContext} from "../contexts/WalletContext";
-import {WalletName} from "../commons";
 import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
 import {ConfigProviderContext} from "../contexts/ConfigContext";
 export interface ILayoutProps {
