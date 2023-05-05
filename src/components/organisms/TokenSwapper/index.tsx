@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {formatNaN, getListPath, Token} from '../../../commons';
-import { globalStore } from '../../../store/store';
+import {formatNaN, Token} from '../../../commons';
 import isCSPRValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
@@ -16,7 +15,6 @@ interface TokenSwapperProps {
   getProgress,
   refresh,
   calculateUSDtokens,
-  pairState,
   firstTokenSelected,
   secondTokenSelected,
   onSelectFirstToken,
@@ -43,7 +41,6 @@ const TokenSwapper = ({
                         getProgress,
                         refresh,
                         calculateUSDtokens,
-                        pairState,
                         firstTokenSelected,
                         secondTokenSelected,
                         onSelectFirstToken,
@@ -62,7 +59,6 @@ const TokenSwapper = ({
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
-  const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
   const [exchangeRateA, exchangeRateASetter] = useState<number>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -73,8 +69,6 @@ const TokenSwapper = ({
   const [lastChanged, setLastChanged] = useState('A');
   const [valueAUSD, setValueAUSD] = useState('0.00');
   const [valueBUSD, setValueBUSD] = useState('0.00');
-
-  const { slippageTolerance, updateSlippageTolerance } = globalStore()
 
   useEffect(() => {
     const t0 = searchParams.get('token0');

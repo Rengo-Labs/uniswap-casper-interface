@@ -71,6 +71,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         firstLiquidity: '0',
         firstRate: '0',
         firstHash: '',
+        decimals: 9,
         secondIcon: '',
         secondName: 'WETH',
         secondSymbol: 'WETH',
@@ -122,9 +123,9 @@ export const LiquidityTemplate = ({isMobile}) => {
         const secondAmount = new BigNumber(removeLiquidityData.secondLiquidity).multipliedBy(inputPercent)
         const newVar = (prevState) => ({
             ...prevState,
-            lpAmount: lpAmount.toNumber().toFixed(8),
-            firstAmount: firstAmount.toNumber().toFixed(8),
-            secondAmount: secondAmount.toNumber().toFixed(8),
+            lpAmount: lpAmount.toNumber().toFixed(removeLiquidityData.decimals),
+            firstAmount: firstAmount.toNumber().toFixed(removeLiquidityData.decimals),
+            secondAmount: secondAmount.toNumber().toFixed(removeLiquidityData.decimals),
             allowance: lpAmount.toNumber() - removeLiquidityData.allowance
         });
 
@@ -188,7 +189,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                 secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
                 secondLiquidity: item.reserve1,
                 secondRate: '',
-                secondHash: item.contract1
+                secondHash: item.contract1,
+                decimals: item.decimals
             }
             setRemoveLiquidityData((prevState) => ({
                 ...prevState,
