@@ -46,8 +46,8 @@ export const calculateSwapDetails = async (
   try {     
       const isA2B = token.symbol == tokenA.symbol
 
-      const liquidityA = new BigNumber(reserve0)
-      const liquidityB = new BigNumber(reserve1)
+      const liquidityA = new BigNumber(reserve0).times(10 ** tokenA.decimals)
+      const liquidityB = new BigNumber(reserve1).times(10 ** token.decimals)
       const inputValue = new BigNumber(inputValueRaw).times(10 ** 9)
       const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
 
