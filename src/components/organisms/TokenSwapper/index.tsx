@@ -140,8 +140,9 @@ const TokenSwapper = ({
     );
     calculateUSDValues(value, tokensToTransfer, firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, exchangeRateA, exchangeRateB, firstTokenSelected.symbolPair)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
-
-    handleValidate(typeof value === "number" ? value : parseFloat(value), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0);
+    if(value) {
+        handleValidate(typeof value === "number" ? value : parseFloat(value), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0);
+    }
   }
 
   async function changeTokenB(value) {
@@ -165,8 +166,9 @@ const TokenSwapper = ({
 
     calculateUSDValues(value, tokensToTransfer, firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, exchangeRateA, exchangeRateB, secondTokenSelected.symbolPair)
     amountSwapTokenASetter(formatNaN(tokensToTransfer))
-
-    handleValidate(parseFloat(tokensToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0)
+    if(tokensToTransfer) {
+        handleValidate(parseFloat(tokensToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0)
+    }
   }
 
   const handleChangeA = async (e) => {
