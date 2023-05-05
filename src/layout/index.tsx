@@ -69,10 +69,10 @@ const Layout = ({children}: ILayoutProps) => {
     const [showWalletOptions, setShowWalletOptions] = useState(false);
 
     const handleSettings = () => {
-        setShowSettings(!showSettings);
+        setShowSettings(true);
     }
     const handleWalletOptions = () => {
-        setShowWalletOptions(!showWalletOptions);
+        setShowWalletOptions(false);
     }
 
     useEffect(() => {
@@ -206,13 +206,13 @@ const Layout = ({children}: ILayoutProps) => {
                 handleRedirect={() => navigate("/")}
             />
             <WalletConnection
-                closeCallback={() => setShowConnectionPopup(!showConnectionPopup)}
+                closeCallback={() => setShowConnectionPopup(false)}
                 wallets={WALLETS_DATA}
                 isOpen={showConnectionPopup}
             />
             <Settings
                 isOpen={showSettings}
-                handleClose={handleSettings}
+                handleClose={() => setShowSettings(false)}
                 handleSave={() => console.log("Guardar")}
                 customNodeUrlValue=''
                 slippageToleranceValue={0.5}
