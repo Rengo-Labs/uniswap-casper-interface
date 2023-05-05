@@ -12,7 +12,7 @@ export interface INotification {
   subtitle?: string;
   type: NotificationType;
   show: boolean;
-  chargerBar?: boolean;
+  isOnlyNotification?: boolean;
   timeToClose?: number;
   onClose?: () => void;
 }

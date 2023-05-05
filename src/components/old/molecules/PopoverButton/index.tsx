@@ -52,7 +52,7 @@ export const PopoverButton = ({
       title: 'Copied.',
       subtitle: '',
       show: true,
-      chargerBar: true,
+      isOnlyNotification: true,
       timeToClose: 5,
     });
   };

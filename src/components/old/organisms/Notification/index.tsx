@@ -17,7 +17,7 @@ export const NotificationSystem = () => {
           subtitle={notification.subtitle}
           type={notification.type}
           onClose={onClose}
-          chargerBar={notification.chargerBar}
+          //chargerBar={notification.chargerBar}
           timeToClose={notification.timeToClose}
         />
       )}

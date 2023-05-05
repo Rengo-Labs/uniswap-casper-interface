@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext} from "react";
 import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
 import {Settings, WalletConnectedOptions, WalletConnection, Notification} from "rengo-ui-kit";

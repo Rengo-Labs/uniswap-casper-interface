@@ -10,7 +10,7 @@ export type RecipientType = CLPublicKey | CLAccountHash | CLByteArray;
 
 /**
  * Convert a publickey into a CLKey
- * 
+ *
  * @param recipient public key of recipient
  * @returns a CLKey encoding the public key
  */

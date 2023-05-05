@@ -67,7 +67,7 @@ export const SwapTemplate = ({isMobile}) => {
     ])
 
     useEffect(() => {
-        handleGetChartData().then(() => console.log('chart data updated'))
+        handleGetChartData().then(() => console.log('chart updated'))
     }, [firstTokenSelected, secondTokenSelected])
 
     const handleChangeGasFee = (value) => {

@@ -4,7 +4,7 @@ import React, {
   ReactNode, useContext,
   useState,
 } from 'react';
-import { NODE_ADDRESS, NotificationType } from '../../constant';
+import {NODE_ADDRESS, NotificationType, SUPPORTED_NETWORKS} from '../../constant';
 
 const NETWORK_NAME = Network.CASPER_TESTNET;
 
@@ -37,6 +37,10 @@ export interface ConfigContext {
   setProgressModal?: (visible: boolean) => void;
   setConfirmModal?: (visible: boolean) => void;
   adjustedGas?: (baseGas, symbolA, symbolB, numberHop) => number
+  showSettings?: boolean
+  setShowSettings?: (visible: boolean) => void
+  showWalletOptions?: boolean
+  setShowWalletOptions?: (visible: boolean) => void
 }
 export interface PairReserves {
   reserve0: BigNumber.Value
@@ -61,20 +65,24 @@ export const ConfigContextWithReducer = ({
   const [progressModal, setProgressModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
   const [linkExplorer, setLinkExplorer] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
+  const [showWalletOptions, setShowWalletOptions] = useState(false);
+
   const { updateNotification } = notificationStore();
 
   const {slippageToleranceSelected } = walletState;
 
   async function onIncreaseAllow(
     amount: number | string,
-    contractHash: string
-  ): Promise<boolean> {
+    contractHash: string,
+): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
       title: 'Increasing allowance.',
       subtitle: '',
       show: true,
-      chargerBar: false
+      isOnlyNotification: false,
+      timeToClose: 100000
     });
 
     try {
@@ -86,28 +94,46 @@ export const ConfigContextWithReducer = ({
       );
 
       setProgressModal(true);
-      setLinkExplorer(`https://testnet.cspr.live/deploy/${deployHash}`);
+      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
+      setLinkExplorer(deployUrl);
+
+      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
+      updateNotification({
+        type: NotificationType.Info,
+        title: 'Processing...',
+        subtitle: notificationMessage,
+        show: true,
+        isOnlyNotification: false,
+        timeToClose: 300000
+      });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
+      console.log('#### waitForDeployExecution onIncreaseAllow #####', result);
+
+        if (result) {
+            updateNotification({
+              type: NotificationType.Success,
+              title: 'Processing...',
+              subtitle: 'Your deploy was successful',
+              show: true,
+              isOnlyNotification: false,
+              timeToClose: 5000
+            });
+      }
       setProgressModal(false);
       setConfirmModal(true);
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Success',
-        subtitle: '',
-        show: true,
-        chargerBar: true
-      });
       refresh(walletState.wallet);
       return true;
     } catch (err) {
-      setProgressModal(false);
+        console.log('####  onIncreaseAllow err#####', err);
+        setProgressModal(false);
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        chargerBar: true
+        isOnlyNotification: false,
+        timeToClose: 5000
       });
       refresh(walletState.wallet);
       return false;
@@ -133,7 +159,11 @@ export const ConfigContextWithReducer = ({
         confirmModal,
         linkExplorer,
         progressModal,
-        adjustedGas
+        adjustedGas,
+        showSettings,
+        setShowSettings,
+        showWalletOptions,
+        setShowWalletOptions
       }}
     >
       {children}

@@ -17,8 +17,7 @@ import {ChildrenContainer, Container} from "./styles";
 import {WalletProviderContext} from "../contexts/WalletContext";
 import {WalletName} from "../commons";
 import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
-import {globalStore} from "../store/store";
-
+import {ConfigProviderContext} from "../contexts/ConfigContext";
 export interface ILayoutProps {
     children?: React.ReactElement;
 }
@@ -57,42 +56,30 @@ const Layout = ({children}: ILayoutProps) => {
     const [rightAction, setRightAction] = useState(rightActionInit);
 
     const {
-        onConnectWallet,
-        onDisconnectWallet,
         isConnected,
-        showConnectionPopup,
         setShowConnectionPopup,
         walletState
     } = useContext(WalletProviderContext);
 
-    const { slippageTolerance, updateSlippageTolerance, nodeUrl, updateNodeUrl } = globalStore()
+    const {
+        showSettings,
+        setShowSettings,
+        showWalletOptions,
+        setShowWalletOptions,
+    } = useContext(ConfigProviderContext);
 
     const deviceType = useDeviceType()
     const isMobile = deviceType === 'mobile'
 
-    const [showSettings, setShowSettings] = useState(false);
-    const [showWalletOptions, setShowWalletOptions] = useState(false);
 
     const handleShowSettings = () => {
         setShowSettings(!showSettings);
     }
 
-    const handleShowWallet = () => {
-        setShowConnectionPopup(!showConnectionPopup)
-    }
     const handleWalletOptions = () => {
         setShowWalletOptions(!showWalletOptions);
     }
 
-    const handleDisconnectWallet = async () => {
-        await onDisconnectWallet();
-    }
-
-    const handleSaveSettings = (slippageTolerance, customNodeUr) => {
-        updateSlippageTolerance(slippageTolerance)
-        updateNodeUrl(customNodeUr)
-        handleShowSettings()
-    }
 
     useEffect(() => {
         const height = menuRef.current?.offsetHeight;
@@ -117,67 +104,6 @@ const Layout = ({children}: ILayoutProps) => {
         }
     }, [isConnected])
 
-    const WALLET_CONNECTED_OPTIONS = [
-        // TODO commented out for now, will be added later
-        // {
-        //     id: 'dmx0031b2b421',
-        //     key: 'account',
-        //     name: 'My Account',
-        //     iconName: 'Copy',
-        //     type: 'Redirect',
-        // },
-        {
-            id: '3d23f23xxx88nf',
-            key: 'wallet',
-            name: walletState.walletAddress,
-            iconName: 'Copy',
-            type: 'copy',
-        },
-        // {
-        //     id: '1x9x9900jjwoa',
-        //     key: 'transactions',
-        //     name: 'Recent Transactions',
-        //     iconName: 'Clock',
-        //     type: 'redirect',
-        // },
-        {
-            id: '0zokxj8h82nndl',
-            key: 'disconnect',
-            name: 'Disconnect Wallet',
-            iconName: '',
-            icon: lineBreakIcon,
-            type: 'redirect',
-            onClick: () => handleDisconnectWallet()
-        },
-    ]
-
-    const WALLETS_DATA = [
-        // TODO we will add ledger wallet later, first option is casper wallet
-        {
-            id: 1,
-            name: 'Casper Wallet',
-            icon: casperWallet,
-            onConnect: () => onConnectWallet(WalletName.CASPER_WALLET)
-        },
-        {
-            id: 2,
-            name: 'Casper Signer',
-            icon: casperWallet,
-            onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
-        },
-        // {
-        //     id: 3,
-        //     name: 'Ledger',
-        //     icon: ledgerWallet,
-        //     onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
-        // },
-        {
-            id: 3,
-            name: 'Torus Wallet',
-            icon: torusWallet,
-            onConnect: () => onConnectWallet(WalletName.TORUS)
-        },
-    ]
 
 
     const routes = [
@@ -213,11 +139,6 @@ const Layout = ({children}: ILayoutProps) => {
         },
     ];
 
-    const handleExternalLink = () => {
-        const link = "https://docs.casperswap.xyz/the-casperswap-protocol-1/how-to-make-a-swap-on-casperswap"
-        window.open(link, '_blank')
-    }
-
     return (
         <Container selectedTheme={selectedTheme}>
             <GlobalStyle selectedTheme={selectedTheme}/>
@@ -237,24 +158,7 @@ const Layout = ({children}: ILayoutProps) => {
                 }}
                 handleRedirect={() => navigate("/")}
             />
-            <WalletConnection
-                closeCallback={handleShowWallet}
-                wallets={WALLETS_DATA}
-                isOpen={showConnectionPopup}
-                linkCallback={handleExternalLink}
-            />
-            <Settings
-                isOpen={showSettings}
-                handleClose={handleShowSettings}
-                handleSave={handleSaveSettings}
-                customNodeUrlValue={nodeUrl}
-                slippageToleranceValue={slippageTolerance}
-            />
-            <WalletConnectedOptions
-                closeCallback={handleWalletOptions}
-                options={WALLET_CONNECTED_OPTIONS as any[]}
-                isOpen={showWalletOptions}
-            />
+
             <ChildrenContainer
                 menuHeight={menuHeight}
                 isMobile={isMobile}>

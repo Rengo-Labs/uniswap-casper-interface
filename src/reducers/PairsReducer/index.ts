@@ -324,6 +324,7 @@ export type PairActionLoadPairUSDPayLoad = {
   name: string,
   token0Price: string,
   token1Price: string,
+  isWalletConnected: boolean,
 }
 
 export type PairActionChangePriorityPayLoad = {

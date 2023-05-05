@@ -86,7 +86,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       title: 'Adding liquidity.',
       subtitle: '',
       show: true,
-      chargerBar: false,
+      isOnlyNotification: false,
     });
     try {
       const [deployHash, deployResult] = await signAndDeployAddLiquidity(
@@ -104,20 +104,37 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       );
 
       setProgressModal(true);
-      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
+      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
+      setLinkExplorer(deployUrl);
+
+
+      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
+      updateNotification({
+        type: NotificationType.Info,
+        title: 'Processing...',
+        subtitle: notificationMessage,
+        show: true,
+        isOnlyNotification: false,
+        timeToClose: 300000
+      });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
+      if (result) {
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'Processing...',
+          subtitle: 'Your deploy was successful',
+          show: true,
+          isOnlyNotification: false,
+          timeToClose: 5000
+        });
+      }
+
+      await refresh();
       setProgressModal(false);
       setConfirmModal(true);
 
       await refresh();
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Success.',
-        subtitle: '',
-        show: true,
-        chargerBar: true,
-      });
       return true;
     } catch (err) {
       setProgressModal(false);
@@ -129,7 +146,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        chargerBar: true,
+        isOnlyNotification: false,
       });
       return false;
     }
@@ -150,7 +167,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       title: 'Removing liquidity',
       subtitle: '',
       show: true,
-      chargerBar: false,
+      isOnlyNotification: false,
     });
 
     try {
@@ -174,30 +191,39 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
 
       const result = await casperClient.waitForDeployExecution(deployHash);
+
+      console.log('#### waitForDeployExecution remove liquidity #####', result)
+
+      if (result) {
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'Liquidity correctly removed.',
+          subtitle: '',
+          show: true,
+          isOnlyNotification: false,
+          timeToClose: 5000
+        });
+      }
+
       setProgressModal(false);
       setConfirmModal(true);
 
       await sleep(15000);
       await refresh();
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Success.',
-        subtitle: '',
-        show: true,
-        chargerBar: true,
-      });
+
       return true;
     } catch (err) {
       setProgressModal(false);
-      dismissNotification();
+      //dismissNotification();
       await refresh();
-      console.log('onRemoveLiquidity');
+      console.log('#### onRemoveLiquidity#####', err);
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        chargerBar: true,
+        isOnlyNotification: false,
+        timeToClose: 5000
       });
       return false
     }

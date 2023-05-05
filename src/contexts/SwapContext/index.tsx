@@ -61,14 +61,13 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
   ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
-      title: 'Swapping.',
-      subtitle: '',
+      title: 'Processing...',
+      subtitle: 'Checking the progress of your deploy',
       show: true,
-      chargerBar: false
+      isOnlyNotification: false,
+      timeToClose: 100000
     });
     try {
-
-
       const [deployHash, deployResult] = await signAndDeploySwap(
         apiClient,
         casperClient,
@@ -84,30 +83,48 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       );
 
       setProgressModal(true);
-      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
+
+      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
+      setLinkExplorer(deployUrl);
+
+      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
+      updateNotification({
+        type: NotificationType.Info,
+        title: 'Processing...',
+        subtitle: notificationMessage,
+        show: true,
+        isOnlyNotification: false,
+        timeToClose: 300000
+      });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
+      console.log('### waitForDeployExecution onConfirmSwapConfig ###', result)
+
+      if (result) {
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'Processing...',
+          subtitle: 'Your deploy was successful',
+          show: true,
+          isOnlyNotification: false,
+          timeToClose: 5000
+        });
+      }
 
       setProgressModal(false);
       setConfirmModal(true);
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Success.',
-        subtitle: '',
-        show: true,
-        chargerBar: true
-      });
+
       await refresh();
       return true;
     } catch (err) {
       setProgressModal(false);
-      console.log('onConfirmSwapConfig');
+      console.log('###  onConfirmSwapConfig  ###', err)
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        chargerBar: true
+        isOnlyNotification: false
       });
       return false;
     }

@@ -27,8 +27,8 @@ export const notificationStore = create(
             subtitle: '',
             type: NotificationType.Success,
             show: false,
-            chargerBar: true,
-            timeToClose: 20,
+            isOnlyNotification: false,
+            timeToClose: 5000,
             onClose: () => {
             },
         },
