@@ -187,8 +187,19 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         refundCSPR
       );
 
+      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);
-      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
+      setLinkExplorer(deployUrl);
+
+      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
+      updateNotification({
+        type: NotificationType.Info,
+        title: 'Processing...',
+        subtitle: notificationMessage,
+        show: true,
+        isOnlyNotification: true,
+        timeToClose: 300000
+      });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
 
