@@ -257,11 +257,11 @@ const TokenSwapper = ({
     if (openPoolDialog.firstSelector) {
       onSelectFirstToken(token)
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, secondTokenSelected, amountSwapTokenA, token)
-      amountSwapTokenBSetter(formatNaN(tokensToTransfer))
+      amountSwapTokenASetter(formatNaN(tokensToTransfer))
     } else {
       onSelectSecondToken(token)
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, firstTokenSelected, amountSwapTokenB, token)
-      amountSwapTokenASetter(formatNaN(tokensToTransfer))
+      amountSwapTokenBSetter(formatNaN(tokensToTransfer))
     }
     setOpenPoolDialog(prevState => ({...prevState, open: false}))
   }

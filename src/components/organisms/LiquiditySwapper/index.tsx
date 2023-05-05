@@ -237,7 +237,7 @@ const LiquiditySwapper = ({
   };
 
   const selectAndCloseToken = async (token: Token) => {
-    openPoolDialog.firstSelector ? selectAndCloseTokenA(token) : selectAndCloseTokenB(token)
+    openPoolDialog.firstSelector ? selectAndCloseTokenB(token) : selectAndCloseTokenA(token)
     setOpenPoolDialog(prevState => ({...prevState, open: false}))
   }
 
