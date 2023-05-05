@@ -136,7 +136,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           ...item,
           isFavorite: !isFavorite
         }
-        
+
       }
       return item
     })
@@ -152,10 +152,10 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const handleFavorite = (name: string) => {
     const currentPersistedData: string[] = getLocalStorageData("pool");
     const isPresent = currentPersistedData.includes(name)
- 
+
     updateTableData(name, isPresent)
     setPoolDetailRow({...poolDetailRow, isFavorite: !isPresent })
-    
+
     updateLocalStorage(name, currentPersistedData, isPresent)
   };
 
@@ -172,7 +172,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
             handleSearch={setQuery}
             handleReloadButton={async () => clearProgress()}
             getProgress={() => getProgress}
-            clearProgress={() => console.log("clear progress pending")}
+            clearProgress={async () => refresh()}
           />
 
           <PoolTable

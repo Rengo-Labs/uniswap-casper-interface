@@ -196,7 +196,7 @@ export const WalletContext = ({
         title: 'No main purse detected',
         subtitle: 'Add CSPR to the wallet before proceeding.',
         show: true,
-        chargerBar: false
+        isOnlyNotification: true
       });
 
       debounceConnect = false;
@@ -225,18 +225,20 @@ export const WalletContext = ({
     }
 
     try {
-      const ret = await connect(name, new BigNumber(0));
-
-      if (!ret.isConnected) {
-        return;
-      }
       updateNotification({
         type: NotificationType.Loading,
         title: 'Connecting to your wallet...',
         subtitle: '',
         show: true,
-        chargerBar: false
+        isOnlyNotification: true,
+        timeToClose: 5000,
       });
+
+      const ret = await connect(name, new BigNumber(0));
+
+      if (!ret.isConnected) {
+        return;
+      }
 
       dispatch({
         type: ConfigActions.SELECT_MAIN_PURSE,
@@ -253,8 +255,8 @@ export const WalletContext = ({
         title: 'Connected',
         subtitle: '',
         show: true,
-        timeToClose: 10,
-        chargerBar: true
+        timeToClose: 5000,
+        isOnlyNotification: true
       });
     } catch (err) {
       log.error(`onConnectWallet error: ${err}`);
@@ -269,7 +271,7 @@ export const WalletContext = ({
           title: 'This wallet is not installed.',
           subtitle: '',
           show: true,
-          chargerBar: true
+          isOnlyNotification: true
         })
         return;
       }
@@ -280,9 +282,32 @@ export const WalletContext = ({
           title: 'Main purse does not exist, send CSPR to your wallet first',
           subtitle: '',
           show: true,
-          chargerBar: true
+          isOnlyNotification: true
         })
         return
+      }
+      // TODO: Casper Wallet is locked
+      if (err.message === 'Wallet is locked.') {
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'Wallet is locked',
+          subtitle: 'Please unlock your wallet first',
+          show: true,
+          isOnlyNotification: true
+        })
+        return
+      }
+
+      if (err.message.includes('Please install the Casper')){
+        console.log('err', err.message)
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'This wallet is not installed.',
+          subtitle: err.message,
+          show: true,
+          isOnlyNotification: true
+        })
+        return;
       }
 
       updateNotification({
@@ -290,7 +315,7 @@ export const WalletContext = ({
         title: 'Ooops we have an error',
         subtitle: '',
         show: true,
-        chargerBar: true
+        isOnlyNotification: true
       });
     }
   }
@@ -362,8 +387,8 @@ export const WalletContext = ({
             title: 'Your wallet is disconnected',
             subtitle: '',
             show: true,
-            timeToClose: 5,
-            chargerBar: true
+            timeToClose: 5000,
+            isOnlyNotification: true
           });
       }
     } catch (error) {
@@ -372,8 +397,8 @@ export const WalletContext = ({
         title: 'Error disconnecting wallet',
         subtitle: '',
         show: true,
-        timeToClose: 10,
-        chargerBar: true
+        timeToClose: 6000,
+        isOnlyNotification: true
       });
     }
   }

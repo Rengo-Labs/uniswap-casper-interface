@@ -19,6 +19,16 @@ interface SwapDetailProps {
     secondSymbolToken: string,
     secondTokenAmount: number,
     slippageSetter: any
+    chartData: any[]
+    xAxisName: string
+    todayPrice: string
+    yesterdayPrice: string
+    chart0Name: string
+    chart1Name: string
+    onClickButton0: () => void
+    onClickButton1: () => void
+    showChart0: boolean
+    showChart1: boolean
 }
 
 const SwapDetail = ({
@@ -38,9 +48,19 @@ const SwapDetail = ({
                         priceImpactMessage,
                         secondSymbolToken,
                         secondTokenAmount,
-                        slippageSetter
+                        slippageSetter,
+                        chartData,
+                        xAxisName,
+                        todayPrice,
+                        yesterdayPrice,
+                        chart0Name,
+                        chart1Name,
+                        onClickButton0,
+                        onClickButton1,
+                        showChart0,
+                        showChart1
                     }: SwapDetailProps) => {
-    // TODO we need to get all the information and connect with the components
+    const container = document.getElementById('swap-tabs');
     return (
         <>
             <SwapTabs
@@ -61,7 +81,20 @@ const SwapDetail = ({
                 secondSymbolToken={secondSymbolToken}
                 secondTokenAmount={secondTokenAmount}
                 slippageSetter={slippageSetter}
-            />
+                //chart
+                graphicData={chartData}
+                todayPrice={todayPrice}
+                yesterdayPrice={yesterdayPrice}
+                xAxisName={xAxisName}
+                chart0Name={chart0Name}
+                chart1Name={chart1Name}
+                onClickButton0={onClickButton0}
+                onClickButton1={onClickButton1}
+                showChart0={showChart0}
+                showChart1={showChart1}
+                charWidth={container?.clientWidth}
+                tabDefault={2}
+                />
         </>
     )
 }

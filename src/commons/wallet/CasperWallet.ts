@@ -8,11 +8,12 @@ import {
 } from 'casper-js-sdk'
 
 import {
-  Wallet, 
+  Wallet,
 } from './Wallet'
 
 import { Network, WalletName } from './types'
 import { NODE_ADDRESS } from '../../constant'
+import {globalStore} from "../../store/store";
 
 export const CASPER_WALLET_PUB_KEY = 'cw-pubk'
 
@@ -100,9 +101,9 @@ export class CasperWallet implements Wallet{
     return this._publicKey?.toAccountHashStr() ?? ''
   }
 
-  /** 
+  /**
    * Async try and connect to the current wallet
-   * 
+   *
    * @returns the the public key on success or throw error
    */
   async connect(): Promise<string> {
@@ -199,9 +200,9 @@ export class CasperWallet implements Wallet{
     }
   }
 
-  /** 
+  /**
    * Async try and read the active key
-   * 
+   *
    * @returns the the public key hex on success or throw error
    */
   async getActiveKey(): Promise<string> {
@@ -216,10 +217,10 @@ export class CasperWallet implements Wallet{
 
     return key
   }
-  
-  /** 
+
+  /**
    * Async try and disconnect from the current wallet
-   * 
+   *
    * @returns a promise for pass/fail
    */
   async disconnect(): Promise<void> {
@@ -231,7 +232,7 @@ export class CasperWallet implements Wallet{
       return this.getCasperWalletInstance().disconnectFromSite();
     } catch (err) {
       log.error(`Casper Signer - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
-      
+
       // rethrow error
       throw err
     }
@@ -239,9 +240,9 @@ export class CasperWallet implements Wallet{
 
   /**
    * Sign a deploy
-   * 
+   *
    * @params deploy Deploy to sign
-   * 
+   *
    * @returns a signed deploy
    */
   async sign(deploy: DeployUtil.Deploy): Promise<DeployUtil.Deploy> {
@@ -262,17 +263,19 @@ export class CasperWallet implements Wallet{
       throw err
     }
   }
-  
+
   /**
    * Deploy a signed deploy
-   * 
+   *
    * @params deploy Signed deploy to deploy
-   * 
+   *
    * @returns a deploy hash
    */
   async deploy(signedDeploy: DeployUtil.Deploy): Promise<string> {
     try {
-      const casperService = new CasperServiceByJsonRPC(NODE_ADDRESS)
+      // TODO: check if the node url global store is set
+      const nodeUrl = globalStore.getState().nodeUrl;
+      const casperService = new CasperServiceByJsonRPC(nodeUrl || NODE_ADDRESS)
       return (await casperService.deploy(signedDeploy)).deploy_hash
     } catch (err) {
       log.error(`Casper Signer - signAndDeploy error: ${err}`)

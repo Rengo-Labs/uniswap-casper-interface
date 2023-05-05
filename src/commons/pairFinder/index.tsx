@@ -121,7 +121,7 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
                 subtitle: '',
                 show: true,
                 timeToClose: 10,
-                chargerBar: true
+                isOnlyNotification: true
             })
             throw new Error('path not found')
         }

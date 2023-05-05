@@ -7,6 +7,11 @@ import {Wallet} from "../wallet";
 import {Token} from "../api";
 import {pairFinder} from "../pairFinder";
 import {PairState} from "../../reducers/PairsReducer";
+import {
+    getBalanceProfitByContractHash,
+    getHistoricalTokenPricesByPackageHash,
+    TokenProfit
+} from "../api/ApolloQueries";
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
@@ -55,7 +60,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                                   payload: {
                                       name: x,
                                       allowance: convertBigNumberToUIString(
-                                        new BigNumber(response)
+                                        new BigNumber(response),
+                                        token.decimals
                                       ),
                                   },
                               });
@@ -73,7 +79,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                                   payload: {
                                       name: x,
                                       amount: convertBigNumberToUIString(
-                                        new BigNumber(response)
+                                        new BigNumber(response),
+                                        token.decimals
                                       ),
                                   },
                               });
@@ -100,8 +107,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     const clearUserTokensData = async () => {
-        Object.keys(tokenState).map((x) => {
-            if (tokenState[x].contractHash) {
+        Object.keys(tokenState.tokens).map((x) => {
+            if (tokenState.tokens[x].contractHash) {
                 tokenDispatch({
                     type: TokenActions.LOAD_ALLOWANCE,
                     payload: {
@@ -160,20 +167,11 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     //TODO adjust the response from the UI KIT to manage the same structure here
-    const filterPopupTokens = (tokensToExclude: any[]): any[] => {
+    const filterPopupTokens = (tokensToExclude: any[], position, firstToken: boolean): any[] => {
         let _filteredTokens = Object.values(tokenState.tokens).map((v, k) => v)
         if (tokensToExclude.length > 0) {
-            tokensToExclude.map((symbol) => {
+            tokensToExclude.map((symbol, idx) => {
                 _filteredTokens = _filteredTokens.filter((token) => {
-                    // CSPR <=> WCSPR cases
-                    if (symbol === 'CSPR' && token.symbol === 'WCSPR') {
-                        return
-                    }
-
-                    if (symbol === 'WCSPR' && token.symbol === 'CSPR') {
-                        return
-                    }
-
                     // main case
                     if (symbol !== token.symbol) {
                         return token
@@ -182,7 +180,9 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
             })
         }
-        console.log(_filteredTokens)
+        _filteredTokens = position == 0 && firstToken || position == 1 && !firstToken ?
+          _filteredTokens : _filteredTokens.filter(token => token.symbol !== 'WCSPR')
+
         return _filteredTokens.map((token) => {
             const {chainId, symbol, name, amount, logoURI}: any = token;
             return (
@@ -219,6 +219,54 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         })
     }
 
+    const getHistoricalTokenPrices = async (packageHash: string) => {
+        return getHistoricalTokenPricesByPackageHash(packageHash)
+    }
+
+    const getHistoricalTokensChartPrices = async (packageHash0: string, packageHash1: string) => {
+        const chart0 = await getHistoricalTokenPricesByPackageHash(packageHash0)
+        const chart1 = await getHistoricalTokenPricesByPackageHash(packageHash1)
+
+        const date0 = chart0.map((item) => item?.date)
+        const date1 = chart1.map((item) => item?.date)
+        const dateFiltered = [];
+
+        if (date0.length > date1.length) {
+            date0.map((item) => {
+                dateFiltered.push(item)
+            })
+        } else {
+            date1.map((item) => {
+                dateFiltered.push(item)
+            })
+        }
+
+        const date = dateFiltered.map((item) => {
+            const date = new Date(item)
+            return `${date.getDate()}/${date.getMonth() + 1}`
+        })
+
+        const priceUSD = chart0 && chart0.length ? parseFloat(chart0[0]?.priceUSD).toFixed(2) : 0
+        const percentage = chart0 && chart0.length ? parseFloat(chart0[0]?.percentage).toFixed(2) : 0
+
+        return date.map((item, index) => {
+            const token0price = chart0 && chart0.length && parseFloat(chart0[index]?.priceUSD).toFixed(2) || 0
+            const token1price =  chart1 && chart1.length && parseFloat(chart1[index]?.priceUSD).toFixed(2) || 0
+
+            return {
+                name: item,
+                token0price: token0price,
+                token1price: token1price,
+                priceUSD: priceUSD,
+                percentage: percentage
+            }
+        })
+    }
+
+    const getBalancesProfit = (packageHash: string): Promise<TokenProfit> => {
+        return getBalanceProfitByContractHash(packageHash)
+    }
+
     return {
         loadTokenUSD,
         updateBalances,
@@ -227,7 +275,10 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         onSelectSecondToken,
         onSwitchTokens,
         filterPopupTokens,
-        filterTokenPairsByToken
+        filterTokenPairsByToken,
+        getHistoricalTokenPrices,
+        getBalancesProfit,
+        getHistoricalTokensChartPrices
     }
 
 }

@@ -5,6 +5,7 @@ import wethIcon from "../../assets/swapIcons/wethIcon.svg"
 import wbtcIcon from "../../assets/swapIcons/btc.png"
 import usdtIcon from "../../assets/swapIcons/tether.png"
 import usdcIcon from "../../assets/swapIcons/usdc.png"
+import dwbtc from "../../assets/swapIcons/dwbtc.png"
 
 import { Token } from '../../commons/api'
 
@@ -118,8 +119,22 @@ const RAW_TOKENS: Record<string, Token> = {
     allowance: "0.0000",
     priceUSD: "0.00",
   },
+  dWBTC: {
+    name: "Debug Wrapped BTC",
+    chainId: 1,
+    symbol: "dWBTC",
+    symbolPair: "dWBTC",
+    decimals: 8,
+    contractHash:
+      "hash-27dcb2efc403047a3f9fdad8acf879e3630706c9a38d28b8ef44201b1581fb3e",
+    packageHash:
+      "hash-a3bce716f129605e5c47147976b0053b5632106d184fb6903ae63aa883905af9",
+    logoURI: dwbtc,
+    amount: "0.0000",
+    allowance: "0.0000",
+    priceUSD: "0.00",
+  },
 }
-
 export const TOKENS: Record<string, Token> = {}
 
 Object.values(RAW_TOKENS).map((t) => {
@@ -141,6 +156,7 @@ export enum TokenActions {
   LOAD_ALLOWANCE = "LOAD_ALLOWANCE",
   LOAD_PRICE_USD = "LOAD_PRICE_USD",
   SWITCH_TOKENS = "SWITCH_TOKENS",
+  RESET = "RESET",
 }
 
 export type TokenAction = {
@@ -177,6 +193,8 @@ export type TokenAction = {
   },
 } | {
   type: TokenActions.SWITCH_TOKENS,
+} | {
+    type: TokenActions.RESET,
 }
 
 export function TokenReducer(state: TokenState, action: TokenAction) {
@@ -232,6 +250,8 @@ export function TokenReducer(state: TokenState, action: TokenAction) {
         firstTokenSelected: state.secondTokenSelected,
         secondTokenSelected: state.firstTokenSelected,
       };
+    case TokenActions.RESET:
+        return initialTokenState;
     default:
       return state;
   }

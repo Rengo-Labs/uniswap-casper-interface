@@ -23,6 +23,9 @@ export const ERROR_BLOCKCHAIN = {
   "Error: Contract execution: User error: 73": {
     message: "Error: This function requires first token to be WCSPR."
   },
+  "Error: Contract execution: User error: 74": {
+    message: "Error: Sent token amount exceeds slippage"
+  },
   "Error: Contract execution: User error: 76": {
     message: "Error: Sent token amount exceeds slippage."
   },
@@ -37,7 +40,7 @@ export const ERROR_BLOCKCHAIN = {
   },
   "Error: Contract execution: User error: 83": {
     message: "Error: Deploy timed out."
-  },  
+  },
   "Error: Contract execution: User error: 84": {
     message: "Error: Deploy timed out."
   },
@@ -64,6 +67,12 @@ export const ERROR_BLOCKCHAIN = {
   },
   "Error: Contract execution: User error: 129": {
     message: "Error: address is not added in the whitelist"
+  },
+  "Error: Contract execution: User error: 65533": {
+    message: "Error: The approval amount is less than the current allowance."
+  },
+  "Error: Out of gas error": {
+    message: "Error: Insufficient gas. The gas needs to be increased and greater than 0."
   },
   "invalid BigNumber string (argument=\"value\", value=\"NaN\", code=INVALID_ARGUMENT, version=bignumber/5.1.1)": {
     message: "Error: Deploy argument is missing."

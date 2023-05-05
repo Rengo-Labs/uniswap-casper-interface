@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {Menu, UIProviderContext, ToggleVariant, WalletConnection, useDeviceType, Settings, WalletConnectedOptions} from "rengo-ui-kit";
+import {Menu, UIProviderContext, ToggleVariant, useDeviceType} from "rengo-ui-kit";
 import {createGlobalStyle} from 'styled-components';
 import {useNavigate} from "react-router-dom";
 import casperIcon from "../assets/newDesignIcons/casperIcon.svg";
@@ -9,15 +9,11 @@ import balanceIcon from "../assets/newDesignIcons/wallet.svg";
 import poolIcon from "../assets/newDesignIcons/pool-icon.svg";
 import settingIcon from "../assets/newDesignIcons/setting-icon.svg";
 import casperWallet from "../assets/newDesignIcons/casper-wallet.svg";
-import ledgerWallet from "../assets/newDesignIcons/ledger-wallet.svg";
-import torusWallet from "../assets/newDesignIcons/torus-wallet.svg";
 import casperLogo from "../assets/newDesignIcons/type_logo.svg";
-import lineBreakIcon from "../assets/newDesignIcons/linkbreak.svg";
 import {ChildrenContainer, Container} from "./styles";
 import {WalletProviderContext} from "../contexts/WalletContext";
-import {WalletName} from "../commons";
 import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
-
+import {ConfigProviderContext} from "../contexts/ConfigContext";
 export interface ILayoutProps {
     children?: React.ReactElement;
 }
@@ -42,7 +38,7 @@ const Layout = ({children}: ILayoutProps) => {
     const navigate = useNavigate();
     const {selectedTheme, toggleTheme} = useContext<ContextProps>(UIProviderContext);
     const [menuHeight, setMenuHeight] = useState(0);
-    const [rightAction, setRightAction] = useState({
+    const rightActionInit = {
         startIcon: casperWallet,
         title: "Connect Wallet",
         background: "#7AEDD4",
@@ -52,28 +48,34 @@ const Layout = ({children}: ILayoutProps) => {
         walletAddress: null,
         onActionConnected: null,
         endIcon: balanceIcon,
-    } as OptAction);
+    } as OptAction
+    const [rightAction, setRightAction] = useState(rightActionInit);
 
     const {
-        onConnectWallet,
         isConnected,
-        showConnectionPopup,
         setShowConnectionPopup,
         walletState
     } = useContext(WalletProviderContext);
 
+    const {
+        showSettings,
+        setShowSettings,
+        showWalletOptions,
+        setShowWalletOptions,
+    } = useContext(ConfigProviderContext);
+
     const deviceType = useDeviceType()
     const isMobile = deviceType === 'mobile'
 
-    const [showSettings, setShowSettings] = useState(false);
-    const [showWalletOptions, setShowWalletOptions] = useState(false);
 
-    const handleSettings = () => {
-        setShowSettings(true);
+    const handleShowSettings = () => {
+        setShowSettings(!showSettings);
     }
+
     const handleWalletOptions = () => {
-        setShowWalletOptions(false);
+        setShowWalletOptions(!showWalletOptions);
     }
+
 
     useEffect(() => {
         const height = menuRef.current?.offsetHeight;
@@ -90,67 +92,14 @@ const Layout = ({children}: ILayoutProps) => {
                 onActionConnected: () => handleWalletOptions()
             }))
             setShowConnectionPopup(false)
+        }else {
+            setRightAction(prevState => ({
+                ...prevState,
+                ...rightActionInit
+            }))
         }
     }, [isConnected])
 
-    const WALLET_CONNECTED_OPTIONS = [
-        {
-            id: 'dmx0031b2b421',
-            key: 'account',
-            name: 'My Account',
-            iconName: 'Copy',
-            type: 'Redirect',
-        },
-        {
-            id: '3d23f23xxx88nf',
-            key: 'wallet',
-            name: walletState.walletAddress,
-            iconName: 'Copy',
-            type: 'copy',
-        },
-        {
-            id: '1x9x9900jjwoa',
-            key: 'transactions',
-            name: 'Recent Transactions',
-            iconName: 'Clock',
-            type: 'redirect',
-        },
-        {
-            id: '0zokxj8h82nndl',
-            key: 'disconnect',
-            name: 'Disconnect Wallet',
-            iconName: '',
-            icon: lineBreakIcon,
-            type: 'redirect',
-        },
-    ]
-
-    const WALLETS_DATA = [
-        {
-            id: 1,
-            name: 'Casper Signer',
-            icon: casperWallet,
-            onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
-        },
-        {
-            id: 2,
-            name: 'Casper Wallet',
-            icon: casperWallet,
-            onConnect: () => onConnectWallet(WalletName.CASPER_WALLET)
-        },
-        {
-            id: 3,
-            name: 'Ledger',
-            icon: ledgerWallet,
-            onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
-        },
-        {
-            id: 4,
-            name: 'Torus Wallet',
-            icon: torusWallet,
-            onConnect: () => onConnectWallet(WalletName.TORUS)
-        },
-    ]
 
 
     const routes = [
@@ -182,7 +131,7 @@ const Layout = ({children}: ILayoutProps) => {
             icon: settingIcon,
             page: "Settings",
             path: "#",
-            onAction: () => handleSettings(),
+            onAction: () => handleShowSettings(),
         },
     ];
 
@@ -205,23 +154,7 @@ const Layout = ({children}: ILayoutProps) => {
                 }}
                 handleRedirect={() => navigate("/")}
             />
-            <WalletConnection
-                closeCallback={() => setShowConnectionPopup(false)}
-                wallets={WALLETS_DATA}
-                isOpen={showConnectionPopup}
-            />
-            <Settings
-                isOpen={showSettings}
-                handleClose={() => setShowSettings(false)}
-                handleSave={() => console.log("Guardar")}
-                customNodeUrlValue=''
-                slippageToleranceValue={0.5}
-            />
-            <WalletConnectedOptions
-                closeCallback={handleWalletOptions}
-                options={WALLET_CONNECTED_OPTIONS as any[]}
-                isOpen={showWalletOptions}
-            />
+
             <ChildrenContainer
                 menuHeight={menuHeight}
                 isMobile={isMobile}>

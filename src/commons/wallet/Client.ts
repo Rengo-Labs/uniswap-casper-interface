@@ -60,7 +60,7 @@ export class Client {
       const casperClient = this.casperClient
       const balance: any = await casperClient.balanceOfByPublicKey(wallet.publicKey as CLPublicKey)
 
-      return balance
+      return new BigNumber(balance.toString())
     } catch(err) {
       log.warn(`Casper Client - getBalaance error: ${err}`)
       
@@ -242,9 +242,11 @@ export class Client {
         args,
       )
 
+      console.log("deployItem", deployItem)
       // Convert the signed deploy json to a deploy
-      const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
 
+      const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
+      console.log("signedDeploy", signedDeploy)
       // Put and confirm deploy
       return this.putAndConfirmDeploy(wallet, signedDeploy)
     } catch (err) {

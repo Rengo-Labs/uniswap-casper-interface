@@ -30,7 +30,8 @@ interface TokenSwapperProps {
   amountSwapTokenASetter,
   amountSwapTokenB,
   amountSwapTokenBSetter,
-  isProcessingTransaction
+  isProcessingTransaction,
+  clearProgress
 }
 
 const TokenSwapper = ({
@@ -56,7 +57,8 @@ const TokenSwapper = ({
                         amountSwapTokenASetter,
                         amountSwapTokenB,
                         amountSwapTokenBSetter,
-                        isProcessingTransaction
+                        isProcessingTransaction,
+                        clearProgress
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -81,7 +83,7 @@ const TokenSwapper = ({
       onSelectFirstToken(tokenState.tokens[t0]);
       onSelectSecondToken(tokenState.tokens[t1]);
     }
-  }, [isConnected, pairState]);
+  }, []);
 
   useEffect(() => {
     progressBar(async () => {
@@ -181,7 +183,8 @@ const TokenSwapper = ({
   //TODO Compartido
   const handleChangeA = async (e) => {
     setCurrentValue(e)
-    handleValidate(
+    // TODO: check if we need to show this when wallet is not connected
+      handleValidate(
         parseFloat(e),
         parseFloat(firstTokenSelected.amount),
         gasPriceSelectedForSwapping || 0
@@ -198,7 +201,8 @@ const TokenSwapper = ({
         parseFloat(e),
         secondTokenSelected
     )
-    handleValidate(
+      // TODO check if we need to show this when wallet is not connected
+      handleValidate(
         parseFloat(tokensToTransfer),
         parseFloat(firstTokenSelected.amount),
         gasPriceSelectedForSwapping || 0
@@ -268,6 +272,17 @@ const TokenSwapper = ({
     setOpenPoolDialog(prevState => ({...prevState, open: false}))
   }
 
+  const getCSPRPosition = () => {
+    if ('CSPR' === firstTokenSelected.symbol) {
+      return 0
+    }
+    if ('CSPR' === secondTokenSelected.symbol) {
+      return 1
+    }
+
+    return -1
+  }
+
   return (
       <div style={{display: "flex", flexDirection: "column", gap: "16px"}}>
         <CoinCard title='From'
@@ -290,7 +305,7 @@ const TokenSwapper = ({
                        tokenBSymbol={secondTokenSelected.symbol}
                        handleClickSwap={() => onSwitchTokensHandler()}
                        strokeWidth={12}
-                       clearProgress={() => console.log("No se que hace?")}
+                       clearProgress={() => clearProgress()}
                        getProgress={() => getProgress}
                        handlerButtonCircle={() => refreshPrices()}/>
 
@@ -311,12 +326,12 @@ const TokenSwapper = ({
               <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onConnectWallet()}}>Connect Wallet</Button>
           )}
           {!isApproved && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => async () => {
+              <Button type={"large"} props={{style: {width: 'auto'}, onClick: async () => {
                   await requestIncreaseAllowance(
-                      -freeAllowance,
+                      Math.abs(freeAllowance),
                       firstTokenSelected.contractHash
                   );
-                }}}>Approve ${-freeAllowance} ${firstTokenSelected.symbol}</Button>
+                }}}>Approve {Math.abs(freeAllowance)} {firstTokenSelected.symbol}</Button>
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{
@@ -332,8 +347,8 @@ const TokenSwapper = ({
         {openPoolDialog.open && (
             <CreatePoolDialog
                 closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-                tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol])}
-                popularTokensData={popularTokens}
+                tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], getCSPRPosition(), openPoolDialog.firstSelector)}
+                popularTokensData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], getCSPRPosition(), openPoolDialog.firstSelector)}
                 onSelectToken={(name) => {
                   selectAndCloseToken(tokenState.tokens[name])
                 }}

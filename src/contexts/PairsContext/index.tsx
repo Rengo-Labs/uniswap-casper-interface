@@ -1,5 +1,5 @@
 import {ReactNode, createContext, useReducer} from "react";
-import {initialPairsState, PairData, PairsReducer} from "../../reducers/PairsReducer";
+import {initialPairsState, PairActions, PairData, PairsReducer} from "../../reducers/PairsReducer";
 import PairsResponsibilities, {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
@@ -22,6 +22,9 @@ interface PairsContext {
     changeRowPriority: (name: string, checked: boolean) => void,
     calculateUSDtokens: (t0: string, t1: string, amount0: string | number, amount1: string | number, isAorB: boolean) => string[];
     findUSDPairBySymbols: (t0: string, t1: string, amount0: string | number, amount1: string | number, tokenState) => string[];
+    resetPairs: () => void;
+    getPairChart: (pairPackageHash: string) => Promise<any>,
+    getGlobalChart: () => Promise<any>,
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -33,8 +36,9 @@ export const PairsContext = ({children}: PairsContextProps) => {
         initialPairsState
     );
 
-    const orderedPairState: Record<string, PairTotalReserves> = PairsResponsibilities(pairState, pairDispatch).orderedPairState()
+    const resetPairs = () => pairDispatch({ type: PairActions.RESET });
 
+    const orderedPairState: Record<string, PairTotalReserves> = PairsResponsibilities(pairState, pairDispatch).orderedPairState()
 
     const loadPairs = async (tokenState): Promise<Record<string, PairTotalReserves>> => {
        return await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairs()
@@ -67,6 +71,14 @@ export const PairsContext = ({children}: PairsContextProps) => {
       return [priceA.toString(), priceB.toString()]
     }
 
+    const getPairChart = async (pairPackageHash): Promise<any> => {
+      return PairsResponsibilities(pairState, pairDispatch).getPairChart(pairPackageHash)
+    }
+
+    const getGlobalChart = async (): Promise<any> => {
+      return PairsResponsibilities(pairState, pairDispatch).getGlobalChart()
+    }
+
     return (
         <PairsContextProvider.Provider value={{
             pairState,
@@ -80,7 +92,10 @@ export const PairsContext = ({children}: PairsContextProps) => {
             getPoolList,
             changeRowPriority,
             calculateUSDtokens,
-            findUSDPairBySymbols
+            findUSDPairBySymbols,
+            resetPairs,
+            getPairChart,
+            getGlobalChart
         }}>
             {children}
         </PairsContextProvider.Provider>

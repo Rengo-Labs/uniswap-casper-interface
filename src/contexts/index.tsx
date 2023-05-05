@@ -8,8 +8,8 @@ import {TorusContext} from './TorusContext'
 import {ConfigContextWithReducer} from './ConfigContext'
 import {ProgressBarContextWithReducer} from "./ProgressBarContext"
 import {SwapContext} from "./SwapContext";
-import {NotificationSystem} from '../components/old/organisms'
-import {PopupsContainer} from '../components/old/PopupsContainer'
+import {NotificationSystem} from '../components/organisms/NotificationSystem'
+import {PopupsContainer} from '../components/organisms/PopupsContainer'
 import {StateHashContext} from './StateHashContext'
 import {PairsContext} from "./PairsContext";
 import {PoolContext} from "./PoolContext";

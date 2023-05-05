@@ -35,6 +35,7 @@ interface LiquiditySwapperProps {
   amountSwapTokenB,
   amountSwapTokenBSetter,
   isProcessingTransaction
+  clearProgress
 }
 
 const LiquiditySwapper = ({
@@ -59,7 +60,8 @@ const LiquiditySwapper = ({
                             amountSwapTokenASetter,
                             amountSwapTokenB,
                             amountSwapTokenBSetter,
-                            isProcessingTransaction
+                            isProcessingTransaction,
+                            clearProgress
                           }: LiquiditySwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -398,7 +400,7 @@ const LiquiditySwapper = ({
                      tokenBSymbol={secondTokenSelected.symbol}
                      handleClickSwap={() => onSwitchTokensHandler()}
                      strokeWidth={12}
-                     clearProgress={() => console.log("No se que hace?")}
+                     clearProgress={() => clearProgress()}
                      getProgress={() => getProgress}
                      handlerButtonCircle={() => refreshPrices()}/>
 
@@ -420,22 +422,22 @@ const LiquiditySwapper = ({
         )}
 
         {!isApprovedA && isConnected && (
-          <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB) ||
-              disableButtonValid, style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" }, onClick: () => async () => {
+          <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
+            style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" }, onClick: async () => {
               await requestIncreaseAllowance(
-                -freeAllowanceA,
+                Math.abs(freeAllowanceA),
                 firstTokenSelected.contractHash
               );
-            }}}>Approve {freeAllowanceA} {firstTokenSelected.symbol}</Button>
+            }}}>Approve {Math.abs(freeAllowanceA)} {firstTokenSelected.symbol}</Button>
         )}
         {!isApprovedB && isConnected && (
-          <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB) ||
-              disableButtonValid, style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""}, onClick: () => async () => {
+          <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
+            style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""}, onClick: async () => {
               await requestIncreaseAllowance(
-                -freeAllowanceB,
+                Math.abs(freeAllowanceB),
                 secondTokenSelected.contractHash
               );
-            }}}>Approve {freeAllowanceB} {secondTokenSelected.symbol}</Button>
+            }}}>Approve {Math.abs(freeAllowanceB)} {secondTokenSelected.symbol}</Button>
         )}
 
         {isApprovedA && isApprovedB && isConnected && (
@@ -447,7 +449,7 @@ const LiquiditySwapper = ({
         <CreatePoolDialog
           closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
           tokenListData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
-          popularTokensData={popularTokens}
+          popularTokensData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
           onSelectToken={(name) => {
             selectAndCloseToken(tokenState.tokens[name])
           }}

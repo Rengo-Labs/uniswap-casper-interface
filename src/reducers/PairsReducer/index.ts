@@ -203,6 +203,54 @@ const RAW_PAIRS: PairState = {
     totalLiquidityUSD: '0',
     decimals: 9,
   },
+  "dWBTC-WCSPR": {
+    checked: false,
+    name: "dWBTC-WCSPR",
+    orderedName: '',
+    contractHash: "hash-a315f59d9803fa4204370b37f62f3fbf87d5ca866ed7c426ccf8921ab787a978",
+    packageHash: "hash-ec323e5f35ef519165bacaaf05af3277fc7f55d33377d1cae4117807eb6913e1",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
+    token0Symbol: 'dWBTC',
+    token1Symbol: 'WCSPR',
+    liquidity: '0',
+    volume7d: '0',
+    volume1d: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
+  },
+  "CST-dWBTC": {
+    checked: false,
+    name: "CST-dWBTC",
+    orderedName: '',
+    contractHash: "hash-b86eb64e78385975a7131bc5f2dae665e0e43e02172545db8736a343448652ef",
+    packageHash: "hash-14d531d1fe0cc1fd8ad46a5923116a28520359ce155e0f145e985fa7269adde6",
+    reserve0: '0',
+    reserve1: '0',
+    totalReserve0: '0',
+    totalReserve1: '0',
+    balance: '0',
+    allowance: '0',
+    token0Symbol: 'CST',
+    token1Symbol: 'dWBTC',
+    liquidity: '0',
+    volume7d: '0',
+    volume1d: '0',
+    totalSupply: '0',
+    token0Price: '0',
+    token1Price: '0',
+    liquidityUSD: '0',
+    totalLiquidityUSD: '0',
+    decimals: 9,
+  }
 }
 
 export const PAIRS: PairState = {}
@@ -247,8 +295,10 @@ export enum PairActions {
   ADD_ALLOWANCE_TO_PAIR = 'ADD_ALLOWANCE_TO_PAIR',
   LOAD_PAIR = 'LOAD_PAIR',
   LOAD_PAIR_USD = 'LOAD_PAIR_USD',
-  CHANGE_PRIORITY = 'CHANGE_PRIORITY'
+  CLEAN_LIQUIDITY_USD = 'CLEAN_LIQUIDITY_USD',
+  CHANGE_PRIORITY = 'CHANGE_PRIORITY',
   //LOAD_USER_PAIR = 'LOAD_USER_PAIR',
+  RESET = 'RESET'
 }
 
 export type PairActionBalancePayload = {
@@ -275,6 +325,12 @@ export type PairActionLoadPairUSDPayLoad = {
   name: string,
   token0Price: string,
   token1Price: string,
+  isWalletConnected: boolean,
+}
+
+export type PairActionCleanLiquidityUSDPayLoad = {
+  name: string,
+  liquidityUSD: string
 }
 
 export type PairActionChangePriorityPayLoad = {
@@ -302,12 +358,17 @@ export type PairAction = {
   type: PairActions.LOAD_PAIR_USD,
   payload: PairActionLoadPairUSDPayLoad,
 } | {
+  type: PairActions.CLEAN_LIQUIDITY_USD,
+  payload: PairActionCleanLiquidityUSDPayLoad,
+} | {
   type: PairActions.CHANGE_PRIORITY,
   payload: PairActionChangePriorityPayLoad,
 }/* | {
   type: PairActions.LOAD_USER_PAIR,
   payload: PairActionLoadUserPairPayLoad,
-}*/
+}*/ | {
+    type: PairActions.RESET,
+    }
 
 export function PairsReducer(state: PairState, action: PairAction): PairState {
   switch (action.type) {
@@ -390,6 +451,18 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           },
         }
       }
+    case PairActions.CLEAN_LIQUIDITY_USD:
+    {
+      const oldState = state[`${action.payload.name}`]
+
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...oldState,
+          liquidityUSD: "0"
+        },
+      }
+    }
     case PairActions.CHANGE_PRIORITY:
       {
         const oldState = state[`${action.payload.name}`]
@@ -402,6 +475,11 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           }
         }
       }
+      case PairActions.RESET: {
+        return initialPairsState
+      }
+    default:
+      return state;
     /* case PairActions.LOAD_USER_PAIR:
       return {
         ...state,

@@ -1,10 +1,11 @@
 import React, {createContext, ReactNode, useReducer} from 'react'
-import {initialTokenState, TokenReducer, TokenState} from '../../reducers/TokenReducers'
+import {initialTokenState, TokenActions, TokenReducer, TokenState} from '../../reducers/TokenReducers'
 import TokenResponsibilities from '../../commons/TokenResponsibilities'
 import {PairTotalReserves} from "../../commons/PairsResponsibilities";
 import {Token, Wallet} from "../../commons";
 import {notificationStore} from "../../store/store";
 import {PairState} from "../../reducers/PairsReducer";
+import {TokenProfit} from "../../commons/api/ApolloQueries";
 
 interface TokensContext {
     tokenState: TokenState,
@@ -17,8 +18,12 @@ interface TokensContext {
     onSwitchTokens,
     firstTokenSelected: Token,
     secondTokenSelected: Token,
-    filterPopupTokens: (excludedTokens: any[]) => any[],
+    filterPopupTokens: (excludedTokens: any[], position: number, hasCSPR: boolean) => any[],
     filterTokenPairsByToken: (token: Token, pairState: PairState) => any[]
+    resetTokens: () => void,
+    getHistoricalTokenPrices?: (packageHash: string) => Promise<any>,
+    getBalancesProfit?: (packageHash: string) => Promise<TokenProfit>,
+    getHistoricalTokensChartPrices?: (packageHash0: string, packageHash1: string) => Promise<any[]>
 }
 
 export const TokensProviderContext = createContext<TokensContext>({} as any)
@@ -28,6 +33,9 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
         TokenReducer,
         initialTokenState
     );
+
+    const resetTokens = () => tokenDispatch({ type: TokenActions.RESET });
+
     const loadTokensUSD = async (pairsTotalReserves, pairs): Promise<any> => {
         return TokenResponsibilities(tokenState, tokenDispatch).loadTokenUSD(pairsTotalReserves, pairs, updateNotification)
     }
@@ -52,12 +60,24 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
         return TokenResponsibilities(tokenState, tokenDispatch).onSwitchTokens()
     }
 
-    const filterPopupTokens = (excludedTokens: any[]) : any[] => {
-      return TokenResponsibilities(tokenState, tokenDispatch).filterPopupTokens(excludedTokens)
+    const filterPopupTokens = (excludedTokens: any[], position: number, firstToken: boolean) : any[] => {
+      return TokenResponsibilities(tokenState, tokenDispatch).filterPopupTokens(excludedTokens, position, firstToken)
     }
 
     const filterTokenPairsByToken = (token, pairState): any[] => {
       return TokenResponsibilities(tokenState, tokenDispatch).filterTokenPairsByToken(token, pairState)
+    }
+
+    const getHistoricalTokenPrices = async (packageHash: string): Promise<any> => {
+      return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokenPrices(packageHash)
+    }
+
+    const getBalancesProfit = async (packageHash: string): Promise<any> => {
+      return TokenResponsibilities(tokenState, tokenDispatch).getBalancesProfit(packageHash)
+    }
+
+    const getHistoricalTokensChartPrices = async (packageHash0: string, packageHash1: string): Promise<any> => {
+      return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokensChartPrices(packageHash0, packageHash1)
     }
 
     return (
@@ -74,7 +94,11 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 firstTokenSelected: tokenState.tokens[tokenState.firstTokenSelected],
                 secondTokenSelected: tokenState.tokens[tokenState.secondTokenSelected],
                 filterPopupTokens,
-                filterTokenPairsByToken
+                filterTokenPairsByToken,
+                resetTokens,
+                getHistoricalTokenPrices,
+                getBalancesProfit,
+                getHistoricalTokensChartPrices
             }}>
             {children}
         </TokensProviderContext.Provider>

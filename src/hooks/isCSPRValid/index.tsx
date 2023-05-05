@@ -14,7 +14,8 @@ const isCSPRValid = () => {
       title,
       subtitle: '',
       show: true,
-      chargerBar: false,
+      isOnlyNotification: true,
+      timeToClose: 5000,
     });
 
   const handleValidate = (

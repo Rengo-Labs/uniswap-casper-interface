@@ -1,11 +1,11 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext} from "react";
 import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
-import {Settings, WalletConnectedOptions, WalletConnection, Notification} from "rengo-ui-kit";
+import {Settings, WalletConnectedOptions, WalletConnection} from "rengo-ui-kit";
 import casperWallet from "../../../assets/newDesignIcons/casper-wallet.svg";
 import {WalletName} from "../../../commons";
 import torusWallet from "../../../assets/newDesignIcons/torus-wallet.svg";
-import {globalStore, notificationStore} from "../../../store/store";
+import {globalStore} from "../../../store/store";
 import lineBreakIcon from "../../../assets/newDesignIcons/linkbreak.svg";
 export const PopupsContainer = () => {
     const {
@@ -23,7 +23,6 @@ export const PopupsContainer = () => {
         showConnectionPopup,
     } = useContext(WalletProviderContext);
     const { slippageTolerance, updateSlippageTolerance, nodeUrl, updateNodeUrl } = globalStore()
-    const { notification, updateNotification } = notificationStore();
 
     const WALLETS_DATA = [
         // TODO we will add ledger wallet later, first option is casper wallet
@@ -90,32 +89,23 @@ export const PopupsContainer = () => {
     const handleDisconnectWallet = async () => {
         await onDisconnectWallet();
     }
-
     const handleShowWallet = () => {
         setShowConnectionPopup(!showConnectionPopup)
     }
-
     const handleExternalLink = () => {
         const link = "https://docs.casperswap.xyz/the-casperswap-protocol-1/how-to-make-a-swap-on-casperswap"
         window.open(link, '_blank')
     }
-
     const handleShowSettings = () => {
         setShowSettings(!showSettings);
     }
-
     const handleSaveSettings = (slippageTolerance, customNodeUr) => {
         updateSlippageTolerance(slippageTolerance)
         updateNodeUrl(customNodeUr)
         handleShowSettings()
     }
-
     const handleWalletOptions = () => {
         setShowWalletOptions(!showWalletOptions);
-    }
-
-    const handleCloseNotification = () => {
-        updateNotification({ ...notification, show: false });
     }
 
     return (
@@ -140,15 +130,6 @@ export const PopupsContainer = () => {
                 options={WALLET_CONNECTED_OPTIONS as any[]}
                 isOpen={showWalletOptions}
             />
-
-            {/*<Notification*/}
-            {/*    title={notification.title}*/}
-            {/*    message={notification.subtitle}*/}
-            {/*    type={notification.type as any}*/}
-            {/*    // @ts-ignore*/}
-            {/*    position={'top-center'}*/}
-            {/*    onClose={handleCloseNotification}*/}
-            {/*/>*/}
         </>
     );
 }

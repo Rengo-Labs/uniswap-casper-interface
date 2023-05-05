@@ -20,8 +20,8 @@ export const StateHashProviderContext = createContext<StateHashContext>({} as an
 
 export const StateHashContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
-    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState} = useContext(PairsContextProvider)
-    const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance} = useContext(TokensProviderContext)
+    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, resetPairs} = useContext(PairsContextProvider)
+    const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance, resetTokens} = useContext(TokensProviderContext)
     const {walletState} = useContext(WalletProviderContext)
 
     const {previousQuery} = useContext(PoolProviderContext)
@@ -41,20 +41,19 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     }, [stateHash, walletState])
 
     const loadUserData = useCallback(async () => {
-        if (!walletState?.wallet) {
-            return;
-        }
-        const isConnected = walletState.wallet.isConnected
+
+        const isConnected = walletState.wallet?.isConnected ?? false
         if (walletState?.wallet) {
             await loadUserPairsData(walletState?.wallet, isConnected)
             await loadTokensBalance(walletState?.wallet, isConnected)
-        } else {
+        }
+        // TODO this part of code delays more than reset data
+        else {
             await clearUserPairsData(pairState)
             await clearTokensBalance(tokenState)
         }
-
         previousQuery()
-    }, [stateHash, walletState])
+    }, [stateHash, walletState.wallet?.isConnected])
 
     // TODO call this function on manual refresh
     const refresh = async () => {
@@ -70,7 +69,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         }
 
         loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
-    },  [stateHash, walletState?.wallet])
+    },  [stateHash, walletState?.wallet?.isConnected])
 
     const getRootHash = useCallback(async () => {
         const rootHash = await getLatestRootHash()

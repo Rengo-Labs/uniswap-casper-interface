@@ -1,4 +1,4 @@
-import {getPairData} from "../api/ApolloQueries";
+import {findPairChartData, findDailyGlobalChart, getPairData} from "../api/ApolloQueries";
 import store from "store2";
 import {convertBigNumberToUIString, log} from "../utils";
 import BigNumber from "bignumber.js";
@@ -255,6 +255,13 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                     ),
                 },
             })
+
+            pairDispatch({
+                type: PairActions.CLEAN_LIQUIDITY_USD,
+                payload: {
+                    name: pair.name
+                },
+            })
         }
     }
 
@@ -307,6 +314,14 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         ]
     }
 
+    const getPairChart = async (pairPackageHash): Promise<any> => {
+        return findPairChartData(pairPackageHash)
+    }
+
+    const getGlobalChart = async (): Promise<any> => {
+        return findDailyGlobalChart()
+    }
+
     return {
         loadPairs,
         loadPairsBalanceUSD,
@@ -317,7 +332,9 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         findReservesBySymbols,
         changeRowPriority,
         calculateUSDtokens,
-        findUSDRateBySymbol
+        findUSDRateBySymbol,
+        getPairChart,
+        getGlobalChart
     }
 }
 

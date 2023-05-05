@@ -13,8 +13,10 @@ import {DoubleColumn} from "../../../layout/DoubleColumn";
 import {useSearchParams} from "react-router-dom";
 import {globalStore} from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
-import {LPContainer} from 'rengo-ui-kit'
-
+import {LPContainer, RemoveLiquidityDialog} from 'rengo-ui-kit';
+import {useNavigate} from "react-router";
+import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
+import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -30,9 +32,10 @@ export const LiquidityTemplate = ({isMobile}) => {
         isRemovingPopupOpen,
         setRemovingPopup,
         onAddLiquidity,
-        getLiquidityDetails
+        getLiquidityDetails,
+        onRemoveLiquidity
     } = useContext(LiquidityProviderContext)
-    const {progressBar, getProgress} = useContext(ProgressBarProviderContext)
+    const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext)
     const {calculateUSDtokens, pairState, findReservesBySymbols, getPoolList} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {
@@ -56,26 +59,170 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [currentFReserve, setFirstReserve] = useState(0)
     const [currentSReserve, setSecondReserve] = useState(0)
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
+    const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState(false)
+    const [removeLiquidityData, setRemoveLiquidityData] = useState({
+        id: 'd3jd92d',
+        tokenName: 'CSPR',
+        liquidity: '0',
+        allowance: 0,
+        firstIcon: '',
+        firstName: 'CSPR',
+        firstSymbol: 'CSPR',
+        firstLiquidity: '0',
+        firstRate: '0',
+        firstHash: '',
+        secondIcon: '',
+        secondName: 'WETH',
+        secondSymbol: 'WETH',
+        secondLiquidity: '0',
+        secondRate: '0',
+        secondHash: ''
+    })
+    const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
+    const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
+    const [removeLiquidityButtonEnabled, setRemoveLiquidityButtonEnabled] = useState(false)
+    const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
+    const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
+        lpAmount: 0,
+        firstAmount: 0,
+        secondAmount: 0,
+        allowance: 0
+    })
+    const Navigator = useNavigate()
 
-    const loadUserLP = useCallback(() => {
+    const handleChangeInput = (value) => {
+        setRemoveLiquidityInput(value)
+        handleRemoveCalculation(value)
+    }
+    const handleRemoveLiquidityToggle = (e) => {
+
+        if (removeLiquidityData.firstSymbol.includes('CSPR')) {
+            setRemoveLiquidityData(prevState => ({
+                ...prevState,
+                firstIcon: e ? csprIcon : wcsprIcon,
+                firstSymbol: e ? 'CSPR' : 'WCSPR',
+                firstName: e ? 'Casper' : 'Wrapped Casper'
+            }))
+        } else {
+            setRemoveLiquidityData(prevState => ({
+                ...prevState,
+                secondIcon: e ? csprIcon : wcsprIcon,
+                secondSymbol: e ? 'CSPR' : 'WCSPR',
+                secondName: e ? 'Casper' : 'Wrapped Casper'
+            }))
+        }
+        setRemoveLiquidityToggle(e)
+    }
+
+    const handleRemoveCalculation = (value) => {
+        const inputPercent = new BigNumber(value).dividedBy(100)
+
+        const lpAmount = new BigNumber(removeLiquidityData.liquidity).multipliedBy(inputPercent)
+        const firstAmount = new BigNumber(removeLiquidityData.firstLiquidity).multipliedBy(inputPercent)
+        const secondAmount = new BigNumber(removeLiquidityData.secondLiquidity).multipliedBy(inputPercent)
+        const newVar = (prevState) => ({
+            ...prevState,
+            lpAmount: lpAmount.toNumber().toFixed(8),
+            firstAmount: firstAmount.toNumber().toFixed(8),
+            secondAmount: secondAmount.toNumber().toFixed(8),
+            allowance: lpAmount.toNumber() - removeLiquidityData.allowance
+        });
+
+        setRemoveLiquidityCalculation(newVar)
+    }
+
+    const handleRemoveLiquidity =  () => {
+        setRemoveLiquidityInput((prevState) => 0)
+        console.log("close popup", removeLiquidityInput)
+        setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
+    }
+
+    const onActionRemove = async () => {
+        await onRemoveLiquidity(
+          removeLiquidityCalculation.lpAmount,
+          {
+              symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
+              packageHash: removeLiquidityData.firstHash,
+          } as any, {
+              symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
+              packageHash: removeLiquidityData.secondHash,
+          } as any,
+          removeLiquidityCalculation.firstAmount,
+          removeLiquidityCalculation.secondAmount,
+          slippageTolerance,
+          gasFee,
+          removeLiquidityToggle)
+
+        setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
+    }
+
+    const onActionAllowance = async () => {
+        await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id)
+    }
+
+    const handleNavigate = (item) => {
+        Navigator(`/swap?token0=${item.token0Symbol}&token1=${item.token1Symbol}`)
+    }
+    const actions = (item, action, firstSymbol, secondSymbol) => {
+        if (action === 'AddLiquidity') {
+            onSelectFirstToken(tokenState.tokens[firstSymbol])
+            onSelectSecondToken(tokenState.tokens[secondSymbol])
+        }
+
+        if (action === 'DeleteLP') {
+
+            setRemoveLiquidityToggle(true)
+            const data = {
+                id: item.contractHash,
+                tokenName: item.name,
+                liquidity: item.balance,
+                allowance: parseFloat(item.allowance),
+                firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
+                firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
+                firstSymbol: item.token0Symbol.includes('CSPR') ? 'CSPR' : item.token0Symbol,
+                firstLiquidity: item.reserve0,
+                firstRate: '',
+                firstHash: item.contract0,
+                secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
+                secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
+                secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
+                secondLiquidity: item.reserve1,
+                secondRate: '',
+                secondHash: item.contract1
+            }
+            setRemoveLiquidityData((prevState) => ({
+                ...prevState,
+                ...data
+            }))
+
+            setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
+            setShowRemoveLiquidityDialog(true)
+        }
+
+        if (action === 'Swap') {
+            handleNavigate(item)
+        }
+    }
+
+    const loadUserLP = () => {
         const userPairs = Object.values(pairState).filter(
-          (v) => parseFloat(v.balance) > 0
+            (v) => parseFloat(v.balance) > 0
         ).map((i) => {
             return {
-                icon: i.token1Icon,
+                firstTokenIcon: i.token0Icon,
+                secondTokenIcon: i.token1Icon,
                 isFavorite: false,
                 firstSymbol: i.token0Symbol,
                 secondSymbol: i.token1Symbol,
                 firstAmount: i.reserve0,
                 secondAmount: i.reserve1,
-                userLP: i.liquidity,
+                userLP: i.balance,
                 totalLP: i.totalLiquidityUSD,
-                onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => () => console.log("Optiones", action, firstSymbol, secondSymbol)
+                onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
             }
         })
         userPairDataNonZeroSetter(userPairs)
-
-    }, [userPairDataNonZero])
+    }
 
     useEffect(() => {
         if (!isConnected) {
@@ -95,19 +242,31 @@ export const LiquidityTemplate = ({isMobile}) => {
             onSelectSecondToken(tokenState.tokens[t1])
         }
 
-        /*
-        if (isRemovingPopupOpen) {
-            setOpenedRemoving(true)
-            setRemovingPopup(false)
-        }*/
-
         updateLiquidityDetail(
           firstTokenSelected,
           secondTokenSelected,
           amountSwapTokenA,
           firstTokenSelected
         )
-    }, [isConnected, pairState]);
+    }, []);
+
+    useEffect(() => {
+
+        if (showRemoveLiquidityDialog) {
+            const pair = pairState[removeLiquidityData.tokenName]
+
+            setRemoveLiquidityData((prevState) => ({
+                ...prevState,
+                allowance: parseFloat(pair.allowance)
+            }))
+
+            setRemoveLiquidityCalculation((prevState) => ({
+                ...prevState,
+                allowance: removeLiquidityCalculation.lpAmount - parseFloat(pair.allowance)
+            }))
+        }
+
+    }, [tokenState])
 
     async function onLiquidity(amountA, amountB) {
         setIsProcessingTransaction(true)
@@ -202,10 +361,26 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     return (
         <>
+            <RemoveLiquidityDialog
+                // @ts-ignore
+                closeCallback={handleRemoveLiquidity}
+                liquidityPoolData={removeLiquidityData as any}
+                isOpen={showRemoveLiquidityDialog}
+                disabledButton={removeLiquidityButtonEnabled}
+                disabledAllowanceButton={removeLiquidityAllowanceEnabled}
+                showAllowance={(removeLiquidityCalculation.allowance) > 0}
+                defaultValue={removeLiquidityInput}
+                isRemoveLiquidityCSPR={removeLiquidityToggle}
+                handleChangeInput={handleChangeInput}
+                handleToggle={handleRemoveLiquidityToggle}
+                handleRemoveLiquidity={onActionRemove}
+                handleAllowanceLiquidity={onActionAllowance}
+                calculatedAmounts={removeLiquidityCalculation}
+            />
             <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
                 <LiquidityDetail
-                  firstSymbol={firstTokenSelected.symbol}
-                  secondSymbol={secondTokenSelected.symbol}
+                  firstSymbol={firstTokenSelected.symbolPair}
+                  secondSymbol={secondTokenSelected.symbolPair}
                   maxAmount={`${amountSwapTokenB}`}
                   firstTotalLiquidity={currentFReserve / 10 ** firstTokenSelected.decimals}
                   secondTotalLiquidity={currentSReserve / 10 ** secondTokenSelected.decimals}
@@ -237,6 +412,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   amountSwapTokenB={amountSwapTokenB}
                                   amountSwapTokenBSetter={amountSwapTokenBSetter}
                                   isProcessingTransaction={isProcessingTransaction}
+                                  clearProgress={clearProgress}
                 />
             </DoubleColumn>
             {

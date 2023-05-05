@@ -32,7 +32,7 @@
     "axios": "^1.2.3",
     "bignumber.js": "^9.1.1",
     "casper-erc20-js-client": "^0.2.1",
-    "casper-js-sdk": "^2.10.2",
+    "casper-js-sdk": "2.10.2",
     "dayjs": "^1.11.7",
     "decimal.js": "^10.4.3",
     "env-cmd": "^10.1.0",

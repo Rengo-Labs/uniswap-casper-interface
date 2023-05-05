@@ -178,6 +178,7 @@ export const signAndDeploySwap = async (
         )
       case SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS:
         // When swapping casper for tokens
+        console.log("Swap", )
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),
