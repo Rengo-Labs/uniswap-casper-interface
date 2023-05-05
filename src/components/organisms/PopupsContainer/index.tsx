@@ -87,49 +87,49 @@ export const PopupsContainer = () => {
     ]
 
     const handleDisconnectWallet = async () => {
-        await onDisconnectWallet();
+      await onDisconnectWallet();
     }
-    const handleShowWallet = () => {
-        setShowConnectionPopup(!showConnectionPopup)
+    const handleShowWalletOnClose = () => {
+      setShowConnectionPopup(false)
     }
     const handleExternalLink = () => {
         const link = "https://docs.casperswap.xyz/the-casperswap-protocol-1/how-to-make-a-swap-on-casperswap"
         window.open(link, '_blank')
     }
-    const handleShowSettings = () => {
-        setShowSettings(!showSettings);
+    const handleShowSettingsOnClose = () => {
+      setShowSettings(false);
     }
     const handleSaveSettings = (slippageTolerance, customNodeUr) => {
-        updateSlippageTolerance(slippageTolerance)
-        updateNodeUrl(customNodeUr)
-        handleShowSettings()
+      updateSlippageTolerance(slippageTolerance)
+      updateNodeUrl(customNodeUr)
+      handleShowSettingsOnClose()
     }
-    const handleWalletOptions = () => {
-        setShowWalletOptions(!showWalletOptions);
+    const handleWalletOptionsOnClose = () => {
+      setShowWalletOptions(false);
     }
 
     return (
         <>
-            <WalletConnection
-                closeCallback={handleShowWallet}
-                wallets={WALLETS_DATA}
-                isOpen={showConnectionPopup}
-                linkCallback={handleExternalLink}
-            />
+          <WalletConnection
+            closeCallback={handleShowWalletOnClose}
+            wallets={WALLETS_DATA}
+            isOpen={showConnectionPopup}
+            linkCallback={handleExternalLink}
+          />
 
-            <Settings
-                isOpen={showSettings}
-                handleClose={handleShowSettings}
-                handleSave={handleSaveSettings}
-                customNodeUrlValue={nodeUrl}
-                slippageToleranceValue={slippageTolerance}
-            />
+          <Settings
+            isOpen={showSettings}
+            handleClose={handleShowSettingsOnClose}
+            handleSave={handleSaveSettings}
+            customNodeUrlValue={nodeUrl}
+            slippageToleranceValue={slippageTolerance}
+          />
 
-            <WalletConnectedOptions
-                closeCallback={handleWalletOptions}
-                options={WALLET_CONNECTED_OPTIONS as any[]}
-                isOpen={showWalletOptions}
-            />
+          <WalletConnectedOptions
+            closeCallback={handleWalletOptionsOnClose}
+            options={WALLET_CONNECTED_OPTIONS as any[]}
+            isOpen={showWalletOptions}
+          />
         </>
     );
 }
