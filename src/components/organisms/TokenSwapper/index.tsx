@@ -316,8 +316,8 @@ const TokenSwapper = ({
         {openPoolDialog.open && (
             <CreatePoolDialog
                 closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-                tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], getCSPRPosition(), openPoolDialog.firstSelector)}
-                popularTokensData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], getCSPRPosition(), openPoolDialog.firstSelector)}
+                tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector)}
+                popularTokensData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector)}
                 onSelectToken={(name) => {
                   selectAndCloseToken(tokenState.tokens[name])
                 }}
