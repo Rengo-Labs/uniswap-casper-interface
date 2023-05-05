@@ -86,7 +86,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       title: 'Adding liquidity.',
       subtitle: '',
       show: true,
-      isOnlyNotification: false,
+      isOnlyNotification: true,
     });
     try {
       const [deployHash, deployResult] = await signAndDeployAddLiquidity(
@@ -114,7 +114,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         title: 'Processing...',
         subtitle: notificationMessage,
         show: true,
-        isOnlyNotification: false,
+        isOnlyNotification: true,
         timeToClose: 300000
       });
 
@@ -125,7 +125,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
           title: 'Processing...',
           subtitle: 'Your deploy was successful',
           show: true,
-          isOnlyNotification: false,
+          isOnlyNotification: true,
           timeToClose: 5000
         });
       }
@@ -146,7 +146,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        isOnlyNotification: false,
+        isOnlyNotification: true,
       });
       return false;
     }
@@ -167,7 +167,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       title: 'Removing liquidity',
       subtitle: '',
       show: true,
-      isOnlyNotification: false,
+      isOnlyNotification: true,
     });
 
     try {
@@ -200,7 +200,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
           title: 'Liquidity correctly removed.',
           subtitle: '',
           show: true,
-          isOnlyNotification: false,
+          isOnlyNotification: true,
           timeToClose: 5000
         });
       }
@@ -222,7 +222,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        isOnlyNotification: false,
+        isOnlyNotification: true,
         timeToClose: 5000
       });
       return false

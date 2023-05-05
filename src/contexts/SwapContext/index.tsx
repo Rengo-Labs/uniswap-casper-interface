@@ -64,7 +64,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       title: 'Processing...',
       subtitle: 'Checking the progress of your deploy',
       show: true,
-      isOnlyNotification: false,
+      isOnlyNotification: true,
       timeToClose: 100000
     });
     try {
@@ -93,7 +93,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         title: 'Processing...',
         subtitle: notificationMessage,
         show: true,
-        isOnlyNotification: false,
+        isOnlyNotification: true,
         timeToClose: 300000
       });
 
@@ -106,7 +106,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
           title: 'Processing...',
           subtitle: 'Your deploy was successful',
           show: true,
-          isOnlyNotification: false,
+          isOnlyNotification: true,
           timeToClose: 5000
         });
       }
@@ -124,7 +124,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        isOnlyNotification: false
+        isOnlyNotification: true
       });
       return false;
     }

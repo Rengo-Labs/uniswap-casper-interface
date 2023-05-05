@@ -2,9 +2,13 @@ import {NotificationMessage} from "rengo-ui-kit";
 import { notificationStore } from '../../../store/store';
 
 export const NotificationSystem = () => {
-  const { notification, dismissNotification } = notificationStore();
-  const onClose = () => {
+  const { notification, updateNotification, dismissNotification } = notificationStore();
+  const onDismiss = () => {
     dismissNotification();
+  }
+
+  const onClose = () => {
+    updateNotification({ ...notification, show: false });
   }
   return (
       <>

@@ -81,7 +81,7 @@ export const ConfigContextWithReducer = ({
       title: 'Increasing allowance.',
       subtitle: '',
       show: true,
-      isOnlyNotification: false,
+      isOnlyNotification: true,
       timeToClose: 100000
     });
 
@@ -103,7 +103,7 @@ export const ConfigContextWithReducer = ({
         title: 'Processing...',
         subtitle: notificationMessage,
         show: true,
-        isOnlyNotification: false,
+        isOnlyNotification: true,
         timeToClose: 300000
       });
 
@@ -116,7 +116,7 @@ export const ConfigContextWithReducer = ({
               title: 'Processing...',
               subtitle: 'Your deploy was successful',
               show: true,
-              isOnlyNotification: false,
+              isOnlyNotification: true,
               timeToClose: 5000
             });
       }
@@ -132,7 +132,7 @@ export const ConfigContextWithReducer = ({
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        isOnlyNotification: false,
+        isOnlyNotification: true,
         timeToClose: 5000
       });
       refresh(walletState.wallet);
