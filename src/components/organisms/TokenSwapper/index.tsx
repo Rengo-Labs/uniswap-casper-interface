@@ -86,7 +86,6 @@ const TokenSwapper = ({
   }, [amountSwapTokenA, amountSwapTokenB]);
 
   useEffect(() => {
-    //Todo Compartido
     const switchToken = async () => {
       lastChanged == 'A'
           ? await changeTokenA(amountSwapTokenB)
@@ -97,12 +96,10 @@ const TokenSwapper = ({
 
   }, [lastChanged]);
 
-  //TODO Compartido
   function onSwitchTokensHandler() {
     onSwitchTokens();
     if (lastChanged == 'A') {
       changeTokenB(amountSwapTokenA.toString());
-      setLastChanged('B');
     } else if (lastChanged == 'B') {
       changeTokenA(amountSwapTokenB.toString());
       setLastChanged('A');
@@ -141,9 +138,10 @@ const TokenSwapper = ({
         filteredValue,
         firstTokenSelected
     );
-
     calculateUSDValues(value, tokensToTransfer, firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, exchangeRateA, exchangeRateB, firstTokenSelected.symbolPair)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
+
+    handleValidate(typeof value === "number" ? value : parseFloat(value), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0);
   }
 
   async function changeTokenB(value) {
@@ -167,35 +165,17 @@ const TokenSwapper = ({
 
     calculateUSDValues(value, tokensToTransfer, firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, exchangeRateA, exchangeRateB, secondTokenSelected.symbolPair)
     amountSwapTokenASetter(formatNaN(tokensToTransfer))
+
+    handleValidate(parseFloat(tokensToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0)
   }
 
-  //TODO Compartido
   const handleChangeA = async (e) => {
     setCurrentValue(e)
-    // TODO: check if we need to show this when wallet is not connected
-      handleValidate(
-        parseFloat(e),
-        parseFloat(firstTokenSelected.amount),
-        gasPriceSelectedForSwapping || 0
-    );
     await changeTokenA(e)
   };
 
-  //TODO Compartido
   const handleChangeB = async (e) => {
     await changeTokenB(e);
-    const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
-        firstTokenSelected,
-        secondTokenSelected,
-        parseFloat(e),
-        secondTokenSelected
-    )
-      // TODO check if we need to show this when wallet is not connected
-      handleValidate(
-        parseFloat(tokensToTransfer),
-        parseFloat(firstTokenSelected.amount),
-        gasPriceSelectedForSwapping || 0
-    )
   }
 
   const freeAllowance = new BigNumber(firstTokenSelected.allowance || 0)
@@ -206,12 +186,10 @@ const TokenSwapper = ({
       firstTokenSelected.symbol == 'CSPR' ||
       (firstTokenSelected.symbol != 'CSPR' && freeAllowance >= 0);
 
-  //Todo compatido
   const refreshPrices = async () => {
     await refresh()
   };
 
-  //TODO Compartido
   const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected) => {
     exchangeRateASetter(rateA);
     exchangeRateBSetter(rateB);
