@@ -326,7 +326,6 @@ export const LiquidityTemplate = ({isMobile}) => {
             setFirstReserve(secondReserve);
             setSecondReserve(firstReserve);
         }*/
-
         setFirstReserve(firstReserve);
         setSecondReserve(secondReserve);
         const totalLP = calculateTotalLP(

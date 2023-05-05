@@ -73,7 +73,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                           )
                           .then((response) => {
                               //console.log('balance', token, response)
-                              console.log(x, convertBigNumberToUIString(new BigNumber(response)).toString())
+                              console.log(x, convertBigNumberToUIString(new BigNumber(response), token.decimals).toString())
                               tokenDispatch({
                                   type: TokenActions.LOAD_BALANCE,
                                   payload: {
@@ -88,12 +88,14 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     ]);
                 } else {
                     return casperClient.getBalance(wallet).then((balance) => {
-                        //console.log('balance', convertBigNumberToUIString(balance))
+                        console.log('balance', convertBigNumberToUIString(balance, token.decimals))
                         tokenDispatch({
                             type: TokenActions.LOAD_BALANCE,
                             payload: {
                                 name: 'CSPR',
-                                amount: convertBigNumberToUIString(balance),
+                                amount: convertBigNumberToUIString(
+                                  balance,
+                                  token.decimals),
                             },
                         });
                     });
@@ -114,7 +116,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     payload: {
                         name: x,
                         allowance: convertBigNumberToUIString(
-                          new BigNumber(0)
+                          new BigNumber(0),
+                          tokenState.tokens[x].decimals
                         ),
                     },
                 })
@@ -124,7 +127,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     payload: {
                         name: x,
                         amount: convertBigNumberToUIString(
-                          new BigNumber(0)
+                          new BigNumber(0),
+                          tokenState.tokens[x].decimals
                         ),
                     },
                 })
@@ -133,7 +137,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     type: TokenActions.LOAD_BALANCE,
                     payload: {
                         name: 'CSPR',
-                        amount: convertBigNumberToUIString(new BigNumber(0)),
+                        amount: convertBigNumberToUIString(new BigNumber(0), tokenState.tokens[x].decimals),
                     },
                 })
             }
