@@ -118,14 +118,15 @@ const RAW_TOKENS: Record<string, Token> = {
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00",
-  },  dWBTC: {
+  },
+  dWBTC: {
     name: "Debug Wrapped BTC",
     chainId: 1,
     symbol: "dWBTC",
     symbolPair: "dWBTC",
-    decimals: 9,
+    decimals: 8,
     contractHash:
-      "hash-dcb2efc403047a3f9fdad8acf879e3630706c9a38d28b8ef44201b1581fb3e",
+      "hash-27dcb2efc403047a3f9fdad8acf879e3630706c9a38d28b8ef44201b1581fb3e",
     packageHash:
       "hash-a3bce716f129605e5c47147976b0053b5632106d184fb6903ae63aa883905af9",
     logoURI: dwbtc,

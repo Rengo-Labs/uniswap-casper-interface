@@ -295,6 +295,7 @@ export enum PairActions {
   ADD_ALLOWANCE_TO_PAIR = 'ADD_ALLOWANCE_TO_PAIR',
   LOAD_PAIR = 'LOAD_PAIR',
   LOAD_PAIR_USD = 'LOAD_PAIR_USD',
+  CLEAN_LIQUIDITY_USD = 'CLEAN_LIQUIDITY_USD',
   CHANGE_PRIORITY = 'CHANGE_PRIORITY',
   //LOAD_USER_PAIR = 'LOAD_USER_PAIR',
   RESET = 'RESET'
@@ -327,6 +328,11 @@ export type PairActionLoadPairUSDPayLoad = {
   isWalletConnected: boolean,
 }
 
+export type PairActionCleanLiquidityUSDPayLoad = {
+  name: string,
+  liquidityUSD: string
+}
+
 export type PairActionChangePriorityPayLoad = {
   name: string,
   checked: boolean,
@@ -351,6 +357,9 @@ export type PairAction = {
 } | {
   type: PairActions.LOAD_PAIR_USD,
   payload: PairActionLoadPairUSDPayLoad,
+} | {
+  type: PairActions.CLEAN_LIQUIDITY_USD,
+  payload: PairActionCleanLiquidityUSDPayLoad,
 } | {
   type: PairActions.CHANGE_PRIORITY,
   payload: PairActionChangePriorityPayLoad,
@@ -442,6 +451,18 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           },
         }
       }
+    case PairActions.CLEAN_LIQUIDITY_USD:
+    {
+      const oldState = state[`${action.payload.name}`]
+
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...oldState,
+          liquidityUSD: "0"
+        },
+      }
+    }
     case PairActions.CHANGE_PRIORITY:
       {
         const oldState = state[`${action.payload.name}`]

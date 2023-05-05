@@ -60,7 +60,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                                   payload: {
                                       name: x,
                                       allowance: convertBigNumberToUIString(
-                                        new BigNumber(response)
+                                        new BigNumber(response),
+                                        token.decimals
                                       ),
                                   },
                               });
@@ -78,7 +79,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                                   payload: {
                                       name: x,
                                       amount: convertBigNumberToUIString(
-                                        new BigNumber(response)
+                                        new BigNumber(response),
+                                        token.decimals
                                       ),
                                   },
                               });
@@ -165,20 +167,11 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     //TODO adjust the response from the UI KIT to manage the same structure here
-    const filterPopupTokens = (tokensToExclude: any[]): any[] => {
+    const filterPopupTokens = (tokensToExclude: any[], position, firstToken: boolean): any[] => {
         let _filteredTokens = Object.values(tokenState.tokens).map((v, k) => v)
         if (tokensToExclude.length > 0) {
-            tokensToExclude.map((symbol) => {
+            tokensToExclude.map((symbol, idx) => {
                 _filteredTokens = _filteredTokens.filter((token) => {
-                    // CSPR <=> WCSPR cases
-                    if (symbol === 'CSPR' && token.symbol === 'WCSPR') {
-                        return
-                    }
-
-                    if (symbol === 'WCSPR' && token.symbol === 'CSPR') {
-                        return
-                    }
-
                     // main case
                     if (symbol !== token.symbol) {
                         return token
@@ -187,6 +180,9 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
             })
         }
+        _filteredTokens = position == 0 && firstToken || position == 1 && !firstToken ?
+          _filteredTokens : _filteredTokens.filter(token => token.symbol !== 'WCSPR')
+
         return _filteredTokens.map((token) => {
             const {chainId, symbol, name, amount, logoURI}: any = token;
             return (

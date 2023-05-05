@@ -425,19 +425,19 @@ const LiquiditySwapper = ({
           <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" }, onClick: async () => {
               await requestIncreaseAllowance(
-                -freeAllowanceA,
+                Math.abs(freeAllowanceA),
                 firstTokenSelected.contractHash
               );
-            }}}>Approve {freeAllowanceA} {firstTokenSelected.symbol}</Button>
+            }}}>Approve {Math.abs(freeAllowanceA)} {firstTokenSelected.symbol}</Button>
         )}
         {!isApprovedB && isConnected && (
           <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""}, onClick: async () => {
               await requestIncreaseAllowance(
-                -freeAllowanceB,
+                Math.abs(freeAllowanceB),
                 secondTokenSelected.contractHash
               );
-            }}}>Approve {freeAllowanceB} {secondTokenSelected.symbol}</Button>
+            }}}>Approve {Math.abs(freeAllowanceB)} {secondTokenSelected.symbol}</Button>
         )}
 
         {isApprovedA && isApprovedB && isConnected && (

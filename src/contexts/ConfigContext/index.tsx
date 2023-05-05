@@ -86,6 +86,7 @@ export const ConfigContextWithReducer = ({
     });
 
     try {
+      console.log("amount", amount, contractHash)
       const [deployHash, deployResult] = await signAndDeployAllowance(
         casperClient,
         walletState.wallet,
