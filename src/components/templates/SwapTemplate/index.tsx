@@ -234,7 +234,6 @@ export const SwapTemplate = ({isMobile}) => {
                     progressBar={progressBar}
                     getProgress={getProgress}
                     calculateUSDtokens={calculateUSDtokens}
-                    pairState={pairState}
                     refresh={refresh}
                     firstTokenSelected={firstTokenSelected}
                     secondTokenSelected={secondTokenSelected}
