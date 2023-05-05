@@ -86,11 +86,6 @@ const TokenSwapper = ({
   }, [amountSwapTokenA, amountSwapTokenB]);
 
   useEffect(() => {
-    // prevent unnecesary switch
-    if (lastChanged === 'A') {
-      return
-    }
-
     //Todo Compartido
     const switchToken = async () => {
       lastChanged == 'A'
@@ -100,7 +95,7 @@ const TokenSwapper = ({
 
     switchToken().catch((e) => console.log(e));
 
-  }, [firstTokenSelected]);
+  }, [lastChanged]);
 
   //TODO Compartido
   function onSwitchTokensHandler() {
