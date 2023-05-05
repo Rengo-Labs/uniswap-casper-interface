@@ -134,7 +134,6 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     const handleRemoveLiquidity =  () => {
         setRemoveLiquidityInput((prevState) => 0)
-        console.log("close popup", removeLiquidityInput)
         setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
     }
 
@@ -154,6 +153,7 @@ export const LiquidityTemplate = ({isMobile}) => {
           gasFee,
           removeLiquidityToggle)
 
+        setRemoveLiquidityInput((prevState) => 0)
         setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
     }
 
