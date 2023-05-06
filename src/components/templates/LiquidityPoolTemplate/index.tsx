@@ -107,7 +107,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         asset0: `${newRow.reserve0} ${newRow.token0Symbol}`,
         asset1: `${newRow.reserve1} ${newRow.token1Symbol}`,
       },
-      yourShare: Number(newRow.balance) / Number(newRow.totalSupply) + "%",
+      yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(2),
       liqudiity: convertNumber(parseFloat(newRow.totalLiquidityUSD)),
       volume7D: newRow.volume7dUSD || "0",
       fees7D: `${new BigNumber(newRow.volume7d).times(0.003).toFixed(2)}`,
