@@ -18,7 +18,7 @@ interface TokensContext {
     onSwitchTokens,
     firstTokenSelected: Token,
     secondTokenSelected: Token,
-    filterPopupTokens: (excludedTokens: any[], position: number, hasCSPR: boolean) => any[],
+    filterPopupTokens: (excludedTokens: any[], isFirstInput: boolean) => any[],
     filterTokenPairsByToken: (token: Token, pairState: PairState) => any[]
     resetTokens: () => void,
     getHistoricalTokenPrices?: (packageHash: string) => Promise<any>,
@@ -60,8 +60,8 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
         return TokenResponsibilities(tokenState, tokenDispatch).onSwitchTokens()
     }
 
-    const filterPopupTokens = (excludedTokens: any[], position: number, firstToken: boolean) : any[] => {
-      return TokenResponsibilities(tokenState, tokenDispatch).filterPopupTokens(excludedTokens, position, firstToken)
+    const filterPopupTokens = (excludedTokens: any[], isFirstInput) : any[] => {
+      return TokenResponsibilities(tokenState, tokenDispatch).filterPopupTokens(excludedTokens, isFirstInput)
     }
 
     const filterTokenPairsByToken = (token, pairState): any[] => {
