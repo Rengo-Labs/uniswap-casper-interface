@@ -172,38 +172,42 @@ export const LiquidityTemplate = ({isMobile}) => {
 
         if (action === 'DeleteLP') {
 
-            setRemoveLiquidityToggle(true)
-            const data = {
-                id: item.contractHash,
-                tokenName: item.name,
-                liquidity: item.balance,
-                allowance: parseFloat(item.allowance),
-                firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
-                firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
-                firstSymbol: item.token0Symbol.includes('CSPR') ? 'CSPR' : item.token0Symbol,
-                firstLiquidity: item.reserve0,
-                firstRate: '',
-                firstHash: item.contract0,
-                secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
-                secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
-                secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
-                secondLiquidity: item.reserve1,
-                secondRate: '',
-                secondHash: item.contract1,
-                decimals: item.decimals
-            }
-            setRemoveLiquidityData((prevState) => ({
-                ...prevState,
-                ...data
-            }))
-
-            setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
-            setShowRemoveLiquidityDialog(true)
+            createRemovingDataForPopup(item)
         }
 
         if (action === 'Swap') {
             handleNavigate(item)
         }
+    }
+
+    const createRemovingDataForPopup = (item) => {
+        setRemoveLiquidityToggle(true)
+        const data = {
+            id: item.contractHash,
+            tokenName: item.name,
+            liquidity: item.balance,
+            allowance: parseFloat(item.allowance),
+            firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
+            firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
+            firstSymbol: item.token0Symbol.includes('CSPR') ? 'CSPR' : item.token0Symbol,
+            firstLiquidity: item.reserve0,
+            firstRate: '',
+            firstHash: item.contract0,
+            secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
+            secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
+            secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
+            secondLiquidity: item.reserve1,
+            secondRate: '',
+            secondHash: item.contract1,
+            decimals: item.decimals
+        }
+        setRemoveLiquidityData((prevState) => ({
+            ...prevState,
+            ...data
+        }))
+
+        setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
+        setShowRemoveLiquidityDialog(true)
     }
 
     const loadUserLP = () => {
@@ -244,6 +248,11 @@ export const LiquidityTemplate = ({isMobile}) => {
             onSelectSecondToken(tokenState.tokens[t1])
         }
 
+        if (isRemovingPopupOpen) {
+            createRemovingDataForPopup(pairState[`${t0}-${t1}`] ?? pairState[`${t1}-${t0}`])
+            setRemovingPopup(false)
+        }
+        // TODO set information?
         updateLiquidityDetail(
           firstTokenSelected,
           secondTokenSelected,

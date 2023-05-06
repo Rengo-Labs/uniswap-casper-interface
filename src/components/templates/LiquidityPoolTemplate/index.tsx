@@ -14,6 +14,7 @@ import {
   getLocalStorageData,
   setLocalStorageData,
 } from "../../../commons/utils/persistData";
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 
 interface IPoolDetailRow {
   token0Icon?: string;
@@ -58,6 +59,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const { progressBar, clearProgress, getProgress } = useContext(
     ProgressBarProviderContext
   );
+  const {setRemovingPopup} = useContext(LiquidityProviderContext)
 
   const navigate = useNavigate();
   const [showpoolDetails, setShowPoolDetails] = useState<boolean>(false);
@@ -96,7 +98,15 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     });
   };
 
-  const handleTrash = () => {};
+  const handleTrash = (name) => {
+    const pair = pairState[name]
+    navigate({
+      pathname: "/liquidity",
+      search: `token0=${pair.token0Symbol}&token1=${pair.token1Symbol}`,
+    });
+    setRemovingPopup(true)
+  }
+
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
     setPoolDetailRow({
