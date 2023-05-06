@@ -53,21 +53,23 @@ const poolDetailsRowDefault = {
 
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
-  const { getPoolList } = useContext(PairsContextProvider);
+  const { getPoolList, pairState } = useContext(PairsContextProvider);
   const { refresh } = useContext(StateHashProviderContext);
   const { progressBar, clearProgress, getProgress } = useContext(
     ProgressBarProviderContext
   );
 
-  const data = getPoolList();
   const navigate = useNavigate();
   const [showpoolDetails, setShowPoolDetails] = useState<boolean>(false);
   const [showStakedOnlyOnTable, setShowStakedOnlyOnTable] =
     useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [poolDetailRow, setPoolDetailRow] = useState<IPoolDetailRow>(poolDetailsRowDefault);
-  const [tableData, setTableData] = useState<any[]>(
-    data.map((item) => ({
+  const [tableData, setTableData] = useState<any[]>([]);
+
+  useEffect(() => {
+
+    setTableData(getPoolList().map((item) => ({
       name: item.name,
       pool: `${item.token0Symbol} - ${item.token1Symbol}`,
       token0Icon: item.token0Icon,
@@ -78,8 +80,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
       apr: "0",
       balance: item.balance,
       isFavorite: getLocalStorageData("pool")?.includes(item.name),
-    }))
-  );
+    })))
+  }, [pairState])
 
   const handleShowPoolDetails = () => {
     setPoolDetailRow(poolDetailsRowDefault)
@@ -96,7 +98,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
 
   const handleTrash = () => {};
   const handleView = (name: string) => {
-    const newRow = data.filter((item) => item.name === name)[0];
+    const newRow = getPoolList().filter((item) => item.name === name)[0];
     setPoolDetailRow({
       token0Icon: newRow.token0Icon,
       token1Icon: newRow.token1Icon,
