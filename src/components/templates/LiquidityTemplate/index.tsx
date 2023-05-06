@@ -17,6 +17,7 @@ import {LPContainer, RemoveLiquidityDialog} from 'rengo-ui-kit';
 import {useNavigate} from "react-router";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
+import isCSPRValid from "../../../hooks/isCSPRValid";
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -47,7 +48,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         onSwitchTokens,
         filterTokenPairsByToken
     } = useContext(TokensProviderContext)
-
+    const { showNotification } = isCSPRValid();
     const [searchParams, setSearchParams] = useSearchParams()
     const [totalSupply, setTotalSupply] = useState('0')
     const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
@@ -94,6 +95,15 @@ export const LiquidityTemplate = ({isMobile}) => {
     const handleChangeInput = (value) => {
         setRemoveLiquidityInput(value)
         handleRemoveCalculation(value)
+    }
+
+    const handleChangeGasFee = (value) => {
+        const gasFeeValue = value ? parseFloat(value) : 0;
+        if (gasFeeValue === 0)  {
+            showNotification('The gas fee needs to be greater than 0')
+            return;
+        }
+        gasFeeSetter(value);
     }
     const handleRemoveLiquidityToggle = (e) => {
 
@@ -398,7 +408,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                   slippage={slippageTolerance}
                   networkFee={gasFee}
                   setSlippage={updateSlippageTolerance}
-                  setNetworkFee={gasFeeSetter}
+                  setNetworkFee={handleChangeGasFee}
                 />
                 <LiquiditySwapper onIncreaseAllow={onIncreaseAllow}
                                   onConnectWallet={onConnectWallet}
