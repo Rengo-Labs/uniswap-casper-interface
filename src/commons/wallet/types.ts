@@ -1,4 +1,5 @@
 export const enum WalletName {
+  METAMASK_FLASK = 'Metamask Flask',
   CASPER_SIGNER = 'Casper Signer',
   CASPER_WALLET = 'Casper Wallet',
   TORUS = 'Torus',
