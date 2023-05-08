@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {formatNaN, getListPath, Token} from '../../../commons';
-import { globalStore } from '../../../store/store';
+import {formatNaN, Token} from '../../../commons';
 import isCSPRValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
@@ -16,7 +15,6 @@ interface TokenSwapperProps {
   getProgress,
   refresh,
   calculateUSDtokens,
-  pairState,
   firstTokenSelected,
   secondTokenSelected,
   onSelectFirstToken,
@@ -43,7 +41,6 @@ const TokenSwapper = ({
                         getProgress,
                         refresh,
                         calculateUSDtokens,
-                        pairState,
                         firstTokenSelected,
                         secondTokenSelected,
                         onSelectFirstToken,
@@ -62,7 +59,6 @@ const TokenSwapper = ({
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
-  const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
   const [exchangeRateA, exchangeRateASetter] = useState<number>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -73,8 +69,6 @@ const TokenSwapper = ({
   const [lastChanged, setLastChanged] = useState('A');
   const [valueAUSD, setValueAUSD] = useState('0.00');
   const [valueBUSD, setValueBUSD] = useState('0.00');
-
-  const { slippageTolerance, updateSlippageTolerance } = globalStore()
 
   useEffect(() => {
     const t0 = searchParams.get('token0');
@@ -92,12 +86,6 @@ const TokenSwapper = ({
   }, [amountSwapTokenA, amountSwapTokenB]);
 
   useEffect(() => {
-    // prevent unnecesary switch
-    if (lastChanged === 'A') {
-      return
-    }
-
-    //Todo Compartido
     const switchToken = async () => {
       lastChanged == 'A'
           ? await changeTokenA(amountSwapTokenB)
@@ -106,14 +94,12 @@ const TokenSwapper = ({
 
     switchToken().catch((e) => console.log(e));
 
-  }, [firstTokenSelected]);
+  }, [lastChanged]);
 
-  //TODO Compartido
   function onSwitchTokensHandler() {
     onSwitchTokens();
     if (lastChanged == 'A') {
       changeTokenB(amountSwapTokenA.toString());
-      setLastChanged('B');
     } else if (lastChanged == 'B') {
       changeTokenA(amountSwapTokenB.toString());
       setLastChanged('A');
@@ -152,9 +138,11 @@ const TokenSwapper = ({
         filteredValue,
         firstTokenSelected
     );
-
     calculateUSDValues(value, tokensToTransfer, firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, exchangeRateA, exchangeRateB, firstTokenSelected.symbolPair)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
+    if(value) {
+        handleValidate(typeof value === "number" ? value : parseFloat(value), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0);
+    }
   }
 
   async function changeTokenB(value) {
@@ -178,35 +166,18 @@ const TokenSwapper = ({
 
     calculateUSDValues(value, tokensToTransfer, firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, exchangeRateA, exchangeRateB, secondTokenSelected.symbolPair)
     amountSwapTokenASetter(formatNaN(tokensToTransfer))
+    if(tokensToTransfer) {
+        handleValidate(parseFloat(tokensToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0)
+    }
   }
 
-  //TODO Compartido
   const handleChangeA = async (e) => {
     setCurrentValue(e)
-    // TODO: check if we need to show this when wallet is not connected
-      handleValidate(
-        parseFloat(e),
-        parseFloat(firstTokenSelected.amount),
-        gasPriceSelectedForSwapping || 0
-    );
     await changeTokenA(e)
   };
 
-  //TODO Compartido
   const handleChangeB = async (e) => {
     await changeTokenB(e);
-    const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
-        firstTokenSelected,
-        secondTokenSelected,
-        parseFloat(e),
-        secondTokenSelected
-    )
-      // TODO check if we need to show this when wallet is not connected
-      handleValidate(
-        parseFloat(tokensToTransfer),
-        parseFloat(firstTokenSelected.amount),
-        gasPriceSelectedForSwapping || 0
-    )
   }
 
   const freeAllowance = new BigNumber(firstTokenSelected.allowance || 0)
@@ -217,12 +188,10 @@ const TokenSwapper = ({
       firstTokenSelected.symbol == 'CSPR' ||
       (firstTokenSelected.symbol != 'CSPR' && freeAllowance >= 0);
 
-  //Todo compatido
   const refreshPrices = async () => {
     await refresh()
   };
 
-  //TODO Compartido
   const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected) => {
     exchangeRateASetter(rateA);
     exchangeRateBSetter(rateB);
@@ -263,11 +232,11 @@ const TokenSwapper = ({
     if (openPoolDialog.firstSelector) {
       onSelectFirstToken(token)
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, secondTokenSelected, amountSwapTokenA, token)
-      amountSwapTokenBSetter(formatNaN(tokensToTransfer))
+      amountSwapTokenASetter(formatNaN(tokensToTransfer))
     } else {
       onSelectSecondToken(token)
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, firstTokenSelected, amountSwapTokenB, token)
-      amountSwapTokenASetter(formatNaN(tokensToTransfer))
+      amountSwapTokenBSetter(formatNaN(tokensToTransfer))
     }
     setOpenPoolDialog(prevState => ({...prevState, open: false}))
   }
@@ -347,8 +316,8 @@ const TokenSwapper = ({
         {openPoolDialog.open && (
             <CreatePoolDialog
                 closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-                tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], getCSPRPosition(), openPoolDialog.firstSelector)}
-                popularTokensData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], getCSPRPosition(), openPoolDialog.firstSelector)}
+                tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector)}
+                popularTokensData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector)}
                 onSelectToken={(name) => {
                   selectAndCloseToken(tokenState.tokens[name])
                 }}

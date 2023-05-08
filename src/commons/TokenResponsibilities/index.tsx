@@ -73,7 +73,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                           )
                           .then((response) => {
                               //console.log('balance', token, response)
-                              console.log(x, convertBigNumberToUIString(new BigNumber(response)).toString())
+                              console.log(x, convertBigNumberToUIString(new BigNumber(response), token.decimals).toString())
                               tokenDispatch({
                                   type: TokenActions.LOAD_BALANCE,
                                   payload: {
@@ -88,12 +88,14 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     ]);
                 } else {
                     return casperClient.getBalance(wallet).then((balance) => {
-                        //console.log('balance', convertBigNumberToUIString(balance))
+                        console.log('balance', convertBigNumberToUIString(balance, token.decimals))
                         tokenDispatch({
                             type: TokenActions.LOAD_BALANCE,
                             payload: {
                                 name: 'CSPR',
-                                amount: convertBigNumberToUIString(balance),
+                                amount: convertBigNumberToUIString(
+                                  balance,
+                                  token.decimals),
                             },
                         });
                     });
@@ -114,7 +116,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     payload: {
                         name: x,
                         allowance: convertBigNumberToUIString(
-                          new BigNumber(0)
+                          new BigNumber(0),
+                          tokenState.tokens[x].decimals
                         ),
                     },
                 })
@@ -124,7 +127,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     payload: {
                         name: x,
                         amount: convertBigNumberToUIString(
-                          new BigNumber(0)
+                          new BigNumber(0),
+                          tokenState.tokens[x].decimals
                         ),
                     },
                 })
@@ -133,7 +137,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     type: TokenActions.LOAD_BALANCE,
                     payload: {
                         name: 'CSPR',
-                        amount: convertBigNumberToUIString(new BigNumber(0)),
+                        amount: convertBigNumberToUIString(new BigNumber(0), tokenState.tokens[x].decimals),
                     },
                 })
             }
@@ -167,7 +171,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     //TODO adjust the response from the UI KIT to manage the same structure here
-    const filterPopupTokens = (tokensToExclude: any[], position, firstToken: boolean): any[] => {
+    const filterPopupTokens = (tokensToExclude: any[], isFirstInput): any[] => {
         let _filteredTokens = Object.values(tokenState.tokens).map((v, k) => v)
         if (tokensToExclude.length > 0) {
             tokensToExclude.map((symbol, idx) => {
@@ -180,8 +184,18 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
             })
         }
-        _filteredTokens = position == 0 && firstToken || position == 1 && !firstToken ?
-          _filteredTokens : _filteredTokens.filter(token => token.symbol !== 'WCSPR')
+
+        if(tokensToExclude[0] === 'CSPR' && isFirstInput) {
+            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'CSPR')
+        } else if(tokensToExclude[0] === 'WCSPR' && isFirstInput) {
+            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'WCSPR')
+        } else if(tokensToExclude[1] === 'CSPR' && !isFirstInput) {
+            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'CSPR')
+        } else if(tokensToExclude[1] === 'WCSPR' && !isFirstInput) {
+            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'WCSPR')
+        } else if (tokensToExclude.includes('CSPR') || tokensToExclude.includes('WCSPR')) {
+            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'WCSPR' && token.symbol !== 'CSPR')
+        }
 
         return _filteredTokens.map((token) => {
             const {chainId, symbol, name, amount, logoURI}: any = token;
@@ -198,13 +212,18 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     const filterTokenPairsByToken = (token, pairState: PairState) => {
+        const filter = token === 'CSPR' ? 'WCSPR' : token
         const result = Object.values(pairState)
           .filter(pl => {
-              return pl.token0Symbol.includes(token) || pl.token1Symbol.includes(token)
+              return filter === pl.token0Symbol || filter === pl.token1Symbol
           })
           .map((pl) => {
-              return pl.token1Symbol.includes(token) ? tokenState.tokens[pl.token0Symbol] : tokenState.tokens[pl.token1Symbol]
+              return pl.token1Symbol.includes(filter) ? tokenState.tokens[pl.token0Symbol] : tokenState.tokens[pl.token1Symbol]
           })
+
+        if (token !== 'CSPR' && token !== 'WCSPR')
+            result.push(tokenState.tokens['CSPR'])
+
         return result.map((token) => {
             const {chainId, symbol, name, amount, logoURI}: any = token;
             return (

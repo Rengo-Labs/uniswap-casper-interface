@@ -42,7 +42,7 @@ export const SwapTemplate = ({isMobile}) => {
         getHistoricalTokensChartPrices
     } = useContext(TokensProviderContext)
     // Details requirements
-    const { handleValidate } =
+    const { handleValidate, showNotification } =
         isCSPRValid();
     const [pairPath, setPairPath] = useState([])
     const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
@@ -72,6 +72,10 @@ export const SwapTemplate = ({isMobile}) => {
 
     const handleChangeGasFee = (value) => {
         const gasFeeValue = value ? parseFloat(value) : 0;
+        if (gasFeeValue === 0)  {
+            showNotification('The gas fee needs to be greater than 0')
+            return;
+        }
         gasFeeSetter(value);
         handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
     }
@@ -234,7 +238,6 @@ export const SwapTemplate = ({isMobile}) => {
                     progressBar={progressBar}
                     getProgress={getProgress}
                     calculateUSDtokens={calculateUSDtokens}
-                    pairState={pairState}
                     refresh={refresh}
                     firstTokenSelected={firstTokenSelected}
                     secondTokenSelected={secondTokenSelected}

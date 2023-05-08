@@ -97,7 +97,6 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         // do different simple look up
         lookUp = `${tB}-${tA}`
         pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
-
         if (pairData) {
             //console.log('b', pairData)
             return {

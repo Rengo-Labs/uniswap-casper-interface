@@ -17,6 +17,7 @@ import {LPContainer, RemoveLiquidityDialog} from 'rengo-ui-kit';
 import {useNavigate} from "react-router";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
+import isCSPRValid from "../../../hooks/isCSPRValid";
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -47,7 +48,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         onSwitchTokens,
         filterTokenPairsByToken
     } = useContext(TokensProviderContext)
-
+    const { showNotification } = isCSPRValid();
     const [searchParams, setSearchParams] = useSearchParams()
     const [totalSupply, setTotalSupply] = useState('0')
     const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
@@ -71,6 +72,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         firstLiquidity: '0',
         firstRate: '0',
         firstHash: '',
+        decimals: 9,
         secondIcon: '',
         secondName: 'WETH',
         secondSymbol: 'WETH',
@@ -93,6 +95,15 @@ export const LiquidityTemplate = ({isMobile}) => {
     const handleChangeInput = (value) => {
         setRemoveLiquidityInput(value)
         handleRemoveCalculation(value)
+    }
+
+    const handleChangeGasFee = (value) => {
+        const gasFeeValue = value ? parseFloat(value) : 0;
+        if (gasFeeValue === 0)  {
+            showNotification('The gas fee needs to be greater than 0')
+            return;
+        }
+        gasFeeSetter(value);
     }
     const handleRemoveLiquidityToggle = (e) => {
 
@@ -122,9 +133,9 @@ export const LiquidityTemplate = ({isMobile}) => {
         const secondAmount = new BigNumber(removeLiquidityData.secondLiquidity).multipliedBy(inputPercent)
         const newVar = (prevState) => ({
             ...prevState,
-            lpAmount: lpAmount.toNumber().toFixed(8),
-            firstAmount: firstAmount.toNumber().toFixed(8),
-            secondAmount: secondAmount.toNumber().toFixed(8),
+            lpAmount: lpAmount.toNumber().toFixed(removeLiquidityData.decimals),
+            firstAmount: firstAmount.toNumber().toFixed(removeLiquidityData.decimals),
+            secondAmount: secondAmount.toNumber().toFixed(removeLiquidityData.decimals),
             allowance: lpAmount.toNumber() - removeLiquidityData.allowance
         });
 
@@ -133,7 +144,6 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     const handleRemoveLiquidity =  () => {
         setRemoveLiquidityInput((prevState) => 0)
-        console.log("close popup", removeLiquidityInput)
         setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
     }
 
@@ -153,6 +163,7 @@ export const LiquidityTemplate = ({isMobile}) => {
           gasFee,
           removeLiquidityToggle)
 
+        setRemoveLiquidityInput((prevState) => 0)
         setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
     }
 
@@ -171,37 +182,42 @@ export const LiquidityTemplate = ({isMobile}) => {
 
         if (action === 'DeleteLP') {
 
-            setRemoveLiquidityToggle(true)
-            const data = {
-                id: item.contractHash,
-                tokenName: item.name,
-                liquidity: item.balance,
-                allowance: parseFloat(item.allowance),
-                firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
-                firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
-                firstSymbol: item.token0Symbol.includes('CSPR') ? 'CSPR' : item.token0Symbol,
-                firstLiquidity: item.reserve0,
-                firstRate: '',
-                firstHash: item.contract0,
-                secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
-                secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
-                secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
-                secondLiquidity: item.reserve1,
-                secondRate: '',
-                secondHash: item.contract1
-            }
-            setRemoveLiquidityData((prevState) => ({
-                ...prevState,
-                ...data
-            }))
-
-            setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
-            setShowRemoveLiquidityDialog(true)
+            createRemovingDataForPopup(item)
         }
 
         if (action === 'Swap') {
             handleNavigate(item)
         }
+    }
+
+    const createRemovingDataForPopup = (item) => {
+        setRemoveLiquidityToggle(true)
+        const data = {
+            id: item.contractHash,
+            tokenName: item.name,
+            liquidity: item.balance,
+            allowance: parseFloat(item.allowance),
+            firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
+            firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
+            firstSymbol: item.token0Symbol.includes('CSPR') ? 'CSPR' : item.token0Symbol,
+            firstLiquidity: item.reserve0,
+            firstRate: '',
+            firstHash: item.contract0,
+            secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
+            secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
+            secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
+            secondLiquidity: item.reserve1,
+            secondRate: '',
+            secondHash: item.contract1,
+            decimals: item.decimals
+        }
+        setRemoveLiquidityData((prevState) => ({
+            ...prevState,
+            ...data
+        }))
+
+        setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
+        setShowRemoveLiquidityDialog(true)
     }
 
     const loadUserLP = () => {
@@ -242,6 +258,11 @@ export const LiquidityTemplate = ({isMobile}) => {
             onSelectSecondToken(tokenState.tokens[t1])
         }
 
+        if (isRemovingPopupOpen) {
+            createRemovingDataForPopup(pairState[`${t0}-${t1}`] ?? pairState[`${t1}-${t0}`])
+            setRemovingPopup(false)
+        }
+        // TODO set information?
         updateLiquidityDetail(
           firstTokenSelected,
           secondTokenSelected,
@@ -324,7 +345,6 @@ export const LiquidityTemplate = ({isMobile}) => {
             setFirstReserve(secondReserve);
             setSecondReserve(firstReserve);
         }*/
-
         setFirstReserve(firstReserve);
         setSecondReserve(secondReserve);
         const totalLP = calculateTotalLP(
@@ -388,7 +408,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                   slippage={slippageTolerance}
                   networkFee={gasFee}
                   setSlippage={updateSlippageTolerance}
-                  setNetworkFee={gasFeeSetter}
+                  setNetworkFee={handleChangeGasFee}
                 />
                 <LiquiditySwapper onIncreaseAllow={onIncreaseAllow}
                                   onConnectWallet={onConnectWallet}

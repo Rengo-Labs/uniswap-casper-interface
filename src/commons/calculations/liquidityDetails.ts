@@ -47,7 +47,7 @@ export const calculateLiquidityDetails = async (
       const liquidityA = new BigNumber(reserve0)
       const liquidityB = new BigNumber(reserve1)
       const inputValue = new BigNumber(inputValueRaw).times(Math.pow(10,token.decimals))
-      
+
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
 

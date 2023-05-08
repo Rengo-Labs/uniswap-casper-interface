@@ -14,6 +14,7 @@ import {
   getLocalStorageData,
   setLocalStorageData,
 } from "../../../commons/utils/persistData";
+import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 
 interface IPoolDetailRow {
   token0Icon?: string;
@@ -53,21 +54,24 @@ const poolDetailsRowDefault = {
 
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
-  const { getPoolList } = useContext(PairsContextProvider);
+  const { getPoolList, pairState } = useContext(PairsContextProvider);
   const { refresh } = useContext(StateHashProviderContext);
   const { progressBar, clearProgress, getProgress } = useContext(
     ProgressBarProviderContext
   );
+  const {setRemovingPopup} = useContext(LiquidityProviderContext)
 
-  const data = getPoolList();
   const navigate = useNavigate();
   const [showpoolDetails, setShowPoolDetails] = useState<boolean>(false);
   const [showStakedOnlyOnTable, setShowStakedOnlyOnTable] =
     useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [poolDetailRow, setPoolDetailRow] = useState<IPoolDetailRow>(poolDetailsRowDefault);
-  const [tableData, setTableData] = useState<any[]>(
-    data.map((item) => ({
+  const [tableData, setTableData] = useState<any[]>([]);
+
+  useEffect(() => {
+
+    setTableData(getPoolList().map((item) => ({
       name: item.name,
       pool: `${item.token0Symbol} - ${item.token1Symbol}`,
       token0Icon: item.token0Icon,
@@ -78,8 +82,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
       apr: "0",
       balance: item.balance,
       isFavorite: getLocalStorageData("pool")?.includes(item.name),
-    }))
-  );
+    })))
+  }, [pairState])
 
   const handleShowPoolDetails = () => {
     setPoolDetailRow(poolDetailsRowDefault)
@@ -94,9 +98,17 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     });
   };
 
-  const handleTrash = () => {};
+  const handleTrash = (name) => {
+    const pair = pairState[name]
+    navigate({
+      pathname: "/liquidity",
+      search: `token0=${pair.token0Symbol}&token1=${pair.token1Symbol}`,
+    });
+    setRemovingPopup(true)
+  }
+
   const handleView = (name: string) => {
-    const newRow = data.filter((item) => item.name === name)[0];
+    const newRow = getPoolList().filter((item) => item.name === name)[0];
     setPoolDetailRow({
       token0Icon: newRow.token0Icon,
       token1Icon: newRow.token1Icon,
@@ -107,7 +119,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         asset0: `${newRow.reserve0} ${newRow.token0Symbol}`,
         asset1: `${newRow.reserve1} ${newRow.token1Symbol}`,
       },
-      yourShare: Number(newRow.balance) / Number(newRow.totalSupply) + "%",
+      yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(2),
       liqudiity: convertNumber(parseFloat(newRow.totalLiquidityUSD)),
       volume7D: newRow.volume7dUSD || "0",
       fees7D: `${new BigNumber(newRow.volume7d).times(0.003).toFixed(2)}`,

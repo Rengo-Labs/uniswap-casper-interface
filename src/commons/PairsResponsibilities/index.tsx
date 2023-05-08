@@ -70,6 +70,12 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                             pair.contractHash,
                         )
                         .then((response) => {
+                            console.log(convertBigNumberToUIString(
+                              new BigNumber(response)
+                            ), convertBigNumberToUIString(
+                              new BigNumber(response),
+                              pair.decimals
+                            ))
                             pairDispatch({
                                 type: PairActions.ADD_ALLOWANCE_TO_PAIR,
                                 payload: {
@@ -86,6 +92,12 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                             pair.contractHash,
                         )
                         .then((response) => {
+                            console.log(convertBigNumberToUIString(
+                              new BigNumber(response)
+                            ), convertBigNumberToUIString(
+                              new BigNumber(response),
+                              pair.decimals
+                            ))
                             pairDispatch({
                                 type: PairActions.ADD_BALANCE_TO_PAIR,
                                 payload: {
