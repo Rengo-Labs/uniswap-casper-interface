@@ -14,6 +14,7 @@ import {ChildrenContainer, Container} from "./styles";
 import {WalletProviderContext} from "../contexts/WalletContext";
 import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
 import {ConfigProviderContext} from "../contexts/ConfigContext";
+import CasperLoader from "../components/organisms/CasperLoader";
 export interface ILayoutProps {
     children?: React.ReactElement;
 }
@@ -158,7 +159,9 @@ const Layout = ({children}: ILayoutProps) => {
             <ChildrenContainer
                 menuHeight={menuHeight}
                 isMobile={isMobile}>
-                {children}
+                <CasperLoader>
+                    {children}
+                </CasperLoader>
             </ChildrenContainer>
         </Container>
     );
