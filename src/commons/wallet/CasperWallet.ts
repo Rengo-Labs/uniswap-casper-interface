@@ -250,7 +250,7 @@ export class CasperWallet implements Wallet{
       // Convert the deploy to a raw json
       const deployJSON = DeployUtil.deployToJson(deploy)
       // Sign the deploy with the signer
-      const signedDeployJSON = await this.getCasperWalletInstance().sign(JSON.stringify(deployJSON), this.publicKeyHex, this.publicKeyHex);
+      const signedDeployJSON = await this.getCasperWalletInstance().sign(JSON.stringify(deployJSON), this.publicKeyHex.toLowerCase());
 
       // Convert the signed deploy json to a deploy
       return DeployUtil.setSignature(
