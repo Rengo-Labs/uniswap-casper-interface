@@ -7,6 +7,7 @@ import {WalletName} from "../../../commons";
 import torusWallet from "../../../assets/newDesignIcons/torus-wallet.svg";
 import {globalStore} from "../../../store/store";
 import lineBreakIcon from "../../../assets/newDesignIcons/linkbreak.svg";
+
 export const PopupsContainer = () => {
     const {
         showSettings,
@@ -53,14 +54,14 @@ export const PopupsContainer = () => {
     ]
 
     const WALLET_CONNECTED_OPTIONS = [
-        // TODO commented out for now, will be added later
-        // {
-        //     id: 'dmx0031b2b421',
-        //     key: 'account',
-        //     name: 'My Account',
-        //     iconName: 'Copy',
-        //     type: 'Redirect',
-        // },
+        {
+            id: 'dmx0031b2b421',
+            key: 'account',
+            name: 'My Account',
+            iconName: 'Copy',
+            type: 'Redirect',
+            onClick: () => console.log('/account')
+        },
         {
             id: '3d23f23xxx88nf',
             key: 'wallet',

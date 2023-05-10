@@ -47,20 +47,20 @@ export class BlockchainAPI {
     }
     const res = await axios.get(path)
 
+    
+
     if (res.data.data.length > 0) {
-      return res.data.data.map(item => {
-        return {
-          "deployHash": item.deploy_hash,
-          "blockHash": item.block_hash,
-          "publicKey": item.caller_public_key,
-          "packageHash": item.contract_package,
-          "cost": item.cost,
-          "payment": item.payment_amount,
-          "timestamp": item.timestamp,
-          "status": item.status,
-          "amount": item.args["amount"]["parsed"]
-        } as BlockchainInfo
-      })
+      return res.data.data.map(item => ({
+        "deployHash": item.deploy_hash,
+        "blockHash": item.block_hash,
+        "publicKey": item.caller_public_key,
+        "packageHash": item.contract_package,
+        "cost": item.cost,
+        "payment": item.payment_amount,
+        "timestamp": item.timestamp,
+        "status": item.status,
+        "amount": item.args?.amount?.parsed
+      })) as BlockchainInfo[]
     }
 
     return []

@@ -8,11 +8,11 @@ const client = new BlockchainAPI()
 const BlockchainResponsibilities = (wallet: Wallet) => {
 
     const getInfoByTopic = async () => {
-        return client.getInfoByTopic(wallet.publicKeyHex, 1, 25)
+      return client.getInfoByTopic(wallet.publicKeyHex, 1, 25)
     }
 
     const getAccountInfo = async () => {
-        return client.getAccountInfo(wallet.publicKeyHex)
+      return client.getAccountInfo(wallet.publicKeyHex)
     }
 
     return {
