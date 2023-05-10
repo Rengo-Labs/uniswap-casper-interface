@@ -22,13 +22,13 @@ interface IAccountTableInfo {
 }
 
 const MatchedKeys = new Map([
-  ['accountHash', 'Account Hash'],
   ['publicKey', 'Public Key'],
-  ['totalRewardReceived', 'Total reward received'],
-  ['stakedAsDelegator', 'Delegated Participation'],
+  ['accountHash', 'Account Hash'],
+  ['totalRewardReceived', 'Total Rewards Received'],
   ['totalBalance', 'Total Balance'],
-  ['liquid', 'Liquidity'],
-  ['undelegating', 'In Rescue'],
+  ['stakedAsDelegator', 'Stake as Delegator'],
+  ['liquid', 'Liquid'],
+  ['undelegating', 'Undelegating'],
 ])
 
 const csprAmounts = ['totalRewardReceived', 'stakedAsDelegator', 'totalBalance', 'liquid', 'undelegating' ]
@@ -67,12 +67,6 @@ export const AccountTemplate = ({isMobile}) => {
         })
       }
     }
-
-    infoTable.push({
-      key: 'Raw Data',
-      type: MyAccountInfoDataTypes.Link,
-      value: "<a href='https://testnet.cspr.live/deploy/6dfb274ff76ae9775d8d6436cb7ec7b9a9fb2f9d0ba0bebf95ba9ecd12d07140/' target='_blank'>Show Raw Data</a>"
-    })
 
     setAccountInfoData(infoTable)
   }

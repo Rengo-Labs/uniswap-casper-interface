@@ -9,7 +9,7 @@ export const Account = () => {
 
     return (
         <Layout>
-            <AccountTemplate isMobile={isMobile}/>
+          <AccountTemplate isMobile={isMobile}/>
         </Layout>
     );
 }
