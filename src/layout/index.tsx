@@ -15,6 +15,9 @@ import {WalletProviderContext} from "../contexts/WalletContext";
 import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
 import {ConfigProviderContext} from "../contexts/ConfigContext";
 import CasperLoader from "../components/organisms/CasperLoader";
+import { useLocation } from 'react-router-dom'
+import { useLoader } from '../hooks/useLoader'
+
 export interface ILayoutProps {
     children?: React.ReactElement;
 }
@@ -34,8 +37,11 @@ const GlobalStyle = createGlobalStyle<{ selectedTheme: string }>`
     background-color: ${({selectedTheme}) => selectedTheme === AvailableThemes.Default ? '#E5F5FC' : '#241E52'};
   }
 `;
+
 const Layout = ({children}: ILayoutProps) => {
     const menuRef = useRef(null);
+    const location = useLocation()
+    const {setLoader, loading} = useLoader()
     const navigate = useNavigate();
     const {selectedTheme, toggleTheme} = useContext<ContextProps>(UIProviderContext);
     const [menuHeight, setMenuHeight] = useState(0);
@@ -77,6 +83,10 @@ const Layout = ({children}: ILayoutProps) => {
         setShowWalletOptions(!showWalletOptions);
     }
 
+    useEffect(() => {
+      setLoader(1000, true)
+    }, [location])
+    
 
     useEffect(() => {
         const height = menuRef.current?.offsetHeight;
@@ -159,9 +169,7 @@ const Layout = ({children}: ILayoutProps) => {
             <ChildrenContainer
                 menuHeight={menuHeight}
                 isMobile={isMobile}>
-                <CasperLoader>
-                    {children}
-                </CasperLoader>
+                {loading ? <CasperLoader /> : children}
             </ChildrenContainer>
         </Container>
     );
