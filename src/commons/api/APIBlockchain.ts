@@ -38,7 +38,7 @@ export class BlockchainAPI {
 
   constructor() {}
 
-  async getInfoByTopic(publicKey: string, page: string | number, limit: string | number, sortFields: string, contractPackageHash: string): Promise<BlockchainInfo[]> {
+  async getInfoByTopic(publicKey: string, page: string | number, limit: string | number, sortFields= "entry_point,contract_package", contractPackageHash = ''): Promise<BlockchainInfo[]> {
 
     let path = `${API_BLOCKCHAIN_INFO}/${BlockchainAPIQuery.TRANSACTION}?page=${page}&limit=${limit}&fields=${sortFields}&caller_public_key=${publicKey}`
 
@@ -69,7 +69,7 @@ export class BlockchainAPI {
   /**
    * get account info
    */
-  getAccountInfo = async (publicKey: string): Promise<any> => {
+  getAccountInfo = async (publicKey: string): Promise<AccountInfo> => {
 
     //const res = axios.get(`${API_BLOCKCHAIN_INFO}/${BlockchainAPIQuery.ACCOUNT}`)
 
