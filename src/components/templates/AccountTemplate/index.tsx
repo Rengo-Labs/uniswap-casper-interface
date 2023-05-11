@@ -50,7 +50,7 @@ const csprAmounts = [
 
 export const AccountTemplate = ({ isMobile }) => {
   const location = useLocation();
-  const defaultAccountTab = location?.state?.accountDefaultTab === 'transfer' ? 1 : 0
+  const defaultAccountTab = location?.state?.accountDefaultTab === 'transfer' ? 2 : 1
   
   const { isConnected, walletState } = useContext(WalletProviderContext);
 
