@@ -15,9 +15,14 @@ const BlockchainResponsibilities = (wallet: Wallet) => {
       return client.getAccountInfo(wallet.publicKeyHex)
     }
 
+    const getTransfers = async () => {
+      return client.getTransfers(wallet.accountHashString, 1, 25, 1, 1)
+    }
+
     return {
         getInfoByTopic,
-        getAccountInfo
+        getAccountInfo,
+        getTransfers
     }
 
 }

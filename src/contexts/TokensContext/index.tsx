@@ -7,7 +7,7 @@ import {notificationStore} from "../../store/store";
 import {PairState} from "../../reducers/PairsReducer";
 import {TokenProfit} from "../../commons/api/ApolloQueries";
 import BlockchainResponsibilities from "../../commons/BlockchainInfoResponsibilities";
-import {AccountInfo, BlockchainInfo} from "../../commons/api/APIBlockchain";
+import {AccountInfo, BlockchainInfo, TransferInfo} from "../../commons/api/APIBlockchain";
 
 interface TokensContext {
     tokenState: TokenState,
@@ -26,8 +26,9 @@ interface TokensContext {
     getHistoricalTokenPrices?: (packageHash: string) => Promise<any>,
     getBalancesProfit?: (packageHash: string) => Promise<TokenProfit>,
     getHistoricalTokensChartPrices?: (packageHash0: string, packageHash1: string) => Promise<any[]>,
-    getTransactionInfo?: (wallet: Wallet) => Promise<BlockchainInfo[]>,
+    getDeploysInfo?: (wallet: Wallet) => Promise<BlockchainInfo[]>,
     getAccountDetail?: (wallet: Wallet) => Promise<AccountInfo>,
+    getTransfersDetail?: (wallet: Wallet) => Promise<TransferInfo[]>,
 }
 
 export const TokensProviderContext = createContext<TokensContext>({} as any)
@@ -84,12 +85,16 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
       return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokensChartPrices(packageHash0, packageHash1)
     }
 
-    const getTransactionInfo = async (wallet: Wallet): Promise<BlockchainInfo[]> => {
+    const getDeploysInfo = async (wallet: Wallet): Promise<BlockchainInfo[]> => {
       return BlockchainResponsibilities(wallet).getInfoByTopic()
     }
 
     const getAccountDetail = async (wallet: Wallet) => {
       return BlockchainResponsibilities(wallet).getAccountInfo()
+    }
+
+    const getTransfersDetail = async (wallet: Wallet) => {
+      return BlockchainResponsibilities(wallet).getTransfers()
     }
 
     return (
@@ -111,8 +116,9 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 getHistoricalTokenPrices,
                 getBalancesProfit,
                 getHistoricalTokensChartPrices,
-                getTransactionInfo,
-                getAccountDetail
+                getDeploysInfo,
+                getAccountDetail,
+                getTransfersDetail
             }}>
             {children}
         </TokensProviderContext.Provider>

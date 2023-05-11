@@ -31,6 +31,18 @@ export interface AccountInfo {
   undelegating: any
 }
 
+export interface TransferInfo {
+  transferId: string,
+  deployHash: string,
+  blockHash: string,
+  forAccount: string,
+  amountInCSPR: number
+  timestamp: string,
+  ofAccount: string,
+  amountInUSD: number,
+  priceUSD: number
+}
+
 /**
  * Client for working with Blockchain API
  */
@@ -59,7 +71,8 @@ export class BlockchainAPI {
         "payment": item.payment_amount,
         "timestamp": item.timestamp,
         "status": item.status,
-        "amount": item.args?.amount?.parsed
+        "amount": item.args?.amount?.parsed ?? "0",
+        "entryPoint": item.entry_point
       })) as BlockchainInfo[]
     }
 
@@ -113,6 +126,25 @@ export class BlockchainAPI {
     }
 
     return "0"
+  }
+
+  getTransfers = async (accountHash: string, page: number, limit: number, info: number, currencyId = 1): Promise<TransferInfo[]> => {
+    const res = await axios.get(`${API_BLOCKCHAIN_INFO}/${BlockchainAPIQuery.ACCOUNT}/${accountHash}/transfers?page=${page}&limit=${limit}&with_extended_info=${info}&with_amounts_in_currency_id=${currencyId}`)
+    if (res.data) {
+      res.data.data.map(item => ({
+        transferId: item.transferId,
+        deployHash: item.deployHash,
+        blockHash: item.blockHash,
+        forAccount: item.targetPurse,
+        amountInCSPR: (-1) * parseInt(item.amount),
+        timestamp: item.timestamp,
+        ofAccount: item.fromAccountPublicKey,
+        amountInUSD: parseInt(item.currency_amount),
+        priceUSD: parseFloat(item.rate)
+      }) as TransferInfo)
+    }
+
+    return []
   }
 
   // blockchain status
