@@ -15,6 +15,7 @@ import {PairsContext} from "./PairsContext";
 import {PoolContext} from "./PoolContext";
 import {WalletContext} from "./WalletContext";
 import {UiProvider} from 'rengo-ui-kit';
+import {LoadingProvider} from "./LoaderContext";
 export const BigContext = ({children}: { children: ReactNode }) => {
     return (
         <UiProvider>
@@ -32,7 +33,9 @@ export const BigContext = ({children}: { children: ReactNode }) => {
                                                     <InitialContext>
                                                         <TokensContext2>
                                                             <LiquidityContext>
-                                                                {children}
+                                                                <LoadingProvider>
+                                                                    {children}
+                                                                </LoadingProvider>
                                                             </LiquidityContext>
                                                         </TokensContext2>
                                                     </InitialContext>
