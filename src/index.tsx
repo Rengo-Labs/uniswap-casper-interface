@@ -13,8 +13,8 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <BigContext>
-      <BrowserRouter>
+    <BrowserRouter>
+      <BigContext>
         <Routes>
           {/* <Route path="/" element={<Home />} /> */}
           <Route path="/" element={<Navigate to="/swap" replace/>} />
@@ -31,7 +31,7 @@ root.render(
           <Route path="/old/pools" element={<PoolOld />} />
           <Route path="/old/tokens" element={<TokensOld />} />
         </Routes>
-      </BrowserRouter>
-    </BigContext>
+      </BigContext>
+    </BrowserRouter>
   </React.StrictMode>
 )

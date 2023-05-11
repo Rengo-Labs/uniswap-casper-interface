@@ -12,6 +12,7 @@ import {
   convertUIStringToBigNumber,
 } from "../../../commons";
 import { Wrapper } from "./styles";
+import { useLocation } from "react-router-dom";
 
 interface IAccountInfo {
   accountHash: string;
@@ -48,9 +49,12 @@ const csprAmounts = [
 ];
 
 export const AccountTemplate = ({ isMobile }) => {
+  const location = useLocation();
+  const defaultAccountTab = location?.state?.accountDefaultTab === 'transfer' ? 1 : 0
+  
   const { isConnected, walletState } = useContext(WalletProviderContext);
 
-  const { getAccountDetail, getTransactionInfo } = useContext(
+  const { getAccountDetail } = useContext(
     TokensProviderContext
   );
 
@@ -159,8 +163,8 @@ export const AccountTemplate = ({ isMobile }) => {
     }
 
     const fetchData = async () => {
-      const infoByTopicResponse = await getTransactionInfo(walletState.wallet);
-      console.log("infoByTopicResponse", infoByTopicResponse);
+      // const infoByTopicResponse = await getTransactionInfo(walletState.wallet);
+      // console.log("infoByTopicResponse", infoByTopicResponse);
       const AccountInfoResponse = await getAccountDetail(walletState.wallet);
       buildAccountInfo(AccountInfoResponse);
     };
