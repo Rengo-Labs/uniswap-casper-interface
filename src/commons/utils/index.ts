@@ -17,8 +17,7 @@ export const fixAmountOfZeros = (number: BigNumber, decimals: number) => {
   } else {
     divisor = ONE_BILLION_E - Math.abs(decimals - ONE_BILLION_E)
   }
-  const result = number.div(10 ** divisor);
-  console.log("Dividir", decimals, divisor, result.toFixed(ONE_BILLION_E))
+  const result = number.div(10 ** divisor)
   return result.toFixed(ONE_BILLION_E);
 }
 

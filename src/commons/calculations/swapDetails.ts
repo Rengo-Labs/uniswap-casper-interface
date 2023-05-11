@@ -50,7 +50,7 @@ export const calculateSwapDetails = async (
       const liquidityB = new BigNumber(reserve1)
       const inputValue = new BigNumber(inputValueRaw).times(10 ** 9)
       const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
-      console.log(inputValueRaw.toString(), inputValue.toString(), reserve0.toString(), reserve1.toString())
+      // console.log(inputValueRaw.toString(), inputValue.toString(), reserve0.toString(), reserve1.toString())
 
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -94,7 +94,6 @@ export const calculateSwapDetails = async (
       const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
       // console.log("priceImpact", priceImpact)
 
-      console.log(inputValue.toString(), inputExchangeRate.toString())
       return {
           tokensToTransfer: fixAmountOfZeros(inputValue.times(inputExchangeRate), tokenB.decimals),
           //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),

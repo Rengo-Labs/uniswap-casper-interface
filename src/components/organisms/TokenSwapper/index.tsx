@@ -88,8 +88,8 @@ const TokenSwapper = ({
   useEffect(() => {
     const switchToken = async () => {
       lastChanged == 'A'
-          ? await changeTokenA(amountSwapTokenB)
-          : await changeTokenB(amountSwapTokenA);
+          ? await changeTokenA(amountSwapTokenB, true)
+          : await changeTokenB(amountSwapTokenA, true);
     }
 
     switchToken().catch((e) => console.log(e));
@@ -99,9 +99,9 @@ const TokenSwapper = ({
   function onSwitchTokensHandler() {
     onSwitchTokens();
     if (lastChanged == 'A') {
-      changeTokenB(amountSwapTokenA.toString());
+      changeTokenB(amountSwapTokenA.toString(), true);
     } else if (lastChanged == 'B') {
-      changeTokenA(amountSwapTokenB.toString());
+      changeTokenA(amountSwapTokenB.toString(), true);
       setLastChanged('A');
     }
   }
@@ -112,7 +112,8 @@ const TokenSwapper = ({
         firstTokenSelected,
         secondTokenSelected,
         amount,
-        firstTokenSelected
+        firstTokenSelected,
+        false
     )
 
     calculateUSDValues(amount, tokensToTransfer,
@@ -121,7 +122,7 @@ const TokenSwapper = ({
       firstTokenSelected.symbolPair)
   }
 
-  async function changeTokenA(value: string | number, first = firstTokenSelected, second = secondTokenSelected) {
+  async function changeTokenA(value: string | number, isSwitched = false) {
     setLastChanged('A');
 
     let filteredValue = formatNaN(value);
@@ -131,12 +132,12 @@ const TokenSwapper = ({
 
     amountSwapTokenASetter(filteredValue);
 
-    console.log("changeTokenA", filteredValue, value)
     const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
         firstTokenSelected,
         secondTokenSelected,
         filteredValue,
-        firstTokenSelected
+        firstTokenSelected,
+        isSwitched
     );
     calculateUSDValues(value, tokensToTransfer, firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, exchangeRateA, exchangeRateB, firstTokenSelected.symbolPair)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
@@ -145,7 +146,7 @@ const TokenSwapper = ({
     }
   }
 
-  async function changeTokenB(value) {
+  async function changeTokenB(value, isSwitched = false) {
     setLastChanged('B');
 
     let filteredValue = parseFloat(value);
@@ -161,7 +162,8 @@ const TokenSwapper = ({
         firstTokenSelected,
         secondTokenSelected,
         filteredValue,
-        secondTokenSelected
+        secondTokenSelected,
+        isSwitched
     );
 
     calculateUSDValues(value, tokensToTransfer, firstTokenSelected.symbolPair, secondTokenSelected.symbolPair, exchangeRateA, exchangeRateB, secondTokenSelected.symbolPair)
@@ -231,11 +233,11 @@ const TokenSwapper = ({
 
     if (openPoolDialog.firstSelector) {
       onSelectFirstToken(token)
-      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, secondTokenSelected, amountSwapTokenA, token)
+      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, secondTokenSelected, amountSwapTokenA, token, true)
       amountSwapTokenASetter(formatNaN(tokensToTransfer))
     } else {
       onSelectSecondToken(token)
-      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, firstTokenSelected, amountSwapTokenB, token)
+      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, firstTokenSelected, amountSwapTokenB, token, true)
       amountSwapTokenBSetter(formatNaN(tokensToTransfer))
     }
     setOpenPoolDialog(prevState => ({...prevState, open: false}))
