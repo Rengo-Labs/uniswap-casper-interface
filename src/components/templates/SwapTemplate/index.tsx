@@ -173,9 +173,11 @@ export const SwapTemplate = ({isMobile}) => {
                     symbol1,
                     tokenState
                 );
+                const token0 = tokenState.tokens[symbol0]
+                const token1 = tokenState.tokens[symbol0]
                 getSwapDetailResponse = await getSwapDetails(
-                    {symbol: symbol0} as any,
-                    {symbol: symbol1} as any,
+                    token0,
+                    token1,
                     reserve0,
                     reserve1,
                     nextTokensToTransfer,

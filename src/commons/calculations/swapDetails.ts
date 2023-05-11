@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { APIClient, Token } from '../api'
-import { log } from '../utils'
+import { log, fixAmountOfZeros } from '../utils'
 import {PLATFORM_GAS_FEE} from "../../constant";
 
 /**
@@ -13,9 +13,9 @@ export interface SwapDetails {
   // estimated price impact
   priceImpact: number | string,
   // effective exchange rate from A to B
-  exchangeRateA: number,
+  exchangeRateA: number | string,
   // effective exchange rate from B to A
-  exchangeRateB: number,
+  exchangeRateB: number | string,
 }
 
 /**
@@ -50,6 +50,7 @@ export const calculateSwapDetails = async (
       const liquidityB = new BigNumber(reserve1)
       const inputValue = new BigNumber(inputValueRaw).times(10 ** 9)
       const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
+      console.log(inputValueRaw.toString(), inputValue.toString(), reserve0.toString(), reserve1.toString())
 
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -93,12 +94,13 @@ export const calculateSwapDetails = async (
       const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
       // console.log("priceImpact", priceImpact)
 
+      console.log(inputValue.toString(), inputExchangeRate.toString())
       return {
-          tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** 9).toNumber().toFixed(9),
+          tokensToTransfer: fixAmountOfZeros(inputValue.times(inputExchangeRate), tokenB.decimals),
           //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
           priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
-          exchangeRateA: exchangeRateA.toNumber(),
-          exchangeRateB : exchangeRateB.toNumber()
+          exchangeRateA: exchangeRateA.toNumber().toFixed(9),
+          exchangeRateB : exchangeRateB.toNumber().toFixed(9)
       }
   } catch (err) {
       log.error(`getSwapDetail error: ${err}`)

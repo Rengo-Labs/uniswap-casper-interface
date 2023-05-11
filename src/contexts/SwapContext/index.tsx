@@ -68,6 +68,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       timeToClose: 100000
     });
     try {
+      console.log("Tokens to swap", amountA.toString(), amountB.toString())
       const [deployHash, deployResult] = await signAndDeploySwap(
         apiClient,
         casperClient,

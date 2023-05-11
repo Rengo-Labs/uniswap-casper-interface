@@ -25,7 +25,8 @@ export interface ConfigContext {
   slippageToleranceSelected?: number;
   onIncreaseAllow?: (
     amount: number | string,
-    contractHash: string
+    contractHash: string,
+    optApproval?: string
   ) => Promise<boolean>;
   confirmModal: boolean;
   linkExplorer: string;
@@ -75,6 +76,7 @@ export const ConfigContextWithReducer = ({
   async function onIncreaseAllow(
     amount: number | string,
     contractHash: string,
+    optApproval = ""
 ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
@@ -91,7 +93,8 @@ export const ConfigContextWithReducer = ({
         casperClient,
         walletState.wallet,
         contractHash,
-        convertUIStringToBigNumber(amount)
+        convertUIStringToBigNumber(amount),
+        optApproval
       );
 
       setProgressModal(true);
