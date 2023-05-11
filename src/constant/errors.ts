@@ -88,5 +88,8 @@ export const ERROR_BLOCKCHAIN = {
   },
   "TypeError: Cannot read properties of undefined (reading 'deploy')": {
     message: "Error: The wallet is disconnected."
+  },
+  "TypeError: The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type undefined": {
+    message: "Error: Signature canceled by user."
   }
 }
