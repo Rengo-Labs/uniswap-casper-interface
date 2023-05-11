@@ -18,6 +18,7 @@ export interface BlockchainInfo {
   payment: any,
   timestamp: any,
   status: string,
+  currencyCost: string,
   amount: any
 }
 
@@ -72,6 +73,7 @@ export class BlockchainAPI {
         "timestamp": item.timestamp,
         "status": item.status,
         "amount": item.args?.amount?.parsed ?? "0",
+        "currencyCost": item.currency_cost,
         "entryPoint": item.entry_point
       })) as BlockchainInfo[]
     }
