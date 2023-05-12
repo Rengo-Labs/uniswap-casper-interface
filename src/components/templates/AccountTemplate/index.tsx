@@ -9,10 +9,17 @@ import { WalletProviderContext } from "../../../contexts/WalletContext";
 import { TokensProviderContext } from "../../../contexts/TokensContext";
 import {
   convertAllFormatsToUIFixedString,
-  convertUIStringToBigNumber,
+  convertBigNumberToUIString,
+  dateConverter,
+  shortenString,
 } from "../../../commons";
-import { Wrapper } from "./styles";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  BlockchainInfo,
+  TransferInfo,
+} from "../../../commons/api/APIBlockchain";
+import { v4 as uuid } from "uuid";
+import BigNumber from "bignumber.js";
 
 interface IAccountInfo {
   accountHash: string;
@@ -22,6 +29,33 @@ interface IAccountInfo {
   totalBalance: number;
   totalRewardReceived: string;
   undelegating: string;
+}
+
+interface IDeployInfo {
+  id: string;
+  deploy_hash: string;
+  block_hash: string;
+  antiquity: string;
+  contract: string;
+  contractRedirect: () => void;
+  handleCopy: () => void;
+  entry_point: string;
+  amount: string;
+  cost: string;
+  price: string;
+}
+
+interface ITransferInfo {
+  id: string;
+  deploy_hash: string;
+  block_hash: string;
+  antiquity: string;
+  of: string;
+  for: string;
+  transference_id: string;
+  amount: string;
+  price: string;
+  handleCopy: () => void;
 }
 
 interface IAccountTableInfo {
@@ -50,84 +84,21 @@ const csprAmounts = [
 
 export const AccountTemplate = ({ isMobile }) => {
   const location = useLocation();
-  const defaultAccountTab = location?.state?.accountDefaultTab === 'transfer' ? 2 : 1
-  
+  const defaultAccountTab =
+    location?.state?.accountDefaultTab === "transfer" ? 2 : 1;
+  const navigate = useNavigate();
+
   const { isConnected, walletState } = useContext(WalletProviderContext);
 
-  const { getAccountDetail } = useContext(
+  const { getAccountDetail, getTransfersDetail, getDeploysInfo } = useContext(
     TokensProviderContext
   );
 
   const [accountInfoData, setAccountInfoData] = useState<IAccountTableInfo[]>(
     []
   );
-  const [deployData, setDeployData] = useState<any[]>([
-    {
-      id: 1,
-      deploy_hash: "0da51...2191c",
-      block_hash: "cff58...3789d",
-      antiquity: "3 days ago",
-      contract: "Wrapped Ether ERC-20",
-      amount: "0.00003 WETH",
-      cost: "2.29277 CSPR",
-      price: "0.1025",
-    },
-    {
-      id: 2,
-      deploy_hash: "0da51...2191c",
-      block_hash: "cff58...3789d",
-      antiquity: "3 days ago",
-      contract: "Wrapped Ether ERC-20",
-      amount: "0.00003 WETH",
-      cost: "2.29277 CSPR",
-      price: "0.1025",
-    },
-    {
-      id: 3,
-      deploy_hash: "0da51...2191c",
-      block_hash: "cff58...3789d",
-      antiquity: "3 days ago",
-      contract: "Wrapped Ether ERC-20",
-      amount: "0.00003 WETH",
-      cost: "3.29277 CSPR",
-      price: "0.1025",
-    },
-  ]);
-  const [transferData, setTransferData] = useState<any[]>([
-    {
-      id: 1,
-      deploy_hash: "0da51...2191c",
-      block_hash: "cff58...3789d",
-      antiquity: "3 days ago",
-      of: "012b3...7f525",
-      for: "012b3...7f525",
-      transference_id: "-",
-      amount: "2.29277 CSPR",
-      price: "0.1025",
-    },
-    {
-      id: 2,
-      deploy_hash: "0da51...2191c",
-      block_hash: "cff58...3789d",
-      antiquity: "3 days ago",
-      of: "012b3...7f525",
-      for: "012b3...7f525",
-      transference_id: "-",
-      amount: "3.29277 CSPR",
-      price: "0.1025",
-    },
-    {
-      id: 3,
-      deploy_hash: "0da51...2191c",
-      block_hash: "cff58...3789d",
-      antiquity: "3 days ago",
-      of: "012b3...7f525",
-      for: "012b3...7f525",
-      transference_id: "-",
-      amount: "2.29277 CSPR",
-      price: "0.1025",
-    },
-  ]);
+  const [deployData, setDeployData] = useState<IDeployInfo[]>([]);
+  const [transferData, setTransferData] = useState<ITransferInfo[]>([]);
   const formatAmount = (value: string | number) =>
     `${convertAllFormatsToUIFixedString(
       value,
@@ -157,14 +128,75 @@ export const AccountTemplate = ({ isMobile }) => {
     setAccountInfoData(infoTable);
   };
 
+  const handleContactRedirect = (contractHash: string) =>
+    window.open(
+      `https://testnet.cspr.live/contract-package/${contractHash}`,
+      "_blank"
+    );
+
+  const handleCopyToClipboard = (value: string) =>
+    navigator.clipboard.writeText(value);
+
+  const buildDeployInfo = (deployInfo: BlockchainInfo[]) => {
+    if (!deployInfo) return;
+    const deployInfoTable = deployInfo?.map((deployItem: BlockchainInfo) => {
+      const deployInfo = {
+        id: uuid(),
+        deploy_hash: shortenString(deployItem?.deployHash, 5),
+        block_hash: shortenString(deployItem?.blockHash, 5),
+        antiquity: dateConverter(deployItem?.timestamp),
+        contract: deployItem?.packageHash?.contract_name,
+        contractRedirect: () =>
+          handleContactRedirect(deployItem?.packageHash?.contract_package_hash),
+        handleCopy: () => handleCopyToClipboard(deployItem?.deployHash),
+        entry_point: deployItem?.entryPoint?.name || "WASM deploy",
+        amount: `${convertBigNumberToUIString(
+          new BigNumber(deployItem?.amount)
+        )} ${deployItem?.packageHash?.metadata?.symbol || "CSPR"}`,
+        cost: convertBigNumberToUIString(new BigNumber(deployItem?.cost)),
+        price: convertAllFormatsToUIFixedString(deployItem?.currencyCost, 2),
+      };
+      return deployInfo;
+    });
+    setDeployData(deployInfoTable);
+  };
+
+  const buildTransferInfo = (transferInfo: TransferInfo[]) => {
+    if (!transferInfo) return;
+    const transferInfoTable = transferInfo?.map(
+      (transferItem: TransferInfo) => {
+        const transferInfo = {
+          id: uuid(),
+          deploy_hash: shortenString(transferItem?.deployHash, 5),
+          block_hash: shortenString(transferItem?.blockHash, 5),
+          antiquity: dateConverter(transferItem?.timestamp),
+          of: shortenString(transferItem?.ofAccount, 5),
+          for: shortenString(transferItem?.forAccount, 10, 9),
+          transference_id: transferItem?.transferId,
+          amount: convertBigNumberToUIString(
+            new BigNumber(transferItem?.amountInCSPR)
+          ),
+          price: convertAllFormatsToUIFixedString(transferItem?.amountInUSD, 2),
+          handleCopy: () => handleCopyToClipboard(transferItem?.deployHash),
+        };
+        return transferInfo;
+      }
+    );
+    setTransferData(transferInfoTable);
+  };
+
   useEffect(() => {
     if (!isConnected) {
       return;
     }
 
     const fetchData = async () => {
-      // const infoByTopicResponse = await getTransactionInfo(walletState.wallet);
-      // console.log("infoByTopicResponse", infoByTopicResponse);
+      const deployInfoResponse = await getDeploysInfo(walletState.wallet);
+      buildDeployInfo(deployInfoResponse);
+      const transfersInfoResponse = await getTransfersDetail(
+        walletState.wallet
+      );
+      buildTransferInfo(transfersInfoResponse);
       const AccountInfoResponse = await getAccountDetail(walletState.wallet);
       buildAccountInfo(AccountInfoResponse);
     };
@@ -173,11 +205,17 @@ export const AccountTemplate = ({ isMobile }) => {
 
   return (
     <SingleColumn isMobile={isMobile} title="My Account">
-        {accountInfoData.length > 0 && (
-          <MyAccountInfoTable data={accountInfoData} />
-        )}
-        <br/>
-        <AccountTabs deployData={deployData} transferData={transferData} />
+      {accountInfoData.length > 0 && (
+        <MyAccountInfoTable data={accountInfoData} />
+      )}
+      <br />
+      {deployData.length > 0 && transferData.length > 0 && (
+        <AccountTabs
+          deployData={deployData}
+          transferData={transferData}
+          tabDefault={defaultAccountTab}
+        />
+      )}
     </SingleColumn>
   );
 };

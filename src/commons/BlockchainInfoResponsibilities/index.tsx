@@ -16,7 +16,7 @@ const BlockchainResponsibilities = (wallet: Wallet) => {
     }
 
     const getTransfers = async () => {
-      return client.getTransfers(wallet.accountHashString, 1, 25, 1, 1)
+      return client.getTransfers(wallet.accountHashString.slice(13), 1, 25, 1, 1)
     }
 
     return {
