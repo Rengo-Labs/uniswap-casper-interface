@@ -98,8 +98,8 @@ export const calculateSwapDetails = async (
           tokensToTransfer: fixAmountOfZeros(inputValue.times(inputExchangeRate), tokenB.decimals),
           //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
           priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
-          exchangeRateA: exchangeRateA.toNumber().toFixed(9),
-          exchangeRateB : exchangeRateB.toNumber().toFixed(9)
+          exchangeRateA: exchangeRateA.toNumber(),
+          exchangeRateB : exchangeRateB.toNumber()
       }
   } catch (err) {
       log.error(`getSwapDetail error: ${err}`)
