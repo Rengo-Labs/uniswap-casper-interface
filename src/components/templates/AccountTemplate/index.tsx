@@ -40,9 +40,10 @@ interface IDeployInfo {
   contractRedirect: () => void;
   handleCopy: () => void;
   entry_point: string;
-  amount: string;
-  cost: string;
-  price: string;
+  amount: number;
+  amountSymbol: string;
+  cost: number;
+  price: number;
 }
 
 interface ITransferInfo {
@@ -53,8 +54,8 @@ interface ITransferInfo {
   of: string;
   for: string;
   transference_id: string;
-  amount: string;
-  price: string;
+  amount: number;
+  price: number;
   handleCopy: () => void;
 }
 
@@ -150,11 +151,12 @@ export const AccountTemplate = ({ isMobile }) => {
           handleContactRedirect(deployItem?.packageHash?.contract_package_hash),
         handleCopy: () => handleCopyToClipboard(deployItem?.deployHash),
         entry_point: deployItem?.entryPoint?.name || "WASM deploy",
-        amount: `${convertBigNumberToUIString(
-          new BigNumber(deployItem?.amount)
-        )} ${deployItem?.packageHash?.metadata?.symbol || "CSPR"}`,
-        cost: convertBigNumberToUIString(new BigNumber(deployItem?.cost)),
-        price: convertAllFormatsToUIFixedString(deployItem?.currencyCost, 2),
+        amount: Number(
+          convertBigNumberToUIString(new BigNumber(deployItem?.amount))
+        ),
+        amountSymbol: deployItem?.packageHash?.metadata?.symbol || "CSPR",
+        cost: Number(convertBigNumberToUIString(new BigNumber(deployItem?.cost))),
+        price: Number(convertAllFormatsToUIFixedString(deployItem?.currencyCost, 2)),
       };
       return deployInfo;
     });
@@ -173,10 +175,14 @@ export const AccountTemplate = ({ isMobile }) => {
           of: shortenString(transferItem?.ofAccount, 5),
           for: shortenString(transferItem?.forAccount, 10, 9),
           transference_id: transferItem?.transferId,
-          amount: convertBigNumberToUIString(
-            new BigNumber(transferItem?.amountInCSPR)
+          amount: Number(
+            convertBigNumberToUIString(
+              new BigNumber(transferItem?.amountInCSPR)
+            )
           ),
-          price: convertAllFormatsToUIFixedString(transferItem?.amountInUSD, 2),
+          price: Number(
+            convertAllFormatsToUIFixedString(transferItem?.amountInUSD, 2)
+          ),
           handleCopy: () => handleCopyToClipboard(transferItem?.deployHash),
         };
         return transferInfo;
