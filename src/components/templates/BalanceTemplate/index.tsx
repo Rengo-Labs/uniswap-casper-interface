@@ -22,11 +22,11 @@ export const BalanceTemplate = ({isMobile}) => {
               id: symbol,
               crypto: name,
               cryptoIcon: logoURI,
-              mycrypto: amount,
-              '24h': data.yesterday.toFixed(2) + " %",
-              '7d': data.sevenDays.toFixed(2) + " %",
-              '15d': data.fifteenDays.toFixed(2) + " %",
-              '30d': data.thirtyDays.toFixed(2) + " %"
+              mycrypto: Number(amount),
+              '24h': Number(data.yesterday.toFixed(2)),
+              '7d': Number(data.sevenDays.toFixed(2)),
+              '15d': Number(data.fifteenDays.toFixed(2)),
+              '30d': Number(data.thirtyDays.toFixed(2))
             }
           );
         }))
