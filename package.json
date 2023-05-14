@@ -57,7 +57,7 @@
     "web-vitals": "^3.1.1",
     "web3-core": "^1.8.1",
     "zustand": "^4.3.2",
-    "rengo-ui-kit": "file:/Users/yordy/Documents/kreitech/Rengo/repos/Rengo-UI-Kit"
+    "rengo-ui-kit": "https://github.com/Rengo-Labs/Rengo-UI-Kit.git#feat/lib-integration"
   },
   "browserslist": {
     "production": [
