@@ -14,7 +14,7 @@ import {
   getLocalStorageData,
   setLocalStorageData,
 } from "../../../commons/utils/persistData";
-import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
+import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { globalStore } from "../../../store/store";
@@ -53,7 +53,7 @@ const poolDetailsRowDefault = {
   fees7D: "",
   apr: "",
   isFavorite: false,
-}
+};
 
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
@@ -77,7 +77,9 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [showStakedOnlyOnTable, setShowStakedOnlyOnTable] =
     useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
-  const [poolDetailRow, setPoolDetailRow] = useState<IPoolDetailRow>(poolDetailsRowDefault);
+  const [poolDetailRow, setPoolDetailRow] = useState<IPoolDetailRow>(
+    poolDetailsRowDefault
+  );
   const [tableData, setTableData] = useState<any[]>([]);
   const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState<boolean>(false)
   const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
@@ -111,24 +113,25 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
 
   useEffect(() => {
-
-    setTableData(getPoolList().map((item) => ({
-      name: item.name,
-      pool: `${item.token0Symbol} - ${item.token1Symbol}`,
-      token0Icon: item.token0Icon,
-      token1Icon: item.token1Icon,
-      liquidity: convertNumber(parseFloat(item.totalLiquidityUSD)),
-      volume7d: item.volume7dUSD || "0",
-      fees7d: `${new BigNumber(item.volume7d).times(0.003).toFixed(2)}`,
-      apr: "0",
-      balance: item.balance,
-      isFavorite: getLocalStorageData("pool")?.includes(item.name),
-    })))
-  }, [pairState])
+    setTableData(
+      getPoolList().map((item) => ({
+        name: item.name,
+        pool: `${item.token0Symbol} - ${item.token1Symbol}`,
+        token0Icon: item.token0Icon,
+        token1Icon: item.token1Icon,
+        liquidity: Number(item.totalLiquidityUSD),
+        volume7d: Number(item.volume7dUSD) || 0,
+        fees7d: Number(new BigNumber(item.volume7d).times(0.003).toFixed(2)),
+        apr: 0,
+        balance: item.balance,
+        isFavorite: getLocalStorageData("pool")?.includes(item.name),
+      }))
+    );
+  }, [pairState]);
 
   const handleShowPoolDetails = () => {
-    setPoolDetailRow(poolDetailsRowDefault)
-    setShowPoolDetails(prev => !prev);
+    setPoolDetailRow(poolDetailsRowDefault);
+    setShowPoolDetails((prev) => !prev);
   };
 
   const goTo = (path: string, pool: string) => {
@@ -257,7 +260,9 @@ const handleActionRemoval = async () => {
         asset0: `${newRow.reserve0} ${newRow.token0Symbol}`,
         asset1: `${newRow.reserve1} ${newRow.token1Symbol}`,
       },
-      yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(2),
+      yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(
+        2
+      ),
       liqudiity: convertNumber(parseFloat(newRow.totalLiquidityUSD)),
       volume7D: newRow.volume7dUSD || "0",
       fees7D: `${new BigNumber(newRow.volume7d).times(0.003).toFixed(2)}`,
@@ -280,33 +285,38 @@ const handleActionRemoval = async () => {
   }, []);
 
   const updateTableData = (name: string, isFavorite: boolean) => {
-    const newTableData = tableData.map(item => {
+    const newTableData = tableData.map((item) => {
       if (item.name === name) {
         return {
           ...item,
-          isFavorite: !isFavorite
-        }
-
+          isFavorite: !isFavorite,
+        };
       }
-      return item
-    })
+      return item;
+    });
 
-    setTableData(newTableData)
-  }
+    setTableData(newTableData);
+  };
 
-  const updateLocalStorage = (name: string, currentPersistedData: string[], isFavorite: boolean) => {
-    const newLocalStorageData = isFavorite ? currentPersistedData.filter(item => item !== name) : [...currentPersistedData, name]
+  const updateLocalStorage = (
+    name: string,
+    currentPersistedData: string[],
+    isFavorite: boolean
+  ) => {
+    const newLocalStorageData = isFavorite
+      ? currentPersistedData.filter((item) => item !== name)
+      : [...currentPersistedData, name];
     setLocalStorageData("pool", newLocalStorageData);
-  }
+  };
 
   const handleFavorite = (name: string) => {
     const currentPersistedData: string[] = getLocalStorageData("pool");
-    const isPresent = currentPersistedData.includes(name)
+    const isPresent = currentPersistedData.includes(name);
 
-    updateTableData(name, isPresent)
-    setPoolDetailRow({...poolDetailRow, isFavorite: !isPresent })
+    updateTableData(name, isPresent);
+    setPoolDetailRow({ ...poolDetailRow, isFavorite: !isPresent });
 
-    updateLocalStorage(name, currentPersistedData, isPresent)
+    updateLocalStorage(name, currentPersistedData, isPresent);
   };
 
   return (
