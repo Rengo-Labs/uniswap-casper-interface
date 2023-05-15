@@ -18,6 +18,7 @@ import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { globalStore } from "../../../store/store";
+import { TokensProviderContext } from "../../../contexts/TokensContext";
 
 interface IPoolDetailRow {
   token0Icon?: string;
@@ -63,9 +64,12 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     ProgressBarProviderContext
   );
   const { 
-    isRemovingPopupOpen,
     setRemovingPopup,
     onRemoveLiquidity} = useContext(LiquidityProviderContext)
+
+  const {
+      tokenState
+    } = useContext(TokensProviderContext)
 
   const {
     onIncreaseAllow,
@@ -126,6 +130,23 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
       isFavorite: getLocalStorageData("pool")?.includes(item.name),
     })))
   }, [pairState])
+
+  useEffect(() => {
+    if (showRemoveLiquidityDialog) {
+        const pair = pairState[removeLiquidityData.tokenName]
+
+        setRemoveLiquidityData((prevState) => ({
+            ...prevState,
+            allowance: parseFloat(pair.allowance)
+        }))
+
+        setRemoveLiquidityCalculation((prevState) => ({
+            ...prevState,
+            allowance: removeLiquidityCalculation.lpAmount - parseFloat(pair.allowance)
+        }))
+    }
+
+}, [tokenState])
 
   const handleShowPoolDetails = () => {
     setPoolDetailRow(poolDetailsRowDefault)
@@ -191,7 +212,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     if (value > 0 && removeLiquidityButtonDisabled) {
       setRemoveLiquidityButtonDisabled(false)
     }
-    
+
     setRemoveLiquidityInput(value)
     handleRemoveCalculation(value)
   }
