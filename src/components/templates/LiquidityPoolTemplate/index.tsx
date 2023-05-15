@@ -72,13 +72,14 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [tableData, setTableData] = useState<any[]>([]);
 
   useEffect(() => {
+    console.log("getPoolList()", getPoolList());
     setTableData(
       getPoolList().map((item) => ({
         name: item.name,
         pool: `${item.token0Symbol} - ${item.token1Symbol}`,
         token0Icon: item.token0Icon,
         token1Icon: item.token1Icon,
-        liquidity: convertNumber(parseFloat(item.totalLiquidityUSD)),
+        liquidity: Number(item.totalLiquidityUSD),
         volume7d: Number(item.volume7dUSD) || 0,
         fees7d: Number(new BigNumber(item.volume7d).times(0.003).toFixed(2)),
         apr: 0,
@@ -109,7 +110,6 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     });
     setRemovingPopup(true);
   };
-
 
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
