@@ -109,6 +109,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
+  const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
 
   useEffect(() => {
 
@@ -183,6 +184,14 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   }
 
   const handleChangeInput = (value) => {
+    if (value === 0) {
+      setRemoveLiquidityButtonDisabled(true)
+    }
+
+    if (value > 0 && removeLiquidityButtonDisabled) {
+      setRemoveLiquidityButtonDisabled(false)
+    }
+    
     setRemoveLiquidityInput(value)
     handleRemoveCalculation(value)
   }
@@ -363,7 +372,7 @@ const handleActionRemoval = async () => {
             closeCallback={handleRemoveLiquidity}
             liquidityPoolData={removeLiquidityData as any}
             isOpen={showRemoveLiquidityDialog}
-            disabledButton={false}
+            disabledButton={removeLiquidityButtonDisabled}
             disabledAllowanceButton={false}
             showAllowance={(removeLiquidityCalculation.allowance) > 0}
             defaultValue={removeLiquidityInput}
