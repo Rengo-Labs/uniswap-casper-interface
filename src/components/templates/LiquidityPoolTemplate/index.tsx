@@ -199,6 +199,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   }
 
   const handleRemoveLiquidity =  () => {
+    setRemoveLiquidityButtonDisabled(true)
     setRemoveLiquidityInput(0)
     setRemovingPopup(false)
     setShowRemoveLiquidityDialog(false)
@@ -258,6 +259,7 @@ const handleActionRemoval = async () => {
   setRemovingPopup(false)
   setRemoveLiquidityInput(0)
   setShowRemoveLiquidityDialog(false)
+  setRemoveLiquidityButtonDisabled(true)
 
   await onRemoveLiquidity(
     removeLiquidityCalculation.lpAmount,
