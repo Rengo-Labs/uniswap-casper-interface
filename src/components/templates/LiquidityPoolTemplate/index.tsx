@@ -1,12 +1,12 @@
 import { SingleColumn } from "../../../layout/SingleColumn";
-import { PoolTable, LPSearch, PoolItemDetails } from "rengo-ui-kit";
+import { PoolTable, LPSearch, PoolItemDetails, RemoveLiquidityDialog } from "rengo-ui-kit";
 import usdcTokenIcon from "../../../assets/swapIcons/btc.png";
 import { Container, SubHeader } from "./styles";
 import { useTheme } from "styled-components";
 import { PairsContextProvider } from "../../../contexts/PairsContext";
 import { ProgressBarProviderContext } from "../../../contexts/ProgressBarContext";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { convertNumber } from "../../../contexts/ConfigContext";
+import { ConfigProviderContext, convertNumber } from "../../../contexts/ConfigContext";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
 import { StateHashProviderContext } from "../../../contexts/StateHashContext";
@@ -15,6 +15,9 @@ import {
   setLocalStorageData,
 } from "../../../commons/utils/persistData";
 import {LiquidityProviderContext} from "../../../contexts/LiquidityContext";
+import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
+import csprIcon from "../../../assets/swapIcons/casperIcon.png";
+import { globalStore } from "../../../store/store";
 
 interface IPoolDetailRow {
   token0Icon?: string;
@@ -59,7 +62,15 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const { progressBar, clearProgress, getProgress } = useContext(
     ProgressBarProviderContext
   );
-  const {setRemovingPopup} = useContext(LiquidityProviderContext)
+  const { 
+    isRemovingPopupOpen,
+    setRemovingPopup,
+    onRemoveLiquidity} = useContext(LiquidityProviderContext)
+
+  const {
+    onIncreaseAllow,
+    gasPriceSelectedForLiquidity,
+    } = useContext(ConfigProviderContext)
 
   const navigate = useNavigate();
   const [showpoolDetails, setShowPoolDetails] = useState<boolean>(false);
@@ -68,6 +79,36 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [query, setQuery] = useState<string>("");
   const [poolDetailRow, setPoolDetailRow] = useState<IPoolDetailRow>(poolDetailsRowDefault);
   const [tableData, setTableData] = useState<any[]>([]);
+  const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState<boolean>(false)
+  const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
+  const [removeLiquidityData, setRemoveLiquidityData] = useState({
+    id: 'd3jd92d',
+    tokenName: 'CSPR',
+    liquidity: '0',
+    allowance: 0,
+    firstIcon: '',
+    firstName: 'CSPR',
+    firstSymbol: 'CSPR',
+    firstLiquidity: '0',
+    firstRate: '0',
+    firstHash: '',
+    decimals: 9,
+    secondIcon: '',
+    secondName: 'WETH',
+    secondSymbol: 'WETH',
+    secondLiquidity: '0',
+    secondRate: '0',
+    secondHash: ''
+  })
+  const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
+    lpAmount: 0,
+    firstAmount: 0,
+    secondAmount: 0,
+    allowance: 0
+  })
+  const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
+  const { slippageTolerance, updateSlippageTolerance } = globalStore()
+  const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
 
   useEffect(() => {
 
@@ -98,14 +139,111 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     });
   };
 
-  const handleTrash = (name) => {
-    const pair = pairState[name]
-    navigate({
-      pathname: "/liquidity",
-      search: `token0=${pair.token0Symbol}&token1=${pair.token1Symbol}`,
-    });
-    setRemovingPopup(true)
+  const createRemovingDataForPopup = (itemName) => {
+    setRemoveLiquidityToggle(true)
+    const pairRemoteData = getPoolList().find(element => element.name === itemName)
+    
+    const data = {
+        id: pairRemoteData.contractHash,
+        tokenName: pairRemoteData.name,
+        liquidity: pairRemoteData.balance,
+        allowance: parseFloat(pairRemoteData.allowance),
+        firstIcon: pairRemoteData.token0Symbol === 'CSPR' ? csprIcon : pairRemoteData.token0Icon,
+        firstName: pairRemoteData.token0Symbol === 'CSPR' ? 'Casper' : pairRemoteData.token0Name,
+        firstSymbol: pairRemoteData.token0Symbol,
+        firstLiquidity: pairRemoteData.reserve0,
+        firstRate: '',
+        firstHash: pairRemoteData.contract0,
+        secondIcon: pairRemoteData.token1Symbol === 'CSPR' ? csprIcon : pairRemoteData.token1Icon,
+        secondName: pairRemoteData.token1Symbol === 'CSPR' ? 'Casper' : pairRemoteData.token1Name,
+        secondSymbol: pairRemoteData.token1Symbol,
+        secondLiquidity: pairRemoteData.reserve1,
+        secondRate: '',
+        secondHash: pairRemoteData.contract1,
+        decimals: pairRemoteData.decimals
+    }
+    
+    setRemoveLiquidityData((prevState) => ({
+        ...prevState,
+        ...data
+    }))
+
+    setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(pairRemoteData.liquidity) - parseFloat(pairRemoteData.allowance)})))
+    setShowRemoveLiquidityDialog(true)
   }
+
+  const onActionAllowance = async () => {
+    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id)
+  }
+
+  const handleRemoveLiquidity =  () => {
+    setRemoveLiquidityInput(0)
+    setRemovingPopup(false)
+    setShowRemoveLiquidityDialog(false)
+  }
+
+  const handleChangeInput = (value) => {
+    setRemoveLiquidityInput(value)
+    handleRemoveCalculation(value)
+  }
+
+  const handleRemoveCalculation = (value) => {
+    const inputPercent = new BigNumber(value).dividedBy(100)
+
+    const lpAmount = new BigNumber(removeLiquidityData.liquidity).multipliedBy(inputPercent)
+    const firstAmount = new BigNumber(removeLiquidityData.firstLiquidity).multipliedBy(inputPercent)
+    const secondAmount = new BigNumber(removeLiquidityData.secondLiquidity).multipliedBy(inputPercent)
+    const newVar = (prevState) => ({
+        ...prevState,
+        lpAmount: lpAmount.toNumber().toFixed(removeLiquidityData.decimals),
+        firstAmount: firstAmount.toNumber().toFixed(removeLiquidityData.decimals),
+        secondAmount: secondAmount.toNumber().toFixed(removeLiquidityData.decimals),
+        allowance: lpAmount.toNumber() - removeLiquidityData.allowance
+    });
+
+    setRemoveLiquidityCalculation(newVar)
+  }
+
+  const handleRemoveLiquidityToggle = (e) => {
+
+    if (removeLiquidityData.firstSymbol.includes('CSPR')) {
+        setRemoveLiquidityData(prevState => ({
+            ...prevState,
+            firstIcon: e ? csprIcon : wcsprIcon,
+            firstSymbol: e ? 'CSPR' : 'WCSPR',
+            firstName: e ? 'Casper' : 'Wrapped Casper'
+        }))
+    } else {
+        setRemoveLiquidityData(prevState => ({
+            ...prevState,
+            secondIcon: e ? csprIcon : wcsprIcon,
+            secondSymbol: e ? 'CSPR' : 'WCSPR',
+            secondName: e ? 'Casper' : 'Wrapped Casper'
+        }))
+    }
+    setRemoveLiquidityToggle(e)
+}
+
+const handleActionRemoval = async () => {
+  setRemovingPopup(false)
+  setRemoveLiquidityInput(0)
+  setShowRemoveLiquidityDialog(false)
+
+  await onRemoveLiquidity(
+    removeLiquidityCalculation.lpAmount,
+    {
+        symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
+        packageHash: removeLiquidityData.firstHash,
+    } as any, {
+        symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
+        packageHash: removeLiquidityData.secondHash,
+    } as any,
+    removeLiquidityCalculation.firstAmount,
+    removeLiquidityCalculation.secondAmount,
+    slippageTolerance,
+    gasFee,
+    removeLiquidityToggle)
+}
 
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
@@ -191,7 +329,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
             data={tableData}
             handleSwap={goTo}
             handleAddLiquidity={goTo}
-            handleTrash={handleTrash}
+            handleTrash={createRemovingDataForPopup}
             handleView={handleView}
             showStakedOnly={showStakedOnlyOnTable}
             handleFavorite={handleFavorite}
@@ -219,6 +357,22 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
             volume7D={poolDetailRow.volume7D}
             fees7D={poolDetailRow.fees7D}
             apr={poolDetailRow.apr}
+          />
+
+          <RemoveLiquidityDialog
+            closeCallback={handleRemoveLiquidity}
+            liquidityPoolData={removeLiquidityData as any}
+            isOpen={showRemoveLiquidityDialog}
+            disabledButton={false}
+            disabledAllowanceButton={false}
+            showAllowance={(removeLiquidityCalculation.allowance) > 0}
+            defaultValue={removeLiquidityInput}
+            isRemoveLiquidityCSPR={removeLiquidityToggle}
+            handleChangeInput={handleChangeInput}
+            handleToggle={handleRemoveLiquidityToggle}
+            handleRemoveLiquidity={handleActionRemoval}
+            handleAllowanceLiquidity={onActionAllowance}
+            calculatedAmounts={removeLiquidityCalculation}
           />
         </Container>
       </SingleColumn>
