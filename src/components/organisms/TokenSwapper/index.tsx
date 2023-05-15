@@ -228,16 +228,22 @@ const TokenSwapper = ({
   });
 
   async function selectAndCloseToken(token: Token): Promise<void> {
-
     if (openPoolDialog.firstSelector) {
       onSelectFirstToken(token)
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, secondTokenSelected, amountSwapTokenA, token)
+     
+      exchangeRateASetter(formatNaN(exchangeRateA))
+      exchangeRateBSetter(formatNaN(exchangeRateB))
       amountSwapTokenASetter(formatNaN(tokensToTransfer))
     } else {
       onSelectSecondToken(token)
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, firstTokenSelected, amountSwapTokenB, token)
+    
+      exchangeRateASetter(formatNaN(exchangeRateA))
+      exchangeRateBSetter(formatNaN(exchangeRateB))
       amountSwapTokenBSetter(formatNaN(tokensToTransfer))
     }
+
     setOpenPoolDialog(prevState => ({...prevState, open: false}))
   }
 
