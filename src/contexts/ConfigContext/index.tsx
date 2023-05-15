@@ -117,7 +117,7 @@ export const ConfigContextWithReducer = ({
         if (result) {
             updateNotification({
               type: NotificationType.Success,
-              title: 'Processing...',
+              title: 'Processed...',
               subtitle: 'Your deploy was successful',
               show: true,
               isOnlyNotification: true,
