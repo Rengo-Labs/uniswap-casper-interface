@@ -68,6 +68,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       timeToClose: 100000
     });
     try {
+      console.log("Tokens to swap", amountA.toString(), amountB.toString())
       const [deployHash, deployResult] = await signAndDeploySwap(
         apiClient,
         casperClient,
@@ -103,7 +104,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       if (result) {
         updateNotification({
           type: NotificationType.Success,
-          title: 'Processing...',
+          title: 'Processed...',
           subtitle: 'Your deploy was successful',
           show: true,
           isOnlyNotification: true,
@@ -118,7 +119,6 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (err) {
       setProgressModal(false);
-      console.log('###  onConfirmSwapConfig  ###', err)
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,

@@ -83,7 +83,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
   ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
-      title: 'Adding liquidity.',
+      title: 'Processing...',
       subtitle: '',
       show: true,
       isOnlyNotification: true,
@@ -122,7 +122,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       if (result) {
         updateNotification({
           type: NotificationType.Success,
-          title: 'Processing...',
+          title: 'Processed...',
           subtitle: 'Your deploy was successful',
           show: true,
           isOnlyNotification: true,
