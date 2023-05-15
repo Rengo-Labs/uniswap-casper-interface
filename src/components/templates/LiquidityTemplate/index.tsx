@@ -148,23 +148,22 @@ export const LiquidityTemplate = ({isMobile}) => {
     }
 
     const onActionRemove = async () => {
-        await onRemoveLiquidity(
-          removeLiquidityCalculation.lpAmount,
-          {
-              symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
-              packageHash: removeLiquidityData.firstHash,
-          } as any, {
-              symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
-              packageHash: removeLiquidityData.secondHash,
-          } as any,
-          removeLiquidityCalculation.firstAmount,
-          removeLiquidityCalculation.secondAmount,
-          slippageTolerance,
-          gasFee,
-          removeLiquidityToggle)
-
-        setRemoveLiquidityInput((prevState) => 0)
-        setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
+      setRemoveLiquidityInput(0)
+      setShowRemoveLiquidityDialog(false)
+      await onRemoveLiquidity(
+        removeLiquidityCalculation.lpAmount,
+        {
+            symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
+            packageHash: removeLiquidityData.firstHash,
+        } as any, {
+            symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
+            packageHash: removeLiquidityData.secondHash,
+        } as any,
+        removeLiquidityCalculation.firstAmount,
+        removeLiquidityCalculation.secondAmount,
+        slippageTolerance,
+        gasFee,
+        removeLiquidityToggle)
     }
 
     const onActionAllowance = async () => {

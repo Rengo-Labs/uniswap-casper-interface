@@ -225,7 +225,11 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
 }
 
 const handleActionRemoval = async () => {
-  const response = await onRemoveLiquidity(
+  setRemovingPopup(false)
+  setRemoveLiquidityInput(0)
+  setShowRemoveLiquidityDialog(false)
+
+  await onRemoveLiquidity(
     removeLiquidityCalculation.lpAmount,
     {
         symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
@@ -239,11 +243,6 @@ const handleActionRemoval = async () => {
     slippageTolerance,
     gasFee,
     removeLiquidityToggle)
-  
-  setRemovingPopup(false)
-  setRemoveLiquidityInput(0)
-  setShowRemoveLiquidityDialog(false)
-  console.log('check handleActionRemoval -<', {isRemovingPopupOpen, response});
 }
 
   const handleView = (name: string) => {
