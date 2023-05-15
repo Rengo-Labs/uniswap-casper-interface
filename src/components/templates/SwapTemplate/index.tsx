@@ -121,9 +121,10 @@ export const SwapTemplate = ({isMobile}) => {
         tokenA: Token,
         tokenB: Token,
         value = 0,
-        token = firstTokenSelected
+        token = firstTokenSelected,
+        isSwitched = false
     ) {
-        const {getSwapDetailResponse} = await calculateSwapDetailResponse(tokenA, tokenB, value, token)
+        const {getSwapDetailResponse} = await calculateSwapDetailResponse(tokenA, tokenB, value, token, isSwitched)
         const {tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath} =
             getSwapDetailResponse;
 
@@ -138,7 +139,7 @@ export const SwapTemplate = ({isMobile}) => {
         return {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact, routePath};
     }
 
-    const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token) => {
+    const calculateSwapDetailResponse = async (tokenA: Token, tokenB: Token, value: number, token: Token, isSwitched: boolean) => {
         const isAorB = tokenA.symbol === token.symbol
         const [param, param1] = isAorB ? [tokenA.symbol, tokenB.symbol] : [tokenB.symbol, tokenA.symbol]
         const listPath = getListPath(param, param1, Object.values(tokenState.tokens), Object.values(pairState))
@@ -173,9 +174,11 @@ export const SwapTemplate = ({isMobile}) => {
                     symbol1,
                     tokenState
                 );
+                const token0 = tokenState.tokens[symbol0]
+                const token1 = tokenState.tokens[symbol0]
                 getSwapDetailResponse = await getSwapDetails(
-                    {symbol: symbol0} as any,
-                    {symbol: symbol1} as any,
+                    token0,
+                    token1,
                     reserve0,
                     reserve1,
                     nextTokensToTransfer,
@@ -191,7 +194,10 @@ export const SwapTemplate = ({isMobile}) => {
             setPairPath([...new Set(pairPath)])
         }
 
-        gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol ,pairExist ? 0 : (listPath.length -1)))
+        if (isSwitched) {
+            gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol ,pairExist ? 0 : (listPath.length -1)))
+        }
+
         return {
             getSwapDetailResponse
         }

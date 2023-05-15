@@ -350,7 +350,7 @@ export const WalletContext = ({
       console.log('signer:locked', msg);
     });
     window.addEventListener('signer:unlocked', (msg) => {
-      console.log('signer:unlocked', msg);
+      //console.log('signer:unlocked', msg);
       //onConnectConfig()
     });
 
