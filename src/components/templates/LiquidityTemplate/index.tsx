@@ -57,8 +57,8 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
     //const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen)
-    const [currentFReserve, setFirstReserve] = useState(0)
-    const [currentSReserve, setSecondReserve] = useState(0)
+    const [currentFReserve, setFirstReserve] = useState<any>(0)
+    const [currentSReserve, setSecondReserve] = useState<any>(0)
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
     const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState(false)
     const [removeLiquidityData, setRemoveLiquidityData] = useState({
@@ -409,8 +409,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                   firstSymbol={firstTokenSelected.symbolPair}
                   secondSymbol={secondTokenSelected.symbolPair}
                   maxAmount={`${amountSwapTokenB}`}
-                  firstTotalLiquidity={currentFReserve / 10 ** firstTokenSelected.decimals}
-                  secondTotalLiquidity={currentSReserve / 10 ** secondTokenSelected.decimals}
+                  firstTotalLiquidity={currentFReserve}
+                  secondTotalLiquidity={currentSReserve}
                   totalSupply={totalSupply}
                   slippage={slippageTolerance}
                   networkFee={gasFee}

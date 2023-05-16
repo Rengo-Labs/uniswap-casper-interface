@@ -63,8 +63,8 @@ export const calculateLiquidityDetails = async (
           tokensToTransfer: ttt.eq(0) ? '0' : ttt.toFixed(token.decimals, BigNumber.ROUND_CEIL),
           exchangeRateA: exchangeRateA.toNumber(),
           exchangeRateB : exchangeRateB.toNumber(),
-          firstReserve: parseFloat(inputLiquidity.toFixed(tokenA.decimals, BigNumber.ROUND_CEIL)),
-          secondReserve: parseFloat(outputLiquidity.toFixed(tokenB.decimals, BigNumber.ROUND_CEIL)),
+          firstReserve: inputLiquidity.div(Math.pow(10, tokenA.decimals)).toString(),
+          secondReserve: outputLiquidity.div(Math.pow(10, tokenA.decimals)).toString(),
       }
   } catch (err) {
       log.error(`getSwapDetail error: ${err}`)
