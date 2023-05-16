@@ -18,6 +18,7 @@ import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { globalStore } from "../../../store/store";
+import { TokensProviderContext } from "../../../contexts/TokensContext";
 
 interface IPoolDetailRow {
   token0Icon?: string;
@@ -63,9 +64,12 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     ProgressBarProviderContext
   );
   const { 
-    isRemovingPopupOpen,
     setRemovingPopup,
     onRemoveLiquidity} = useContext(LiquidityProviderContext)
+
+  const {
+      tokenState
+    } = useContext(TokensProviderContext)
 
   const {
     onIncreaseAllow,
@@ -111,6 +115,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
+  const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
 
   useEffect(() => {
     setTableData(
@@ -128,6 +133,23 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
       }))
     );
   }, [pairState]);
+
+  useEffect(() => {
+    if (showRemoveLiquidityDialog) {
+        const pair = pairState[removeLiquidityData.tokenName]
+
+        setRemoveLiquidityData((prevState) => ({
+            ...prevState,
+            allowance: parseFloat(pair.allowance)
+        }))
+
+        setRemoveLiquidityCalculation((prevState) => ({
+            ...prevState,
+            allowance: removeLiquidityCalculation.lpAmount - parseFloat(pair.allowance)
+        }))
+    }
+
+}, [tokenState])
 
   const handleShowPoolDetails = () => {
     setPoolDetailRow(poolDetailsRowDefault);
@@ -180,12 +202,21 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   }
 
   const handleRemoveLiquidity =  () => {
+    setRemoveLiquidityButtonDisabled(true)
     setRemoveLiquidityInput(0)
     setRemovingPopup(false)
     setShowRemoveLiquidityDialog(false)
   }
 
   const handleChangeInput = (value) => {
+    if (value === 0) {
+      setRemoveLiquidityButtonDisabled(true)
+    }
+
+    if (value > 0 && removeLiquidityButtonDisabled) {
+      setRemoveLiquidityButtonDisabled(false)
+    }
+
     setRemoveLiquidityInput(value)
     handleRemoveCalculation(value)
   }
@@ -231,6 +262,7 @@ const handleActionRemoval = async () => {
   setRemovingPopup(false)
   setRemoveLiquidityInput(0)
   setShowRemoveLiquidityDialog(false)
+  setRemoveLiquidityButtonDisabled(true)
 
   await onRemoveLiquidity(
     removeLiquidityCalculation.lpAmount,
@@ -373,7 +405,7 @@ const handleActionRemoval = async () => {
             closeCallback={handleRemoveLiquidity}
             liquidityPoolData={removeLiquidityData as any}
             isOpen={showRemoveLiquidityDialog}
-            disabledButton={false}
+            disabledButton={removeLiquidityButtonDisabled}
             disabledAllowanceButton={false}
             showAllowance={(removeLiquidityCalculation.allowance) > 0}
             defaultValue={removeLiquidityInput}

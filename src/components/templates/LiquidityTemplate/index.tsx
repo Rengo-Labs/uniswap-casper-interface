@@ -82,7 +82,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     })
     const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
     const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
-    const [removeLiquidityButtonEnabled, setRemoveLiquidityButtonEnabled] = useState(false)
+    const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
     const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
     const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
         lpAmount: 0,
@@ -93,6 +93,14 @@ export const LiquidityTemplate = ({isMobile}) => {
     const Navigator = useNavigate()
 
     const handleChangeInput = (value) => {
+        if (value === 0) {
+          setRemoveLiquidityButtonDisabled(true)
+        }
+
+        if (value > 0 && removeLiquidityButtonDisabled) {
+          setRemoveLiquidityButtonDisabled(false)
+        }
+        
         setRemoveLiquidityInput(value)
         handleRemoveCalculation(value)
     }
@@ -385,7 +393,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 closeCallback={handleRemoveLiquidity}
                 liquidityPoolData={removeLiquidityData as any}
                 isOpen={showRemoveLiquidityDialog}
-                disabledButton={removeLiquidityButtonEnabled}
+                disabledButton={removeLiquidityButtonDisabled}
                 disabledAllowanceButton={removeLiquidityAllowanceEnabled}
                 showAllowance={(removeLiquidityCalculation.allowance) > 0}
                 defaultValue={removeLiquidityInput}
