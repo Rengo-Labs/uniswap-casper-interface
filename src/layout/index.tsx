@@ -57,6 +57,7 @@ const Layout = ({children}: ILayoutProps) => {
         endIcon: balanceIcon,
     } as OptAction
     const [rightAction, setRightAction] = useState(rightActionInit);
+    const [pathName, setPathName] = useState('')
 
     const {
         isConnected,
@@ -84,6 +85,11 @@ const Layout = ({children}: ILayoutProps) => {
     }
 
     useEffect(() => {
+      setPathName(location.pathname)
+      if (location.pathname === pathName) {
+        return
+      }
+
       setLoader(1000, true)
     }, [location])
     
