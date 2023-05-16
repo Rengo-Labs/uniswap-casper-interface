@@ -82,6 +82,9 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             tB = 'WCSPR'
         }
 
+        const tADecimals = tokenState.tokens[tokenASymbol]?.decimals | 9
+        const tBDecimals = tokenState.tokens[tokenBSymbol]?.decimals | 9
+
         let lookUp = `${tA}-${tB}`
 
         // do a simple look up
@@ -90,8 +93,8 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             // console.log('a', pairData)
 
             return {
-                reserve0: convertUIStringToBigNumber(pairData.totalReserve0),
-                reserve1: convertUIStringToBigNumber(pairData.totalReserve1),
+                reserve0: convertUIStringToBigNumber(pairData.totalReserve0, tADecimals),
+                reserve1: convertUIStringToBigNumber(pairData.totalReserve1, tBDecimals),
             }
         }
         // do different simple look up
@@ -100,8 +103,8 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         if (pairData) {
             //console.log('b', pairData)
             return {
-                reserve0: convertUIStringToBigNumber(pairData.totalReserve1),
-                reserve1: convertUIStringToBigNumber(pairData.totalReserve0),
+                reserve0: convertUIStringToBigNumber(pairData.totalReserve1, tBDecimals),
+                reserve1: convertUIStringToBigNumber(pairData.totalReserve0, tADecimals),
             }
         }
 

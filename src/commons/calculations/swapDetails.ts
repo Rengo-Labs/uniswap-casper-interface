@@ -33,14 +33,12 @@ export interface SwapDetails {
  * @return SwapDetails
  */
 export const calculateSwapDetails = async (
-    apiClient: APIClient,
     tokenA: Token,
     tokenB: Token,
     reserve0: BigNumber.Value,
     reserve1: BigNumber.Value,
     inputValueRaw: BigNumber.Value,
     token: Token,
-    slippage = 0.005,
     fee = PLATFORM_GAS_FEE
 ): Promise<SwapDetails> => {
   try {     
@@ -48,7 +46,7 @@ export const calculateSwapDetails = async (
 
       const liquidityA = new BigNumber(reserve0)
       const liquidityB = new BigNumber(reserve1)
-      const inputValue = new BigNumber(inputValueRaw).times(10 ** 9)
+      const inputValue = new BigNumber(inputValueRaw)
       const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
       // console.log(inputValueRaw.toString(), inputValue.toString(), reserve0.toString(), reserve1.toString())
 
@@ -95,7 +93,7 @@ export const calculateSwapDetails = async (
       // console.log("priceImpact", priceImpact)
 
       return {
-          tokensToTransfer: fixAmountOfZeros(inputValue.times(inputExchangeRate), tokenB.decimals),
+          tokensToTransfer: inputValue.times(inputExchangeRate).toFixed((isA2B ? tokenB.decimals : tokenA.decimals)),
           //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
           priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
           exchangeRateA: exchangeRateA.toNumber(),
