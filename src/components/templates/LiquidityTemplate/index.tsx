@@ -342,18 +342,16 @@ export const LiquidityTemplate = ({isMobile}) => {
             secondReserve,
         } = getLiquidityDetailResponse;
 
-        /*
-        exchangeRateASetter(exchangeRateA);
-        exchangeRateBSetter(exchangeRateB);
+
+        //exchangeRateASetter(exchangeRateA);
+        //exchangeRateBSetter(exchangeRateB);
         if (token === tokenA) {
             setFirstReserve(firstReserve);
             setSecondReserve(secondReserve);
         } else {
             setFirstReserve(secondReserve);
             setSecondReserve(firstReserve);
-        }*/
-        setFirstReserve(firstReserve);
-        setSecondReserve(secondReserve);
+        }
         const totalLP = calculateTotalLP(
           firstTokenSelected.symbolPair,
           secondTokenSelected.symbolPair
@@ -384,6 +382,13 @@ export const LiquidityTemplate = ({isMobile}) => {
             );
             return userLP;
         }
+    }
+
+    const performSwitchTokens = () => {
+        onSwitchTokens()
+
+        setFirstReserve(currentSReserve);
+        setSecondReserve(currentFReserve);
     }
 
     return (
@@ -429,7 +434,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   onSelectFirstToken={onSelectFirstToken}
                                   onSelectSecondToken={onSelectSecondToken}
                                   tokenState={tokenState}
-                                  onSwitchTokens={onSwitchTokens}
+                                  onSwitchTokens={performSwitchTokens}
                                   onActionConfirm={onLiquidity}
                                   filterPopupTokens={filterTokenPairsByToken}
                                   updateDetail={updateLiquidityDetail}
