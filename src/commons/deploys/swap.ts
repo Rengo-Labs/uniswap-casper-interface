@@ -157,8 +157,8 @@ export const signAndDeploySwap = async (
           wallet,
           await apiClient.getDeployWasmData(),
           RuntimeArgs.fromMap({
-            amount_in: CLValueBuilder.u256(new BigNumber(amountIn).times(1 - slippage).toFixed(0, BigNumber.ROUND_UP)),
-            amount_out_min: CLValueBuilder.u256(new BigNumber(amountOut).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_in: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_UP)),
+            amount_out_min: CLValueBuilder.u256(new BigNumber(amountOut).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             path: new CLList(path),
             to: CLValueBuilder.uref(
               Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
