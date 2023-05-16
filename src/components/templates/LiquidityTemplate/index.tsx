@@ -82,7 +82,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     })
     const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
     const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
-    const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
+    const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(false)
     const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
     const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
         lpAmount: 0,

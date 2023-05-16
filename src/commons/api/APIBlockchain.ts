@@ -1,6 +1,8 @@
 import axios from "axios";
 
 import { API_BLOCKCHAIN_INFO } from "../../constant";
+import { TokenState } from "../../reducers/TokenReducers";
+import { Wallet } from "../wallet";
 
 export const enum BlockchainAPIQuery {
   TRANSACTION = "extended-deploys",
@@ -38,6 +40,8 @@ export interface BlockchainInfo {
   currencyCost: string;
   amount: any;
   entryPoint: EntryPoint;
+  errorMessage: string;
+  priceUsd: number;
 }
 
 export interface AccountInfo {
@@ -75,7 +79,7 @@ export class BlockchainAPI {
     sortFields = "entry_point,contract_package",
     contractPackageHash = ""
   ): Promise<BlockchainInfo[]> {
-    let path = `${API_BLOCKCHAIN_INFO}/${BlockchainAPIQuery.ACCOUNT}/${publicKey}/${BlockchainAPIQuery.TRANSACTION}?page=${page}&limit=${limit}&fields=${sortFields}&with_amounts_in_currency_id=1`
+    let path = `${API_BLOCKCHAIN_INFO}/${BlockchainAPIQuery.ACCOUNT}/${publicKey}/${BlockchainAPIQuery.TRANSACTION}?page=${page}&limit=${limit}&fields=${sortFields}&with_amounts_in_currency_id=1`;
 
     if (contractPackageHash && contractPackageHash !== "") {
       path = path + `&contract_package_hash=${contractPackageHash}`;
@@ -94,6 +98,8 @@ export class BlockchainAPI {
         amount: item.args?.amount?.parsed ?? "0",
         currencyCost: item.currency_cost,
         entryPoint: item.entry_point,
+        errorMessage: item.error_message,
+        priceUsd: parseFloat(item.rate),
       })) as BlockchainInfo[];
     }
 
@@ -103,19 +109,20 @@ export class BlockchainAPI {
   /**
    * get account info
    */
-  getAccountInfo = async (publicKey: string): Promise<AccountInfo> => {
-    //const res = axios.get(`${API_BLOCKCHAIN_INFO}/${BlockchainAPIQuery.ACCOUNT}`)
-
+  getAccountInfo = async (wallet: Wallet, tokenState: TokenState): Promise<AccountInfo> => {
+    // const res = await axios.get(
+    //   `${API_BLOCKCHAIN_INFO}/${BlockchainAPIQuery.ACCOUNT}`
+    // );
     const infoStatus = await this.getInfoStatus();
-    const totalRewards = await this.getTotalRewards(publicKey);
-    const undelegating = await this.getUndelegation(publicKey, infoStatus);
+    const totalRewards = await this.getTotalRewards(wallet.publicKeyHex);
+    const undelegating = await this.getUndelegation(wallet.publicKeyHex, infoStatus);
 
     return {
-      publicKey: publicKey,
-      accountHash: "hash",
+      publicKey: wallet.publicKeyHex,
+      accountHash: wallet.accountHashString,
       totalRewardReceived: totalRewards,
-      totalBalance: 0.0,
-      liquid: 0.0,
+      totalBalance: tokenState.tokens['CSPR'].amount,
+      liquid: tokenState.tokens['CSPR'].amount,
       stakedAsDelegator: 0.0,
       undelegating: undelegating,
     } as AccountInfo;
