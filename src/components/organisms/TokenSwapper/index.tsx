@@ -122,17 +122,17 @@ const TokenSwapper = ({
     updateDetailAndUSDValuesForInputA(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected, isSwitched)
   }
 
-  const updateDetailAndUSDValuesForInputA = async (firstToken, SecondToken, filteredValue, activeToken, isSwitched) => {
+  const updateDetailAndUSDValuesForInputA = async (firstToken, secondToken, filteredValue, activeToken, isSwitched) => {
     amountSwapTokenASetter(filteredValue);
     const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
       firstToken,
-      SecondToken,
+      secondToken,
       filteredValue,
       activeToken,
       isSwitched
     );
 
-    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, SecondToken.symbolPair, exchangeRateA, exchangeRateB, firstToken.symbolPair)
+    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, firstToken.symbolPair)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
     if(filteredValue) {
       handleValidate(typeof filteredValue === "number" ? filteredValue : parseFloat(filteredValue), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0);
@@ -152,17 +152,17 @@ const TokenSwapper = ({
     updateDetailAndUSDValuesForInputB(firstTokenSelected, secondTokenSelected, filteredValue, secondTokenSelected, isSwitched)
   }
 
-  const updateDetailAndUSDValuesForInputB = async (firstToken, SecondToken, filteredValue, activeToken, isSwitched) => {
+  const updateDetailAndUSDValuesForInputB = async (firstToken, secondToken, filteredValue, activeToken, isSwitched) => {
     amountSwapTokenBSetter(filteredValue)
     const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
       firstToken,
-      SecondToken,
+      secondToken,
       filteredValue,
       activeToken,
       isSwitched
     );
 
-    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, SecondToken.symbolPair, exchangeRateA, exchangeRateB, activeToken.symbolPair)
+    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, activeToken.symbolPair)
     amountSwapTokenASetter(formatNaN(tokensToTransfer))
     if(tokensToTransfer) {
       handleValidate(parseFloat(tokensToTransfer), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0)
@@ -229,12 +229,10 @@ const TokenSwapper = ({
 
     if (openPoolDialog.firstSelector) {
       onSelectFirstToken(token)
-      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, secondTokenSelected, amountSwapTokenA, token, true)
-      amountSwapTokenASetter(formatNaN(tokensToTransfer))
+      updateDetailAndUSDValuesForInputA(token, secondTokenSelected, amountSwapTokenA.toString(), token, true)
     } else {
       onSelectSecondToken(token)
-      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(token, firstTokenSelected, amountSwapTokenB, token, true)
-      amountSwapTokenBSetter(formatNaN(tokensToTransfer))
+      updateDetailAndUSDValuesForInputB(firstTokenSelected, token, amountSwapTokenB.toString(), token, true)
     }
     setOpenPoolDialog(prevState => ({...prevState, open: false}))
   }
