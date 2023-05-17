@@ -28,8 +28,8 @@ export const TestComponent = () => {
     )
 
     expect(tokensToTransfer).toBe("400")
-    expect(exchangeRateA).toBe("20")
-    expect(exchangeRateB).toBe("10")
+    expect(exchangeRateA).toBe(20)
+    expect(exchangeRateB).toBe(10)
   }
   const checkSwapper = async () => {
     const result = await onConfirmSwapConfig(2000.00, 1000.00, 0.5, 0.003)

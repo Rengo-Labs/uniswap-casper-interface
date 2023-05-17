@@ -266,6 +266,7 @@ const handleActionRemoval = async () => {
 
   await onRemoveLiquidity(
     removeLiquidityCalculation.lpAmount,
+    removeLiquidityData.decimals,
     {
         symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
         packageHash: removeLiquidityData.firstHash,

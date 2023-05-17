@@ -46,6 +46,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                         name: p.name,
                         token0Price: price0USD,
                         token1Price: price1USD,
+                        decimals0: tokenState.tokens[p.token0Symbol].decimals,
+                        decimals1: tokenState.tokens[p.token1Symbol].decimals
                     },
                 })
             }
@@ -173,7 +175,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                     pl.decimals
                 ),
                 totalLiquidityUSD: convertBigNumberToUIString(
-                    new BigNumber(infoResult ? infoResult.reserveUSD : 0)
+                    new BigNumber(infoResult ? infoResult.reserveUSD : 0),
+                    pl.decimals
                 )
             }
         }))
@@ -247,7 +250,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 payload: {
                     name: pair.name,
                     allowance: convertBigNumberToUIString(
-                      new BigNumber(0)
+                      new BigNumber(0),
+                      pair.decimals
                     ),
                 },
             })
@@ -257,7 +261,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 payload: {
                     name: pair.name,
                     balance: convertBigNumberToUIString(
-                      new BigNumber(0)
+                      new BigNumber(0),
+                      pair.decimals
                     ),
                     decimals0: tokenState.tokens[pair.token0Symbol].decimals,
                     decimals1: tokenState.tokens[pair.token1Symbol].decimals

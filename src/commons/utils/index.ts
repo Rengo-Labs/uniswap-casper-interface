@@ -11,11 +11,11 @@ export const ONE_BILLION_E = 9;
 
 export const convertBigNumberToUIString = (
   amount: BigNumber,
-  decimals = 9
+  decimals
 ): string => amount.div(10 ** decimals).toString();
 export const convertUIStringToBigNumber = (
   amount: BigNumber.Value,
-  decimals = 9
+  decimals: number
 ): BigNumber => new BigNumber(amount).times(10 ** decimals);
 export const convertAllFormatsToUIFixedString = (
   amount: BigNumber.Value,

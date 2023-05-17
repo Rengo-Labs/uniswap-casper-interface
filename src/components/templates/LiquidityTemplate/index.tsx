@@ -166,6 +166,7 @@ export const LiquidityTemplate = ({isMobile}) => {
 
       await onRemoveLiquidity(
         removeLiquidityCalculation.lpAmount,
+        removeLiquidityData.decimals,
         {
             symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
             packageHash: removeLiquidityData.firstHash,

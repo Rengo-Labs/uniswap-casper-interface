@@ -10,7 +10,7 @@ import { TokensProviderContext } from "../../../contexts/TokensContext";
 import {
   convertAllFormatsToUIFixedString,
   convertBigNumberToUIString,
-  dateConverter,
+  dateConverter, ONE_BILLION_E,
   shortenString,
 } from "../../../commons";
 import { useLocation } from "react-router-dom";
@@ -155,11 +155,11 @@ export const AccountTemplate = ({ isMobile }) => {
         handleCopy: () => handleCopyToClipboard(deployItem?.deployHash),
         entry_point: deployItem?.entryPoint?.name || "WASM deploy",
         amount: Number(
-          convertBigNumberToUIString(new BigNumber(deployItem?.amount))
+          convertBigNumberToUIString(new BigNumber(deployItem?.amount), ONE_BILLION_E)
         ),
         amountSymbol: deployItem?.packageHash?.metadata?.symbol || "CSPR",
         cost: Number(
-          convertBigNumberToUIString(new BigNumber(deployItem?.cost))
+          convertBigNumberToUIString(new BigNumber(deployItem?.cost), ONE_BILLION_E)
         ),
         price: Number(
           convertAllFormatsToUIFixedString(deployItem?.currencyCost, 2)
@@ -185,7 +185,8 @@ export const AccountTemplate = ({ isMobile }) => {
           transference_id: transferItem?.transferId,
           amount: Number(
             convertBigNumberToUIString(
-              new BigNumber(transferItem?.amountInCSPR)
+              new BigNumber(transferItem?.amountInCSPR),
+              ONE_BILLION_E
             )
           ),
           price: Number(

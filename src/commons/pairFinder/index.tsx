@@ -134,11 +134,11 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         for (let i = 1; i < path.length; i++) {
             const pair = overrideReserves[path[i].label.name] ?? path[i].label
             if (path[i - 1].id == tokenASymbol) {
-                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1))
-                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0))
+                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1, tBDecimals))
+                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0, tADecimals))
             } else {
-                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve0))
-                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve1))
+                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve0, tADecimals))
+                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve1, tBDecimals))
             }
 
             if (i == 1) {
