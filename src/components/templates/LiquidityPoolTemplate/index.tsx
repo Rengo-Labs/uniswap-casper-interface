@@ -31,7 +31,7 @@ interface IPoolDetailRow {
     asset1: string;
   };
   yourShare: any;
-  liqudiity: string;
+  liquidity: string;
   volume7D: string;
   fees7D: string;
   apr: string;
@@ -49,7 +49,7 @@ const poolDetailsRowDefault = {
     asset1: "",
   },
   yourShare: "",
-  liqudiity: "",
+  liquidity: "",
   volume7D: "",
   fees7D: "",
   apr: "",
@@ -198,7 +198,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   }
 
   const onActionAllowance = async () => {
-    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id)
+    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityData.decimals)
   }
 
   const handleRemoveLiquidity =  () => {
@@ -295,7 +295,7 @@ const handleActionRemoval = async () => {
       yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(
         2
       ),
-      liqudiity: convertNumber(parseFloat(newRow.totalLiquidityUSD)),
+      liquidity: convertNumber(parseFloat(newRow.totalLiquidityUSD)),
       volume7D: newRow.volume7dUSD || "0",
       fees7D: `${new BigNumber(newRow.volume7d).times(0.003).toFixed(2)}`,
       apr: "0",
@@ -395,7 +395,7 @@ const handleActionRemoval = async () => {
             yourLiquidity={poolDetailRow.yourLiquidity}
             assetsPooled={poolDetailRow.assetsPooled}
             yourShare={poolDetailRow.yourShare}
-            liqudiity={poolDetailRow.liqudiity}
+            liqudiity={poolDetailRow.liquidity}
             volume7D={poolDetailRow.volume7D}
             fees7D={poolDetailRow.fees7D}
             apr={poolDetailRow.apr}

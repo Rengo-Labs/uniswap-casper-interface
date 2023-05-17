@@ -72,13 +72,15 @@ export const LiquidityTemplate = ({isMobile}) => {
         firstLiquidity: '0',
         firstRate: '0',
         firstHash: '',
+        firstDecimals: 9,
         decimals: 9,
         secondIcon: '',
         secondName: 'WETH',
         secondSymbol: 'WETH',
         secondLiquidity: '0',
         secondRate: '0',
-        secondHash: ''
+        secondHash: '',
+        secondDecimals: 9
     })
     const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
     const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
@@ -158,14 +160,17 @@ export const LiquidityTemplate = ({isMobile}) => {
     const onActionRemove = async () => {
       setRemoveLiquidityInput(0)
       setShowRemoveLiquidityDialog(false)
+        console.log(removeLiquidityCalculation.firstAmount, removeLiquidityCalculation.secondAmount)
       await onRemoveLiquidity(
         removeLiquidityCalculation.lpAmount,
         {
             symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
             packageHash: removeLiquidityData.firstHash,
+            decimals: removeLiquidityData.firstDecimals
         } as any, {
             symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
             packageHash: removeLiquidityData.secondHash,
+            decimals: removeLiquidityData.secondDecimals
         } as any,
         removeLiquidityCalculation.firstAmount,
         removeLiquidityCalculation.secondAmount,
@@ -175,7 +180,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     }
 
     const onActionAllowance = async () => {
-        await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id)
+        await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityCalculation.decimals)
     }
 
     const handleNavigate = (item) => {
@@ -199,6 +204,8 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     const createRemovingDataForPopup = (item) => {
         setRemoveLiquidityToggle(true)
+        const token0 = tokenState.tokens[item.token0Symbol]
+        const token1 = tokenState.tokens[item.token1Symbol]
         const data = {
             id: item.contractHash,
             tokenName: item.name,
@@ -210,13 +217,15 @@ export const LiquidityTemplate = ({isMobile}) => {
             firstLiquidity: item.reserve0,
             firstRate: '',
             firstHash: item.contract0,
+            firstDecimals: token0.decimals,
             secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
             secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
             secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
             secondLiquidity: item.reserve1,
             secondRate: '',
             secondHash: item.contract1,
-            decimals: item.decimals
+            decimals: item.decimals,
+            secondDecimals: token1.decimals
         }
         setRemoveLiquidityData((prevState) => ({
             ...prevState,

@@ -26,6 +26,7 @@ export interface ConfigContext {
   onIncreaseAllow?: (
     amount: number | string,
     contractHash: string,
+    decimals?: number,
     optApproval?: string
   ) => Promise<boolean>;
   confirmModal: boolean;
@@ -73,9 +74,14 @@ export const ConfigContextWithReducer = ({
 
   const {slippageToleranceSelected } = walletState;
 
+  const redirectToNetwork = (link) => {
+    window.open(link, '_blank')
+  }
+
   async function onIncreaseAllow(
     amount: number | string,
     contractHash: string,
+    decimals = 9,
     optApproval = ""
 ): Promise<boolean> {
     updateNotification({
@@ -88,12 +94,11 @@ export const ConfigContextWithReducer = ({
     });
 
     try {
-      console.log("amount", amount, contractHash)
       const [deployHash, deployResult] = await signAndDeployAllowance(
         casperClient,
         walletState.wallet,
         contractHash,
-        convertUIStringToBigNumber(amount),
+        convertUIStringToBigNumber(amount, decimals),
         optApproval
       );
 

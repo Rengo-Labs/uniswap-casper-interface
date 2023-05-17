@@ -149,8 +149,8 @@ const LiquiditySwapper = ({
     setExcludedB(excludedA)
   }
 
-  async function requestIncreaseAllowance(amount, contractHash, optApproval="") {
-    await onIncreaseAllow(amount, contractHash, optApproval)
+  async function requestIncreaseAllowance(amount, contractHash, decimals, optApproval="") {
+    await onIncreaseAllow(amount, contractHash, decimals, optApproval)
     await updateDetail(firstTokenSelected, secondTokenSelected)
   }
 
@@ -427,6 +427,7 @@ const LiquiditySwapper = ({
               await requestIncreaseAllowance(
                 Math.abs(freeAllowanceA),
                 firstTokenSelected.contractHash,
+                firstTokenSelected.decimals,
                 firstTokenSelected.optApproval
               );
             }}}>Approve {Math.abs(freeAllowanceA)} {firstTokenSelected.symbol}</Button>
@@ -437,6 +438,7 @@ const LiquiditySwapper = ({
               await requestIncreaseAllowance(
                 Math.abs(freeAllowanceB),
                 secondTokenSelected.contractHash,
+                secondTokenSelected.decimals,
                 secondTokenSelected.optApproval
               );
             }}}>Approve {Math.abs(freeAllowanceB)} {secondTokenSelected.symbol}</Button>
