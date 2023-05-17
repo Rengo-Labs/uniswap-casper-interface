@@ -84,7 +84,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     })
     const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
     const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
-    const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
+    const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(false)
     const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
     const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
         lpAmount: 0,
@@ -153,14 +153,17 @@ export const LiquidityTemplate = ({isMobile}) => {
     }
 
     const handleRemoveLiquidity =  () => {
-        setRemoveLiquidityInput((prevState) => 0)
-        setShowRemoveLiquidityDialog(!showRemoveLiquidityDialog)
+      setRemoveLiquidityButtonDisabled(true)
+      setRemoveLiquidityInput(0)
+      setShowRemoveLiquidityDialog(false)
     }
 
     const onActionRemove = async () => {
       setRemoveLiquidityInput(0)
       setShowRemoveLiquidityDialog(false)
-        console.log(removeLiquidityCalculation.firstAmount, removeLiquidityCalculation.secondAmount)
+
+      setRemoveLiquidityButtonDisabled(true)
+
       await onRemoveLiquidity(
         removeLiquidityCalculation.lpAmount,
         {

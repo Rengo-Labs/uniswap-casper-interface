@@ -90,7 +90,7 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
     }
 
     const getAccountDetail = async (wallet: Wallet) => {
-      return BlockchainResponsibilities(wallet).getAccountInfo()
+      return BlockchainResponsibilities(wallet, tokenState).getAccountInfo()
     }
 
     const getTransfersDetail = async (wallet: Wallet) => {
