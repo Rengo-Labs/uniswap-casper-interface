@@ -19,8 +19,10 @@ import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { globalStore } from "../../../store/store";
 import { TokensProviderContext } from "../../../contexts/TokensContext";
+import {SUPPORTED_NETWORKS} from "../../../constant";
 
 interface IPoolDetailRow {
+  contractPackage: string,
   token0Icon?: string;
   token1Icon?: string;
   token0Symbol?: string;
@@ -39,6 +41,7 @@ interface IPoolDetailRow {
 }
 
 const poolDetailsRowDefault = {
+  contractPackage: "",
   token0Icon: "",
   token1Icon: "",
   token0Symbol: "",
@@ -120,6 +123,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   useEffect(() => {
     setTableData(
       getPoolList().map((item) => ({
+        contractPackage: item.packageHash.slice(5),
         name: item.name,
         pool: `${item.token0Symbol} - ${item.token1Symbol}`,
         token0Icon: item.token0Icon,
@@ -167,7 +171,9 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const createRemovingDataForPopup = (itemName) => {
     setRemoveLiquidityToggle(true)
     const pairRemoteData = getPoolList().find(element => element.name === itemName)
-    
+    const token0 = tokenState.tokens[pairRemoteData.token0Symbol]
+    const token1 = tokenState.tokens[pairRemoteData.token1Symbol]
+
     const data = {
         id: pairRemoteData.contractHash,
         tokenName: pairRemoteData.name,
@@ -177,13 +183,13 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         firstName: pairRemoteData.token0Symbol === 'CSPR' ? 'Casper' : pairRemoteData.token0Name,
         firstSymbol: pairRemoteData.token0Symbol,
         firstLiquidity: pairRemoteData.reserve0,
-        firstRate: '',
+        firstRate: new BigNumber(pairRemoteData.reserve0).div(pairRemoteData.reserve1).toFixed(token0.decimals),
         firstHash: pairRemoteData.contract0,
         secondIcon: pairRemoteData.token1Symbol === 'CSPR' ? csprIcon : pairRemoteData.token1Icon,
         secondName: pairRemoteData.token1Symbol === 'CSPR' ? 'Casper' : pairRemoteData.token1Name,
         secondSymbol: pairRemoteData.token1Symbol,
         secondLiquidity: pairRemoteData.reserve1,
-        secondRate: '',
+        secondRate: new BigNumber(pairRemoteData.reserve1).div(pairRemoteData.reserve0).toFixed(token1.decimals),
         secondHash: pairRemoteData.contract1,
         decimals: pairRemoteData.decimals
     }
@@ -284,6 +290,7 @@ const handleActionRemoval = async () => {
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
     setPoolDetailRow({
+      contractPackage: newRow.packageHash.slice(5),
       token0Icon: newRow.token0Icon,
       token1Icon: newRow.token1Icon,
       token0Symbol: newRow.token0Symbol,
@@ -369,6 +376,7 @@ const handleActionRemoval = async () => {
           />
 
           <PoolTable
+            networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
             data={tableData}
             handleSwap={goTo}
             handleAddLiquidity={goTo}
@@ -403,6 +411,8 @@ const handleActionRemoval = async () => {
           />
 
           <RemoveLiquidityDialog
+            firstRate={removeLiquidityData.firstRate}
+            secondRate={removeLiquidityData.secondRate}
             closeCallback={handleRemoveLiquidity}
             liquidityPoolData={removeLiquidityData as any}
             isOpen={showRemoveLiquidityDialog}
