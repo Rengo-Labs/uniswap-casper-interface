@@ -107,6 +107,7 @@ export const LiquidityRemovingWithInputRangeModule = ({
   const removeLiquidity = async () => {
     setIsProcessingTransaction(true)
     await onRemoveLiquidity(lpValue,
+      9,
       {
         symbol: firstSymbol.replace('WCSPR', 'CSPR'),
         packageHash: firstHash,

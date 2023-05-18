@@ -46,6 +46,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                         name: p.name,
                         token0Price: price0USD,
                         token1Price: price1USD,
+                        decimals0: tokenState.tokens[p.token0Symbol].decimals,
+                        decimals1: tokenState.tokens[p.token1Symbol].decimals
                     },
                 })
             }
@@ -75,7 +77,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                                 payload: {
                                     name: pair.name,
                                     allowance: convertBigNumberToUIString(
-                                        new BigNumber(response)
+                                        new BigNumber(response),
+                                        pair.decimals
                                     ),
                                 },
                             });
@@ -86,13 +89,17 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                             pair.contractHash,
                         )
                         .then((response) => {
+                            console.log(pair.name, response)
                             pairDispatch({
                                 type: PairActions.ADD_BALANCE_TO_PAIR,
                                 payload: {
                                     name: pair.name,
                                     balance: convertBigNumberToUIString(
-                                        new BigNumber(response)
+                                        new BigNumber(response),
+                                        pair.decimals
                                     ),
+                                    decimals0: tokenState.tokens[pair.token0Symbol].decimals,
+                                    decimals1: tokenState.tokens[pair.token1Symbol].decimals
                                 },
                             });
                         }),
@@ -164,10 +171,12 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 volume7d: new BigNumber(infoResult.oneWeekVolumeUSD).div(10 ** pl.decimals).toFixed(2),
                 volume1d: new BigNumber(infoResult.oneDayVolumeUSD).div(10 ** pl.decimals).toFixed(2),
                 totalSupply: convertBigNumberToUIString(
-                    new BigNumber(pairDataResponse.totalSupply)
+                    new BigNumber(pairDataResponse.totalSupply),
+                    pl.decimals
                 ),
                 totalLiquidityUSD: convertBigNumberToUIString(
-                    new BigNumber(infoResult ? infoResult.reserveUSD : 0)
+                    new BigNumber(infoResult ? infoResult.reserveUSD : 0),
+                    pl.decimals
                 )
             }
         }))
@@ -241,7 +250,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 payload: {
                     name: pair.name,
                     allowance: convertBigNumberToUIString(
-                      new BigNumber(0)
+                      new BigNumber(0),
+                      pair.decimals
                     ),
                 },
             })
@@ -251,8 +261,11 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 payload: {
                     name: pair.name,
                     balance: convertBigNumberToUIString(
-                      new BigNumber(0)
+                      new BigNumber(0),
+                      pair.decimals
                     ),
+                    decimals0: tokenState.tokens[pair.token0Symbol].decimals,
+                    decimals1: tokenState.tokens[pair.token1Symbol].decimals
                 },
             })
 

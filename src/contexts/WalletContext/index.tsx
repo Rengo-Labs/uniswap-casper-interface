@@ -23,7 +23,7 @@ import {
   Wallet,
   convertUIStringToBigNumber,
   log,
-  WalletName, Client as CasperClient,
+  WalletName, Client as CasperClient, ONE_BILLION_E,
 } from '../../commons';
 
 import { ConfigState } from '../../reducers/ConfigReducers';
@@ -115,7 +115,7 @@ export const WalletContext = ({
         wallet: state.wallet,
         mainPurse: state.mainPurse,
         walletAddress: state.wallet?.accountHashString ?? '',
-        balance: convertUIStringToBigNumber(amount),
+        balance: convertUIStringToBigNumber(amount, ONE_BILLION_E),
         isConnected: state.wallet?.isConnected ?? false,
       };
     }
@@ -173,7 +173,7 @@ export const WalletContext = ({
         return {
           mainPurse: '',
           walletAddress: '',
-          balance: convertUIStringToBigNumber(amount),
+          balance: convertUIStringToBigNumber(amount, ONE_BILLION_E),
           isConnected: false,
         };
     }

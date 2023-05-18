@@ -35,6 +35,7 @@ export interface LiquidityContext {
   ) => Promise<boolean>;
   onRemoveLiquidity: (
     liquidity: number | string,
+    liquidityDecimals: number,
     tokenA: Token,
     tokenB: Token,
     amountA: number | string,
@@ -94,8 +95,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         casperClient,
         walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(amountA, firstTokenSelected.decimals),
+        convertUIStringToBigNumber(amountB, secondTokenSelected.decimals),
         firstTokenSelected,
         secondTokenSelected,
         slippage / 100,
@@ -154,6 +155,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
 
   async function onRemoveLiquidity(
     liquidity: number | string,
+    liquidityDecimals: number,
     tokenA: Token,
     tokenB: Token,
     amountA: number | string,
@@ -176,9 +178,9 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         casperClient,
         walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(liquidity),
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(liquidity, liquidityDecimals),
+        convertUIStringToBigNumber(amountA, tokenA.decimals),
+        convertUIStringToBigNumber(amountB, tokenB.decimals),
         tokenA,
         tokenB,
         slippage / 100,

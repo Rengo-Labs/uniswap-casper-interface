@@ -193,7 +193,6 @@ const SwapNewModule = () => {
           reserve1,
           value,
           token,
-          slippageTolerance,
           feeToPay
       );
       setPairPath([tokenA.symbol, tokenB.symbol])
@@ -215,7 +214,6 @@ const SwapNewModule = () => {
             reserve1,
             nextTokensToTransfer,
             {symbol: symbol0} as any,
-            slippageTolerance,
             feeToPay
         );
 
