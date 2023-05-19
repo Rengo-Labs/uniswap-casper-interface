@@ -311,16 +311,19 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     async function onLiquidity(amountA, amountB) {
         setIsProcessingTransaction(true)
-        await onAddLiquidity(
+        const isSuccessful = await onAddLiquidity(
             amountA,
             amountB,
             slippageTolerance,
             gasFee
         );
+        
         refresh()
-        amountSwapTokenASetter(0)
-        amountSwapTokenBSetter(0)
         setIsProcessingTransaction(false)
+        if (isSuccessful) {
+          amountSwapTokenASetter(0)
+          amountSwapTokenBSetter(0)
+        }
     }
 
     async function updateLiquidityDetail(
