@@ -18,6 +18,7 @@ import {useNavigate} from "react-router";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
+import {SUPPORTED_NETWORKS} from "../../../constant";
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -219,14 +220,14 @@ export const LiquidityTemplate = ({isMobile}) => {
             firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
             firstSymbol: item.token0Symbol.includes('CSPR') ? 'CSPR' : item.token0Symbol,
             firstLiquidity: item.reserve0,
-            firstRate: '',
+            firstRate: new BigNumber(item.reserve0).div(item.reserve1).toFixed(token0.decimals),
             firstHash: item.contract0,
             firstDecimals: token0.decimals,
             secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
             secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
             secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
             secondLiquidity: item.reserve1,
-            secondRate: '',
+            secondRate: new BigNumber(item.reserve1).div(item.reserve0).toFixed(token1.decimals),
             secondHash: item.contract1,
             decimals: item.decimals,
             secondDecimals: token1.decimals
@@ -245,6 +246,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             (v) => parseFloat(v.balance) > 0
         ).map((i) => {
             return {
+                contractPackage: i.packageHash.slice(5),
                 firstTokenIcon: i.token0Icon,
                 secondTokenIcon: i.token1Icon,
                 isFavorite: false,
@@ -407,6 +409,8 @@ export const LiquidityTemplate = ({isMobile}) => {
     return (
         <>
             <RemoveLiquidityDialog
+                firstRate={removeLiquidityData.firstRate}
+                secondRate={removeLiquidityData.secondRate}
                 // @ts-ignore
                 closeCallback={handleRemoveLiquidity}
                 liquidityPoolData={removeLiquidityData as any}
@@ -464,6 +468,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 isConnected && userPairDataNonZero.length > 0 &&
               <SingleColumn isMobile={isMobile}>
                   <LPContainer title="My Liquidity"
+                               networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
                                lpTokens={userPairDataNonZero} />
               </SingleColumn>
             }

@@ -4,6 +4,7 @@ import {BalanceTable} from "rengo-ui-kit";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
 import {PairsContextProvider} from "../../../contexts/PairsContext";
+import {SUPPORTED_NETWORKS} from "../../../constant";
 
 export const BalanceTemplate = ({isMobile}) => {
     const {isConnected} = useContext(WalletProviderContext)
@@ -19,6 +20,7 @@ export const BalanceTemplate = ({isMobile}) => {
           //const result = await getHistoricalTokensChartPrices("hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a", "hash-28eed3da2b123334c7913d84c4aea0ed426fd268d29410cb12c6bc8a453183f6")
           return (
             {
+              contractPackage: symbol === 'CSPR' ? tokenState.tokens['WCSPR'].packageHash.slice(5) : packageHash.slice(5),
               id: symbol,
               crypto: name,
               cryptoIcon: logoURI,
@@ -42,7 +44,7 @@ export const BalanceTemplate = ({isMobile}) => {
     return (
         <>
             <SingleColumn isMobile={isMobile} title="My Balance">
-                <BalanceTable data={data}/>
+                <BalanceTable networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`} data={data}/>
             </SingleColumn>
         </>
     );
