@@ -255,7 +255,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 firstAmount: i.reserve0,
                 secondAmount: i.reserve1,
                 userLP: i.balance,
-                totalLP: i.totalLiquidityUSD,
+                totalLP: i.totalSupply,
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
             }
         })
