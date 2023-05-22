@@ -176,6 +176,12 @@ const LiquiditySwapper = ({
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
     amountSwapTokenBSetter(tokensToTransfer);
+    handleValidate(
+      parseFloat(tokensToTransfer),
+      parseFloat(secondTokenSelected.amount),
+      gasFee || 0,
+      secondTokenSelected.symbol
+    )
   }
 
   const handleChangeA = (value) => {
@@ -219,6 +225,12 @@ const LiquiditySwapper = ({
     calculateUSDValues(filteredValue, tokensToTransfer, true)
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
+    handleValidate(
+      parseFloat(tokensToTransfer),
+      parseFloat(firstTokenSelected.amount),
+      gasFee || 0,
+      firstTokenSelected.symbol
+    )
   }
 
   const handleChangeB = async (value) => {
@@ -273,36 +285,6 @@ const LiquiditySwapper = ({
     amountSwapTokenASetter(tokensToTransfer)
   }
 
-  async function validateToken(amount, token) {
-    if (token === tokenType.tokenA) {
-      console.log('amount', amount)
-      if (parseFloat(firstTokenSelected.amount) > gasFee) {
-        amount = parseFloat(firstTokenSelected.amount) - gasFee;
-        setCurrentValue(amount);
-        dismissNotification();
-        setDisableButton(false);
-      } else if(Number(amount) > 0){
-        showNotification();
-        setCurrentValue(amount);
-      }
-    } else if (token == tokenType.tokenB) {
-      const {tokensToTransfer} = await updateDetail(
-        firstTokenSelected,
-        secondTokenSelected,
-        parseFloat(amount),
-        secondTokenSelected
-      );
-      setCurrentValue(parseFloat(tokensToTransfer));
-      if (
-        parseFloat(tokensToTransfer) > 0 &&
-        parseFloat(tokensToTransfer) >
-        parseFloat(firstTokenSelected.amount) - gasFee
-      ) {
-        showNotification();
-      }
-    }
-    return amount;
-  }
 
   const disableButton = (amount0, amount1) => {
     if (isNaN(amount0)) {
@@ -350,20 +332,6 @@ const LiquiditySwapper = ({
     await refresh()
     await changeTokenA(amountSwapTokenA)
   }
-
-  const popularTokens = Object.values(tokenState.tokens).map((token) => {
-    const {chainId, symbol, name, amount, logoURI}: any = token;
-    return (
-      {
-        id: chainId,
-        name: symbol,
-        fullName: name,
-        amount: amount,
-        tokenImg: logoURI,
-        favorite: false
-      }
-    );
-  })
 
   const calculateUSDValues = (amountA, amountB, isAorB) => {
     const [usdA, usdB] = calculateUSDtokens(
