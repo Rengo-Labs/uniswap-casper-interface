@@ -39,7 +39,8 @@ export const SwapTemplate = ({isMobile}) => {
         tokenState,
         onSwitchTokens,
         filterPopupTokens,
-        getHistoricalTokensChartPrices
+        getHistoricalTokensChartPrices,
+        getTokensChartData
     } = useContext(TokensProviderContext)
     // Details requirements
     const { handleValidate, showNotification } =
@@ -55,7 +56,7 @@ export const SwapTemplate = ({isMobile}) => {
     const { slippageTolerance, updateSlippageTolerance } = globalStore()
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
     const [showChart0, setShowChart0] = useState(true)
-    const [showChart1, setShowChart1] = useState(true)
+    const [showChart1, setShowChart1] = useState(false)
     const [chartData,  setChartData] = useState([
         {
             priceUSD: 0,
@@ -65,6 +66,11 @@ export const SwapTemplate = ({isMobile}) => {
             token1price: 0
         }
     ])
+
+    const [priceAndPercentage, setPriceAndPercentage] = useState({
+        priceUSD: 0,
+        percentage: 0,
+    })
 
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
@@ -81,10 +87,39 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const handleGetChartData = async () => {
-        const chartData = await getHistoricalTokensChartPrices(firstTokenSelected.packageHash, secondTokenSelected.packageHash)
-        if(chartData.length > 0) {
-            setChartData(chartData)
-        }
+        //const chartData = await getHistoricalTokensChartPrices(firstTokenSelected.packageHash, secondTokenSelected.packageHash)
+        const chartData = await getTokensChartData(firstTokenSelected.packageHash, secondTokenSelected.packageHash)
+        // console.log('chartData', showChart0, showChart1)
+
+        setChartData(chartData[1])
+        // setChartData(chartData[1])
+
+
+        // if(chartData.length > 0) {
+        //     setPriceAndPercentage((prevState) => ({
+        //         ...prevState,
+        //         priceUSD: chartData[chartData.length - 1].priceUSD,
+        //         percentage: chartData[chartData.length - 1].percentage
+        //     }))
+        // }
+        //
+        // let pairName = `${firstTokenSelected.symbol === 'CSPR' ? 'WCSPR': firstTokenSelected.symbol }-${secondTokenSelected.symbol === 'CSPR' ? 'WCSPR': secondTokenSelected.symbol}`
+        // if(!pairState[pairName]) {
+        //     pairName = `${secondTokenSelected.symbol === 'CSPR' ? 'WCSPR': secondTokenSelected.symbol }-${firstTokenSelected.symbol === 'CSPR' ? 'WCSPR': firstTokenSelected.symbol}`
+        // }
+        //
+        // const pair = pairState[pairName]
+        //
+        // if(!pairState[pairName]) {
+        //     return []
+        // }
+        //
+        // const packageHash = pair.packageHash.slice(5, pair.packageHash.length)
+        // const data = await getPairChart(packageHash)
+        //
+        // if(data.length > 0) {
+        //     setChartData(data)
+        // }
     }
 
     const handlesShowChart0 = () => {
@@ -227,8 +262,8 @@ export const SwapTemplate = ({isMobile}) => {
                     //chart
                     chartData={chartData}
                     xAxisName='name'
-                    todayPrice={`${chartData[0]?.priceUSD}`}
-                    yesterdayPrice={`${chartData[0].percentage}`}
+                    todayPrice={`${priceAndPercentage.priceUSD}`}
+                    yesterdayPrice={`${priceAndPercentage.percentage}`}
                     chart0Name='token0price'
                     chart1Name='token1price'
                     onClickButton0={handlesShowChart0}

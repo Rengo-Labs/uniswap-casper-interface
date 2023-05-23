@@ -910,7 +910,7 @@ const getTokenDataByDays = async (tokenPackageHash, skip = 0): Promise<any> => {
   }
 }
 
-const getTokenChartData = async (tokenPackageHash) => {
+export const getTokenChartData = async (tokenPackageHash) => {
   let data = []
   const utcEndTime = dayjs.utc()
   const utcStartTime = utcEndTime.subtract(1, 'year')
@@ -920,24 +920,27 @@ const getTokenChartData = async (tokenPackageHash) => {
     let allFound = false
     let skip = 0
     while (!allFound) {
-
-      const result = await getTokenDataByDays(tokenPackageHash, skip)
+      const result = await getTokenDataByDays(tokenPackageHash.slice(5), skip)
       if (result.data.tokendaydatas.length < 1000) {
         allFound = true
       }
       for (let index = 0; index < result.data.tokendaydatas.length; index++) {
-        // result.data.tokendaydatas[index].reserveUSDValue = result.data.tokendaydatas[index].reserveUSD / 10 ** 9;
-        result.data.tokendaydatas[index].dailyVolumeUSDValue = result.data.tokendaydatas[index].dailyVolumeUSD / 10 ** 9
-        result.data.tokendaydatas[index].totalLiquidityUSDValue =
-          result.data.tokendaydatas[index].totalLiquidityUSD / 10 ** 9
-        result.data.tokendaydatas[index].totalLiquidityTokenValue =
-          result.data.tokendaydatas[index].totalLiquidityToken / 10 ** 9
+        const el = result.data.tokendaydatas[index];
+        const obj = {
+          date: el.date,
+          dayString: el.date,
+          dailyVolumeUSD: el.dailyVolumeUSD,
+          dailyVolumeUSDValue: el.dailyVolumeUSD / 10 ** 9,
+          priceUSD: el.priceUSD,
+          totalLiquidityUSD: el.totalLiquidityUSD,
+          totalLiquidityUSDValue: el.totalLiquidityUSD / 10 ** 9,
+          totalLiquidityTokenValue: el.totalLiquidityToken / 10 ** 9
+        };
+        data.push(obj);
       }
 
       skip += 1000
-      data = data.concat(result.data.tokendaydatas)
     }
-
     const dayIndexSet = new Set()
     const dayIndexArray = []
     const oneDay = 24 * 60 * 60
@@ -954,7 +957,7 @@ const getTokenChartData = async (tokenPackageHash) => {
     let latestLiquidityUSD = data[0] && data[0].totalLiquidityUSD
     let latestLiquidityUSDValue = data[0] && data[0].totalLiquidityUSD / 10 ** 9
     let latestPriceUSD = data[0] && data[0].priceUSD
-    let latestPairDatas = data[0] && data[0].mostLiquidPairs
+    //let latestPairDatas = data[0] && data[0].mostLiquidPairs
     let index = 1
     while (timestamp < utcEndTime.startOf('minute').unix() - oneDay) {
       const nextDay = timestamp + oneDay
@@ -968,13 +971,13 @@ const getTokenChartData = async (tokenPackageHash) => {
           priceUSD: latestPriceUSD,
           totalLiquidityUSD: latestLiquidityUSD,
           totalLiquidityUSDValue: latestLiquidityUSDValue,
-          mostLiquidPairs: latestPairDatas,
+          //mostLiquidPairs: latestPairDatas,
         })
       } else {
         latestLiquidityUSD = dayIndexArray[index].totalLiquidityUSD
         latestLiquidityUSDValue = dayIndexArray[index].totalLiquidityUSD / 10 ** 9
         latestPriceUSD = dayIndexArray[index].priceUSD
-        latestPairDatas = dayIndexArray[index].mostLiquidPairs
+        //latestPairDatas = dayIndexArray[index].mostLiquidPairs
         index = index + 1
       }
       timestamp = nextDay
@@ -998,14 +1001,19 @@ const getPairChartData = async (pairPackageHash) => {
     while (!allFound) {
       const result = await getPairDataByDays(pairPackageHash, skip)
       for (let index = 0; index < result.data.pairdaydatasbypairAddress.length; index++) {
-        result.data.pairdaydatasbypairAddress[index].reserveUSDValue =
-          result.data.pairdaydatasbypairAddress[index].reserveUSD / 10 ** 9
-        result.data.pairdaydatasbypairAddress[index].dailyVolumeUSDValue =
-          result.data.pairdaydatasbypairAddress[index].dailyVolumeUSD / 10 ** 9
+        const el = result.data.pairdaydatasbypairAddress[index];
+        const obj = {
+          date: el.date,
+          dayString: el.date,
+          dailyVolumeUSD: el.dailyVolumeUSD,
+          reserveUSD: el.reserveUSD,
+          reserveUSDValue: el.reserveUSD / 10 ** 9,
+          dailyVolumeUSDValue: el.dailyVolumeUSD / 10 ** 9,
+        };
+        data.push(obj);
       }
 
       skip += 1000
-      data = data.concat(result.data.pairdaydatasbypairAddress)
       if (result.data.pairdaydatasbypairAddress.length < 1000) {
         allFound = true
       }
@@ -1127,7 +1135,7 @@ export const getBalanceProfitByContractHash = async (packageHash: string): Promi
 
 export const findPairChartData = async (pairPackageHash) => {
   const result = await getPairChartData(pairPackageHash)
-  console.log("pairCharData", result)
+  return result
 }
 
 export const findDailyGlobalChart = async () => {

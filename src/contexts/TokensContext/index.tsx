@@ -26,6 +26,7 @@ interface TokensContext {
     getHistoricalTokenPrices?: (packageHash: string) => Promise<any>,
     getBalancesProfit?: (packageHash: string) => Promise<TokenProfit>,
     getHistoricalTokensChartPrices?: (packageHash0: string, packageHash1: string) => Promise<any[]>,
+    getTokensChartData?: (packageHash0: string, packageHash1: string) => Promise<any[]>,
     getDeploysInfo?: (wallet: Wallet) => Promise<BlockchainInfo[]>,
     getAccountDetail?: (wallet: Wallet) => Promise<AccountInfo>,
     getTransfersDetail?: (wallet: Wallet) => Promise<TransferInfo[]>,
@@ -85,6 +86,10 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
       return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokensChartPrices(packageHash0, packageHash1)
     }
 
+    const getTokensChartData = async (packageHash0: string, packageHash1: string): Promise<any> => {
+        return TokenResponsibilities(tokenState, tokenDispatch).getTokensChartData(packageHash0, packageHash1)
+    }
+
     const getDeploysInfo = async (wallet: Wallet): Promise<BlockchainInfo[]> => {
       return BlockchainResponsibilities(wallet).getInfoByTopic()
     }
@@ -114,6 +119,7 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 filterTokenPairsByToken,
                 resetTokens,
                 getHistoricalTokenPrices,
+                getTokensChartData,
                 getBalancesProfit,
                 getHistoricalTokensChartPrices,
                 getDeploysInfo,

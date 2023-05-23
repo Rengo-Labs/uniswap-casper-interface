@@ -10,7 +10,8 @@ import {PairState} from "../../reducers/PairsReducer";
 import {
     getBalanceProfitByContractHash,
     getHistoricalTokenPricesByPackageHash,
-    TokenProfit
+    TokenProfit,
+    getTokenChartData
 } from "../api/ApolloQueries";
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
@@ -246,6 +247,10 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         const chart0 = await getHistoricalTokenPricesByPackageHash(packageHash0)
         const chart1 = await getHistoricalTokenPricesByPackageHash(packageHash1)
 
+        console.log('chart0', chart0)
+        console.log('chart1', chart1)
+
+
         const date0 = chart0.map((item) => item?.date)
         const date1 = chart1.map((item) => item?.date)
         const dateFiltered = [];
@@ -261,12 +266,14 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         }
 
         const date = dateFiltered.map((item) => {
-            const date = new Date(item)
+            console.log('#### item ####', item)
+            const date = new Date(item * 1000)
+            console.log('#### date ####', date)
             return `${date.getDate()}/${date.getMonth() + 1}`
         })
 
-        const priceUSD = chart0 && chart0.length ? parseFloat(chart0[0]?.priceUSD).toFixed(2) : 0
-        const percentage = chart0 && chart0.length ? parseFloat(chart0[0]?.percentage).toFixed(2) : 0
+        const priceUSD = chart0 && chart0.length ? parseFloat(chart0[chart0.length - 1]?.priceUSD).toFixed(2) : 0
+        const percentage = chart0 && chart0.length ? parseFloat(chart0[chart0.length - 1]?.percentage).toFixed(2) : 0
 
         return date.map((item, index) => {
             const token0price = chart0 && chart0.length && parseFloat(chart0[index]?.priceUSD).toFixed(2) || 0
@@ -280,6 +287,14 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                 percentage: percentage
             }
         })
+    }
+
+    const getTokensChartData = async (packageHash0: string, packageHash1: string) => {
+        console.log('packageHash0', packageHash0)
+        console.log('packageHash1', packageHash1)
+        const chart0 = await getTokenChartData(packageHash0)
+        const chart1 = await getTokenChartData(packageHash1)
+        return [chart0, chart1]
     }
 
     const getBalancesProfit = (packageHash: string): Promise<TokenProfit> => {
@@ -297,7 +312,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         filterTokenPairsByToken,
         getHistoricalTokenPrices,
         getBalancesProfit,
-        getHistoricalTokensChartPrices
+        getHistoricalTokensChartPrices,
+        getTokensChartData
     }
 
 }
