@@ -34,7 +34,6 @@ export interface SwapContext {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage?: number,
     fee?: number
   ) => Promise<SwapDetails>;
 }
@@ -74,8 +73,8 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         casperClient,
         walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(amountA, firstTokenSelected.decimals),
+        convertUIStringToBigNumber(amountB, secondTokenSelected.decimals),
         firstTokenSelected,
         secondTokenSelected,
         slippage / 100,
@@ -150,18 +149,16 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage = 0.005,
     fee = PLATFORM_GAS_FEE
   ): Promise<SwapDetails> {
     return calculateSwapDetails(
-      apiClient,
       tokenA,
       tokenB,
       reserve0,
       reserve1,
       inputValue,
       token,
-      slippage
+      fee,
     );
   }
 

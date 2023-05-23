@@ -10,10 +10,10 @@ import { TokensProviderContext } from "../../../contexts/TokensContext";
 import {
   convertAllFormatsToUIFixedString,
   convertBigNumberToUIString,
-  dateConverter,
+  dateConverter, ONE_BILLION_E,
   shortenString,
 } from "../../../commons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   BlockchainInfo,
   TransferInfo,
@@ -44,6 +44,7 @@ interface IDeployInfo {
   amountSymbol: string;
   cost: number;
   price: number;
+  errorMessage: string;
 }
 
 interface ITransferInfo {
@@ -87,7 +88,6 @@ export const AccountTemplate = ({ isMobile }) => {
   const location = useLocation();
   const defaultAccountTab =
     location?.state?.accountDefaultTab === "transfer" ? 2 : 1;
-  const navigate = useNavigate();
 
   const { isConnected, walletState } = useContext(WalletProviderContext);
 
@@ -100,13 +100,16 @@ export const AccountTemplate = ({ isMobile }) => {
   );
   const [deployData, setDeployData] = useState<IDeployInfo[]>([]);
   const [transferData, setTransferData] = useState<ITransferInfo[]>([]);
-  const formatAmount = (value: string | number) =>
+  const formatAmount = (value: string | number, priceUsd: number) =>
     `${convertAllFormatsToUIFixedString(
       value,
       6
-    )} CSPR ($${convertAllFormatsToUIFixedString(value, 2)})`;
+    )} CSPR ($${convertAllFormatsToUIFixedString(
+      Number(value) * priceUsd,
+      2
+    )})`;
 
-  const buildAccountInfo = (AccountInfo: IAccountInfo) => {
+  const buildAccountInfo = (AccountInfo: IAccountInfo, priceUsd: number) => {
     const infoTable = [];
     for (const infoKey in AccountInfo) {
       const key = MatchedKeys.get(infoKey);
@@ -115,7 +118,7 @@ export const AccountTemplate = ({ isMobile }) => {
         infoTable.push({
           key,
           type: MyAccountInfoDataTypes.String,
-          value: formatAmount(AccountInfo[infoKey]),
+          value: formatAmount(AccountInfo[infoKey], priceUsd),
         });
       } else {
         infoTable.push({
@@ -152,11 +155,16 @@ export const AccountTemplate = ({ isMobile }) => {
         handleCopy: () => handleCopyToClipboard(deployItem?.deployHash),
         entry_point: deployItem?.entryPoint?.name || "WASM deploy",
         amount: Number(
-          convertBigNumberToUIString(new BigNumber(deployItem?.amount))
+          convertBigNumberToUIString(new BigNumber(deployItem?.amount), ONE_BILLION_E)
         ),
         amountSymbol: deployItem?.packageHash?.metadata?.symbol || "CSPR",
-        cost: Number(convertBigNumberToUIString(new BigNumber(deployItem?.cost))),
-        price: Number(convertAllFormatsToUIFixedString(deployItem?.currencyCost, 2)),
+        cost: Number(
+          convertBigNumberToUIString(new BigNumber(deployItem?.cost), ONE_BILLION_E)
+        ),
+        price: Number(
+          convertAllFormatsToUIFixedString(deployItem?.currencyCost, 2)
+        ),
+        errorMessage: deployItem?.errorMessage,
       };
       return deployInfo;
     });
@@ -177,7 +185,8 @@ export const AccountTemplate = ({ isMobile }) => {
           transference_id: transferItem?.transferId,
           amount: Number(
             convertBigNumberToUIString(
-              new BigNumber(transferItem?.amountInCSPR)
+              new BigNumber(transferItem?.amountInCSPR),
+              ONE_BILLION_E
             )
           ),
           price: Number(
@@ -204,7 +213,7 @@ export const AccountTemplate = ({ isMobile }) => {
       );
       buildTransferInfo(transfersInfoResponse);
       const AccountInfoResponse = await getAccountDetail(walletState.wallet);
-      buildAccountInfo(AccountInfoResponse);
+      buildAccountInfo(AccountInfoResponse, deployInfoResponse[0]?.priceUsd);
     };
     fetchData();
   }, [isConnected]);

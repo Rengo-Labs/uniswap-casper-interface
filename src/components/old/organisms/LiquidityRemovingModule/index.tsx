@@ -79,6 +79,7 @@ export const LiquidityRemovingModule = ({
 
   const removeLiquidity = async () => {
     await onRemoveLiquidity(value,
+      9,
       {
         symbol: firstSymbol.replace('WCSPR', 'CSPR'),
         packageHash: `hash-${firstHash}`,
