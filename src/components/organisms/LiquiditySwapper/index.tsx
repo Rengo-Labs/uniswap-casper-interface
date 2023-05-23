@@ -35,7 +35,11 @@ interface LiquiditySwapperProps {
   amountSwapTokenB,
   amountSwapTokenBSetter,
   isProcessingTransaction
-  clearProgress
+  clearProgress,
+  valueAUSD,
+  valueBUSD,
+  setValueAUSD,
+  setValueBUSD
 }
 
 const LiquiditySwapper = ({
@@ -61,7 +65,11 @@ const LiquiditySwapper = ({
                             amountSwapTokenB,
                             amountSwapTokenBSetter,
                             isProcessingTransaction,
-                            clearProgress
+                            clearProgress,
+                            valueAUSD,
+                            valueBUSD,
+                            setValueAUSD,
+                            setValueBUSD
                           }: LiquiditySwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -77,8 +85,6 @@ const LiquiditySwapper = ({
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0);
 
   const [lastChanged, setLastChanged] = useState('');
-  const [valueAUSD, setValueAUSD] = useState('0');
-  const [valueBUSD, setValueBUSD] = useState('0');
   const [currentValue, setCurrentValue] = useState<number>(0)
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
 

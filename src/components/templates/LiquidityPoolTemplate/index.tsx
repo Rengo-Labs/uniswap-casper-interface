@@ -289,6 +289,7 @@ const handleActionRemoval = async () => {
 
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
+    console.log("TotalSupply", newRow.totalSupply)
     setPoolDetailRow({
       contractPackage: newRow.packageHash.slice(5),
       token0Icon: newRow.token0Icon,
