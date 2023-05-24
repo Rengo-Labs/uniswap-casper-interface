@@ -8,7 +8,7 @@ const isCSPRValid = () => {
   const { updateNotification, dismissNotification } = notificationStore();
   const {firstTokenSelected, tokenState} = useContext(TokensProviderContext)
 
-  const showNotification = (title = 'Insufficent Gas Reserved') =>
+  const showNotification = (title = 'Insufficient Gas Reserved') =>
     updateNotification({
       type: NotificationType.Error,
       title,
@@ -22,9 +22,10 @@ const isCSPRValid = () => {
     currentValue: number,
     balance: number,
     gasFee: number,
+    tokenSymbol = firstTokenSelected.symbol
   ) => {
     const aplicationToken = 'CSPR'
-    if (firstTokenSelected.symbol === aplicationToken) {
+    if (tokenSymbol === aplicationToken) {
       if (Number(currentValue) + Number(gasFee) > balance) {
         setDisableButton(true);
         showNotification();
@@ -35,7 +36,7 @@ const isCSPRValid = () => {
     } else {
       if (Number(currentValue) > balance) {
         setDisableButton(true);
-        showNotification('Insufficent Balance');
+        showNotification(`Insufficient Balance for the token : ${tokenSymbol}`);
       } else if (gasFee > Number(tokenState.tokens[aplicationToken].amount) && Number(currentValue) > 0) {
         setDisableButton(true);
         showNotification();
