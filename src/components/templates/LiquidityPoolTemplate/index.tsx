@@ -36,7 +36,6 @@ interface IPoolDetailRow {
   liquidity: string;
   volume7D: string;
   fees7D: string;
-  apr: string;
   isFavorite?: boolean;
 }
 
@@ -55,7 +54,6 @@ const poolDetailsRowDefault = {
   liquidity: "",
   volume7D: "",
   fees7D: "",
-  apr: "",
   isFavorite: false,
 };
 
@@ -131,9 +129,11 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         liquidity: Number(item.totalLiquidityUSD),
         volume7d: Number(item.volume7dUSD) || 0,
         fees7d: Number(new BigNumber(item.volume7d).times(0.003).toFixed(2)),
-        apr: 0,
         balance: item.balance,
         isFavorite: getLocalStorageData("pool")?.includes(item.name),
+        assetsPoolToken0: `${item.reserve0} ${item.token0Symbol}`,
+        assetsPoolToken1: `${item.reserve1} ${item.token1Symbol}`,
+        yourShare: (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
       }))
     );
   }, [pairState]);
@@ -289,13 +289,14 @@ const handleActionRemoval = async () => {
 
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
+    
     setPoolDetailRow({
       contractPackage: newRow.packageHash.slice(5),
       token0Icon: newRow.token0Icon,
       token1Icon: newRow.token1Icon,
       token0Symbol: newRow.token0Symbol,
       token1Symbol: newRow.token1Symbol,
-      yourLiquidity: `${newRow.balance} CSPR`,
+      yourLiquidity: `${newRow.balance} ${newRow.orderedName}`,
       assetsPooled: {
         asset0: `${newRow.reserve0} ${newRow.token0Symbol}`,
         asset1: `${newRow.reserve1} ${newRow.token1Symbol}`,
@@ -306,7 +307,6 @@ const handleActionRemoval = async () => {
       liquidity: convertNumber(parseFloat(newRow.totalLiquidityUSD)),
       volume7D: newRow.volume7dUSD || "0",
       fees7D: `${new BigNumber(newRow.volume7d).times(0.003).toFixed(2)}`,
-      apr: "0",
       isFavorite: getLocalStorageData("pool")?.includes(name),
     });
     setShowPoolDetails(true);
@@ -404,10 +404,9 @@ const handleActionRemoval = async () => {
             yourLiquidity={poolDetailRow.yourLiquidity}
             assetsPooled={poolDetailRow.assetsPooled}
             yourShare={poolDetailRow.yourShare}
-            liqudiity={poolDetailRow.liquidity}
+            liquidity={poolDetailRow.liquidity}
             volume7D={poolDetailRow.volume7D}
             fees7D={poolDetailRow.fees7D}
-            apr={poolDetailRow.apr}
           />
 
           <RemoveLiquidityDialog
