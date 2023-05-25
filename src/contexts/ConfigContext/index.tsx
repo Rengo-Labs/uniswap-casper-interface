@@ -74,10 +74,6 @@ export const ConfigContextWithReducer = ({
 
   const {slippageToleranceSelected } = walletState;
 
-  const redirectToNetwork = (link) => {
-    window.open(link, '_blank')
-  }
-
   async function onIncreaseAllow(
     amount: number | string,
     contractHash: string,

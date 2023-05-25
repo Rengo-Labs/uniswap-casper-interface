@@ -183,7 +183,7 @@ const RAW_PAIRS: PairState = {
     checked: false,
     name: "USDT-USDC",
     orderedName: '',
-    contractHash: "hash-ffed0f843fe60f120da664a9a8522544c97a762fe37422d2f0476adc871b7da9",
+    contractHash: "hash-84182a62b8059b0d034e1f1773f6cfcd45898332ad0098430fa4363447c3af6b",
     packageHash: "hash-6de9a63441e43d75e8774675407ed3d6775b0e5f3fa35382c744980733030902",
     reserve0: '0',
     reserve1: '0',

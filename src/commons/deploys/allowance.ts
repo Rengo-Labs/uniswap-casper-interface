@@ -84,7 +84,7 @@ export const signAndDeployAllowance = async (
         spender: createRecipientAddress(spenderByteArray),
         amount: CLValueBuilder.u256(new BigNumber(amount).toFixed(0)),
       }),
-      new BigNumber(5000000000),
+      new BigNumber(3000000000),
     )    
   } catch (err) {
       log.error(`signAndDeployAllowance error: ${err}`)
