@@ -76,7 +76,7 @@ export const SwapTemplate = ({isMobile}) => {
 
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
-    }, [firstTokenSelected, secondTokenSelected])
+    }, [firstTokenSelected, secondTokenSelected, showChart0])
 
     const handleChangeGasFee = (value) => {
         const gasFeeValue = value ? parseFloat(value) : 0;
@@ -88,48 +88,45 @@ export const SwapTemplate = ({isMobile}) => {
         handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
     }
 
+    const setPackageHashIfSymbolIsCSPR = (token) => {
+        const CSPRPackageHash = 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a'
+        if (token.symbol === 'CSPR') {
+            token.packageHash = CSPRPackageHash;
+        }
+        return token;
+    }
     const handleGetChartData = async () => {
-        //const chartData = await getHistoricalTokensChartPrices(firstTokenSelected.packageHash, secondTokenSelected.packageHash)
-        const chartData = await getTokensChartData(firstTokenSelected.packageHash, secondTokenSelected.packageHash)
-        // console.log('chartData', showChart0, showChart1)
+        const firstToken = setPackageHashIfSymbolIsCSPR(firstTokenSelected)
+        const secondToken = setPackageHashIfSymbolIsCSPR(secondTokenSelected)
 
-        setChartData(chartData[1])
-        // setChartData(chartData[1])
+        const priceAndPercentage = await getHistoricalTokensChartPrices(firstToken.packageHash, secondToken.packageHash)
+        const chartData = await getTokensChartData(firstToken.packageHash, secondToken.packageHash)
 
-
-        // if(chartData.length > 0) {
-        //     setPriceAndPercentage((prevState) => ({
-        //         ...prevState,
-        //         priceUSD: chartData[chartData.length - 1].priceUSD,
-        //         percentage: chartData[chartData.length - 1].percentage
-        //     }))
-        // }
-        //
-        // let pairName = `${firstTokenSelected.symbol === 'CSPR' ? 'WCSPR': firstTokenSelected.symbol }-${secondTokenSelected.symbol === 'CSPR' ? 'WCSPR': secondTokenSelected.symbol}`
-        // if(!pairState[pairName]) {
-        //     pairName = `${secondTokenSelected.symbol === 'CSPR' ? 'WCSPR': secondTokenSelected.symbol }-${firstTokenSelected.symbol === 'CSPR' ? 'WCSPR': firstTokenSelected.symbol}`
-        // }
-        //
-        // const pair = pairState[pairName]
-        //
-        // if(!pairState[pairName]) {
-        //     return []
-        // }
-        //
-        // const packageHash = pair.packageHash.slice(5, pair.packageHash.length)
-        // const data = await getPairChart(packageHash)
-        //
-        // if(data.length > 0) {
-        //     setChartData(data)
-        // }
+        if(showChart0) {
+            setChartData(chartData[0])
+            setPriceAndPercentage((prevState) => ({
+                ...prevState,
+                priceUSD: priceAndPercentage[0].priceUSD,
+                percentage: priceAndPercentage[0].percentage
+            }))
+        } else {
+            setChartData(chartData[1])
+            setPriceAndPercentage((prevState) => ({
+                ...prevState,
+                priceUSD: priceAndPercentage[1].priceUSD,
+                percentage: priceAndPercentage[1].percentage
+            }))
+        }
     }
 
     const handlesShowChart0 = () => {
-        setShowChart0(!showChart0)
+        setShowChart0(true)
+        setShowChart1(false)
     }
 
     const handleShowChart1 = () => {
-        setShowChart1(!showChart1)
+        setShowChart1(true)
+        setShowChart0(false)
     }
 
     const resetTokenValues =  () => {

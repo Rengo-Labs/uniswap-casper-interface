@@ -244,49 +244,24 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     const getHistoricalTokensChartPrices = async (packageHash0: string, packageHash1: string) => {
-        const chart0 = await getHistoricalTokenPricesByPackageHash(packageHash0)
-        const chart1 = await getHistoricalTokenPricesByPackageHash(packageHash1)
+        const token1Hist = await getHistoricalTokenPricesByPackageHash(packageHash0)
+        const token2Hist = await getHistoricalTokenPricesByPackageHash(packageHash1)
 
-        console.log('chart0', chart0)
-        console.log('chart1', chart1)
-
-
-        const date0 = chart0.map((item) => item?.date)
-        const date1 = chart1.map((item) => item?.date)
-        const dateFiltered = [];
-
-        if (date0.length > date1.length) {
-            date0.map((item) => {
-                dateFiltered.push(item)
-            })
-        } else {
-            date1.map((item) => {
-                dateFiltered.push(item)
-            })
-        }
-
-        const date = dateFiltered.map((item) => {
-            console.log('#### item ####', item)
-            const date = new Date(item * 1000)
-            console.log('#### date ####', date)
-            return `${date.getDate()}/${date.getMonth() + 1}`
-        })
-
-        const priceUSD = chart0 && chart0.length ? parseFloat(chart0[chart0.length - 1]?.priceUSD).toFixed(2) : 0
-        const percentage = chart0 && chart0.length ? parseFloat(chart0[chart0.length - 1]?.percentage).toFixed(2) : 0
-
-        return date.map((item, index) => {
-            const token0price = chart0 && chart0.length && parseFloat(chart0[index]?.priceUSD).toFixed(2) || 0
-            const token1price =  chart1 && chart1.length && parseFloat(chart1[index]?.priceUSD).toFixed(2) || 0
+        const getPriceAndPercentage = (hist) => {
+            const length = hist.length - 1
+            const priceUSD = hist && hist.length ? parseFloat(hist[length]?.priceUSD).toFixed(2) : 0
+            const percentage = hist && hist.length ? parseFloat(hist[length]?.percentage).toFixed(2) : 0
 
             return {
-                name: item,
-                token0price: token0price,
-                token1price: token1price,
-                priceUSD: priceUSD,
-                percentage: percentage
+                priceUSD,
+                percentage
             }
-        })
+        }
+
+        const token0 = getPriceAndPercentage(token1Hist)
+        const token1 = getPriceAndPercentage(token2Hist)
+
+        return [token0, token1]
     }
 
     const getTokensChartData = async (packageHash0: string, packageHash1: string) => {
