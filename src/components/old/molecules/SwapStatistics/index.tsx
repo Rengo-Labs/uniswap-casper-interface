@@ -25,7 +25,7 @@ export const SwapStatistics = () => {
     if(token.symbol === 'CSPR') {
       currentToken = tokenState.tokens[currentToken.symbolPair]
     }
-    return await getPercentChangeByToken(currentToken.packageHash?.slice(5))
+    return await getPercentChangeByToken(currentToken.packageHash)
   }
 
   useEffect(() => {

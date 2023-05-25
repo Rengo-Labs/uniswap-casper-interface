@@ -26,6 +26,7 @@ interface TokensContext {
     getHistoricalTokenPrices?: (packageHash: string) => Promise<any>,
     getBalancesProfit?: (packageHash: string) => Promise<TokenProfit>,
     getHistoricalTokensChartPrices?: (packageHash0: string, packageHash1: string) => Promise<any[]>,
+    getPercentChangeByTokens?: (packageHash0: string, packageHash1: string) => Promise<any[]>
     getTokensChartData?: (packageHash0: string, packageHash1: string) => Promise<any[]>,
     getDeploysInfo?: (wallet: Wallet) => Promise<BlockchainInfo[]>,
     getAccountDetail?: (wallet: Wallet) => Promise<AccountInfo>,
@@ -78,6 +79,10 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
       return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokenPrices(packageHash)
     }
 
+    const getPercentChangeByTokens = async (packageHash0: string, packageHash1: string): Promise<any> => {
+        return TokenResponsibilities(tokenState, tokenDispatch).getPercentChangeByTokens(packageHash0, packageHash1)
+    }
+
     const getBalancesProfit = async (packageHash: string): Promise<any> => {
       return TokenResponsibilities(tokenState, tokenDispatch).getBalancesProfit(packageHash)
     }
@@ -124,7 +129,8 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 getHistoricalTokensChartPrices,
                 getDeploysInfo,
                 getAccountDetail,
-                getTransfersDetail
+                getTransfersDetail,
+                getPercentChangeByTokens
             }}>
             {children}
         </TokensProviderContext.Provider>

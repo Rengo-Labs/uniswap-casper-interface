@@ -11,7 +11,8 @@ import {
     getBalanceProfitByContractHash,
     getHistoricalTokenPricesByPackageHash,
     TokenProfit,
-    getTokenChartData
+    getTokenChartData,
+    getPercentChangeByToken
 } from "../api/ApolloQueries";
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
@@ -264,9 +265,28 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         return [token0, token1]
     }
 
+    const getPercentChangeByTokens = async (packageHash0: string, packageHash1: string) => {
+        const token0Percent = await getPercentChangeByToken(packageHash0)
+        const token1Percent = await getPercentChangeByToken(packageHash1)
+
+        const getPriceAndPercentage = (hist) => {
+            const length = 0
+            const priceUSD = hist && hist.length ? parseFloat(hist[length]?.nowPrice).toFixed(2) : 0
+            const percentage = hist && hist.length ? parseFloat(hist[length]?.percent).toFixed(2) : 0
+
+            return {
+                priceUSD,
+                percentage
+            }
+        }
+
+        const token0 = getPriceAndPercentage(token0Percent)
+        const token1 = getPriceAndPercentage(token1Percent)
+
+        return [token0, token1]
+    }
+
     const getTokensChartData = async (packageHash0: string, packageHash1: string) => {
-        console.log('packageHash0', packageHash0)
-        console.log('packageHash1', packageHash1)
         const chart0 = await getTokenChartData(packageHash0)
         const chart1 = await getTokenChartData(packageHash1)
         return [chart0, chart1]
@@ -288,7 +308,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         getHistoricalTokenPrices,
         getBalancesProfit,
         getHistoricalTokensChartPrices,
-        getTokensChartData
+        getTokensChartData,
+        getPercentChangeByTokens
     }
 
 }

@@ -40,7 +40,8 @@ export const SwapTemplate = ({isMobile}) => {
         onSwitchTokens,
         filterPopupTokens,
         getHistoricalTokensChartPrices,
-        getTokensChartData
+        getTokensChartData,
+        getPercentChangeByTokens
     } = useContext(TokensProviderContext)
     // Details requirements
     const { handleValidate, showNotification } =
@@ -99,7 +100,9 @@ export const SwapTemplate = ({isMobile}) => {
         const firstToken = setPackageHashIfSymbolIsCSPR(firstTokenSelected)
         const secondToken = setPackageHashIfSymbolIsCSPR(secondTokenSelected)
 
-        const priceAndPercentage = await getHistoricalTokensChartPrices(firstToken.packageHash, secondToken.packageHash)
+        // TODO: validate what information are OK to show
+        //const priceAndPercentage = await getHistoricalTokensChartPrices(firstToken.packageHash, secondToken.packageHash)
+        const priceAndPercentage = await getPercentChangeByTokens(firstToken.packageHash, secondToken.packageHash)
         const chartData = await getTokensChartData(firstToken.packageHash, secondToken.packageHash)
 
         if(showChart0) {

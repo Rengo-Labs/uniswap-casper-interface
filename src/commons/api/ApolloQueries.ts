@@ -625,13 +625,13 @@ export async function getPercentChangeByBlocks(pricesByBlocks, timestamps) {
 
 }
 
-export async function getPercentChangeByToken(tokenHash) {
+export async function getPercentChangeByToken(tokenPackageHash) {
   try {
     const timestamps = getTimestampsForChanges();
     const blocks = await getBlocksFromTimestamps([...timestamps]);
 
     const pricesByBlocks = await v2client.query({
-      query: PRICES_BY_BLOCK(tokenHash, blocks),
+      query: PRICES_BY_BLOCK(tokenPackageHash.slice(5), blocks),
       fetchPolicy: 'no-cache',
     });
 
