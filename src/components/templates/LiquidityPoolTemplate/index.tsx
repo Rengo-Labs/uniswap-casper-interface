@@ -134,7 +134,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         isFavorite: getLocalStorageData("pool")?.includes(item.name),
         assetsPoolToken0: `${item.reserve0} ${item.token0Symbol}`,
         assetsPoolToken1: `${item.reserve1} ${item.token1Symbol}`,
-        yourShare: (Number(item.balance) / Number(item.totalSupply)).toFixed(2).replace('.', ',')
+        yourShare: (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
       }))
     );
     
@@ -305,7 +305,7 @@ const handleActionRemoval = async () => {
       },
       yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(
         2
-      ).replace('.', ','),
+      ),
       yourLiquidity: convertToUSDCurrency(parseFloat(newRow.liquidityUSD)) ,
       volume7D: convertToUSDCurrency(newRow.volume7dUSD || 0),
       fees7D: `${convertToUSDCurrency(new BigNumber(newRow.volume7d).times(0.003).toNumber())}`,
