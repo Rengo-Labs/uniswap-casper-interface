@@ -245,12 +245,9 @@ export class Client {
         new Uint8Array(wasm),
         args,
       )
-
-      console.log("deployItem", deployItem)
       // Convert the signed deploy json to a deploy
 
       const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
-      console.log("signedDeploy", signedDeploy)
       // Put and confirm deploy
       return this.putAndConfirmDeploy(wallet, signedDeploy)
     } catch (err) {

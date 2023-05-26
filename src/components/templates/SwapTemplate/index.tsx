@@ -65,6 +65,8 @@ export const SwapTemplate = ({isMobile}) => {
             token1price: 0
         }
     ])
+    const [valueAUSD, setValueAUSD] = useState('0.00');
+    const [valueBUSD, setValueBUSD] = useState('0.00');
 
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
@@ -98,6 +100,8 @@ export const SwapTemplate = ({isMobile}) => {
     const resetTokenValues =  () => {
         amountSwapTokenASetter(0);
         amountSwapTokenBSetter(0);
+        setValueAUSD('0')
+        setValueBUSD('0')
     }
 
     const onActionConfirm = async (amountA, amountB) => {
@@ -260,6 +264,10 @@ export const SwapTemplate = ({isMobile}) => {
                     amountSwapTokenBSetter={amountSwapTokenBSetter}
                     isProcessingTransaction={isProcessingTransaction}
                     clearProgress={clearProgress}
+                    valueAUSD={valueAUSD}
+                    valueBUSD={valueBUSD}
+                    setValueAUSD={setValueAUSD}
+                    setValueBUSD={setValueBUSD}
                 />
             </DoubleColumn>
         </>

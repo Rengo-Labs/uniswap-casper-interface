@@ -29,7 +29,11 @@ interface TokenSwapperProps {
   amountSwapTokenB,
   amountSwapTokenBSetter,
   isProcessingTransaction,
-  clearProgress
+  clearProgress,
+  valueAUSD,
+  valueBUSD,
+  setValueAUSD,
+  setValueBUSD
 }
 
 const TokenSwapper = ({
@@ -55,7 +59,11 @@ const TokenSwapper = ({
                         amountSwapTokenB,
                         amountSwapTokenBSetter,
                         isProcessingTransaction,
-                        clearProgress
+                        clearProgress,
+                        valueAUSD,
+                        valueBUSD,
+                        setValueAUSD,
+                        setValueBUSD
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -67,8 +75,6 @@ const TokenSwapper = ({
       isCSPRValid();
 
   const [lastChanged, setLastChanged] = useState('A');
-  const [valueAUSD, setValueAUSD] = useState('0.00');
-  const [valueBUSD, setValueBUSD] = useState('0.00');
 
   useEffect(() => {
     const t0 = searchParams.get('token0');

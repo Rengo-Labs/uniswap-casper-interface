@@ -60,6 +60,9 @@ export const LiquidityTemplate = ({isMobile}) => {
     //const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen)
     const [currentFReserve, setFirstReserve] = useState<any>(0)
     const [currentSReserve, setSecondReserve] = useState<any>(0)
+    const [valueAUSD, setValueAUSD] = useState('0')
+    const [valueBUSD, setValueBUSD] = useState('0')
+
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
     const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState(false)
     const [removeLiquidityData, setRemoveLiquidityData] = useState({
@@ -255,7 +258,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 firstAmount: i.reserve0,
                 secondAmount: i.reserve1,
                 userLP: i.balance,
-                totalLP: i.totalLiquidityUSD,
+                totalLP: i.totalSupply,
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
             }
         })
@@ -322,6 +325,8 @@ export const LiquidityTemplate = ({isMobile}) => {
         refresh()
         amountSwapTokenASetter(0)
         amountSwapTokenBSetter(0)
+        setValueAUSD('0')
+        setValueBUSD('0')
         setIsProcessingTransaction(false)
     }
 
@@ -462,6 +467,10 @@ export const LiquidityTemplate = ({isMobile}) => {
                                   amountSwapTokenBSetter={amountSwapTokenBSetter}
                                   isProcessingTransaction={isProcessingTransaction}
                                   clearProgress={clearProgress}
+                                  valueAUSD={valueAUSD}
+                                  valueBUSD={valueBUSD}
+                                  setValueAUSD={setValueAUSD}
+                                  setValueBUSD={setValueBUSD}
                 />
             </DoubleColumn>
             {

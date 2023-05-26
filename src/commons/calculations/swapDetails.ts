@@ -93,7 +93,7 @@ export const calculateSwapDetails = async (
       // console.log("priceImpact", priceImpact)
 
       return {
-          tokensToTransfer: fixAmountOfZeros(inputValue.times(inputExchangeRate), isA2B ? tokenB.decimals : tokenA.decimals),
+          tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** (isA2B ? tokenA.decimals : tokenB.decimals)).toFixed((isA2B ? tokenB.decimals : tokenA.decimals)),
           //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
           priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
           exchangeRateA: exchangeRateA.toNumber(),
