@@ -20,6 +20,7 @@ import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { globalStore } from "../../../store/store";
 import { TokensProviderContext } from "../../../contexts/TokensContext";
 import {SUPPORTED_NETWORKS} from "../../../constant";
+import { convertToUSDCurrency } from "../../../commons/utils";
 
 interface IPoolDetailRow {
   contractPackage: string,
@@ -27,13 +28,13 @@ interface IPoolDetailRow {
   token1Icon?: string;
   token0Symbol?: string;
   token1Symbol?: string;
-  yourLiquidity: string;
+  yourLiquidityTokens: string;
   assetsPooled: {
     asset0: string;
     asset1: string;
   };
   yourShare: any;
-  liquidity: string;
+  yourLiquidity: string;
   volume7D: string;
   fees7D: string;
   isFavorite?: boolean;
@@ -45,13 +46,13 @@ const poolDetailsRowDefault = {
   token1Icon: "",
   token0Symbol: "",
   token1Symbol: "",
-  yourLiquidity: "",
+  yourLiquidityTokens: "",
   assetsPooled: {
     asset0: "",
     asset1: "",
   },
   yourShare: "",
-  liquidity: "",
+  yourLiquidity: "",
   volume7D: "",
   fees7D: "",
   isFavorite: false,
@@ -126,16 +127,17 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         pool: `${item.token0Symbol} - ${item.token1Symbol}`,
         token0Icon: item.token0Icon,
         token1Icon: item.token1Icon,
-        liquidity: Number(item.totalLiquidityUSD),
-        volume7d: Number(item.volume7dUSD) || 0,
-        fees7d: Number(new BigNumber(item.volume7d).times(0.003).toFixed(2)),
+        yourLiquidity: convertToUSDCurrency(parseFloat(item.liquidityUSD)),
+        volume7d: convertToUSDCurrency(Number(item.volume7d)),
+        fees7d: convertToUSDCurrency(Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
         balance: item.balance,
         isFavorite: getLocalStorageData("pool")?.includes(item.name),
         assetsPoolToken0: `${item.reserve0} ${item.token0Symbol}`,
         assetsPoolToken1: `${item.reserve1} ${item.token1Symbol}`,
-        yourShare: (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
+        yourShare: (Number(item.balance) / Number(item.totalSupply)).toFixed(2).replace('.', ',')
       }))
     );
+    
   }, [pairState]);
 
   useEffect(() => {
@@ -296,17 +298,17 @@ const handleActionRemoval = async () => {
       token1Icon: newRow.token1Icon,
       token0Symbol: newRow.token0Symbol,
       token1Symbol: newRow.token1Symbol,
-      yourLiquidity: `${newRow.balance} ${newRow.orderedName}`,
+      yourLiquidityTokens: `${newRow.balance} ${newRow.orderedName}`,
       assetsPooled: {
         asset0: `${newRow.reserve0} ${newRow.token0Symbol}`,
         asset1: `${newRow.reserve1} ${newRow.token1Symbol}`,
       },
       yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(
         2
-      ),
-      liquidity: convertNumber(parseFloat(newRow.totalLiquidityUSD)),
-      volume7D: newRow.volume7dUSD || "0",
-      fees7D: `${new BigNumber(newRow.volume7d).times(0.003).toFixed(2)}`,
+      ).replace('.', ','),
+      yourLiquidity: convertToUSDCurrency(parseFloat(newRow.liquidityUSD)) ,
+      volume7D: convertToUSDCurrency(newRow.volume7dUSD || 0),
+      fees7D: `${convertToUSDCurrency(new BigNumber(newRow.volume7d).times(0.003).toNumber())}`,
       isFavorite: getLocalStorageData("pool")?.includes(name),
     });
     setShowPoolDetails(true);
@@ -404,7 +406,7 @@ const handleActionRemoval = async () => {
             yourLiquidity={poolDetailRow.yourLiquidity}
             assetsPooled={poolDetailRow.assetsPooled}
             yourShare={poolDetailRow.yourShare}
-            liquidity={poolDetailRow.liquidity}
+            yourLiquidityTokens={poolDetailRow.yourLiquidityTokens}
             volume7D={poolDetailRow.volume7D}
             fees7D={poolDetailRow.fees7D}
           />
