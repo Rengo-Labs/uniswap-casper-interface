@@ -423,10 +423,9 @@ const handleActionRemoval = async () => {
             yourLiquidity={poolDetailRow.yourLiquidity}
             assetsPooled={poolDetailRow.assetsPooled}
             yourShare={poolDetailRow.yourShare}
-            liqudiity={poolDetailRow.liquidity}
+            yourLiquidityTokens={poolDetailRow.liquidity}
             volume7D={poolDetailRow.volume7D}
             fees7D={poolDetailRow.fees7D}
-            apr={poolDetailRow.apr}
           />
 
           <RemoveLiquidityDialog
