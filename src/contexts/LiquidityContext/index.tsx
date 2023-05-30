@@ -83,11 +83,12 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     gasFee: number
   ): Promise<boolean> {
     updateNotification({
-      type: NotificationType.Loading,
+      type: NotificationType.Info,
       title: 'Processing...',
       subtitle: '',
       show: true,
       isOnlyNotification: true,
+      closeManually: true
     });
     try {
       const [deployHash, deployResult] = await signAndDeployAddLiquidity(
@@ -116,7 +117,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         subtitle: notificationMessage,
         show: true,
         isOnlyNotification: true,
-        timeToClose: 300000
+        closeManually: true
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
@@ -127,7 +128,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
           subtitle: 'Your deploy was successful',
           show: true,
           isOnlyNotification: true,
-          timeToClose: 5000
+          timeToClose: 5000,
         });
       }
 
@@ -141,7 +142,6 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       dismissNotification();
       await refresh();
-      console.log('onAddLiquidity');
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
