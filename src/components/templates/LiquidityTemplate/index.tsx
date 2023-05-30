@@ -19,6 +19,7 @@ import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {SUPPORTED_NETWORKS} from "../../../constant";
+import { convertToUSDCurrency } from '../../../commons/utils';
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -268,8 +269,9 @@ export const LiquidityTemplate = ({isMobile}) => {
                 secondSymbol: i.token1Symbol,
                 firstAmount: i.reserve0,
                 secondAmount: i.reserve1,
-                userLP: i.balance,
-                totalLP: i.totalSupply,
+                userLP: convertToUSDCurrency(parseFloat(i.balance)),
+                totalLP: convertToUSDCurrency(parseFloat(i.totalSupply)),
+                yourShare: (Number(i.balance) / Number(i.totalSupply)).toFixed(2),
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
             }
         })
@@ -327,11 +329,13 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     async function onLiquidity(amountA, amountB) {
         setIsProcessingTransaction(true)
+        const pair = pairState[`${firstTokenSelected.symbolPair}-${secondTokenSelected.symbolPair}`] ?? pairState[`${secondTokenSelected.symbolPair}-${firstTokenSelected.symbolPair}`]
         await onAddLiquidity(
             amountA,
             amountB,
             slippageTolerance,
-            gasFee
+            gasFee,
+            pair.packageHash
         );
         refresh()
         amountSwapTokenASetter(0)

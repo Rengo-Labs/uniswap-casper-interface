@@ -33,6 +33,11 @@ export const fixAmountOfZeros = (number: BigNumber, decimals: number) => {
   return result.toFixed(ONE_BILLION_E);
 }
 
+export const convertToUSDCurrency = (amount: number) => amount.toLocaleString('en-US', {
+  style: 'currency',
+  currency: 'USD',
+})
+
 /**
  *
  * @param ms

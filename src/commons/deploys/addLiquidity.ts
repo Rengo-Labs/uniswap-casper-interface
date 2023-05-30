@@ -84,11 +84,16 @@ export enum AddLiquidityEntryPoint {
   tokenB: Token,
   slippage: number,
   mainPurse: string,
-  gasFee: number
+  gasFee: number,
+  pairHash: string
 ): Promise<[string, GetDeployResult]> => {
   try {
     const publicKey = wallet.publicKey;
     const entryPoint = selectAddLiquidityEntryPoint(tokenA.symbol, tokenB.symbol)
+
+    const packageHash = new CLByteArray(
+      Uint8Array.from(Buffer.from(pairHash.slice(5), "hex"))
+    )
 
     switch (entryPoint) {
       case AddLiquidityEntryPoint.ADD_LIQUIDITY_CSPR:
@@ -98,7 +103,7 @@ export enum AddLiquidityEntryPoint {
           ) : new CLByteArray(
             Uint8Array.from(Buffer.from(tokenA.packageHash.slice(5), "hex"))
           )
-        
+
         const amountCSPRDesired = tokenA.symbol === 'CSPR' ? amountADesired : amountBDesired
         const amountTokenDesired = tokenA.symbol !== 'CSPR' ? amountADesired : amountBDesired
         
@@ -111,7 +116,7 @@ export enum AddLiquidityEntryPoint {
             amount_token_desired: CLValueBuilder.u256(new BigNumber(amountTokenDesired).toFixed(0, BigNumber.ROUND_UP)),
             amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
-            pair: new CLOption(Some(new CLKey(token) as any) as any),
+            pair: new CLOption(Some(new CLKey(packageHash) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
 
@@ -146,7 +151,7 @@ export enum AddLiquidityEntryPoint {
             amount_b_desired: CLValueBuilder.u256(new BigNumber(amountBDesired).toFixed(0, BigNumber.ROUND_CEIL)),
             amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_FLOOR)),
             amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_FLOOR)),
-            pair: new CLOption(Some(new CLKey(tokenBContract) as any) as any),
+            pair: new CLOption(Some(new CLKey(packageHash) as any) as any),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
             
