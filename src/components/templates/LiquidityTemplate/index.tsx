@@ -97,6 +97,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         secondAmount: 0,
         allowance: 0
     })
+    const [showRemovingToggle, setShowRemovingToggle] = useState(false)
     const Navigator = useNavigate()
 
     const handleChangeInput = (value) => {
@@ -164,12 +165,9 @@ export const LiquidityTemplate = ({isMobile}) => {
     }
 
     const onActionRemove = async () => {
-      setRemoveLiquidityInput(0)
-      setShowRemoveLiquidityDialog(false)
-
       setRemoveLiquidityButtonDisabled(true)
 
-      await onRemoveLiquidity(
+      const result = await onRemoveLiquidity(
         removeLiquidityCalculation.lpAmount,
         removeLiquidityData.decimals,
         {
@@ -186,6 +184,15 @@ export const LiquidityTemplate = ({isMobile}) => {
         slippageTolerance,
         gasFee,
         removeLiquidityToggle)
+
+      if (result) {
+
+        setRemovingPopup(false)
+        setRemoveLiquidityInput(0)
+        setShowRemoveLiquidityDialog(false)
+      } else {
+          setRemoveLiquidityButtonDisabled(false)
+      }
     }
 
     const onActionAllowance = async () => {
@@ -215,6 +222,10 @@ export const LiquidityTemplate = ({isMobile}) => {
         setRemoveLiquidityToggle(true)
         const token0 = tokenState.tokens[item.token0Symbol]
         const token1 = tokenState.tokens[item.token1Symbol]
+        const tokenActive = token0.symbolPair === 'WCSPR' || token0.symbolPair === 'CSPR'
+          || token1.symbolPair === 'WCSPR' || token1.symbolPair === 'CSPR'
+        setShowRemovingToggle(tokenActive)
+
         const data = {
             id: item.contractHash,
             tokenName: item.name,
@@ -418,6 +429,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     return (
         <>
             <RemoveLiquidityDialog
+                showToggle={showRemovingToggle}
                 firstRate={removeLiquidityData.firstRate}
                 secondRate={removeLiquidityData.secondRate}
                 // @ts-ignore

@@ -1,6 +1,5 @@
 import { SingleColumn } from "../../../layout/SingleColumn";
 import { PoolTable, LPSearch, PoolItemDetails, RemoveLiquidityDialog } from "rengo-ui-kit";
-import usdcTokenIcon from "../../../assets/swapIcons/btc.png";
 import { Container, SubHeader } from "./styles";
 import { useTheme } from "styled-components";
 import { PairsContextProvider } from "../../../contexts/PairsContext";
@@ -100,13 +99,15 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     firstLiquidity: '0',
     firstRate: '0',
     firstHash: '',
+    firstDecimals: 9,
     decimals: 9,
     secondIcon: '',
     secondName: 'WETH',
     secondSymbol: 'WETH',
     secondLiquidity: '0',
     secondRate: '0',
-    secondHash: ''
+    secondHash: '',
+    secondDecimals: 9
   })
   const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
     lpAmount: 0,
@@ -118,6 +119,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
+  const [showRemovingToggle, setShowRemovingToggle] = useState(true)
 
   useEffect(() => {
     setTableData(
@@ -176,6 +178,10 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     const token0 = tokenState.tokens[pairRemoteData.token0Symbol]
     const token1 = tokenState.tokens[pairRemoteData.token1Symbol]
 
+    const tokenActive = token0.symbolPair === 'WCSPR' || token0.symbolPair === 'CSPR'
+      || token1.symbolPair === 'WCSPR' || token1.symbolPair === 'CSPR'
+    setShowRemovingToggle(tokenActive)
+
     const data = {
         id: pairRemoteData.contractHash,
         tokenName: pairRemoteData.name,
@@ -187,13 +193,15 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         firstLiquidity: pairRemoteData.reserve0,
         firstRate: new BigNumber(pairRemoteData.reserve0).div(pairRemoteData.reserve1).toFixed(token0.decimals),
         firstHash: pairRemoteData.contract0,
+        firstDecimals: token0.decimals,
         secondIcon: pairRemoteData.token1Symbol === 'CSPR' ? csprIcon : pairRemoteData.token1Icon,
         secondName: pairRemoteData.token1Symbol === 'CSPR' ? 'Casper' : pairRemoteData.token1Name,
         secondSymbol: pairRemoteData.token1Symbol,
         secondLiquidity: pairRemoteData.reserve1,
         secondRate: new BigNumber(pairRemoteData.reserve1).div(pairRemoteData.reserve0).toFixed(token1.decimals),
         secondHash: pairRemoteData.contract1,
-        decimals: pairRemoteData.decimals
+        decimals: pairRemoteData.decimals,
+        secondDecimals: token1.decimals
     }
     
     setRemoveLiquidityData((prevState) => ({
@@ -267,26 +275,35 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
 }
 
 const handleActionRemoval = async () => {
-  setRemovingPopup(false)
-  setRemoveLiquidityInput(0)
-  setShowRemoveLiquidityDialog(false)
   setRemoveLiquidityButtonDisabled(true)
 
-  await onRemoveLiquidity(
+  const result = await onRemoveLiquidity(
     removeLiquidityCalculation.lpAmount,
     removeLiquidityData.decimals,
     {
-        symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
-        packageHash: removeLiquidityData.firstHash,
+      symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
+      packageHash: removeLiquidityData.firstHash,
+      decimals: removeLiquidityData.firstDecimals
     } as any, {
-        symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
-        packageHash: removeLiquidityData.secondHash,
+      symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
+      packageHash: removeLiquidityData.secondHash,
+      decimals: removeLiquidityData.secondDecimals
     } as any,
     removeLiquidityCalculation.firstAmount,
     removeLiquidityCalculation.secondAmount,
     slippageTolerance,
     gasFee,
     removeLiquidityToggle)
+
+
+  if (result) {
+
+    setRemovingPopup(false)
+    setRemoveLiquidityInput(0)
+    setShowRemoveLiquidityDialog(false)
+  } else {
+    setRemoveLiquidityButtonDisabled(false)
+  }
 }
 
   const handleView = (name: string) => {
@@ -412,6 +429,7 @@ const handleActionRemoval = async () => {
           />
 
           <RemoveLiquidityDialog
+            showToggle={showRemovingToggle}
             firstRate={removeLiquidityData.firstRate}
             secondRate={removeLiquidityData.secondRate}
             closeCallback={handleRemoveLiquidity}
