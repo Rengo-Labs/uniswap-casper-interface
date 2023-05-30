@@ -27,7 +27,7 @@ export const TestComponent = () => {
     expect(secondReserve).toBe("2e-9")
   }
   const checkAddLiquidity = async () => {
-    const result = await onAddLiquidity(2000.00, 1000.00, 0.5, 0.003)
+    const result = await onAddLiquidity(2000.00, 1000.00, 0.5, 0.003, "")
     expect(result).toBe(true)
   }
   const checkRemoveLiquidity = async () => {

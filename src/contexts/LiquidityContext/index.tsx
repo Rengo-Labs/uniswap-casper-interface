@@ -31,7 +31,8 @@ export interface LiquidityContext {
     amountA: number | string,
     amountB: number | string,
     slippage: number,
-    gasFee: number
+    gasFee: number,
+    pairHash: string
   ) => Promise<boolean>;
   onRemoveLiquidity: (
     liquidity: number | string,
@@ -80,7 +81,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     amountA: number | string,
     amountB: number | string,
     slippage: number,
-    gasFee: number
+    gasFee: number,
+    pairHash: string
   ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
@@ -102,7 +104,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         secondTokenSelected,
         slippage / 100,
         walletState.mainPurse,
-        gasFee
+        gasFee,
+        pairHash
       );
 
       setProgressModal(true);
