@@ -101,6 +101,7 @@ export class CasperSignerWallet implements Wallet{
       // if it is connected then set connect to true
       if (signerIsConnected) {
         this._isConnected = true
+        await this.getActiveKey();
         return
       }
 
@@ -235,8 +236,8 @@ export class CasperSignerWallet implements Wallet{
       // Sign the deploy with the signer
       const signedDeployJSON = await Signer.sign(
         deployJSON,
-        this.publicKeyHex,
-        this.publicKeyHex,
+        this.publicKeyHex.toLowerCase(),
+        this.publicKeyHex.toLowerCase(),
       )
       // Convert the signed deploy json to a deploy
       return DeployUtil.deployFromJson(signedDeployJSON).unwrap()
