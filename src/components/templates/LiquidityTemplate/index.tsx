@@ -318,11 +318,13 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     async function onLiquidity(amountA, amountB) {
         setIsProcessingTransaction(true)
+        const pair = pairState[`${firstTokenSelected.symbolPair}-${secondTokenSelected.symbolPair}`] ?? pairState[`${secondTokenSelected.symbolPair}-${firstTokenSelected.symbolPair}`]
         await onAddLiquidity(
             amountA,
             amountB,
             slippageTolerance,
-            gasFee
+            gasFee,
+            pair.packageHash
         );
         refresh()
         amountSwapTokenASetter(0)
