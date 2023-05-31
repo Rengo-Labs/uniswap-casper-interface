@@ -175,6 +175,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       subtitle: '',
       show: true,
       isOnlyNotification: true,
+      closeManually: true
     });
 
     try {
@@ -205,7 +206,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         subtitle: notificationMessage,
         show: true,
         isOnlyNotification: true,
-        timeToClose: 300000
+        closeManually: true,
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);

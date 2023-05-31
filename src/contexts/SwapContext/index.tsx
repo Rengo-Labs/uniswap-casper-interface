@@ -64,7 +64,6 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       subtitle: 'Checking the progress of your deploy',
       show: true,
       isOnlyNotification: true,
-      timeToClose: 100000,
       closeManually: true
     });
     try {
@@ -95,7 +94,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         subtitle: notificationMessage,
         show: true,
         isOnlyNotification: true,
-        timeToClose: 300000
+        closeManually: true
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
