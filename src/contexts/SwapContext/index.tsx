@@ -99,7 +99,6 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
-      console.log('### waitForDeployExecution onConfirmSwapConfig ###', result)
 
       if (result) {
         updateNotification({
@@ -124,6 +123,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
+        timeToClose: 5000,
         isOnlyNotification: true
       });
       return false;

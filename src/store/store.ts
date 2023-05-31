@@ -30,7 +30,6 @@ export const notificationStore = create(
           isOnlyNotification: true,
           timeToClose: 5000,
           closeManually: false,
-        
         },
         updateNotification: (notificationValues: INotification) =>{
           set(() => ({
