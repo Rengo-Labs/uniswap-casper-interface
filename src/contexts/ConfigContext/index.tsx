@@ -81,12 +81,12 @@ export const ConfigContextWithReducer = ({
     optApproval = ""
 ): Promise<boolean> {
     updateNotification({
-      type: NotificationType.Loading,
+      type: NotificationType.Info,
       title: 'Increasing allowance.',
       subtitle: '',
       show: true,
       isOnlyNotification: true,
-      timeToClose: 100000
+      closeManually: true,
     });
 
     try {
@@ -109,7 +109,7 @@ export const ConfigContextWithReducer = ({
         subtitle: notificationMessage,
         show: true,
         isOnlyNotification: true,
-        timeToClose: 300000
+        closeManually: true,
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
@@ -130,7 +130,6 @@ export const ConfigContextWithReducer = ({
       refresh(walletState.wallet);
       return true;
     } catch (err) {
-        console.log('####  onIncreaseAllow err#####', err);
         setProgressModal(false);
       updateNotification({
         type: NotificationType.Error,

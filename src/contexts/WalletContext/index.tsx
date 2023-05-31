@@ -215,7 +215,8 @@ export const WalletContext = ({
         title: 'No main purse detected',
         subtitle: 'Add CSPR to the wallet before proceeding.',
         show: true,
-        isOnlyNotification: true
+        isOnlyNotification: true,
+        timeToClose: 5000,
       });
 
       debounceConnect = false;
@@ -245,12 +246,12 @@ export const WalletContext = ({
 
     try {
       updateNotification({
-        type: NotificationType.Loading,
+        type: NotificationType.Info,
         title: 'Connecting to your wallet...',
         subtitle: '',
         show: true,
         isOnlyNotification: true,
-        timeToClose: 5000,
+        closeManually: true,
       });
 
       const ret = await connect(name, new BigNumber(0));
@@ -290,7 +291,8 @@ export const WalletContext = ({
           title: 'This wallet is not installed.',
           subtitle: '',
           show: true,
-          isOnlyNotification: true
+          isOnlyNotification: true,
+          timeToClose: 5000,
         })
         return;
       }
@@ -301,7 +303,8 @@ export const WalletContext = ({
           title: 'Main purse does not exist, send CSPR to your wallet first',
           subtitle: '',
           show: true,
-          isOnlyNotification: true
+          isOnlyNotification: true,
+          timeToClose: 5000,
         })
         return
       }
@@ -312,19 +315,20 @@ export const WalletContext = ({
           title: 'Wallet is locked',
           subtitle: 'Please unlock your wallet first',
           show: true,
-          isOnlyNotification: true
+          isOnlyNotification: true,
+          timeToClose: 5000,
         })
         return
       }
 
       if (err.message.includes('Please install the Casper')){
-        console.log('err', err.message)
         updateNotification({
           type: NotificationType.Error,
           title: 'This wallet is not installed.',
           subtitle: err.message,
           show: true,
-          isOnlyNotification: true
+          isOnlyNotification: true,
+          timeToClose: 5000,
         })
         return;
       }
@@ -334,7 +338,8 @@ export const WalletContext = ({
         title: 'Ooops we have an error',
         subtitle: '',
         show: true,
-        isOnlyNotification: true
+        isOnlyNotification: true,
+        timeToClose: 5000,
       });
     }
   }

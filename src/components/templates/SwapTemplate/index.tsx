@@ -39,7 +39,9 @@ export const SwapTemplate = ({isMobile}) => {
         tokenState,
         onSwitchTokens,
         filterPopupTokens,
-        getHistoricalTokensChartPrices
+        getHistoricalTokensChartPrices,
+        getTokensChartData,
+        getPercentChangeByTokens
     } = useContext(TokensProviderContext)
     // Details requirements
     const { handleValidate, showNotification } =
@@ -55,7 +57,7 @@ export const SwapTemplate = ({isMobile}) => {
     const { slippageTolerance, updateSlippageTolerance } = globalStore()
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
     const [showChart0, setShowChart0] = useState(true)
-    const [showChart1, setShowChart1] = useState(true)
+    const [showChart1, setShowChart1] = useState(false)
     const [chartData,  setChartData] = useState([
         {
             priceUSD: 0,
@@ -68,9 +70,14 @@ export const SwapTemplate = ({isMobile}) => {
     const [valueAUSD, setValueAUSD] = useState('0.00');
     const [valueBUSD, setValueBUSD] = useState('0.00');
 
+    const [priceAndPercentage, setPriceAndPercentage] = useState({
+        priceUSD: 0,
+        percentage: 0,
+    })
+
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
-    }, [firstTokenSelected, secondTokenSelected])
+    }, [firstTokenSelected, secondTokenSelected, showChart0])
 
     const handleChangeGasFee = (value) => {
         const gasFeeValue = value ? parseFloat(value) : 0;
@@ -82,19 +89,47 @@ export const SwapTemplate = ({isMobile}) => {
         handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasFeeValue);
     }
 
+    const setPackageHashIfSymbolIsCSPR = (token) => {
+        const CSPRPackageHash = 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a'
+        if (token.symbol === 'CSPR') {
+            token.packageHash = CSPRPackageHash;
+        }
+        return token;
+    }
     const handleGetChartData = async () => {
-        const chartData = await getHistoricalTokensChartPrices(firstTokenSelected.packageHash, secondTokenSelected.packageHash)
-        if(chartData.length > 0) {
-            setChartData(chartData)
+        const firstToken = setPackageHashIfSymbolIsCSPR(firstTokenSelected)
+        const secondToken = setPackageHashIfSymbolIsCSPR(secondTokenSelected)
+
+        // TODO: validate what information are OK to show
+        //const priceAndPercentage = await getHistoricalTokensChartPrices(firstToken.packageHash, secondToken.packageHash)
+        const priceAndPercentage = await getPercentChangeByTokens(firstToken.packageHash, secondToken.packageHash)
+        const chartData = await getTokensChartData(firstToken.packageHash, secondToken.packageHash)
+
+        if(showChart0) {
+            setChartData(chartData[0])
+            setPriceAndPercentage((prevState) => ({
+                ...prevState,
+                priceUSD: priceAndPercentage[0].priceUSD,
+                percentage: priceAndPercentage[0].percentage
+            }))
+        } else {
+            setChartData(chartData[1])
+            setPriceAndPercentage((prevState) => ({
+                ...prevState,
+                priceUSD: priceAndPercentage[1].priceUSD,
+                percentage: priceAndPercentage[1].percentage
+            }))
         }
     }
 
     const handlesShowChart0 = () => {
-        setShowChart0(!showChart0)
+        setShowChart0(true)
+        setShowChart1(false)
     }
 
     const handleShowChart1 = () => {
-        setShowChart1(!showChart1)
+        setShowChart1(true)
+        setShowChart0(false)
     }
 
     const resetTokenValues =  () => {
@@ -231,8 +266,8 @@ export const SwapTemplate = ({isMobile}) => {
                     //chart
                     chartData={chartData}
                     xAxisName='name'
-                    todayPrice={`${chartData[0]?.priceUSD}`}
-                    yesterdayPrice={`${chartData[0].percentage}`}
+                    todayPrice={`${priceAndPercentage.priceUSD}`}
+                    yesterdayPrice={`${priceAndPercentage.percentage}`}
                     chart0Name='token0price'
                     chart1Name='token1price'
                     onClickButton0={handlesShowChart0}
