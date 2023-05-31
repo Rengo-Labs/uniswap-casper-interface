@@ -86,7 +86,7 @@ export const ConfigContextWithReducer = ({
       subtitle: '',
       show: true,
       isOnlyNotification: true,
-      timeToClose: 100000
+      closeManually: true,
     });
 
     try {
@@ -109,7 +109,7 @@ export const ConfigContextWithReducer = ({
         subtitle: notificationMessage,
         show: true,
         isOnlyNotification: true,
-        timeToClose: 300000
+        closeManually: true,
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);

@@ -232,7 +232,7 @@ export const WalletContext = ({
         subtitle: '',
         show: true,
         isOnlyNotification: true,
-        timeToClose: 5000,
+        closeManually: true,
       });
 
       const ret = await connect(name, new BigNumber(0));
