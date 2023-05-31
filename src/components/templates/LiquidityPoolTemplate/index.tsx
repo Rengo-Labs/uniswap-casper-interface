@@ -1,6 +1,5 @@
 import { SingleColumn } from "../../../layout/SingleColumn";
 import { PoolTable, LPSearch, PoolItemDetails, RemoveLiquidityDialog } from "rengo-ui-kit";
-import usdcTokenIcon from "../../../assets/swapIcons/btc.png";
 import { Container, SubHeader } from "./styles";
 import { useTheme } from "styled-components";
 import { PairsContextProvider } from "../../../contexts/PairsContext";
@@ -20,6 +19,7 @@ import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { globalStore } from "../../../store/store";
 import { TokensProviderContext } from "../../../contexts/TokensContext";
 import {SUPPORTED_NETWORKS} from "../../../constant";
+import { convertToUSDCurrency } from "../../../commons/utils";
 
 interface IPoolDetailRow {
   contractPackage: string,
@@ -27,16 +27,15 @@ interface IPoolDetailRow {
   token1Icon?: string;
   token0Symbol?: string;
   token1Symbol?: string;
-  yourLiquidity: string;
+  yourLiquidityTokens: string;
   assetsPooled: {
     asset0: string;
     asset1: string;
   };
   yourShare: any;
-  liquidity: string;
+  yourLiquidity: string;
   volume7D: string;
   fees7D: string;
-  apr: string;
   isFavorite?: boolean;
 }
 
@@ -46,16 +45,15 @@ const poolDetailsRowDefault = {
   token1Icon: "",
   token0Symbol: "",
   token1Symbol: "",
-  yourLiquidity: "",
+  yourLiquidityTokens: "",
   assetsPooled: {
     asset0: "",
     asset1: "",
   },
   yourShare: "",
-  liquidity: "",
+  yourLiquidity: "",
   volume7D: "",
   fees7D: "",
-  apr: "",
   isFavorite: false,
 };
 
@@ -101,13 +99,15 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     firstLiquidity: '0',
     firstRate: '0',
     firstHash: '',
+    firstDecimals: 9,
     decimals: 9,
     secondIcon: '',
     secondName: 'WETH',
     secondSymbol: 'WETH',
     secondLiquidity: '0',
     secondRate: '0',
-    secondHash: ''
+    secondHash: '',
+    secondDecimals: 9
   })
   const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
     lpAmount: 0,
@@ -119,6 +119,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const { slippageTolerance, updateSlippageTolerance } = globalStore()
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
+  const [showRemovingToggle, setShowRemovingToggle] = useState(true)
 
   useEffect(() => {
     setTableData(
@@ -128,14 +129,17 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         pool: `${item.token0Symbol} - ${item.token1Symbol}`,
         token0Icon: item.token0Icon,
         token1Icon: item.token1Icon,
-        liquidity: Number(item.totalLiquidityUSD),
-        volume7d: Number(item.volume7dUSD) || 0,
-        fees7d: Number(new BigNumber(item.volume7d).times(0.003).toFixed(2)),
-        apr: 0,
+        yourLiquidity: convertToUSDCurrency(parseFloat(item.liquidityUSD)),
+        volume7d: convertToUSDCurrency(Number(item.volume7d)),
+        fees7d: convertToUSDCurrency(Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
         balance: item.balance,
         isFavorite: getLocalStorageData("pool")?.includes(item.name),
+        assetsPoolToken0: `${item.reserve0} ${item.token0Symbol}`,
+        assetsPoolToken1: `${item.reserve1} ${item.token1Symbol}`,
+        yourShare: (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
       }))
     );
+    
   }, [pairState]);
 
   useEffect(() => {
@@ -174,6 +178,10 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     const token0 = tokenState.tokens[pairRemoteData.token0Symbol]
     const token1 = tokenState.tokens[pairRemoteData.token1Symbol]
 
+    const tokenActive = token0.symbolPair === 'WCSPR' || token0.symbolPair === 'CSPR'
+      || token1.symbolPair === 'WCSPR' || token1.symbolPair === 'CSPR'
+    setShowRemovingToggle(tokenActive)
+
     const data = {
         id: pairRemoteData.contractHash,
         tokenName: pairRemoteData.name,
@@ -185,13 +193,15 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         firstLiquidity: pairRemoteData.reserve0,
         firstRate: new BigNumber(pairRemoteData.reserve0).div(pairRemoteData.reserve1).toFixed(token0.decimals),
         firstHash: pairRemoteData.contract0,
+        firstDecimals: token0.decimals,
         secondIcon: pairRemoteData.token1Symbol === 'CSPR' ? csprIcon : pairRemoteData.token1Icon,
         secondName: pairRemoteData.token1Symbol === 'CSPR' ? 'Casper' : pairRemoteData.token1Name,
         secondSymbol: pairRemoteData.token1Symbol,
         secondLiquidity: pairRemoteData.reserve1,
         secondRate: new BigNumber(pairRemoteData.reserve1).div(pairRemoteData.reserve0).toFixed(token1.decimals),
         secondHash: pairRemoteData.contract1,
-        decimals: pairRemoteData.decimals
+        decimals: pairRemoteData.decimals,
+        secondDecimals: token1.decimals
     }
     
     setRemoveLiquidityData((prevState) => ({
@@ -265,38 +275,47 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
 }
 
 const handleActionRemoval = async () => {
-  setRemovingPopup(false)
-  setRemoveLiquidityInput(0)
-  setShowRemoveLiquidityDialog(false)
   setRemoveLiquidityButtonDisabled(true)
 
-  await onRemoveLiquidity(
+  const result = await onRemoveLiquidity(
     removeLiquidityCalculation.lpAmount,
     removeLiquidityData.decimals,
     {
-        symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
-        packageHash: removeLiquidityData.firstHash,
+      symbol: removeLiquidityData.firstSymbol.replace('WCSPR', 'CSPR'),
+      packageHash: removeLiquidityData.firstHash,
+      decimals: removeLiquidityData.firstDecimals
     } as any, {
-        symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
-        packageHash: removeLiquidityData.secondHash,
+      symbol: removeLiquidityData.secondSymbol.replace('WCSPR', 'CSPR'),
+      packageHash: removeLiquidityData.secondHash,
+      decimals: removeLiquidityData.secondDecimals
     } as any,
     removeLiquidityCalculation.firstAmount,
     removeLiquidityCalculation.secondAmount,
     slippageTolerance,
     gasFee,
     removeLiquidityToggle)
+
+
+  if (result) {
+
+    setRemovingPopup(false)
+    setRemoveLiquidityInput(0)
+    setShowRemoveLiquidityDialog(false)
+  } else {
+    setRemoveLiquidityButtonDisabled(false)
+  }
 }
 
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
-    console.log("TotalSupply", newRow.totalSupply)
+    
     setPoolDetailRow({
       contractPackage: newRow.packageHash.slice(5),
       token0Icon: newRow.token0Icon,
       token1Icon: newRow.token1Icon,
       token0Symbol: newRow.token0Symbol,
       token1Symbol: newRow.token1Symbol,
-      yourLiquidity: `${newRow.balance} CSPR`,
+      yourLiquidityTokens: `${newRow.balance} ${newRow.orderedName}`,
       assetsPooled: {
         asset0: `${newRow.reserve0} ${newRow.token0Symbol}`,
         asset1: `${newRow.reserve1} ${newRow.token1Symbol}`,
@@ -304,10 +323,9 @@ const handleActionRemoval = async () => {
       yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(
         2
       ),
-      liquidity: convertNumber(parseFloat(newRow.totalLiquidityUSD)),
-      volume7D: newRow.volume7dUSD || "0",
-      fees7D: `${new BigNumber(newRow.volume7d).times(0.003).toFixed(2)}`,
-      apr: "0",
+      yourLiquidity: convertToUSDCurrency(parseFloat(newRow.liquidityUSD)) ,
+      volume7D: convertToUSDCurrency(newRow.volume7dUSD || 0),
+      fees7D: `${convertToUSDCurrency(new BigNumber(newRow.volume7d).times(0.003).toNumber())}`,
       isFavorite: getLocalStorageData("pool")?.includes(name),
     });
     setShowPoolDetails(true);
@@ -405,13 +423,13 @@ const handleActionRemoval = async () => {
             yourLiquidity={poolDetailRow.yourLiquidity}
             assetsPooled={poolDetailRow.assetsPooled}
             yourShare={poolDetailRow.yourShare}
-            liqudiity={poolDetailRow.liquidity}
+            yourLiquidityTokens={poolDetailRow.yourLiquidityTokens}
             volume7D={poolDetailRow.volume7D}
             fees7D={poolDetailRow.fees7D}
-            apr={poolDetailRow.apr}
           />
 
           <RemoveLiquidityDialog
+            showToggle={showRemovingToggle}
             firstRate={removeLiquidityData.firstRate}
             secondRate={removeLiquidityData.secondRate}
             closeCallback={handleRemoveLiquidity}

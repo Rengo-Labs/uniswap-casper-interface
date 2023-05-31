@@ -535,11 +535,13 @@ const LiquidityNewModule = () => {
 
   async function onLiquidity() {
     setIsProcessingTransaction(true);
+    const pair = pairState[`${firstTokenSelected.symbolPair}-${secondTokenSelected.symbolPair}`] ?? pairState[`${firstTokenSelected.symbolPair}-${secondTokenSelected.symbolPair}`]
     await onAddLiquidity(
       amountSwapTokenA,
       amountSwapTokenB,
       slippageTolerance,
-      gasFee
+      gasFee,
+      pair.packageHash
     );
     setIsProcessingTransaction(false);
     resetAll();

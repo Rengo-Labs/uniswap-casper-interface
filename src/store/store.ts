@@ -23,23 +23,19 @@ export const globalStore = create(
 export const notificationStore = create(
     devtools<INotificationStore>((set) => ({
         notification: {
-            title: 'Success',
-            subtitle: '',
-            type: NotificationType.Success,
-            show: false,
-            isOnlyNotification: true,
-            timeToClose: 5000,
-            onClose: () => {
-            },
+          title: 'Success',
+          subtitle: '',
+          type: NotificationType.Success,
+          show: false,
+          isOnlyNotification: true,
+          timeToClose: 5000,
+          closeManually: false,
         },
-        updateNotification: (notificationValues: INotification) =>
-            set((state: INotificationStore) => ({
-                ...state,
-                notification: {
-                    ...state.notification,
-                    ...notificationValues
-                },
-            })),
+        updateNotification: (notificationValues: INotification) =>{
+          set(() => ({
+            notification: structuredClone(notificationValues)
+          }))
+        },
         dismissNotification: () =>
             set((state: INotificationStore) => ({
                 ...state,

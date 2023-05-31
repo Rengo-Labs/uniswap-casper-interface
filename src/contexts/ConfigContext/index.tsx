@@ -81,7 +81,7 @@ export const ConfigContextWithReducer = ({
     optApproval = ""
 ): Promise<boolean> {
     updateNotification({
-      type: NotificationType.Loading,
+      type: NotificationType.Info,
       title: 'Increasing allowance.',
       subtitle: '',
       show: true,
@@ -130,7 +130,6 @@ export const ConfigContextWithReducer = ({
       refresh(walletState.wallet);
       return true;
     } catch (err) {
-        console.log('####  onIncreaseAllow err#####', err);
         setProgressModal(false);
       updateNotification({
         type: NotificationType.Error,
