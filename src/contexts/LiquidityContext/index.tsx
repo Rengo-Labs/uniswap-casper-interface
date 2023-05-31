@@ -90,7 +90,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       subtitle: '',
       show: true,
       isOnlyNotification: true,
-      timeToClose: 5000,
+      closeManually: true
     });
     try {
       const [deployHash, deployResult] = await signAndDeployAddLiquidity(
@@ -120,7 +120,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         subtitle: notificationMessage,
         show: true,
         isOnlyNotification: true,
-        timeToClose: 300000
+        closeManually: true
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
@@ -131,7 +131,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
           subtitle: 'Your deploy was successful',
           show: true,
           isOnlyNotification: true,
-          timeToClose: 5000
+          timeToClose: 5000,
         });
       }
 
@@ -145,14 +145,12 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       dismissNotification();
       await refresh();
-      console.log('onAddLiquidity');
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
         isOnlyNotification: true,
-        timeToClose: 5000,
       });
       return false;
     }
@@ -170,12 +168,11 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     refundCSPR: boolean
   ): Promise<boolean> {
     updateNotification({
-      type: NotificationType.Info,
+      type: NotificationType.Loading,
       title: 'Removing liquidity',
       subtitle: '',
       show: true,
       isOnlyNotification: true,
-      timeToClose: 5000,
     });
 
     try {
@@ -211,6 +208,8 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
 
       const result = await casperClient.waitForDeployExecution(deployHash);
 
+      console.log('#### waitForDeployExecution remove liquidity #####', result)
+
       if (result) {
         updateNotification({
           type: NotificationType.Success,
@@ -233,6 +232,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       //dismissNotification();
       await refresh();
+      console.log('#### onRemoveLiquidity#####', err);
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
