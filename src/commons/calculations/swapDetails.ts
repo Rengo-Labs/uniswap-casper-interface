@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { APIClient, Token } from '../api'
-import { log } from '../utils'
+import { log, fixAmountOfZeros } from '../utils'
 import {PLATFORM_GAS_FEE} from "../../constant";
 
 /**
@@ -13,9 +13,9 @@ export interface SwapDetails {
   // estimated price impact
   priceImpact: number | string,
   // effective exchange rate from A to B
-  exchangeRateA: number,
+  exchangeRateA: number | string,
   // effective exchange rate from B to A
-  exchangeRateB: number,
+  exchangeRateB: number | string,
 }
 
 /**
@@ -33,14 +33,12 @@ export interface SwapDetails {
  * @return SwapDetails
  */
 export const calculateSwapDetails = async (
-    apiClient: APIClient,
     tokenA: Token,
     tokenB: Token,
     reserve0: BigNumber.Value,
     reserve1: BigNumber.Value,
     inputValueRaw: BigNumber.Value,
     token: Token,
-    slippage = 0.005,
     fee = PLATFORM_GAS_FEE
 ): Promise<SwapDetails> => {
   try {     
@@ -48,8 +46,9 @@ export const calculateSwapDetails = async (
 
       const liquidityA = new BigNumber(reserve0)
       const liquidityB = new BigNumber(reserve1)
-      const inputValue = new BigNumber(inputValueRaw).times(10 ** 9)
+      const inputValue = new BigNumber(inputValueRaw).times(10 ** (isA2B ? tokenA.decimals : tokenB.decimals))
       const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
+      // console.log(inputValueRaw.toString(), inputValue.toString(), reserve0.toString(), reserve1.toString())
 
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -94,7 +93,7 @@ export const calculateSwapDetails = async (
       // console.log("priceImpact", priceImpact)
 
       return {
-          tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** 9).toNumber().toFixed(9),
+          tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** (isA2B ? tokenA.decimals : tokenB.decimals)).toFixed((isA2B ? tokenB.decimals : tokenA.decimals)),
           //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
           priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
           exchangeRateA: exchangeRateA.toNumber(),

@@ -101,7 +101,7 @@ export const signAndDeploySwap = async (
     const response = await apiClient.getPath(tokenA.symbolPair, tokenB.symbolPair)
     const path = response.pathwithcontractHash.map((x) => new CLString(x))
 
-    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountIn, amountOut)
+    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountIn.toString(), amountOut.toString())
 
     switch (entryPoint) {
       case SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS:
@@ -157,8 +157,8 @@ export const signAndDeploySwap = async (
           wallet,
           await apiClient.getDeployWasmData(),
           RuntimeArgs.fromMap({
-            amount_in: CLValueBuilder.u256(new BigNumber(amountIn).times(1 - slippage).toFixed(0, BigNumber.ROUND_UP)),
-            amount_out_min: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_in: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_UP)),
+            amount_out_min: CLValueBuilder.u256(new BigNumber(amountOut).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             path: new CLList(path),
             to: CLValueBuilder.uref(
               Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
@@ -178,7 +178,6 @@ export const signAndDeploySwap = async (
         )
       case SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS:
         // When swapping casper for tokens
-        console.log("Swap", )
         return await casperClient.signAndDeployWasm(
           wallet,
           await apiClient.getDeployWasmData(),

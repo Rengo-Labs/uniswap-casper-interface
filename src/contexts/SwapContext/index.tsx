@@ -34,7 +34,6 @@ export interface SwapContext {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage?: number,
     fee?: number
   ) => Promise<SwapDetails>;
 }
@@ -68,13 +67,14 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       timeToClose: 100000
     });
     try {
+      console.log("Tokens to swap", amountA.toString(), amountB.toString())
       const [deployHash, deployResult] = await signAndDeploySwap(
         apiClient,
         casperClient,
         walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(amountA, firstTokenSelected.decimals),
+        convertUIStringToBigNumber(amountB, secondTokenSelected.decimals),
         firstTokenSelected,
         secondTokenSelected,
         slippage / 100,
@@ -103,7 +103,7 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       if (result) {
         updateNotification({
           type: NotificationType.Success,
-          title: 'Processing...',
+          title: 'Processed...',
           subtitle: 'Your deploy was successful',
           show: true,
           isOnlyNotification: true,
@@ -118,7 +118,6 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (err) {
       setProgressModal(false);
-      console.log('###  onConfirmSwapConfig  ###', err)
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
@@ -150,18 +149,16 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage = 0.005,
     fee = PLATFORM_GAS_FEE
   ): Promise<SwapDetails> {
     return calculateSwapDetails(
-      apiClient,
       tokenA,
       tokenB,
       reserve0,
       reserve1,
       inputValue,
       token,
-      slippage
+      fee,
     );
   }
 

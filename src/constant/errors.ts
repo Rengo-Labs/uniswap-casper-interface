@@ -2,6 +2,9 @@ export const ERROR_BLOCKCHAIN = {
   "Mint error: 0": {
     message: "Error: Insufficent CSPR for gas."
   },
+  "Error: Contract execution: User error: 38": {
+    message: "Error: The amount need to be greater than zero."
+  },
   "Error: Contract execution: User error: 55": {
     message: "Error: Tried to reserve reserve that does not exist." //Todo check this
   },
@@ -88,5 +91,8 @@ export const ERROR_BLOCKCHAIN = {
   },
   "TypeError: Cannot read properties of undefined (reading 'deploy')": {
     message: "Error: The wallet is disconnected."
+  },
+  "TypeError: The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type undefined": {
+    message: "Error: Signature canceled by user."
   }
 }

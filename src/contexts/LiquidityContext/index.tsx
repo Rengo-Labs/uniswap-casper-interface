@@ -31,10 +31,12 @@ export interface LiquidityContext {
     amountA: number | string,
     amountB: number | string,
     slippage: number,
-    gasFee: number
+    gasFee: number,
+    pairHash: string
   ) => Promise<boolean>;
   onRemoveLiquidity: (
     liquidity: number | string,
+    liquidityDecimals: number,
     tokenA: Token,
     tokenB: Token,
     amountA: number | string,
@@ -79,11 +81,12 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     amountA: number | string,
     amountB: number | string,
     slippage: number,
-    gasFee: number
+    gasFee: number,
+    pairHash: string
   ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
-      title: 'Adding liquidity.',
+      title: 'Processing...',
       subtitle: '',
       show: true,
       isOnlyNotification: true,
@@ -94,13 +97,14 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         casperClient,
         walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(amountA, firstTokenSelected.decimals),
+        convertUIStringToBigNumber(amountB, secondTokenSelected.decimals),
         firstTokenSelected,
         secondTokenSelected,
         slippage / 100,
         walletState.mainPurse,
-        gasFee
+        gasFee,
+        pairHash
       );
 
       setProgressModal(true);
@@ -122,7 +126,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       if (result) {
         updateNotification({
           type: NotificationType.Success,
-          title: 'Processing...',
+          title: 'Processed...',
           subtitle: 'Your deploy was successful',
           show: true,
           isOnlyNotification: true,
@@ -154,6 +158,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
 
   async function onRemoveLiquidity(
     liquidity: number | string,
+    liquidityDecimals: number,
     tokenA: Token,
     tokenB: Token,
     amountA: number | string,
@@ -176,9 +181,9 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         casperClient,
         walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(liquidity),
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(liquidity, liquidityDecimals),
+        convertUIStringToBigNumber(amountA, tokenA.decimals),
+        convertUIStringToBigNumber(amountB, tokenB.decimals),
         tokenA,
         tokenB,
         slippage / 100,

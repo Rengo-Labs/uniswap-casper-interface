@@ -133,6 +133,7 @@ const RAW_TOKENS: Record<string, Token> = {
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00",
+    optApproval: "approve"
   },
 }
 export const TOKENS: Record<string, Token> = {}

@@ -4,6 +4,7 @@ import PairsResponsibilities, {PairTotalReserves} from "../../commons/PairsRespo
 import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
 import {notificationStore} from "../../store/store";
+import {TokenState} from "../../reducers/TokenReducers";
 
 interface PairsContextProps {
     children: ReactNode
@@ -14,9 +15,9 @@ interface PairsContext {
     pairDispatch,
     loadPairs: (tokenState) => Promise<Record<string, PairTotalReserves>>
     loadPairsUSD: (pairsTotalReserves: Record<string, PairTotalReserves>, tokenState) => Promise<void>,
-    loadUserPairsData: (wallet: Wallet, isConnected) => Promise<void>,
+    loadUserPairsData: (wallet: Wallet, isConnected, tokenState: TokenState) => Promise<void>,
     orderedPairState,
-    clearUserPairsData: (pairState) => Promise<void>,
+    clearUserPairsData: (pairState, tokenState: TokenState) => Promise<void>,
     findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string, tokenState) => PairReserves | undefined;
     getPoolList: () => any[],
     changeRowPriority: (name: string, checked: boolean) => void,
@@ -48,12 +49,12 @@ export const PairsContext = ({children}: PairsContextProps) => {
         await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairsBalanceUSD(pairsTotalReserves, updateNotification)
     }
 
-    const loadUserPairsData = async (wallet: Wallet, isConnected) => {
-        await PairsResponsibilities(pairState, pairDispatch).loadPairsUserData(wallet, isConnected)
+    const loadUserPairsData = async (wallet: Wallet, isConnected, tokenState) => {
+        await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairsUserData(wallet, isConnected)
     }
 
-    const clearUserPairsData = async (pairState) => {
-        await PairsResponsibilities(pairState, pairDispatch).clearUserPairsData()
+    const clearUserPairsData = async (pairState, tokenState) => {
+        await PairsResponsibilities(pairState, pairDispatch, tokenState).clearUserPairsData()
     }
 
     const findReservesBySymbols = (symbolA, symbolB, tokenState) => PairsResponsibilities(pairState, pairDispatch, tokenState)

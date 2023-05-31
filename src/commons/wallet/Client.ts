@@ -23,7 +23,7 @@ export class Client {
 
   /**
    * Create a casper client
-   * 
+   *
    * @param _network network type
    * @param _node node address
    */
@@ -47,12 +47,12 @@ export class Client {
   get node(): string {
     return this._node
   }
-  
+
   /**
    * Async attempt to retrieve latest balance
-   * 
+   *
    * @param wallet wallet whose public key is being used
-   * 
+   *
    * @returns the balance as a decimal representation or throw error
    */
   async getBalance(wallet: Wallet): Promise<BigNumber> {
@@ -63,7 +63,7 @@ export class Client {
       return new BigNumber(balance.toString())
     } catch(err) {
       log.warn(`Casper Client - getBalaance error: ${err}`)
-      
+
       // rethrow error
       throw err
     }
@@ -71,20 +71,20 @@ export class Client {
 
   /**
    * Async attempt to retrieve the state root hash
-   * 
+   *
    * @returns the state root hash or throw error
    */
   async getStateRootHash(): Promise<string> {
     const casperService = this.casperClient.nodeClient
-    
+
     return casperService.getStateRootHash();
   }
 
   /**
    * Async attempt to retrieve main purse
-   * 
+   *
    * @param wallet wallet whose public key is being used
-   * 
+   *
    * @returns the main purse or throw error
    */
    async getMainPurse(wallet: Wallet): Promise<string> {
@@ -102,7 +102,7 @@ export class Client {
       return mainPurse
     } catch(err) {
       log.warn(`Casper Client - getMainPurse error: ${err}`)
-      
+
       // rethrow error
       throw err
     }
@@ -110,21 +110,21 @@ export class Client {
 
   /**
    * Async attempt to retrieve deploy
-   * 
+   *
    * @param deployHash string deploy hash
-   * 
+   *
    * @returns the an array with deploy and deploy result or throw error
    */
   async getDeploy(deployHash: string, ticks = 5): Promise<[DeployUtil.Deploy, GetDeployResult]> {
     try {
-      
+
       let deployCheck = 0
       // Get the deploy hash from the network
-      
+
       while (deployCheck < ticks) {
         try {
           const casperClient = this.casperClient
-          return await casperClient.getDeploy(deployHash)          
+          return await casperClient.getDeploy(deployHash)
         } catch(e) {
           deployCheck++
           await sleep(1000)
@@ -133,7 +133,7 @@ export class Client {
       throw new Error('Could not confirm deploy.')
     } catch(err) {
       log.error(`Casper Client - getDeploy error: ${err}`)
-      
+
       // rethrow error
       throw err
     }
@@ -141,10 +141,10 @@ export class Client {
 
   /**
    * Async attempt to retrieve deploy but wits until the deploy execution is completed
-   * 
+   *
    * @param deployHash string deploy hash
    * @param ticks number of times before giving up
-   * 
+   *
    * @returns the an array with deploy and deploy result or throw error
    */
   async waitForDeployExecution(deployHash: string, ticks = 1000): Promise<[DeployUtil.Deploy, GetDeployResult]> {
@@ -168,37 +168,41 @@ export class Client {
           await sleep(1000)
         }
       } catch (e){
+        // if error is a contract execution error, throw it
+        if(e.message.includes('Contract execution:')) {
+            throw e
+        }
         i++
         await sleep(1000)
-      }      
+      }
     }
     throw Error("Timeout after " + i + "s. Something's wrong");
   }
 
   /**
    * Async try and sign deploy using the wallet
-   * 
+   *
    * @param wallet wallet for signing
    * @param contactHash hex encoded hash of the contract with or without the 'hash-' prefix
    * @param entry name of the entry point
    * @param args arguments for this contract call
    * @param gas how much gas to use for this call
-   * 
+   *
    * @returns Deploy a array of deploy hash string and deploy result
-   */  
+   */
   async signAndDeployContractCall(
     wallet: Wallet,
     contractHash: string,
     entryPoint: string,
-    args: RuntimeArgs, 
-    gas: BigNumber, 
+    args: RuntimeArgs,
+    gas: BigNumber,
   ): Promise<[string, GetDeployResult]> {
     try {
       // Convert contract hash to bytes
       const contractHashAsByteArray = Uint8Array.from(
         Buffer.from(contractHash, 'hex')
       )
-      
+
       // Create the deploy item using contractHash + entryPoint + args
       const deployItem = DeployUtil.ExecutableDeployItem.newStoredContractByHash(
         contractHashAsByteArray,
@@ -213,7 +217,7 @@ export class Client {
       return this.putAndConfirmDeploy(wallet, signedDeploy)
     } catch (err) {
       log.error(`Casper Client - signAndDeployContractCall error: ${err}`)
-      
+
       // rethrow error
       throw err
     }
@@ -221,19 +225,19 @@ export class Client {
 
   /**
    * Async try and sign deploy using the wallet
-   * 
+   *
    * @param wallet wallet for signing
    * @param wasm hex encoded hash of the contract with or without the 'hash-' prefix
    * @param args arguments for this contract call
    * @param gas how much gas to use for this call
-   * 
+   *
    * @returns Deploy a array of deploy hash string and deploy result
-   */  
+   */
   async signAndDeployWasm(
     wallet: Wallet,
     wasm: ArrayBuffer,
     args: RuntimeArgs,
-    gas: BigNumber, 
+    gas: BigNumber,
   ): Promise<[string, GetDeployResult]> {
     try {
       // Create the deploy item using wasm + args
@@ -241,17 +245,14 @@ export class Client {
         new Uint8Array(wasm),
         args,
       )
-
-      console.log("deployItem", deployItem)
       // Convert the signed deploy json to a deploy
 
       const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
-      console.log("signedDeploy", signedDeploy)
       // Put and confirm deploy
       return this.putAndConfirmDeploy(wallet, signedDeploy)
     } catch (err) {
       log.error(`Casper Client - signAndDeployWasm error: ${err}`)
-      
+
       // rethrow error
       throw err
     }
@@ -259,12 +260,12 @@ export class Client {
 
   /**
    * Create and sign the deploy
-   * 
+   *
    * @param wallet wallet for signing
    * @param deployItem item to deploy
    * @param gas how much gas to use for this call
-   * 
-   * @returns a signed deploy 
+   *
+   * @returns a signed deploy
    */
   async makeAndSignDeploy(wallet: Wallet, deployItem: DeployUtil.ExecutableDeployItem, gas: BigNumber): Promise<DeployUtil.Deploy> {
     try {
@@ -278,7 +279,7 @@ export class Client {
       return await wallet.sign(deploy)
     } catch (err) {
       log.error(`Casper Client - putAndConfirmDeploy error: ${err}`)
-      
+
       // rethrow error
       throw err
     }
@@ -286,10 +287,10 @@ export class Client {
 
   /**
    * Execute putDeploy and getDeploy to confirm a successfully deploy
-   * 
+   *
    * @param wallet wallet to deploy using
    * @param signedDeploy deploy to putDeploy
-   * 
+   *
    * @returns the array with the deployHash and detailed deploy information
    */
   async putAndConfirmDeploy(wallet: Wallet, signedDeploy: DeployUtil.Deploy): Promise<[string, GetDeployResult]> {
@@ -299,11 +300,11 @@ export class Client {
       console.log('deployHash', deployHash)
 
       const [_, deployResult] = await this.getDeploy(deployHash)
-      
+
       return [deployHash, deployResult]
     } catch (err) {
       log.error(`Casper Client - putAndConfirmDeploy error: ${err}`)
-      
+
       // rethrow error
       throw err
     }

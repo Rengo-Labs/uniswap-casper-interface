@@ -8,7 +8,11 @@ import torusWallet from "../../../assets/newDesignIcons/torus-wallet.svg";
 import {globalStore} from "../../../store/store";
 import lineBreakIcon from "../../../assets/newDesignIcons/linkbreak.svg";
 import metamaskFlask from '../../../assets/newDesignIcons/metaMaskFlask.svg';
+import {useNavigate} from 'react-router-dom'
+
 export const PopupsContainer = () => {
+  const navigate = useNavigate()
+  
     const {
         showSettings,
         setShowSettings,
@@ -60,14 +64,14 @@ export const PopupsContainer = () => {
     ]
 
     const WALLET_CONNECTED_OPTIONS = [
-        // TODO commented out for now, will be added later
-        // {
-        //     id: 'dmx0031b2b421',
-        //     key: 'account',
-        //     name: 'My Account',
-        //     iconName: 'Copy',
-        //     type: 'Redirect',
-        // },
+        {
+            id: 'dmx0031b2b421',
+            key: 'account',
+            name: 'My Account',
+            iconName: 'Copy',
+            type: 'Redirect',
+            onClick: () => navigate('/account')
+        },
         {
             id: '3d23f23xxx88nf',
             key: 'wallet',
@@ -75,13 +79,14 @@ export const PopupsContainer = () => {
             iconName: 'Copy',
             type: 'copy',
         },
-        // {
-        //     id: '1x9x9900jjwoa',
-        //     key: 'transactions',
-        //     name: 'Recent Transactions',
-        //     iconName: 'Clock',
-        //     type: 'redirect',
-        // },
+        {
+            id: '1x9x9900jjwoa',
+            key: 'transactions',
+            name: 'Recent Transactions',
+            iconName: 'Clock',
+            type: 'redirect',
+            onClick: () => navigate('/account', { state: { accountDefaultTab: 'transfer' }})
+        },
         {
             id: '0zokxj8h82nndl',
             key: 'disconnect',

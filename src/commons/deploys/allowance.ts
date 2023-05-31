@@ -66,9 +66,10 @@ export const signAndDeployAllowance = async (
   wallet: Wallet,
   contractHash: string,
   amount: BigNumber.Value,
+  optApproval = ""
 ): Promise<[string, GetDeployResult]> => {
   try {
-    const entryPoint = selectAllowanceEntryPoint(amount)
+    const entryPoint = optApproval === "" ? selectAllowanceEntryPoint(amount) : optApproval
 
     const spender = ROUTER_PACKAGE_HASH;
     const spenderByteArray = new CLByteArray(
@@ -83,7 +84,7 @@ export const signAndDeployAllowance = async (
         spender: createRecipientAddress(spenderByteArray),
         amount: CLValueBuilder.u256(new BigNumber(amount).toFixed(0)),
       }),
-      new BigNumber(5000000000),
+      new BigNumber(3000000000),
     )    
   } catch (err) {
       log.error(`signAndDeployAllowance error: ${err}`)

@@ -183,7 +183,7 @@ const RAW_PAIRS: PairState = {
     checked: false,
     name: "USDT-USDC",
     orderedName: '',
-    contractHash: "hash-ffed0f843fe60f120da664a9a8522544c97a762fe37422d2f0476adc871b7da9",
+    contractHash: "hash-84182a62b8059b0d034e1f1773f6cfcd45898332ad0098430fa4363447c3af6b",
     packageHash: "hash-6de9a63441e43d75e8774675407ed3d6775b0e5f3fa35382c744980733030902",
     reserve0: '0',
     reserve1: '0',
@@ -304,6 +304,8 @@ export enum PairActions {
 export type PairActionBalancePayload = {
   name: string,
   balance: string,
+  decimals0: number,
+  decimals1: number
 }
 
 export type PairActionAllowancePayload = {
@@ -326,6 +328,8 @@ export type PairActionLoadPairUSDPayLoad = {
   token0Price: string,
   token1Price: string,
   isWalletConnected: boolean,
+  decimals0: number,
+  decimals1: number
 }
 
 export type PairActionCleanLiquidityUSDPayLoad = {
@@ -343,6 +347,8 @@ export type PairActionLoadUserPairPayLoad = {
   reserve0: string,
   reserve1: string,
   liquidityUSD: string,
+  decimals0: number,
+  decimals1: number
 }
 
 export type PairAction = {
@@ -379,18 +385,18 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           throw new Error(`pair ${action.payload.name} does not exist`)
         }
 
-        const balance = convertUIStringToBigNumber(action.payload.balance)
-        const totalSupply = convertUIStringToBigNumber(oldState.totalSupply)
-        const totalReserve0 = convertUIStringToBigNumber(oldState.totalReserve0)
-        const totalReserve1 = convertUIStringToBigNumber(oldState.totalReserve1)
-        const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
-        const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
+        const balance = convertUIStringToBigNumber(action.payload.balance, oldState.decimals)
+        const totalSupply = convertUIStringToBigNumber(oldState.totalSupply, oldState.decimals)
+        const totalReserve0 = convertUIStringToBigNumber(oldState.totalReserve0, action.payload.decimals0)
+        const totalReserve1 = convertUIStringToBigNumber(oldState.totalReserve1, action.payload.decimals1)
+        const reserve0 = convertBigNumberToUIString(new BigNumber(totalReserve0.times(balance.div(totalSupply)).toFixed(0)), action.payload.decimals0)
+        const reserve1 = convertBigNumberToUIString(new BigNumber(totalReserve1.times(balance.div(totalSupply)).toFixed(0)), action.payload.decimals1)
 
         return {
           ...state,
           [`${action.payload.name}`]: {
             ...oldState,
-            balance: convertBigNumberToUIString(balance),
+            balance: convertBigNumberToUIString(balance, oldState.decimals),
             reserve0,
             reserve1,
           },
@@ -409,9 +415,9 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         const oldState = state[`${action.payload.name}`]
 
         //const balance = convertUIStringToBigNumber(oldState.balance)
-        const totalSupply = convertUIStringToBigNumber(action.payload.totalSupply)
-        const totalReserve0 = convertUIStringToBigNumber(action.payload.totalReserve0)
-        const totalReserve1 = convertUIStringToBigNumber(action.payload.totalReserve1)
+        //const totalSupply = convertUIStringToBigNumber(action.payload.totalSupply, oldState.decimals)
+        //const totalReserve0 = convertUIStringToBigNumber(action.payload.totalReserve0, action.payload.decimals0)
+        //const totalReserve1 = convertUIStringToBigNumber(action.payload.totalReserve1, action.payload.decimals1)
         //const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
         //const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
 
@@ -424,9 +430,9 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             //reserve0,
             //reserve1,
             totalLiquidityUSD: action.payload.totalLiquidityUSD,
-            totalReserve0: convertBigNumberToUIString(totalReserve0),
-            totalReserve1: convertBigNumberToUIString(totalReserve1),
-            totalSupply: convertBigNumberToUIString(totalSupply),
+            totalReserve0: action.payload.totalReserve0,//convertBigNumberToUIString(totalReserve0, action.payload.decimals0),
+            totalReserve1: action.payload.totalReserve1,//convertBigNumberToUIString(totalReserve1, action.payload.decimals1),
+            totalSupply: action.payload.totalSupply//convertBigNumberToUIString(totalSupply, oldState.decimals),
           },
         }
       }
@@ -434,9 +440,9 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
       {
         const oldState = state[`${action.payload.name}`]
 
-        const liquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.reserve0))
+        const liquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.reserve0, action.payload.decimals0))
           .times(action.payload.token0Price)
-          .plus(new BigNumber(convertUIStringToBigNumber(oldState.reserve1)).times(action.payload.token1Price))
+          .plus(new BigNumber(convertUIStringToBigNumber(oldState.reserve1, action.payload.decimals1)).times(action.payload.token1Price))
           .div(10 ** 9)
           .toString()
         // console.log('action.payload', action.payload, oldState.totalReserve0, oldState.totalReserve1)

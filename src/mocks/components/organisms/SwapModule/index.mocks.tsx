@@ -24,7 +24,6 @@ export const TestComponent = () => {
       reserve1,
       100,
       { symbol: "TK1" } as any,
-      0.005,
       0.003
     )
 

@@ -44,12 +44,12 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
 
         const isConnected = walletState.wallet?.isConnected ?? false
         if (walletState?.wallet) {
-            await loadUserPairsData(walletState?.wallet, isConnected)
+            await loadUserPairsData(walletState?.wallet, isConnected, tokenState)
             await loadTokensBalance(walletState?.wallet, isConnected)
         }
         // TODO this part of code delays more than reset data
         else {
-            await clearUserPairsData(pairState)
+            await clearUserPairsData(pairState, tokenState)
             await clearTokensBalance(tokenState)
         }
         previousQuery()

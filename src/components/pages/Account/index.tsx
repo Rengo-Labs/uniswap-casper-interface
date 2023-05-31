@@ -1,14 +1,15 @@
 import React from 'react';
 import Layout from "../../../layout";
-import {BalanceTemplate} from "../../templates";
 import {useDeviceType} from "rengo-ui-kit";
-export const Balance = () => {
+import { AccountTemplate } from '../../templates/AccountTemplate';
+
+export const Account = () => {
     const deviceType = useDeviceType()
     const isMobile = deviceType === 'mobile'
 
     return (
         <Layout>
-            <BalanceTemplate isMobile={isMobile}/>
+          <AccountTemplate isMobile={isMobile}/>
         </Layout>
     );
 }

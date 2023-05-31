@@ -25,7 +25,9 @@ export interface ConfigContext {
   slippageToleranceSelected?: number;
   onIncreaseAllow?: (
     amount: number | string,
-    contractHash: string
+    contractHash: string,
+    decimals?: number,
+    optApproval?: string
   ) => Promise<boolean>;
   confirmModal: boolean;
   linkExplorer: string;
@@ -75,6 +77,8 @@ export const ConfigContextWithReducer = ({
   async function onIncreaseAllow(
     amount: number | string,
     contractHash: string,
+    decimals = 9,
+    optApproval = ""
 ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Loading,
@@ -86,12 +90,12 @@ export const ConfigContextWithReducer = ({
     });
 
     try {
-      console.log("amount", amount, contractHash)
       const [deployHash, deployResult] = await signAndDeployAllowance(
         casperClient,
         walletState.wallet,
         contractHash,
-        convertUIStringToBigNumber(amount)
+        convertUIStringToBigNumber(amount, decimals),
+        optApproval
       );
 
       setProgressModal(true);
@@ -114,7 +118,7 @@ export const ConfigContextWithReducer = ({
         if (result) {
             updateNotification({
               type: NotificationType.Success,
-              title: 'Processing...',
+              title: 'Processed...',
               subtitle: 'Your deploy was successful',
               show: true,
               isOnlyNotification: true,
