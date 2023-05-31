@@ -14,6 +14,7 @@ export interface INotification {
   show: boolean;
   isOnlyNotification?: boolean;
   timeToClose?: number;
+  closeManually?: boolean
   onClose?: () => void;
 }
 

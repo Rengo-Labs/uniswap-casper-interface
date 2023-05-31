@@ -59,12 +59,13 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     gasFee: number
   ): Promise<boolean> {
     updateNotification({
-      type: NotificationType.Loading,
+      type: NotificationType.Info,
       title: 'Processing...',
       subtitle: 'Checking the progress of your deploy',
       show: true,
       isOnlyNotification: true,
-      timeToClose: 100000
+      timeToClose: 100000,
+      closeManually: true
     });
     try {
       console.log("Tokens to swap", amountA.toString(), amountB.toString())
