@@ -10,7 +10,9 @@ import {PairState} from "../../reducers/PairsReducer";
 import {
     getBalanceProfitByContractHash,
     getHistoricalTokenPricesByPackageHash,
-    TokenProfit
+    TokenProfit,
+    getTokenChartData,
+    getPercentChangeByToken
 } from "../api/ApolloQueries";
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
@@ -243,43 +245,51 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
     }
 
     const getHistoricalTokensChartPrices = async (packageHash0: string, packageHash1: string) => {
-        const chart0 = await getHistoricalTokenPricesByPackageHash(packageHash0)
-        const chart1 = await getHistoricalTokenPricesByPackageHash(packageHash1)
+        const token1Hist = await getHistoricalTokenPricesByPackageHash(packageHash0)
+        const token2Hist = await getHistoricalTokenPricesByPackageHash(packageHash1)
 
-        const date0 = chart0.map((item) => item?.date)
-        const date1 = chart1.map((item) => item?.date)
-        const dateFiltered = [];
-
-        if (date0.length > date1.length) {
-            date0.map((item) => {
-                dateFiltered.push(item)
-            })
-        } else {
-            date1.map((item) => {
-                dateFiltered.push(item)
-            })
-        }
-
-        const date = dateFiltered.map((item) => {
-            const date = new Date(item)
-            return `${date.getDate()}/${date.getMonth() + 1}`
-        })
-
-        const priceUSD = chart0 && chart0.length ? parseFloat(chart0[0]?.priceUSD).toFixed(2) : 0
-        const percentage = chart0 && chart0.length ? parseFloat(chart0[0]?.percentage).toFixed(2) : 0
-
-        return date.map((item, index) => {
-            const token0price = chart0 && chart0.length && parseFloat(chart0[index]?.priceUSD).toFixed(2) || 0
-            const token1price =  chart1 && chart1.length && parseFloat(chart1[index]?.priceUSD).toFixed(2) || 0
+        const getPriceAndPercentage = (hist) => {
+            const length = hist.length - 1
+            const priceUSD = hist && hist.length ? parseFloat(hist[length]?.priceUSD).toFixed(2) : 0
+            const percentage = hist && hist.length ? parseFloat(hist[length]?.percentage).toFixed(2) : 0
 
             return {
-                name: item,
-                token0price: token0price,
-                token1price: token1price,
-                priceUSD: priceUSD,
-                percentage: percentage
+                priceUSD,
+                percentage
             }
-        })
+        }
+
+        const token0 = getPriceAndPercentage(token1Hist)
+        const token1 = getPriceAndPercentage(token2Hist)
+
+        return [token0, token1]
+    }
+
+    const getPercentChangeByTokens = async (packageHash0: string, packageHash1: string) => {
+        const token0Percent = await getPercentChangeByToken(packageHash0)
+        const token1Percent = await getPercentChangeByToken(packageHash1)
+
+        const getPriceAndPercentage = (hist) => {
+            const length = 0
+            const priceUSD = hist && hist.length ? parseFloat(hist[length]?.nowPrice).toFixed(2) : 0
+            const percentage = hist && hist.length ? parseFloat(hist[length]?.percent).toFixed(2) : 0
+
+            return {
+                priceUSD,
+                percentage
+            }
+        }
+
+        const token0 = getPriceAndPercentage(token0Percent)
+        const token1 = getPriceAndPercentage(token1Percent)
+
+        return [token0, token1]
+    }
+
+    const getTokensChartData = async (packageHash0: string, packageHash1: string) => {
+        const chart0 = await getTokenChartData(packageHash0)
+        const chart1 = await getTokenChartData(packageHash1)
+        return [chart0, chart1]
     }
 
     const getBalancesProfit = (packageHash: string): Promise<TokenProfit> => {
@@ -297,7 +307,9 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         filterTokenPairsByToken,
         getHistoricalTokenPrices,
         getBalancesProfit,
-        getHistoricalTokensChartPrices
+        getHistoricalTokensChartPrices,
+        getTokensChartData,
+        getPercentChangeByTokens
     }
 
 }
