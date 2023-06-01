@@ -92,7 +92,7 @@ const Layout = ({children}: ILayoutProps) => {
 
       setLoader(1000, true)
     }, [location])
-    
+
 
     useEffect(() => {
         const height = menuRef.current?.offsetHeight;
@@ -115,7 +115,7 @@ const Layout = ({children}: ILayoutProps) => {
                 ...rightActionInit
             }))
         }
-    }, [isConnected])
+    }, [isConnected, walletState])
 
 
 

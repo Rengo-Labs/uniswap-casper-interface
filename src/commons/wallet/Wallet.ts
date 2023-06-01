@@ -33,7 +33,7 @@ export interface Wallet {
    * 
    * @returns the the public key on success or throw error
    */
-  connect: () => Promise<string>
+  connect: (dispatch?) => Promise<string>
 
   /** 
    * Async try and read the active key
