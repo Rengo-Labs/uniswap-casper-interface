@@ -82,6 +82,18 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                                     ),
                                 },
                             });
+                        }).catch(e => {
+                            console.log("Error loading pair allowance", pair.name)
+                            pairDispatch({
+                                type: PairActions.ADD_ALLOWANCE_TO_PAIR,
+                                payload: {
+                                    name: pair.name,
+                                    allowance: convertBigNumberToUIString(
+                                      new BigNumber(0),
+                                      pair.decimals
+                                    ),
+                                },
+                            })
                         }),
                     apiClient
                         .getERC20Balance(
@@ -102,6 +114,20 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                                     decimals1: tokenState.tokens[pair.token1Symbol].decimals
                                 },
                             });
+                        }).catch(e => {
+                            console.log("Error loading pair balance ", pair.name)
+                            pairDispatch({
+                                type: PairActions.ADD_BALANCE_TO_PAIR,
+                                payload: {
+                                    name: pair.name,
+                                    balance: convertBigNumberToUIString(
+                                      new BigNumber(0),
+                                      pair.decimals
+                                    ),
+                                    decimals0: tokenState.tokens[pair.token0Symbol].decimals,
+                                    decimals1: tokenState.tokens[pair.token1Symbol].decimals
+                                },
+                            })
                         }),
                 )
             }

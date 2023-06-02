@@ -108,7 +108,8 @@ export const WalletContext = ({
    */
   async function connect(
     name: WalletName = WalletName.NONE,
-    amount
+    amount,
+    dispatch = null
   ): Promise<ConnectReturn> {
     if (debounceConnect) {
       return {
@@ -166,7 +167,7 @@ export const WalletContext = ({
           await state.wallet.disconnect();
         }
         w = new CasperWallet(NETWORK_NAME)
-        await w.connect()
+        await w.connect(dispatch)
         break
       default:
         setShowConnectionPopup(true);
@@ -235,7 +236,7 @@ export const WalletContext = ({
         closeManually: true,
       });
 
-      const ret = await connect(name, new BigNumber(0));
+      const ret = await connect(name, new BigNumber(0), dispatch);
 
       if (!ret.isConnected) {
         return;

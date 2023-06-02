@@ -36,7 +36,7 @@ const RAW_TOKENS: Record<string, Token> = {
     symbolPair: "CST",
     decimals: 9,
     contractHash:
-      "hash-aff3a1beb6239317e84d898cd04e10aa3368f646009188ea596514b6bb1a34c9",
+      "hash-65044e6a2f2c60d1f868686e9f9a1538ce1615a509ba0f5420d326172d261623",
     packageHash:
       "hash-995947f349c23a1812f6c7702e75eb95afabdb5f389f150e4ddb91c9de6225f0",
     logoURI: cstIcon,
@@ -51,7 +51,7 @@ const RAW_TOKENS: Record<string, Token> = {
     symbolPair: "WBTC",
     decimals: 9,
     contractHash:
-      "hash-66d17f410f45a29bd710175fdbf03277619a797fa5b7a3858d1dd2e386cfac9f",
+      "hash-71afe14308465f7eb7f49463df96ba52cf2da8e1deeb64a1d0978af9170e52ce",
     packageHash:
       "hash-883238e99639bc7f5f7858398d0df94138c8ad89f76bdef7fac5fdd3df7f033a",
     logoURI: wbtcIcon,
@@ -66,7 +66,7 @@ const RAW_TOKENS: Record<string, Token> = {
     symbolPair: "WETH",
     decimals: 9,
     contractHash:
-      "hash-82a894a18840f988dd87b3121a52ed951bb16236ff772572b9531f93a51aa7f7",
+      "hash-906e222218c54ff108d8b88d6b7f4fdcb4b5c41428463166f9ac2abf25cc4178",
     packageHash:
       "hash-28eed3da2b123334c7913d84c4aea0ed426fd268d29410cb12c6bc8a453183f6",
     logoURI: wethIcon,
@@ -81,7 +81,7 @@ const RAW_TOKENS: Record<string, Token> = {
     symbolPair: "WCSPR",
     decimals: 9,
     contractHash:
-      "hash-785aa60c219869f1770d1aa44cebfaf3a8fc0004551677b67d1441bdc57470c1",
+      "hash-99baafab995cab68ca622edcb29fee7b83e1245ac0a3218444e996f561cba8f9",
     packageHash:
       "hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a",
     logoURI: wcsprIcon,
@@ -96,7 +96,7 @@ const RAW_TOKENS: Record<string, Token> = {
     symbolPair: "USDT",
     decimals: 9,
     contractHash:
-      "hash-bffffa8755571a90fa20b35ed3d0fc47aeecab52eca73138e27109d4d5e9dc57",
+      "hash-da217de766096f168ad906a8eb2a8f48e32717bcf5fd1124188eda6193c6b7f7",
     packageHash:
       "hash-a7672d33a577d196a42b9936025c2edc22b25c20cc16b783a3790c8e35f71e0b",
     logoURI: usdtIcon,
@@ -111,7 +111,7 @@ const RAW_TOKENS: Record<string, Token> = {
     symbolPair: "USDC",
     decimals: 9,
     contractHash:
-      "hash-a08a6565f8437daa52eb45c0ce70b5640ad048b9e6e1ca66b84e8d37e40b5257",
+      "hash-b5aa8961b1dae0eab3e828da836911d339b30f3e90c8ed479eb797789fe8e9f2",
     packageHash:
       "hash-e43357d2be4f5cd2d744e218eb7bf79148f0fa777b111a71c6d587f054a50b44",
     logoURI: usdcIcon,

@@ -315,6 +315,7 @@ const TokenSwapper = ({
                   tokenName={firstTokenSelected.symbol}
                   tokenBalance={firstTokenSelected.amount}
                   tokenPrice={valueAUSD}
+                  gasFee={gasPriceSelectedForSwapping}
                   iconSize='36px'
         />
 
@@ -342,6 +343,7 @@ const TokenSwapper = ({
                   tokenName={secondTokenSelected.symbol}
                   tokenBalance={secondTokenSelected.amount}
                   tokenPrice={valueBUSD}
+                  gasFee={gasPriceSelectedForSwapping}
                   iconSize='36px'
         />
         <div style={{display: "flex", justifyContent: "right"}}>

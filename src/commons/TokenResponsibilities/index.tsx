@@ -47,8 +47,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
             const ps = Object.keys(tokenState.tokens).map((x) => {
                 const token = tokenState.tokens[x];
 
-                //console.log('token', x, token)
-                if (tokenState.tokens[x].contractHash) {
+                if (token.contractHash) {
                     return Promise.all([
                         apiClient
                           .getERC20Allowance(
@@ -67,6 +66,18 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                                       ),
                                   },
                               });
+                          }).catch(e => {
+                              console.log("Error loading pair allowance", x)
+                              tokenDispatch({
+                                  type: TokenActions.LOAD_ALLOWANCE,
+                                  payload: {
+                                      name: x,
+                                      allowance: convertBigNumberToUIString(
+                                        new BigNumber(0),
+                                        token.decimals
+                                      ),
+                                  },
+                              })
                           }),
                         apiClient
                           .getERC20Balance(
@@ -86,6 +97,18 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                                       ),
                                   },
                               });
+                          }).catch(e => {
+                              console.log("Error loading pair balance", x)
+                              tokenDispatch({
+                                  type: TokenActions.LOAD_BALANCE,
+                                  payload: {
+                                      name: x,
+                                      amount: convertBigNumberToUIString(
+                                        new BigNumber(0),
+                                        token.decimals
+                                      ),
+                                  },
+                            })
                           }),
                     ]);
                 } else {
