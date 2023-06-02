@@ -86,7 +86,6 @@ const LiquiditySwapper = ({
 
   const [lastChanged, setLastChanged] = useState('');
   const [currentValue, setCurrentValue] = useState<number>(0)
-  const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
 
   const {
     disableButton: disableButtonValid,
@@ -185,7 +184,7 @@ const LiquiditySwapper = ({
     handleValidate(
       parseFloat(tokensToTransfer),
       parseFloat(secondTokenSelected.amount),
-      gasFee || 0,
+      gasPriceSelectedForLiquidity || 0,
       secondTokenSelected.symbol
     )
   }
@@ -195,7 +194,7 @@ const LiquiditySwapper = ({
     handleValidate(
       parseFloat(value),
       parseFloat(firstTokenSelected.amount),
-      gasFee || 0
+      gasPriceSelectedForLiquidity || 0
     )
     changeTokenA(value);
   };
@@ -234,7 +233,7 @@ const LiquiditySwapper = ({
     handleValidate(
       parseFloat(tokensToTransfer),
       parseFloat(firstTokenSelected.amount),
-      gasFee || 0,
+      gasPriceSelectedForLiquidity || 0,
       firstTokenSelected.symbol
     )
   }
@@ -250,7 +249,7 @@ const LiquiditySwapper = ({
     handleValidate(
       parseFloat(tokensToTransfer),
       parseFloat(firstTokenSelected.amount),
-      gasFee || 0
+      gasPriceSelectedForLiquidity || 0
     );
   };
 
@@ -364,6 +363,7 @@ const LiquiditySwapper = ({
                 tokenName={firstTokenSelected.symbol}
                 tokenBalance={firstTokenSelected.amount}
                 tokenPrice={valueAUSD}
+                gasFee={gasPriceSelectedForLiquidity}
                 iconSize='36px'
       />
 
@@ -388,6 +388,7 @@ const LiquiditySwapper = ({
                 tokenName={secondTokenSelected.symbol}
                 tokenBalance={secondTokenSelected.amount}
                 tokenPrice={valueBUSD}
+                gasFee={gasPriceSelectedForLiquidity}
                 iconSize='36px'
       />
       <div style={{display: "flex", justifyContent: "right", gap: "10px"}}>

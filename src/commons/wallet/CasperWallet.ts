@@ -14,12 +14,14 @@ import {
 import { Network, WalletName } from './types'
 import { NODE_ADDRESS } from '../../constant'
 import {globalStore} from "../../store/store";
+import {ConfigActions} from "../../reducers";
 
 export const CASPER_WALLET_PUB_KEY = 'cw-pubk'
 
 export enum CasperWalletEvents {
   CONNECT = 'casper-wallet:connected',
-  DISCONNECT = 'casper-wallet:disconnected'
+  DISCONNECT = 'casper-wallet:disconnected',
+  ACTIVE_WALLET = 'casper-wallet:activeKeyChanged'
 }
 
 export type WalletState = {
@@ -34,6 +36,7 @@ export type WalletState = {
 export class CasperWallet implements Wallet{
   private _connectPromise?: Promise<string>
   private _connectEventHandler: any
+  private _activeWallet: any
   private _disconnectEventHandler: any
   private _previousConnectReject: any
   private _publicKey?: CLPublicKey
@@ -106,7 +109,7 @@ export class CasperWallet implements Wallet{
    *
    * @returns the the public key on success or throw error
    */
-  async connect(): Promise<string> {
+  async connect(dispatch = null): Promise<string> {
     if (this.isConnected) {
       return
     }
@@ -114,6 +117,35 @@ export class CasperWallet implements Wallet{
     try {
       // check if we're connected
       const signerIsConnected = await this.getCasperWalletInstance().isConnected()
+
+      if (dispatch != null) {
+        // detect when the account switched
+        this._activeWallet = async (msg) => {
+          console.log("event - casper-wallet:activeKeyChanged", msg.detail);
+          try {
+            const action: WalletState = JSON.parse(msg.detail);
+
+            await this.getActiveKey()
+
+            dispatch({
+              type: ConfigActions.SELECT_MAIN_PURSE,
+              payload: { mainPurse: action.activeKey },
+            });
+
+            dispatch({
+              type: ConfigActions.CONNECT_WALLET,
+              payload: { wallet: this },
+            });
+          } catch (err) {
+            console.error(err);
+          }
+        }
+
+        window.addEventListener(
+          CasperWalletEvents.ACTIVE_WALLET,
+          this._activeWallet,
+        );
+      }
 
       // if it is connected then set connect to true
       if (signerIsConnected) {

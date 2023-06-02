@@ -53,7 +53,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
             await clearTokensBalance(tokenState)
         }
         previousQuery()
-    }, [stateHash, walletState.wallet?.isConnected])
+    }, [stateHash, walletState.wallet?.isConnected, walletState?.wallet?.publicKey])
 
     // TODO call this function on manual refresh
     const refresh = async () => {
@@ -69,7 +69,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         }
 
         loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
-    },  [stateHash, walletState?.wallet?.isConnected])
+    },  [stateHash, walletState?.wallet?.isConnected, walletState?.wallet?.publicKey])
 
     const getRootHash = useCallback(async () => {
         const rootHash = await getLatestRootHash()
