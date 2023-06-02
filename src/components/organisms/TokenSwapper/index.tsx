@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {formatNaN, Token} from '../../../commons';
 import isCSPRValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
 import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
+import { getLocalStorageData, setLocalStorageData } from '../../../commons/utils/persistData';
 
 interface TokenSwapperProps {
   onIncreaseAllow,
@@ -35,6 +36,9 @@ interface TokenSwapperProps {
   setValueAUSD,
   setValueBUSD
 }
+
+const LOCAL_STORAGE_KEY = 'token-list'
+const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
 const TokenSwapper = ({
                         onIncreaseAllow,
@@ -73,8 +77,29 @@ const TokenSwapper = ({
   const [currentValue, setCurrentValue] = useState<number>(0);
   const { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification } =
       isCSPRValid();
-
   const [lastChanged, setLastChanged] = useState('A');
+  const [tokenListData, setTokenListData] = useState<any[]>([]);
+
+  const tokenListFromFilter = useMemo(() => {
+    return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
+  }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector]);
+  
+  const sortedTokenListData = tokenListData.sort((a, b) => {
+    if (a.isFavorite && !b.isFavorite) {
+      return -1;
+    } else if (!a.isFavorite && b.isFavorite) {
+      return 1;
+    } else {
+      return collator.compare(a.name, b.name);
+    }
+  });
+
+
+  useEffect(() => {
+    const favoriteData: string[] = getLocalStorageData(LOCAL_STORAGE_KEY)
+    const newTokenListData = tokenListFromFilter.map(token =>( {...token, isFavorite: favoriteData.includes(token.name) } ))
+    setTokenListData(newTokenListData)
+  }, [tokenListFromFilter])
 
   useEffect(() => {
     const t0 = searchParams.get('token0');
@@ -231,6 +256,32 @@ const TokenSwapper = ({
     );
   });
 
+  const updateLocalStorage = (
+    name: string,
+    currentPersistedData: string[],
+    isFavorite: boolean
+  ) => {
+    const newLocalStorageData = isFavorite
+      ? currentPersistedData.filter((item) => item !== name)
+      : [...currentPersistedData, name];
+    setLocalStorageData(LOCAL_STORAGE_KEY, newLocalStorageData);
+  };
+
+  const updateTokenListData = (tokenName: string, isFavorite: boolean) => {
+    const newTokenList = tokenListData.map(token => {
+      if (token.name === tokenName) {
+        return {
+          ...token,
+          isFavorite: !isFavorite
+        }
+      }
+
+      return token
+    })
+
+    setTokenListData(newTokenList)
+  }
+
   async function selectAndCloseToken(token: Token): Promise<void> {
 
     if (openPoolDialog.firstSelector) {
@@ -241,6 +292,15 @@ const TokenSwapper = ({
       updateDetailAndUSDValuesForInputB(firstTokenSelected, token, amountSwapTokenB.toString(), token, true)
     }
     setOpenPoolDialog(prevState => ({...prevState, open: false}))
+  }
+
+  const handlerFavoriteToken = (tokenName: string) => {
+    const currentPersistedData: string[] = getLocalStorageData(LOCAL_STORAGE_KEY);
+    
+    const isPresent = currentPersistedData.includes(tokenName);
+
+    updateTokenListData(tokenName, isPresent)
+    updateLocalStorage(tokenName, currentPersistedData, isPresent)
   }
 
   return (
@@ -312,12 +372,12 @@ const TokenSwapper = ({
         {openPoolDialog.open && (
             <CreatePoolDialog
                 closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-                tokenListData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector)}
+                tokenListData={sortedTokenListData}
                 popularTokensData={filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector)}
                 onSelectToken={(name) => {
                   selectAndCloseToken(tokenState.tokens[name])
                 }}
-                onSelectFavoriteToken={(name, value) => console.log("Is favorite", name, value)}
+                onSelectFavoriteToken={(name) => handlerFavoriteToken(name)}
                 isOpen={openPoolDialog.open}
             />
         )}
