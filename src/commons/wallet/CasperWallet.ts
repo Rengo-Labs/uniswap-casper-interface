@@ -121,7 +121,6 @@ export class CasperWallet implements Wallet{
       if (dispatch != null) {
         // detect when the account switched
         this._activeWallet = async (msg) => {
-          console.log("event - casper-wallet:activeKeyChanged", msg.detail);
           try {
             const action: WalletState = JSON.parse(msg.detail);
 
@@ -144,7 +143,7 @@ export class CasperWallet implements Wallet{
         window.addEventListener(
           CasperWalletEvents.ACTIVE_WALLET,
           this._activeWallet,
-        );
+        )
       }
 
       // if it is connected then set connect to true
@@ -261,6 +260,10 @@ export class CasperWallet implements Wallet{
     }
 
     try {
+      window.removeEventListener(
+        CasperWalletEvents.ACTIVE_WALLET,
+        this._activeWallet,
+      )
       return this.getCasperWalletInstance().disconnectFromSite();
     } catch (err) {
       log.error(`Casper Signer - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
@@ -279,17 +282,16 @@ export class CasperWallet implements Wallet{
    */
   async sign(deploy: DeployUtil.Deploy): Promise<DeployUtil.Deploy> {
     try {
-      // Convert the deploy to a raw json
       const deployJSON = DeployUtil.deployToJson(deploy)
       // Sign the deploy with the signer
-      const signedDeployJSON = await this.getCasperWalletInstance().sign(JSON.stringify(deployJSON), this.publicKeyHex, this.publicKeyHex);
+      const signedDeployJSON = await this.getCasperWalletInstance().sign(JSON.stringify(deployJSON), this.publicKeyHex.toLowerCase())
 
       // Convert the signed deploy json to a deploy
       return DeployUtil.setSignature(
         deploy,
         signedDeployJSON.signature,
         CLPublicKey.fromHex(this.publicKeyHex)
-      );
+      )
     } catch (err) {
       log.error(`Casper Wallet - signAndDeploy error: ${err}`)
       throw err
