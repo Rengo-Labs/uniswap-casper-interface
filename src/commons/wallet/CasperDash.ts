@@ -15,6 +15,7 @@ import { Network, WalletName } from './types'
 import { NODE_ADDRESS } from '../../constant'
 import {globalStore} from "../../store/store";
 import {ConfigActions} from "../../reducers";
+import {CasperWalletEvents} from "./CasperWallet";
 
 export const CASPER_DASH_PUB_KEY = 'cd-pubk'
 
@@ -259,6 +260,10 @@ export class CasperDash implements Wallet{
     }
 
     try {
+      window.removeEventListener(
+        CasperWalletEvents.ACTIVE_WALLET,
+        this._activeWallet,
+      )
       return this.getCasperDashInstance().disconnectFromSite();
     } catch (err) {
       log.error(`Casper Signer - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
