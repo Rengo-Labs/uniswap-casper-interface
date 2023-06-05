@@ -25,26 +25,30 @@ const isCSPRValid = () => {
     tokenSymbol = firstTokenSelected.symbol
   ) => {
     const aplicationToken = 'CSPR'
+    let showNotifier = false
     if (tokenSymbol === aplicationToken) {
       if (Number(currentValue) + Number(gasFee) > balance) {
-        setDisableButton(true);
-        showNotification();
+        showNotifier = true
       } else {
-        setDisableButton(false);
-        dismissNotification();
+        showNotifier = false
       }
     } else {
       if (Number(currentValue) > balance) {
-        setDisableButton(true);
-        showNotification(`Insufficient Balance for the token : ${tokenSymbol}`);
+        showNotifier = true
       } else if (gasFee > Number(tokenState.tokens[aplicationToken].amount) && Number(currentValue) > 0) {
-        setDisableButton(true);
-        showNotification();
+        showNotifier = true
       } else {
-        setDisableButton(false);
-        dismissNotification();
+        showNotifier = false
       }
     }
+
+    if (showNotifier) {
+      showNotification(`Insufficient Balance for the token : ${tokenSymbol}`)
+    } else {
+      dismissNotification()
+    }
+    setDisableButton(showNotifier)
+    return showNotifier
   };
 
   return {
