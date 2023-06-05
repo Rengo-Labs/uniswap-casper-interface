@@ -42,6 +42,12 @@ export const PopupsContainer = () => {
             icon: casperWallet,
             onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
         },
+        {
+            id: 3,
+            name: 'Casper Dash',
+            icon: casperWallet,
+            onConnect: () => onConnectWallet(WalletName.CASPER_DASH)
+        },
         // {
         //     id: 3,
         //     name: 'Ledger',
@@ -49,7 +55,7 @@ export const PopupsContainer = () => {
         //     onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
         // },
         {
-            id: 3,
+            id: 4,
             name: 'Torus Wallet',
             icon: torusWallet,
             onConnect: () => onConnectWallet(WalletName.TORUS)
