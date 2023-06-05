@@ -103,7 +103,9 @@ export const SwapTemplate = ({isMobile}) => {
         // TODO: validate what information are OK to show
         //const priceAndPercentage = await getHistoricalTokensChartPrices(firstToken.packageHash, secondToken.packageHash)
         const priceAndPercentage = await getPercentChangeByTokens(firstToken.packageHash, secondToken.packageHash)
-        const chartData = await getTokensChartData(firstToken.packageHash, secondToken.packageHash)
+        // TODO: enable this when the look and feel are ready
+        // const chartData = await getTokensChartData(firstToken.packageHash, secondToken.packageHash)
+        const chartData = [[], []]
 
         if(showChart0) {
             setChartData(chartData[0])
