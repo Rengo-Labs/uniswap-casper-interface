@@ -108,7 +108,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         if (value > 0 && removeLiquidityButtonDisabled) {
           setRemoveLiquidityButtonDisabled(false)
         }
-        
+
         setRemoveLiquidityInput(value)
         handleRemoveCalculation(value)
     }
@@ -451,7 +451,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                 <LiquidityDetail
                   firstSymbol={firstTokenSelected.symbolPair}
                   secondSymbol={secondTokenSelected.symbolPair}
-                  maxAmount={`${amountSwapTokenB}`}
+                  baseAmount={amountSwapTokenA}
+                  minAmount={`${amountSwapTokenB}`}
                   firstTotalLiquidity={currentFReserve}
                   secondTotalLiquidity={currentSReserve}
                   totalSupply={totalSupply}
