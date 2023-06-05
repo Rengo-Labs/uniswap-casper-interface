@@ -25,9 +25,9 @@ export const pairList: PairState = {
     totalLiquidityUSD: '0',
     decimals: 9,
   },
-  "WBTC-WCSPR": {
+  "WCSPR-dBTC": {
     checked: false,
-    name: "WBTC-WCSPR",
+    name: "WCSPR-dBTC",
     orderedName: '',
     contractHash: "hash-8673e6d82c49f7efcfd115f93294f29eec6f3d8f7a0addff7c74c8de7fec03c6",
     packageHash: "hash-f1a1129bddc5bc7cd32bda36bfe91b02aa31973b6a9b47f4c4809ddd0612b271",
@@ -38,7 +38,7 @@ export const pairList: PairState = {
     balance: '0',
     allowance: '0',
     token0Symbol: 'WCSPR',
-    token1Symbol: 'WBTC',
+    token1Symbol: 'dBTC',
     liquidity: '0',
     volume7d: '0',
     volume1d: '0',
