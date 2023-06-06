@@ -6,7 +6,6 @@ import wethIcon from "../assets/swapIcons/wethIcon.svg";
 import wcsprIcon from "../assets/swapIcons/wrappedCasperIcon.png";
 import usdtIcon from "../assets/swapIcons/tether.png";
 import usdcIcon from "../assets/swapIcons/usdc.png";
-import dwbtc from "../assets/swapIcons/dwbtc.png";
 
 export const tokenList: Record<string, Token> = {
   CSPR: {
@@ -62,7 +61,7 @@ export const tokenList: Record<string, Token> = {
       "hash-3e46fdbcd0e5882ef2130456195f1658f02789b4b69a8e8e1dde773c2565555a",
     packageHash:
       "hash-c44d2505862832d8043fbe32f068b92895f84b2e479f8a29954a94fce6835360",
-    logoURI: dwbtc,
+    logoURI: wbtcIcon,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00"
@@ -70,46 +69,46 @@ export const tokenList: Record<string, Token> = {
   dUSDC: {
     name: "USD Coin",
     chainId: 1,
-    symbol: "USDC",
+    symbol: "dUSDC",
     symbolPair: "dUSDC",
     decimals: 9,
     contractHash:
       "hash-48bd364532febf044cca8d2d716336b93d27458ce0aa48ad292ca28304fa8649",
     packageHash:
       "hash-354f65e7c195e246c6f1171b8c0c036794593b3fd84c2442046519e1d4c15cc0",
-    logoURI: dwbtc,
+    logoURI: usdcIcon,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00"
   },
-  USDT: {
+  dUSDT: {
     name: "USD Theter",
     chainId: 1,
-    symbol: "USDT",
-    symbolPair: "USDT",
+    symbol: "dUSDT",
+    symbolPair: "dUSDT",
     decimals: 9,
     contractHash:
       "hash-b53fa728c7074c84f35407f4d0989eb4133d391402b7ce13b7feeb01479a4f01",
     packageHash:
       "hash-6a39adb3af054cbd3055e07213ec55343d8e785ac8a43b9717fb21da55dc1f40",
-    logoURI: dwbtc,
+    logoURI: usdtIcon,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00"
   },
-  WETH: {
-    name: "Ethereum",
+  dETH: {
+    name: "Wrapped Ethereum",
     chainId: 1,
-    symbol: "WETH",
-    symbolPair: "WETH",
+    symbol: "dETH",
+    symbolPair: "dETH",
     decimals: 9,
     contractHash:
       "hash-012f8f3689ddf5c7a92ddeb54a311afb660051bb5fab3568dbb3d796809be8c6",
     packageHash:
       "hash-afc752ad814c4e05cafb25fb676fd74b65f1a340c5b5f0055814d3dd5115280a",
-    logoURI: dwbtc,
+    logoURI: wethIcon,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00"
-  },
+  }
 }

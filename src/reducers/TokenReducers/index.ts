@@ -20,7 +20,7 @@ Object.values(RAW_TOKENS).map((t) => {
 export const initialTokenState: TokenState = {
   tokens: TOKENS,
   firstTokenSelected: 'CSPR',
-  secondTokenSelected: 'WETH',
+  secondTokenSelected: 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? 'WETH' : 'dETH',
 };
 
 export enum TokenActions {
