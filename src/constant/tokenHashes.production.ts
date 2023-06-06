@@ -82,7 +82,7 @@ export const tokenList: Record<string, Token> = {
     priceUSD: "0.00"
   },
   dUSDT: {
-    name: "USD Theter",
+    name: "USD Tether",
     chainId: 1,
     symbol: "dUSDT",
     symbolPair: "dUSDT",
