@@ -7,6 +7,7 @@ export const Container = styled.div<{ selectedTheme: string }>`
 `;
 
 export const ChildrenContainer = styled.div<{ menuHeight: number, isMobile: boolean }>`
+  position: relative;
   margin-top: ${({menuHeight}) => `${menuHeight}px`};
   margin-left: ${({isMobile}) => isMobile ? '16.5px' : '70px'};
   margin-right: ${({isMobile}) => isMobile ? '16.5px' : '70px'};
