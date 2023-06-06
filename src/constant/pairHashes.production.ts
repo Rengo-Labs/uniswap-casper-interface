@@ -49,9 +49,9 @@ export const pairList: PairState = {
     totalLiquidityUSD: '0',
     decimals: 9,
   },
-  "WETH-WCSPR": {
+  "WCSPR-dETH": {
     checked: false,
-    name: "WETH-WCSPR",
+    name: "WCSPR-dETH",
     contractHash: "hash-5e9b3912a3319ba0e27d8b56cea5561187c48de3592aa04060340d5786a0d084",
     packageHash: "hash-0dbaa8191435acc26a954d0db344d49daa6fa5a003d5df9883fd3c6ef08b64b5",
     reserve0: '0',
@@ -61,7 +61,7 @@ export const pairList: PairState = {
     balance: '0',
     allowance: '0',
     token0Symbol: 'WCSPR',
-    token1Symbol: 'WETH',
+    token1Symbol: 'dETH',
     liquidity: '0',
     volume7d: '0',
     volume1d: '0',
@@ -72,9 +72,9 @@ export const pairList: PairState = {
     totalLiquidityUSD: '0',
     decimals: 9,
   },
-  "USDT-WCSPR": {
+  "WCSPR-dUSDT": {
     checked: false,
-    name: "USDT-WCSPR",
+    name: "WCSPR-dUSDT",
     orderedName: '',
     contractHash: "hash-2c62b3d3324d405f43c7db314c9cbcb6e9deaea0bd564db479dca0ee5ec0c35c",
     packageHash: "hash-064813e59d92293abd463c32c6dd8265c285b32c3cff73a71e1115aee6f2d8cf",
@@ -85,7 +85,7 @@ export const pairList: PairState = {
     balance: '0',
     allowance: '0',
     token0Symbol: 'WCSPR',
-    token1Symbol: 'USDT',
+    token1Symbol: 'dUSDT',
     liquidity: '0',
     volume7d: '0',
     volume1d: '0',
@@ -96,9 +96,9 @@ export const pairList: PairState = {
     totalLiquidityUSD: '0',
     decimals: 9,
   },
-  "USDC-WCSPR": {
+  "WCSPR-dUSDC": {
     checked: false,
-    name: "USDC-WCSPR",
+    name: "WCSPR-dUSDC",
     orderedName: '',
     contractHash: "hash-d24e150230084d0b522df024d0318472f4a031e59a681f698eb8a541228a4173",
     packageHash: "hash-ab3f2f5cc95296df75da6061d67fb8afca23ab8daf7f4e96bd78f11f520c520b",
@@ -109,7 +109,7 @@ export const pairList: PairState = {
     balance: '0',
     allowance: '0',
     token0Symbol: 'WCSPR',
-    token1Symbol: 'USDC',
+    token1Symbol: 'dUSDC',
     liquidity: '0',
     volume7d: '0',
     volume1d: '0',
@@ -120,9 +120,9 @@ export const pairList: PairState = {
     totalLiquidityUSD: '0',
     decimals: 9,
   },
-  "USDT-USDC": {
+  "dUSDC-dUSDT": {
     checked: false,
-    name: "USDT-USDC",
+    name: "dUSDC-dUSDT",
     orderedName: '',
     contractHash: "hash-83d0c459bd0516bb26431bd22e3529bcdbcc5f313f5ce0a3323da0e2cad014ca",
     packageHash: "hash-c2ebc30ec4db984028e2c3ba5317b32a2b862bbaf57708e91fa3958d35bd808b",
@@ -132,8 +132,8 @@ export const pairList: PairState = {
     totalReserve1: '0',
     balance: '0',
     allowance: '0',
-    token0Symbol: 'USDC',
-    token1Symbol: 'USDT',
+    token0Symbol: 'dUSDC',
+    token1Symbol: 'dUSDT',
     liquidity: '0',
     volume7d: '0',
     volume1d: '0',
@@ -143,5 +143,5 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
-  },
+  }
 }
