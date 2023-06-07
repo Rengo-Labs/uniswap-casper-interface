@@ -1,6 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Token} from '../../../commons';
 import isCSPRValid from '../../../hooks/isCSPRValid';
+import * as secondValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
 import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
@@ -95,11 +96,10 @@ const LiquiditySwapper = ({
 
   const {
     disableButton: disableButtonValid,
-    setDisableButton,
     handleValidate,
-    showNotification,
-    dismissNotification,
-  } = isCSPRValid();
+  } = isCSPRValid()
+
+  const secondValidator = secondValid.default()
 
   const tokenListFromFilter = useMemo(() => {
     const symbol = !openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol;
@@ -189,7 +189,7 @@ const LiquiditySwapper = ({
     await updateDetail(firstTokenSelected, secondTokenSelected)
   }
 
-  async function changeTokenA(value: string) {
+  async function changeTokenA(value: string, firstValidation = false) {
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
@@ -211,22 +211,24 @@ const LiquiditySwapper = ({
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
     amountSwapTokenBSetter(tokensToTransfer);
-    handleValidate(
-      parseFloat(tokensToTransfer),
-      parseFloat(secondTokenSelected.amount),
-      gasPriceSelectedForLiquidity || 0,
-      secondTokenSelected.symbol
-    )
+    if (! firstValidation) {
+      handleValidate(
+        parseFloat(tokensToTransfer),
+        parseFloat(secondTokenSelected.amount),
+        gasPriceSelectedForLiquidity || 0,
+        secondTokenSelected.symbol
+      )
+    }
   }
 
   const handleChangeA = (value) => {
     setCurrentValue(value)
-    handleValidate(
+    const firstValidation = handleValidate(
       parseFloat(value),
       parseFloat(firstTokenSelected.amount),
       gasPriceSelectedForLiquidity || 0
     )
-    changeTokenA(value);
+    changeTokenA(value, firstValidation);
   };
 
   const setUSDByTokens = (rateA, rateB, value) => {
@@ -239,7 +241,7 @@ const LiquiditySwapper = ({
     }
   }
 
-  async function changeTokenB(value: string) {
+  async function changeTokenB(value: string, secondValidation = false) {
     let filteredValue = parseFloat(value);
     if (isNaN(filteredValue)) {
       filteredValue = 0;
@@ -260,27 +262,24 @@ const LiquiditySwapper = ({
     calculateUSDValues(filteredValue, tokensToTransfer, true)
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
-    handleValidate(
-      parseFloat(tokensToTransfer),
-      parseFloat(firstTokenSelected.amount),
-      gasPriceSelectedForLiquidity || 0,
-      firstTokenSelected.symbol
-    )
+    if (!secondValidation) {
+      handleValidate(
+        parseFloat(tokensToTransfer),
+        parseFloat(firstTokenSelected.amount),
+        gasPriceSelectedForLiquidity || 0,
+        firstTokenSelected.symbol
+      )
+    }
   }
 
   const handleChangeB = async (value) => {
-    changeTokenB(value);
-    const {tokensToTransfer} = await updateDetail(
-      firstTokenSelected,
-      secondTokenSelected,
+    const secondValidation = handleValidate(
       parseFloat(value),
-      secondTokenSelected
-    );
-    handleValidate(
-      parseFloat(tokensToTransfer),
-      parseFloat(firstTokenSelected.amount),
-      gasPriceSelectedForLiquidity || 0
-    );
+      parseFloat(secondTokenSelected.amount),
+      gasPriceSelectedForLiquidity || 0,
+      secondTokenSelected.symbol
+    )
+    changeTokenB(value, secondValidation);
   };
 
   const selectAndCloseToken = async (token: Token) => {
@@ -491,7 +490,7 @@ const LiquiditySwapper = ({
       {openPoolDialog.open && (
         <CreatePoolDialog
           closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-          tokenListData={sortedTokenListData}
+          tokenListData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
           popularTokensData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
           onSelectToken={(name) => {
             selectAndCloseToken(tokenState.tokens[name])
