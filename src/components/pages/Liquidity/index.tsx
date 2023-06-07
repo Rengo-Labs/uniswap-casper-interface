@@ -1,15 +1,14 @@
-import React from 'react'
-import NewLayout from '../../../layout/NewLayout'
-import LiquidityNewModule from '../../organisms/LiquidityModule'
-import { LiquidityNewContainerCC } from '../../atoms'
+import React from 'react';
+import Layout from "../../../layout";
+import {LiquidityTemplate} from "../../templates";
+import {useDeviceType} from "rengo-ui-kit";
+export const Liquidity = () => {
+    const deviceType = useDeviceType()
+    const isMobile = deviceType === 'mobile'
 
-export const NewLiquidity = () => {
-  return (
-    <NewLayout>
-      <LiquidityNewContainerCC>
-        <LiquidityNewModule />
-      </LiquidityNewContainerCC>
-    </NewLayout>
-  )
+    return (
+        <Layout>
+            <LiquidityTemplate isMobile={isMobile}/>
+        </Layout>
+    );
 }
-

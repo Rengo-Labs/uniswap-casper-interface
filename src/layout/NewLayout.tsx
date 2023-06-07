@@ -25,21 +25,22 @@ import {
   NewNavigationCC,
   CasperIcons,
   ContainerMobile,
-} from '../components/atoms';
+} from '../components/old/atoms';
 import { useNavigate } from 'react-router-dom';
 import { ConfigProviderContext } from '../contexts/ConfigContext';
 import { WalletName } from '../commons';
 import {
   SettingMenu,
   MobileMenu,
-} from '../components/molecules';
+} from '../components/old/molecules';
 import {
   CommunityMenu,
   MenuOption,
-} from '../components/molecules/CommunityMenu';
-import { INotification } from '../components/molecules/NotificationList';
-import isMobileScreen from '../hooks/isMobileScreen';
+} from '../components/old/molecules/CommunityMenu';
+import { INotification } from '../components/old/molecules/NotificationList';
+import screens from '../hooks/isMobileScreen';
 import { MenuMobileOptions } from '../constant';
+import {WalletProviderContext} from "../contexts/WalletContext";
 
 const size = 20;
 
@@ -107,7 +108,7 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [notifications, setNotifications] =
     useState<INotification[]>(notificationList);
-  const isMobile = isMobileScreen();
+  const isMobile = screens.isMobileScreen();
 
   const IconMenusMobile = [
     { icon: SwapIcon, text: 'Swap', path: '/swap' },
@@ -121,7 +122,7 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
     {
       icon: CommunityIcon,
       text: MenuMobileOptions.Community,
-      component: 
+      component:
         <CommunityMenu communityOptions={settingMenuOptions} />
     },
     //{ icon: CasperIcon, text: "CasperSwap", component: null},
@@ -136,17 +137,17 @@ const NewLayout = ({ children, title = '' }: NewLayoutProps) => {
     {
       icon: CommunityIcon,
       text: MenuMobileOptions.Community,
-      component: 
+      component:
         <CommunityMenu communityOptions={settingMenuOptions} />
     },
     //{ icon: CasperIcon, text: "CasperSwap", component: null},
   ];
 
-  const { onConnectWallet, onDisconnectWallet, configState } = useContext(
-    ConfigProviderContext
+  const { onConnectWallet, onDisconnectWallet, walletState } = useContext(
+    WalletProviderContext
   );
 
-  const { isConnected, walletAddress } = configState;
+  const { isConnected, walletAddress } = walletState;
 
   function onConnect(name: WalletName) {
     onConnectWallet(name);

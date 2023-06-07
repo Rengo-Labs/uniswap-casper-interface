@@ -7,7 +7,7 @@ import {
   SwapDetails,
   Token,
 } from '../../commons';
-import { DEADLINE, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
+import {DEADLINE, NotificationType, PLATFORM_GAS_FEE, SUPPORTED_NETWORKS} from '../../constant';
 import {
   apiClient,
   casperClient,
@@ -16,6 +16,9 @@ import {
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
 import {ERROR_BLOCKCHAIN} from "../../constant/errors";
+import {TokensProviderContext} from "../TokensContext";
+import {WalletProviderContext} from "../WalletContext";
+import {StateHashProviderContext} from "../StateHashContext";
 
 export interface SwapContext {
   onConfirmSwapConfig: (
@@ -31,8 +34,7 @@ export interface SwapContext {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage: number,
-    fee: number
+    fee?: number
   ) => Promise<SwapDetails>;
 }
 
@@ -40,14 +42,14 @@ export const SwapProviderContext = createContext<SwapContext>({} as any);
 
 export const SwapContext = ({ children }: { children: ReactNode }) => {
   const {
-    firstTokenSelected,
-    secondTokenSelected,
-    refreshAll,
-    configState,
     setConfirmModal,
     setLinkExplorer,
     setProgressModal,
   } = useContext(ConfigProviderContext);
+
+  const {refresh} = useContext(StateHashProviderContext)
+  const {walletState} = useContext(WalletProviderContext)
+  const {firstTokenSelected, secondTokenSelected} = useContext(TokensProviderContext)
   const { updateNotification } = notificationStore();
 
   async function onConfirmSwapConfig(
@@ -57,52 +59,71 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     gasFee: number
   ): Promise<boolean> {
     updateNotification({
-      type: NotificationType.Loading,
-      title: 'Swapping.',
-      subtitle: '',
+      type: NotificationType.Info,
+      title: 'Processing...',
+      subtitle: 'Checking the progress of your deploy',
       show: true,
-      chargerBar: false
+      isOnlyNotification: true,
+      closeManually: true
     });
     try {
+      console.log("Tokens to swap", amountA.toString(), amountB.toString())
       const [deployHash, deployResult] = await signAndDeploySwap(
         apiClient,
         casperClient,
-        configState.wallet,
+        walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(amountA, firstTokenSelected.decimals),
+        convertUIStringToBigNumber(amountB, secondTokenSelected.decimals),
         firstTokenSelected,
         secondTokenSelected,
         slippage / 100,
-        configState.mainPurse,
+        walletState.mainPurse,
         gasFee
       );
 
       setProgressModal(true);
-      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
+
+      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
+      setLinkExplorer(deployUrl);
+
+      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
+      updateNotification({
+        type: NotificationType.Info,
+        title: 'Processing...',
+        subtitle: notificationMessage,
+        show: true,
+        isOnlyNotification: true,
+        closeManually: true
+      });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
 
+      if (result) {
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'Processed...',
+          subtitle: 'Your deploy was successful',
+          show: true,
+          isOnlyNotification: true,
+          timeToClose: 5000
+        });
+      }
+
       setProgressModal(false);
       setConfirmModal(true);
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Success.',
-        subtitle: '',
-        show: true,
-        chargerBar: true
-      });
-      await refreshAll();
+
+      await refresh();
       return true;
     } catch (err) {
       setProgressModal(false);
-      console.log('onConfirmSwapConfig');
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        chargerBar: true
+        timeToClose: 5000,
+        isOnlyNotification: true
       });
       return false;
     }
@@ -128,19 +149,16 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage = 0.005,
-    fee = 0.003
+    fee = PLATFORM_GAS_FEE
   ): Promise<SwapDetails> {
     return calculateSwapDetails(
-      apiClient,
       tokenA,
       tokenB,
       reserve0,
       reserve1,
       inputValue,
       token,
-      slippage,
-      fee
+      fee,
     );
   }
 

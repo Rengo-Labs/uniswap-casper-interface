@@ -1,39 +1,23 @@
 import axios from 'axios'
-
-import { 
+import {
   CasperServiceByJsonRPC,
   CLByteArray,
   Contracts,
 } from 'casper-js-sdk'
-
-import { 
-  AllowanceAgainstOwnerAndSpenderResponse,
-  DeployWasmDataResponse,
-  TokenList,
+import {
   PathResponse,
-  PathReservesResponse,
-  LiquidityAgainstUserAndPairResponse,
-  BalanceAgainstUserResponse,
-  PairListResponse,
-  PairAgainstUserResponse,
 } from './types'
-
 import {
   Client as CasperClient,
 } from '../wallet'
-
 import { NODE_ADDRESS } from '../../constant'
-
 import { ROUTER_PACKAGE_HASH } from '../../constant';
 import {Wallet} from "../wallet";
-
 import { getPath } from '../calculations'
 import { initialTokenState } from '../../reducers/TokenReducers'
-
 import { ERC20Client } from 'casper-erc20-js-client'
-
 const { Contract } = Contracts
-
+import {globalStore} from "../../store/store";
 export const enum ERC20Keys {
   TOTAL_SUPPLY = 'total_supply',
 }
@@ -45,12 +29,12 @@ export const enum ERC20Dictionaries {
 
 export const enum PairKeys {
   RESERVE0 = 'reserve0',
-  RESERVE1 = 'reserve1',  
+  RESERVE1 = 'reserve1',
   LIQUIDITY = 'liquidity',
 }
 
 export interface PairDataResponse {
-  reserve0: string 
+  reserve0: string
   reserve1: string
   totalSupply: string
 }
@@ -83,7 +67,7 @@ export class APIClient {
 
     const path = getPath(token0, token1).map(x => initialTokenState.tokens[x.id].packageHash)
 
-    console.log('path', path)
+    //console.log('path', path)
 
     return {
       message: '',
@@ -103,24 +87,24 @@ export class APIClient {
       responseType: 'arraybuffer',
     });
 
-    console.log('getDeployWasmData', response.data)
+    //console.log('getDeployWasmData', response.data)
 
     return response.data
-  }  
+  }
 
   /**
    * Get the user's balances
-   * 
+   *
    * @param wallet user wallet
    * @param contractHash contract hash
    * @param dictionaryKey dictionary's key
    * @param itemKey item's key in dictionary
    * @param stateRootHash optional state root hash
-   * 
+   *
    * @returns the dictionary item
    */
    async getDictionaryItem(contractHash: string, dictionaryKey: string, itemKey: string, stateRootHash?: string): Promise<string> {
-    
+
 
     // set up the contract client
     const contractClient = new Contract(this._client.casperClient)
@@ -131,7 +115,7 @@ export class APIClient {
     if (!srh) {
       srh = await this._client.getStateRootHash()
     }
-    
+
     try {
       const result = await contractClient.queryContractDictionary(
         dictionaryKey,
@@ -141,7 +125,7 @@ export class APIClient {
 
       return result.toString()
     } catch (e) {
-      console.log(contractHash, dictionaryKey, itemKey, srh)
+      //console.log(contractHash, dictionaryKey, itemKey, srh)
       console.log('get erc20 get dictionary error', e)
       throw e
     }
@@ -149,11 +133,11 @@ export class APIClient {
 
   /**
    * Get the user's balances
-   * 
+   *
    * @param wallet user wallet
    * @param contract hash contract hash
    * @param stateRootHash optional state root hash
-   * 
+   *
    * @returns the balance as a string
    */
   async getERC20Balance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
@@ -169,11 +153,11 @@ export class APIClient {
 
   /**
    * Get the user's allowance
-   * 
+   *
    * @param wallet user wallet
    * @param contract hash contract hash
    * @param stateRootHash optional state root hash
-   * 
+   *
    * @returns the allowance as a string
    */
   async getERC20Allowance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
@@ -194,23 +178,25 @@ export class APIClient {
 
   /**
    * Get the pair data
-   * 
+   *
    * @param wallet user wallet
    * @param contract hash contract hash
    * @param stateRootHash optional state root hash
-   * 
+   *
    * @returns the a PairDataResponse
    */
    async getPairData(contractHash: string, stateRootHash?: string): Promise<PairDataResponse> {
+     // TODO: check if the node url global store is set
+    const nodeUrl = globalStore.getState().nodeUrl;
     // set up the service
-    const casperService = new CasperServiceByJsonRPC(NODE_ADDRESS)
-    
+    const casperService = new CasperServiceByJsonRPC(nodeUrl || NODE_ADDRESS)
+
     let srh = stateRootHash ?? ''
 
     if (!srh) {
       srh = await this._client.getStateRootHash()
     }
-    
+
     try {
       const [reserve0, reserve1, totalSupply]: any[] = await Promise.all([
         casperService.getBlockState(
@@ -236,7 +222,7 @@ export class APIClient {
         totalSupply: totalSupply?.CLValue?.isCLValue ? totalSupply?.CLValue?.value().toString() : '0'
       }
     } catch (e) {
-      console.log('get pair data error', e)
+      //console.log('get pair data error', e)
 
       return {
         reserve0: '0',
@@ -248,24 +234,24 @@ export class APIClient {
 
   /**
    * Get the user's pair data
-   * 
+   *
    * @param wallet user wallet
    * @param contract hash contract hash
    * @param stateRootHash optional state root hash
-   * 
+   *
    * @returns the a PairUserDataResponse
    */
-   async getPairUserData(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<PairUserDataResponse> {   
+   async getPairUserData(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<PairUserDataResponse> {
     let srh = stateRootHash ?? ''
 
     if (!srh) {
       srh = await this._client.getStateRootHash()
     }
-    
+
     try {
       const [allowance, balance]: any[] = await Promise.all([
-        this.getERC20Allowance(wallet, contractHash, srh).catch(e => '0'),  
-        this.getERC20Balance(wallet, contractHash, srh),      
+        this.getERC20Allowance(wallet, contractHash, srh).catch(e => '0'),
+        this.getERC20Balance(wallet, contractHash, srh),
       ])
 
       return {
@@ -273,7 +259,7 @@ export class APIClient {
         balance,
       }
     } catch (e) {
-      console.log('get pair user data error', e)
+      //console.log('get pair user data error', e)
 
       return {
         allowance: '0',

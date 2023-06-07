@@ -29,6 +29,7 @@ export interface Token {
   packageHash: string
   symbol: string
   priceUSD?: string,
+  optApproval?: string
 }
 
 /**

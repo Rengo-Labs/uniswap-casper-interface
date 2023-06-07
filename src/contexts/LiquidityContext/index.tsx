@@ -2,7 +2,6 @@ import React, {
   createContext,
   ReactNode,
   useContext,
-  useReducer,
   useState,
 } from 'react';
 import {
@@ -23,22 +22,28 @@ import {
 import BigNumber from 'bignumber.js';
 import { notificationStore } from '../../store/store';
 import {ERROR_BLOCKCHAIN} from "../../constant/errors";
+import {TokensProviderContext} from "../TokensContext";
+import {StateHashProviderContext} from "../StateHashContext";
+import {WalletProviderContext} from "../WalletContext";
 
 export interface LiquidityContext {
   onAddLiquidity: (
     amountA: number | string,
     amountB: number | string,
     slippage: number,
-    gasFee: number
+    gasFee: number,
+    pairHash: string
   ) => Promise<boolean>;
   onRemoveLiquidity: (
     liquidity: number | string,
+    liquidityDecimals: number,
     tokenA: Token,
     tokenB: Token,
     amountA: number | string,
     amountB: number | string,
     slippage: number,
     gasFee: number,
+    refundCSPR: boolean
   ) => Promise<boolean>;
   getLiquidityDetails: (
     tokenA: Token,
@@ -47,8 +52,8 @@ export interface LiquidityContext {
     reserve1: BigNumber.Value,
     inputValue: BigNumber.Value,
     token: Token,
-    slippage: number,
-    fee: number
+    slippage?: number,
+    fee?: number
   ) => Promise<LiquidityDetails>;
   isRemovingPopupOpen?: boolean;
   setRemovingPopup?: any;
@@ -60,14 +65,14 @@ export const LiquidityProviderContext = createContext<LiquidityContext>(
 
 export const LiquidityContext = ({ children }: { children: ReactNode }) => {
   const {
-    firstTokenSelected,
-    secondTokenSelected,
-    refreshAll,
-    configState,
     setConfirmModal,
     setLinkExplorer,
     setProgressModal,
   } = useContext(ConfigProviderContext);
+
+  const {walletState} = useContext(WalletProviderContext)
+  const {refresh} = useContext(StateHashProviderContext)
+  const {firstTokenSelected, secondTokenSelected} = useContext(TokensProviderContext)
 
   const [isRemovingPopupOpen, setRemovingPopup] = useState(false);
   const { updateNotification, dismissNotification } = notificationStore();
@@ -76,57 +81,78 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     amountA: number | string,
     amountB: number | string,
     slippage: number,
-    gasFee: number
+    gasFee: number,
+    pairHash: string
   ): Promise<boolean> {
     updateNotification({
-      type: NotificationType.Loading,
-      title: 'Adding liquidity.',
+      type: NotificationType.Info,
+      title: 'Processing...',
       subtitle: '',
       show: true,
-      chargerBar: false,
+      isOnlyNotification: true,
+      timeToClose: 5000,
+      closeManually: true
     });
     try {
       const [deployHash, deployResult] = await signAndDeployAddLiquidity(
         apiClient,
         casperClient,
-        configState.wallet,
+        walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(amountA, firstTokenSelected.decimals),
+        convertUIStringToBigNumber(amountB, secondTokenSelected.decimals),
         firstTokenSelected,
         secondTokenSelected,
         slippage / 100,
-        configState.mainPurse,
-        gasFee
+        walletState.mainPurse,
+        gasFee,
+        pairHash
       );
 
       setProgressModal(true);
-      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
+      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
+      setLinkExplorer(deployUrl);
+
+
+      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
+      updateNotification({
+        type: NotificationType.Info,
+        title: 'Processing...',
+        subtitle: notificationMessage,
+        show: true,
+        isOnlyNotification: true,
+        closeManually: true
+      });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
+      if (result) {
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'Processed...',
+          subtitle: 'Your deploy was successful',
+          show: true,
+          isOnlyNotification: true,
+          timeToClose: 5000,
+        });
+      }
+
+      await refresh();
       setProgressModal(false);
       setConfirmModal(true);
 
-      await refreshAll();
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Success.',
-        subtitle: '',
-        show: true,
-        chargerBar: true,
-      });
+      await refresh();
       return true;
     } catch (err) {
       setProgressModal(false);
       dismissNotification();
-      await refreshAll();
-      console.log('onAddLiquidity');
+      await refresh();
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        chargerBar: true,
+        isOnlyNotification: true,
+        timeToClose: 5000,
       });
       return false;
     }
@@ -134,65 +160,86 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
 
   async function onRemoveLiquidity(
     liquidity: number | string,
+    liquidityDecimals: number,
     tokenA: Token,
     tokenB: Token,
     amountA: number | string,
     amountB: number | string,
     slippage: number,
     gasFee: number,
+    refundCSPR: boolean
   ): Promise<boolean> {
     updateNotification({
-      type: NotificationType.Loading,
+      type: NotificationType.Info,
       title: 'Removing liquidity',
       subtitle: '',
       show: true,
-      chargerBar: false,
+      isOnlyNotification: true,
+      closeManually: true
     });
 
     try {
       const [deployHash, deployResult] = await signAndDeployRemoveLiquidity(
         apiClient,
         casperClient,
-        configState.wallet,
+        walletState.wallet,
         DEADLINE,
-        convertUIStringToBigNumber(liquidity),
-        convertUIStringToBigNumber(amountA),
-        convertUIStringToBigNumber(amountB),
+        convertUIStringToBigNumber(liquidity, liquidityDecimals),
+        convertUIStringToBigNumber(amountA, tokenA.decimals),
+        convertUIStringToBigNumber(amountB, tokenB.decimals),
         tokenA,
         tokenB,
         slippage / 100,
-        configState.mainPurse,
+        walletState.mainPurse,
         gasFee,
+        refundCSPR
       );
 
+      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);
-      setLinkExplorer(SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`);
+      setLinkExplorer(deployUrl);
+
+      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
+      updateNotification({
+        type: NotificationType.Info,
+        title: 'Processing...',
+        subtitle: notificationMessage,
+        show: true,
+        isOnlyNotification: true,
+        closeManually: true,
+      });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
+
+      if (result) {
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'Liquidity correctly removed.',
+          subtitle: '',
+          show: true,
+          isOnlyNotification: true,
+          timeToClose: 5000
+        });
+      }
+
       setProgressModal(false);
       setConfirmModal(true);
 
       await sleep(15000);
-      await refreshAll();
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Success.',
-        subtitle: '',
-        show: true,
-        chargerBar: true,
-      });
+      await refresh();
+
       return true;
     } catch (err) {
       setProgressModal(false);
-      dismissNotification();
-      await refreshAll();
-      console.log('onRemoveLiquidity');
+      //dismissNotification();
+      await refresh();
       updateNotification({
         type: NotificationType.Error,
         title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
         subtitle: '',
         show: true,
-        chargerBar: true,
+        isOnlyNotification: true,
+        timeToClose: 5000
       });
       return false
     }

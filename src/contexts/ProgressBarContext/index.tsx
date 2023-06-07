@@ -1,6 +1,6 @@
 import React, {createContext, ReactNode, useContext, useEffect, useReducer, useState} from 'react'
 
-import {Timer} from "../../components/atoms/UpdatableCircle/timer"
+import {Timer} from "../../components/old/atoms/UpdatableCircle/timer"
 
 export interface ProgressBarContext {
   progressBar: (callback: any, seconds?: number) => any,
@@ -18,7 +18,7 @@ interface HandlerPointer {
 
 const handler: HandlerPointer = {
   handler: undefined
-} 
+}
 
 export const ProgressBarProviderContext = createContext<ProgressBarContext>({} as any)
 

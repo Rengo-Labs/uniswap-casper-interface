@@ -12,6 +12,7 @@ module.exports = function override(config) {
     os: require.resolve("os-browserify"),
     path: require.resolve("path-browserify"),
     url: require.resolve("url"),
+    zlib: require.resolve('browserify-zlib'),
     fs: false,
   });
   config.module.rules.unshift({

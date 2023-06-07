@@ -1,10 +1,24 @@
 import '@testing-library/jest-dom'
 
 import {render, fireEvent} from '@testing-library/react'
-import {CollapsingBox} from "../../../../components/molecules/CollapsingBox";
-import {jest} from "@jest/globals";
+import {jest} from "@jest/globals"
+jest.mock('../../../../store/store', () => {
+    return {
+        notificationStore: () => {
+            return {
+                updateNotification: () => {
+
+                },
+                dismissNotification: () => {
+
+                }
+            }
+        }
+    }
+})
 jest.mock('axios', () => {})
 jest.mock('@toruslabs/casper-embed', () => {})
+import {CollapsingBox} from "../../../../components/old/molecules/CollapsingBox";
 
 describe("Test for swap details", () => {
 
