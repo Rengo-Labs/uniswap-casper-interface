@@ -92,7 +92,6 @@ const LiquiditySwapper = ({
   const [currentValue, setCurrentValue] = useState<number>(0)
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const [tokenListData, setTokenListData] = useState<any[]>([]);
-  const menuHeight = document.querySelector('.menu-target-id').getBoundingClientRect().height
 
   const {
     disableButton: disableButtonValid,
@@ -499,7 +498,6 @@ const LiquiditySwapper = ({
           }}
           onSelectFavoriteToken={(name) => handlerFavoriteToken(name)}
           isOpen={openPoolDialog.open}
-          explicitMarginTop={menuHeight}
         />
       )}
     </div>

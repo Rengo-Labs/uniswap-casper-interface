@@ -79,7 +79,6 @@ const TokenSwapper = ({
       isCSPRValid();
   const [lastChanged, setLastChanged] = useState('A');
   const [tokenListData, setTokenListData] = useState<any[]>([]);
-  const menuHeight = document.querySelector('.menu-target-id').getBoundingClientRect().height
 
   const tokenListFromFilter = useMemo(() => {
     return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
@@ -380,7 +379,6 @@ const TokenSwapper = ({
                 }}
                 onSelectFavoriteToken={(name) => handlerFavoriteToken(name)}
                 isOpen={openPoolDialog.open}
-                explicitMarginTop={menuHeight}
             />
         )}
       </div>
