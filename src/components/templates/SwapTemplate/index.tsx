@@ -141,6 +141,15 @@ export const SwapTemplate = ({isMobile}) => {
         setValueBUSD('0')
     }
 
+    const setPriceImpact = (priceImpact = 0) => {
+        priceImpactSetter(priceImpact);
+        defaultPriceImpactLabelSetter(
+            parseFloat(priceImpact as any) > 1
+                ? 'Price Impact Warning'
+                : 'Low Price Impact'
+        );
+    }
+
     const onActionConfirm = async (amountA, amountB) => {
         setIsProcessingTransaction(true)
         const isValid = await onConfirmSwapConfig(
@@ -152,6 +161,7 @@ export const SwapTemplate = ({isMobile}) => {
 
         if (isValid) {
             resetTokenValues();
+            setPriceImpact();
         }
 
         await refresh();
@@ -169,13 +179,7 @@ export const SwapTemplate = ({isMobile}) => {
         const {tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath} =
             getSwapDetailResponse;
 
-        // TODO REVIEW DETAILS
-        priceImpactSetter(priceImpact);
-        defaultPriceImpactLabelSetter(
-            parseFloat(priceImpact as any) > 1
-                ? 'Price Impact Warning'
-                : 'Low Price Impact'
-        );
+        setPriceImpact(priceImpact);
 
         return {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact, routePath};
     }
