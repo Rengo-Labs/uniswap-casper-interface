@@ -128,11 +128,13 @@ const SwapNewModule = () => {
 
     const switchToken = async () => {
       lastChanged == 'A'
-        ? await changeTokenA(amountSwapTokenA)
-        : await changeTokenB(amountSwapTokenB);
-      await refreshAll();
-    });
-  }, [amountSwapTokenA, amountSwapTokenB, isConnected]);
+          ? await changeTokenA(amountSwapTokenB)
+          : await changeTokenB(amountSwapTokenA);
+    }
+
+    switchToken().catch((e) => console.log(e));
+
+  }, [firstTokenSelected]);
 
   async function onConnect() {
     await onConnectWallet();
