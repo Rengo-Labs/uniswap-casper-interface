@@ -32,6 +32,7 @@ export const NotificationSystem = () => {
                 type={notification.type}
                 isOnlyNotification={notification.isOnlyNotification}
                 autoCloseDelay={notification.timeToClose}
+                closeManually={notification.closeManually}
             />
         )}
       </>
