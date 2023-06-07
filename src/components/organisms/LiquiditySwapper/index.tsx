@@ -98,10 +98,13 @@ const LiquiditySwapper = ({
     handleValidate,
   } = isCSPRValid()
 
+  
+
   const tokenListFromFilter = useMemo(() => {
     const symbol = !openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol;
     return filterPopupTokens(symbol, pairState);
   }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector, pairState]);
+  
   
 
 
@@ -121,6 +124,8 @@ const LiquiditySwapper = ({
       return collator.compare(a.name, b.name);
     }
   });
+
+
 
   useEffect(() => {
     const fn = async () => {
@@ -487,7 +492,8 @@ const LiquiditySwapper = ({
       {openPoolDialog.open && (
         <CreatePoolDialog
           closeCallback={() => setOpenPoolDialog(prevState => ({...prevState, open: false}))}
-          tokenListData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
+          // tokenListData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
+          tokenListData={sortedTokenListData}
           popularTokensData={filterPopupTokens(!openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol, pairState)}
           onSelectToken={(name) => {
             selectAndCloseToken(tokenState.tokens[name])
