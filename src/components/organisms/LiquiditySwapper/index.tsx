@@ -1,7 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Token} from '../../../commons';
 import isCSPRValid from '../../../hooks/isCSPRValid';
-import * as secondValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
 import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
@@ -98,8 +97,6 @@ const LiquiditySwapper = ({
     disableButton: disableButtonValid,
     handleValidate,
   } = isCSPRValid()
-
-  const secondValidator = secondValid.default()
 
   const tokenListFromFilter = useMemo(() => {
     const symbol = !openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol;
