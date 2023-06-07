@@ -58,14 +58,6 @@ export const PopupsContainer = () => {
 
     const WALLET_CONNECTED_OPTIONS = [
         {
-            id: 'dmx0031b2b421',
-            key: 'account',
-            name: 'My Account',
-            iconName: 'Copy',
-            type: 'Redirect',
-            onClick: () => navigate('/account')
-        },
-        {
             id: '3d23f23xxx88nf',
             key: 'wallet',
             name: walletState.walletAddress,
