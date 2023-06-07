@@ -125,7 +125,10 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
                 timeToClose: 10,
                 isOnlyNotification: true
             })
-            throw new Error('path not found')
+            return {
+                reserve0: new BigNumber(0),
+                reserve1: new BigNumber(0),
+            }
         }
 
         let firstReserve0 = new BigNumber(1)

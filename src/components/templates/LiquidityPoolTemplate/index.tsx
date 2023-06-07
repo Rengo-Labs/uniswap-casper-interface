@@ -130,13 +130,13 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         token0Icon: item.token0Icon,
         token1Icon: item.token1Icon,
         yourLiquidity: convertToUSDCurrency(parseFloat(item.liquidityUSD)),
-        volume7d: convertToUSDCurrency(Number(item.volume7d)),
-        fees7d: convertToUSDCurrency(Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
+        volume7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(item.volume7d)),
+        fees7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
         balance: item.balance,
         isFavorite: getLocalStorageData("pool")?.includes(item.name),
-        assetsPoolToken0: `${item.reserve0} ${item.token0Symbol}`,
-        assetsPoolToken1: `${item.reserve1} ${item.token1Symbol}`,
-        yourShare: (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
+        assetsPoolToken0: `${isNaN(item.reserve0) ? 0 : item.reserve0} ${item.token0Symbol}`,
+        assetsPoolToken1: `${isNaN(item.reserve1) ? 0 : item.reserve1} ${item.token1Symbol}`,
+        yourShare: (isNaN(item.balanace) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
       }))
     );
     
@@ -308,7 +308,7 @@ const handleActionRemoval = async () => {
 
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
-    
+
     setPoolDetailRow({
       contractPackage: newRow.packageHash.slice(5),
       token0Icon: newRow.token0Icon,
@@ -317,15 +317,15 @@ const handleActionRemoval = async () => {
       token1Symbol: newRow.token1Symbol,
       yourLiquidityTokens: `${newRow.balance} ${newRow.orderedName}`,
       assetsPooled: {
-        asset0: `${newRow.reserve0} ${newRow.token0Symbol}`,
-        asset1: `${newRow.reserve1} ${newRow.token1Symbol}`,
+        asset0: `${isNaN(newRow.reserve0) ? 0 : newRow.reserve0} ${newRow.token0Symbol}`,
+        asset1: `${isNaN(newRow.reserve1) ? 0 : newRow.reserve1} ${newRow.token1Symbol}`,
       },
-      yourShare: (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(
+      yourShare: (isNaN(newRow.balance) || isNaN(newRow.totalSupply) || Number(newRow.totalSupply) == 0) ? '0.00' : (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(
         2
       ),
       yourLiquidity: convertToUSDCurrency(parseFloat(newRow.liquidityUSD)) ,
       volume7D: convertToUSDCurrency(newRow.volume7dUSD || 0),
-      fees7D: `${convertToUSDCurrency(new BigNumber(newRow.volume7d).times(0.003).toNumber())}`,
+      fees7D: `${convertToUSDCurrency(isNaN(newRow.volume7d) ? 0 : new BigNumber(newRow.volume7d).times(0.003).toNumber())}`,
       isFavorite: getLocalStorageData("pool")?.includes(name),
     });
     setShowPoolDetails(true);
