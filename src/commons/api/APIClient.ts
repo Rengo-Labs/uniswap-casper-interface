@@ -267,4 +267,17 @@ export class APIClient {
       }
     }
   }
+
+  /**
+   * Get the latest deploy wasm data
+   *
+   * @returns deploy wasm for special purse functions
+   */
+  async getWCSPRWasmData(): Promise<ArrayBuffer> {
+    const response = await axios.get(`/session-code-wcspr.wasm`, {
+      responseType: 'arraybuffer',
+    });
+
+    return response.data
+  }
 }

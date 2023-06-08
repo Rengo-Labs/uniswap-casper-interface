@@ -210,18 +210,6 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
             })
         }
 
-        if(tokensToExclude[0] === 'CSPR' && isFirstInput) {
-            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'CSPR')
-        } else if(tokensToExclude[0] === 'WCSPR' && isFirstInput) {
-            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'WCSPR')
-        } else if(tokensToExclude[1] === 'CSPR' && !isFirstInput) {
-            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'CSPR')
-        } else if(tokensToExclude[1] === 'WCSPR' && !isFirstInput) {
-            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'WCSPR')
-        } else if (tokensToExclude.includes('CSPR') || tokensToExclude.includes('WCSPR')) {
-            _filteredTokens = _filteredTokens.filter(token => token.symbol !== 'WCSPR' && token.symbol !== 'CSPR')
-        }
-
         return _filteredTokens.map((token) => {
             const {chainId, symbol, name, amount, logoURI}: any = token;
             return (
