@@ -57,7 +57,7 @@
     "web-vitals": "^3.1.1",
     "web3-core": "^1.8.1",
     "zustand": "^4.3.2",
-    "rengo-ui-kit": "https://github.com/Rengo-Labs/Rengo-UI-Kit.git#feat/lib-integration"
+    "rengo-ui-kit": "file:../../Desarrollo/Rengo-UI-Kit"
   },
   "browserslist": {
     "production": [

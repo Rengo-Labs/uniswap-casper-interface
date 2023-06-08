@@ -14,6 +14,7 @@ import {calculateMinimumTokenReceived} from '../../../contexts/PriceImpactContex
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {globalStore} from "../../../store/store";
 import {PLATFORM_GAS_FEE} from '../../../constant'
+import BigNumber from "bignumber.js";
 
 export const SwapTemplate = ({isMobile}) => {
     const {
@@ -39,8 +40,6 @@ export const SwapTemplate = ({isMobile}) => {
         tokenState,
         onSwitchTokens,
         filterPopupTokens,
-        getHistoricalTokensChartPrices,
-        getTokensChartData,
         getPercentChangeByTokens
     } = useContext(TokensProviderContext)
     // Details requirements
@@ -74,6 +73,8 @@ export const SwapTemplate = ({isMobile}) => {
         priceUSD: 0,
         percentage: 0,
     })
+
+    const [platformGas, setPlatformGas] = useState(PLATFORM_GAS_FEE)
 
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
@@ -175,12 +176,30 @@ export const SwapTemplate = ({isMobile}) => {
         token = firstTokenSelected,
         isSwitched = false
     ) {
+        if (validAndCalculateCSPRToWCSPR(tokenA, tokenB, isSwitched)) {
+            const pairPath = []
+            pairPath.push(tokenA.symbol)
+            pairPath.push(tokenB.symbol)
+
+            priceImpactSetter('0');
+            defaultPriceImpactLabelSetter(
+              parseFloat('0' as any) > 1
+                ? 'Price Impact Warning'
+                : 'Low Price Impact'
+            );
+
+            setPlatformGas(0)
+
+            return {tokensToTransfer: new BigNumber(value).toString(), priceImpact: '0', exchangeRateA: new BigNumber(1), exchangeRateB: new BigNumber(1), routePath: pairPath}
+        }
+
         const {getSwapDetailResponse} = await calculateSwapDetailResponse(tokenA, tokenB, value, token, isSwitched)
         const {tokensToTransfer, priceImpact, exchangeRateA, exchangeRateB, routePath} =
             getSwapDetailResponse;
 
         setPriceImpact(priceImpact);
 
+        setPlatformGas(PLATFORM_GAS_FEE)
         return {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact, routePath};
     }
 
@@ -248,6 +267,26 @@ export const SwapTemplate = ({isMobile}) => {
         }
     }
 
+    const validAndCalculateCSPRToWCSPR = (tokenA: Token, tokenB: Token, isSwitched): boolean => {
+        let isValid = false
+        if (tokenA.symbol === 'CSPR' && tokenB.symbol === 'WCSPR') {
+            isValid = true
+        } else if (tokenA.symbol === 'WCSPR' && tokenB.symbol === 'CSPR') {
+            isValid = true
+        }
+
+        if (isValid) {
+            updateSlippageTolerance(0)
+            setPairPath([tokenA.symbol, tokenB.symbol])
+        }
+        if (isSwitched) {
+            updateSlippageTolerance(0.5)
+            gasFeeSetter(isValid ? 9 : adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol, 0))
+        }
+
+        return isValid
+    }
+
     return (
         <>
             <DoubleColumn isMobile={isMobile} title="Swap">
@@ -255,7 +294,7 @@ export const SwapTemplate = ({isMobile}) => {
                     firstTokenImg={firstTokenSelected.logoURI || ''}
                     secondTokenImg={secondTokenSelected.logoURI || ''}
                     firstSelectedToken={firstTokenSelected}
-                    platformGasFee={PLATFORM_GAS_FEE}
+                    platformGasFee={platformGas}
                     secondSelectedToken={secondTokenSelected}
                     slippageTolerance={slippageTolerance}
                     calculateMinimumTokenReceived={calculateMinimumTokenReceived}

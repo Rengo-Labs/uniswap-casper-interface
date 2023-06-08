@@ -328,7 +328,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                   returnPrice(amount0, amount1, p.token0Price, p.token1Price)
             } else if (p.token0Symbol === token0 || p.token1Symbol === token0) {
                 priceA = getPrice(amount0, p, token0)
-            } else if (p.token1Symbol === token1 || p.token0Symbol === token1) {
+            }
+            if (p.token1Symbol === token1 || p.token0Symbol === token1) {
                 priceB = getPrice(amount1, p, token1)
             }
         }

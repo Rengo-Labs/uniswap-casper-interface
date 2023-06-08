@@ -61,7 +61,7 @@ const SwapDetail = ({
                         showChart1
                     }: SwapDetailProps) => {
     const container = document.getElementById('swap-tabs');
-    return (
+  return (
         <>
             <SwapTabs
                 firstTokenImg={firstTokenImg}
@@ -95,6 +95,7 @@ const SwapDetail = ({
                 charWidth={container?.clientWidth}
                 charHeight={225}
                 tabDefault={2}
+                editableSlippage={!(firstSymbolToken === 'CSPR' && secondSymbolToken === 'WCSPR' || firstSymbolToken === 'WCSPR' && secondSelectedToken === 'CSPR')}
                 />
         </>
     )
