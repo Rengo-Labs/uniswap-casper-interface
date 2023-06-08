@@ -180,7 +180,6 @@ export const SwapTemplate = ({isMobile}) => {
             const pairPath = []
             pairPath.push(tokenA.symbol)
             pairPath.push(tokenB.symbol)
-            console.log(new BigNumber(value).toString(), '0', '1.000000000', '1.000000000', pairPath)
 
             priceImpactSetter('0');
             defaultPriceImpactLabelSetter(
