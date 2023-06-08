@@ -35,6 +35,8 @@ import {
  * All swap smart contract endpoints
  */
 export enum SwapEntryPoint {
+  SWAP_CSPR_FOR_WCSPR = "deposit",
+  SWAP_WCSPR_FOR_CSPR = "withdraw",
   SWAP_EXACT_CSPR_FOR_TOKENS = "swap_exact_cspr_for_tokens",
   SWAP_EXACT_TOKENS_FOR_TOKENS = "swap_exact_tokens_for_tokens",
   SWAP_TOKENS_FOR_EXACT_CSPR = "swap_tokens_for_exact_cspr",
@@ -56,7 +58,12 @@ export enum SwapEntryPoint {
  * @returns which swap endpoint should be used
  */
 export const selectSwapEntryPoint = (tokenASymbol: string, tokenBSymbol: string): SwapEntryPoint => {
-  if (tokenASymbol === 'CSPR' && tokenBSymbol !== 'CSPR') {
+
+  if (tokenASymbol === 'CSPR' && tokenBSymbol === 'WCSPR') {
+    return SwapEntryPoint.SWAP_CSPR_FOR_WCSPR
+  } else if (tokenASymbol === 'WCSPR' && tokenBSymbol === 'CSPR') {
+    return SwapEntryPoint.SWAP_WCSPR_FOR_CSPR
+  } else if (tokenASymbol === 'CSPR' && tokenBSymbol !== 'CSPR') {
     return SwapEntryPoint.SWAP_EXACT_CSPR_FOR_TOKENS
   } else if (tokenASymbol !== 'CSPR' && tokenBSymbol === 'CSPR') {
     return SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_CSPR
@@ -101,7 +108,7 @@ export const signAndDeploySwap = async (
     const response = await apiClient.getPath(tokenA.symbolPair, tokenB.symbolPair)
     const path = response.pathwithcontractHash.map((x) => new CLString(x))
 
-    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountIn, amountOut)
+    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountIn.toString(), amountOut.toString())
 
     switch (entryPoint) {
       case SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS:
@@ -157,8 +164,8 @@ export const signAndDeploySwap = async (
           wallet,
           await apiClient.getDeployWasmData(),
           RuntimeArgs.fromMap({
-            amount_in: CLValueBuilder.u256(new BigNumber(amountIn).times(1 - slippage).toFixed(0, BigNumber.ROUND_UP)),
-            amount_out_min: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_in: CLValueBuilder.u256(new BigNumber(amountIn).toFixed(0, BigNumber.ROUND_UP)),
+            amount_out_min: CLValueBuilder.u256(new BigNumber(amountOut).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
             path: new CLList(path),
             to: CLValueBuilder.uref(
               Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
@@ -195,6 +202,44 @@ export const signAndDeploySwap = async (
               new CLByteArray(
                 Uint8Array.from(Buffer.from(ROUTER_PACKAGE_HASH, "hex"))
               )
+            ),
+          }),
+          new BigNumber(gasFee * 10 ** 9),
+        )
+      case SwapEntryPoint.SWAP_CSPR_FOR_WCSPR:
+        // When swapping casper for tokens
+
+        return await casperClient.signAndDeployWasm(
+          wallet,
+          await apiClient.getWCSPRWasmData(),
+          RuntimeArgs.fromMap({
+            amount: CLValueBuilder.u512(new BigNumber(amountIn).toFixed(0)),
+            purse: CLValueBuilder.uref(
+              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+              AccessRights.READ_ADD_WRITE
+            ),
+
+            // Deploy wasm params
+            entrypoint: CLValueBuilder.string(entryPoint),
+            package_hash: new CLKey(
+              new CLByteArray(
+                Uint8Array.from(Buffer.from(tokenB.packageHash.slice(5), "hex"))
+              )
+            ),
+          }),
+          new BigNumber(gasFee * 10 ** 9),
+        )
+      case SwapEntryPoint.SWAP_WCSPR_FOR_CSPR:
+        // When swapping casper for tokens
+        return await casperClient.signAndDeployContractCall(
+          wallet,
+          tokenA.contractHash.slice(5),
+          entryPoint,
+          RuntimeArgs.fromMap({
+            amount: CLValueBuilder.u512(new BigNumber(amountIn).toFixed(0)),
+            purse: CLValueBuilder.uref(
+              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+              AccessRights.READ_ADD_WRITE
             ),
           }),
           new BigNumber(gasFee * 10 ** 9),

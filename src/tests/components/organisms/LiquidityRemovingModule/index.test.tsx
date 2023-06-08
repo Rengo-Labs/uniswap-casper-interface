@@ -1,11 +1,24 @@
 import '@testing-library/jest-dom'
 import {render, fireEvent} from '@testing-library/react'
-import {LiquidityRemovingModule} from "../../../../components/organisms/LiquidityRemovingModule";
+import {LiquidityRemovingModule} from "../../../../components/old/organisms/LiquidityRemovingModule";
 
 import {jest} from "@jest/globals";
 import {TestContext} from "../../../../mocks/contexts/LiquidityContext/index.mocks";
 import {LiquidityContext} from "../../../../contexts/LiquidityContext";
+jest.mock('../../../../store/store', () => {
+  return {
+    notificationStore: () => {
+      return {
+        updateNotification: () => {
 
+        },
+        dismissNotification: () => {
+
+        }
+      }
+    }
+  }
+})
 jest.mock('axios', () => {})
 jest.mock('@toruslabs/casper-embed', () => {})
 

@@ -8,6 +8,9 @@ import {
     initialTokenStateMock2,
     initialTokenStateMock3
 } from "../../../mocks/commons/calculations/functions.mock";
+import {jest} from "@jest/globals";
+jest.mock("axios", () => {})
+jest.mock("@toruslabs/casper-embed", () => {})
 
 describe("Test for Path Finder", () => {
 

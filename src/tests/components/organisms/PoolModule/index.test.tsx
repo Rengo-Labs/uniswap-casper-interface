@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import {BrowserRouter as Router} from 'react-router-dom';
 import {render, fireEvent} from '@testing-library/react'
-import {PoolModule} from "../../../../components/organisms/PoolModule";
+import {PoolModule} from "../../../../components/old/organisms/PoolModule";
 
 import {jest} from "@jest/globals";
 jest.mock('axios', () => {})
@@ -10,6 +10,21 @@ jest.mock('@toruslabs/casper-embed', () => {})
 import {getColumns, getPoolList, loadPoolDetailByUser} from "../../../../mocks/components/organisms/PoolsContext";
 import {TestContext} from "../../../../mocks/contexts/PoolContext/index.mocks";
 import {ProgressBarContextWithReducer} from "../../../../contexts/ProgressBarContext";
+import {PoolContext} from "../../../../contexts/PoolContext"
+jest.mock('../../../../store/store', () => {
+    return {
+        notificationStore: () => {
+            return {
+                updateNotification: () => {
+
+                },
+                dismissNotification: () => {
+
+                }
+            }
+        }
+    }
+})
 
 describe("Test for Pool Module", () => {
 
@@ -19,11 +34,13 @@ describe("Test for Pool Module", () => {
 
         const poolModule = render(
             <TestContext>
-                <ProgressBarContextWithReducer>
-                    <Router>
-                        <PoolModule columns={headers} data={poolList}/>
-                    </Router>
-                </ProgressBarContextWithReducer>
+                <PoolContext>
+                    <ProgressBarContextWithReducer>
+                        <Router>
+                            <PoolModule columns={headers} data={poolList}/>
+                        </Router>
+                    </ProgressBarContextWithReducer>
+                </PoolContext>
             </TestContext>
         )
 
@@ -37,15 +54,17 @@ describe("Test for Pool Module", () => {
         const newPoolList = await loadPoolDetailByUser("hash")
         poolModule.rerender(
             <TestContext>
-                <ProgressBarContextWithReducer>
-                    <Router>
-                        <PoolModule columns={headers} data={newPoolList}/>
-                    </Router>
-                </ProgressBarContextWithReducer>
+                <PoolContext>
+                    <ProgressBarContextWithReducer>
+                        <Router>
+                            <PoolModule columns={headers} data={newPoolList}/>
+                        </Router>
+                    </ProgressBarContextWithReducer>
+                </PoolContext>
             </TestContext>
         )
 
         const labelChanged = await poolModule.getAllByRole("row")
-        expect(labelChanged).toHaveLength(1);
+        expect(labelChanged).toHaveLength(5);
     })
 })

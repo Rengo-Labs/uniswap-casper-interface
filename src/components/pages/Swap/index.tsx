@@ -1,17 +1,15 @@
-import React from 'react'
-import NewLayout from '../../../layout/NewLayout'
-import { ContainerNSM } from '../../atoms/ContainerNSM'
-import { ModuleSwapNSM } from '../../atoms/ModuleSwapNSM'
-import SwapNewModule from '../../organisms/SwapModule'
+import React from 'react';
+import Layout from '../../../layout';
+import {SwapTemplate} from "../../templates";
+import {useDeviceType} from "rengo-ui-kit";
 
 export const Swap = () => {
-  return (
-    <NewLayout>
-      <ContainerNSM>
-        <ModuleSwapNSM>
-          <SwapNewModule />
-        </ModuleSwapNSM>
-      </ContainerNSM>
-    </NewLayout>
-  )
-}
+    const deviceType = useDeviceType()
+    const isMobile = deviceType === 'mobile'
+
+    return (
+        <Layout>
+            <SwapTemplate isMobile={isMobile}/>
+        </Layout>
+    )
+};
