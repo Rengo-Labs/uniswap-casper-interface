@@ -344,8 +344,9 @@ const handleActionRemoval = async () => {
   }, []);
 
   const updateTableData = (name: string, isFavorite: boolean) => {
+    const invertedName = name.split('-').reverse().join('-')
     const newTableData = tableData.map((item) => {
-      if (item.name === name) {
+      if (item.name === name || item.name === invertedName) {
         return {
           ...item,
           isFavorite: !isFavorite,
@@ -371,7 +372,7 @@ const handleActionRemoval = async () => {
   const handleFavorite = (name: string) => {
     const currentPersistedData: string[] = getLocalStorageData("pool");
     const isPresent = currentPersistedData.includes(name);
-
+   
     updateTableData(name, isPresent);
     setPoolDetailRow({ ...poolDetailRow, isFavorite: !isPresent });
 
@@ -415,7 +416,7 @@ const handleActionRemoval = async () => {
             isFavorite={poolDetailRow.isFavorite}
             handleFavorite={() =>
               handleFavorite(
-                `${poolDetailRow.token1Symbol}-${poolDetailRow.token0Symbol}`
+                `${poolDetailRow.token0Symbol}-${poolDetailRow.token1Symbol}`
               )
             }
             widthIcon={45}
