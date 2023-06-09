@@ -29,6 +29,7 @@ import {
 import { ConfigState } from '../../reducers/ConfigReducers';
 import { notificationStore } from '../../store/store';
 import {CasperWallet} from "../../commons/wallet/CasperWallet";
+import { MetamaskSnapWallet } from '../../commons/wallet/MetamaskSnap';
 import useConnectionPopUp from "../../hooks/useConnectionPopUp";
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
@@ -125,6 +126,24 @@ export const WalletContext = ({
     let w: MaybeWallet;
 
     switch (name) {
+      case WalletName.METAMASK_FLASK:
+        try {
+          if (state.wallet?.isConnected) {
+            await state.wallet.disconnect();
+          }
+
+          w = new MetamaskSnapWallet(NETWORK_NAME);
+          await w.connect();
+        } catch (e) {
+          debounceConnect = false;
+          throw e;
+        }
+
+        if (!w?.publicKey) {
+          debounceConnect = false;
+          throw new Error('metamask error');
+        }
+        break;
       case WalletName.CASPER_SIGNER:
         try {
           if (state.wallet?.isConnected) {

@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.5",
+    "@casperholders/casper-snap-helper": "^1.0.5",
     "@emotion/react": "^11.10.5",
     "@fontsource/epilogue": "^4.5.11",
     "@mui/material": "^5.11.5",

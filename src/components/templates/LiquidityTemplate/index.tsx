@@ -13,7 +13,7 @@ import {DoubleColumn} from "../../../layout/DoubleColumn";
 import {useSearchParams} from "react-router-dom";
 import {globalStore} from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
-import {LPContainer, RemoveLiquidityDialog} from 'rengo-ui-kit';
+import {LPContainer, RemoveLiquidityDialog, StakeDialog} from 'rengo-ui-kit';
 import {useNavigate} from "react-router";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
@@ -99,6 +99,10 @@ export const LiquidityTemplate = ({isMobile}) => {
     })
     const [showRemovingToggle, setShowRemovingToggle] = useState(false)
     const Navigator = useNavigate()
+    const [stakePopup, setStakePopup] = useState(false)
+    const [titleStakePopup, setTitleStakePopup] = useState('')
+    const [titleStakeButton, setTitleStakeButton] = useState('')
+    const [stakingToggle, setStakingToggle] = useState(false)
 
     const handleChangeInput = (value) => {
         if (value === 0) {
@@ -216,6 +220,24 @@ export const LiquidityTemplate = ({isMobile}) => {
         if (action === 'Swap') {
             handleNavigate(item)
         }
+
+        if (action === 'StakeLP') {
+            createStakeDataForPopup(item)
+        }
+
+        if (action === 'UnstakeLP') {
+            createUnstakeDataForPopup(item)
+        }
+
+        if (action === 'ClaimLP') {
+            onClaimAction(item)
+        }
+    }
+
+    const handleStakeClose =  () => {
+        setRemoveLiquidityButtonDisabled(true)
+        setRemoveLiquidityInput(0)
+        setStakePopup(false)
     }
 
     const createRemovingDataForPopup = (item) => {
@@ -256,6 +278,101 @@ export const LiquidityTemplate = ({isMobile}) => {
         setShowRemoveLiquidityDialog(true)
     }
 
+    const createStakeDataForPopup = (item) => {
+        const token0 = tokenState.tokens[item.token0Symbol]
+        const token1 = tokenState.tokens[item.token1Symbol]
+
+        setTitleStakePopup('Stake')
+        setTitleStakeButton('Stake')
+
+        const data = {
+            id: item.contractHash,
+            tokenName: item.name,
+            liquidity: item.balance,
+            allowance: parseFloat(item.allowance),
+            firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
+            firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
+            firstSymbol: item.token0Symbol.includes('CSPR') ? 'CSPR' : item.token0Symbol,
+            firstHash: item.contract0,
+            firstDecimals: token0.decimals,
+            secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
+            secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
+            secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
+            secondHash: item.contract1,
+            decimals: item.decimals,
+            secondDecimals: token1.decimals
+        }
+        setRemoveLiquidityData((prevState) => ({
+            ...prevState,
+            ...data
+        }))
+
+        setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
+        setStakePopup(true)
+    }
+
+    const createUnstakeDataForPopup = (item) => {
+        const token0 = tokenState.tokens[item.token0Symbol]
+        const token1 = tokenState.tokens[item.token1Symbol]
+
+        setTitleStakePopup('Unstake & Claim')
+        setTitleStakeButton('Unstake')
+
+        const data = {
+            id: item.contractHash,
+            tokenName: item.name,
+            liquidity: item.balance,
+            allowance: parseFloat(item.allowance),
+            firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
+            firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
+            firstSymbol: item.token0Symbol.includes('CSPR') ? 'CSPR' : item.token0Symbol,
+            firstHash: item.contract0,
+            firstDecimals: token0.decimals,
+            secondIcon: item.token1Symbol.includes('CSPR') ? csprIcon : item.token1Icon,
+            secondName: item.token1Symbol.includes('CSPR') ? 'Casper' : item.token1Name,
+            secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
+            secondHash: item.contract1,
+            decimals: item.decimals,
+            secondDecimals: token1.decimals
+        }
+        setRemoveLiquidityData((prevState) => ({
+            ...prevState,
+            ...data
+        }))
+
+        setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
+        setStakePopup(true)
+    }
+
+    const onClaimAction = async (item) => {
+
+        const token0 = tokenState.tokens[item.token0Symbol]
+        const token1 = tokenState.tokens[item.token1Symbol]
+
+        const liquidityToRemove = parseFloat(item.balance) * 0.01
+        const firstReserve = parseFloat(item.reserve0) * 0.01
+        const secondReserve = parseFloat(item.reserve1) * 0.01
+
+        await onRemoveLiquidity(
+          liquidityToRemove,
+          item.decimals,
+          {
+              symbol: token0.symbolPair.replace('WCSPR', 'CSPR'),
+              packageHash: token0.packageHash,
+              decimals: token0.decimals
+          } as any, {
+              symbol: token1.symbolPair.replace('WCSPR', 'CSPR'),
+              packageHash: token1.packageHash,
+              decimals: token1.decimals
+          } as any,
+          firstReserve,
+          secondReserve,
+          slippageTolerance,
+          gasFee,
+          removeLiquidityToggle)
+
+    }
+
     const loadUserLP = () => {
         const userPairs = Object.values(pairState).filter(
             (v) => parseFloat(v.balance) > 0
@@ -273,6 +390,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 totalLP: convertToUSDCurrency(parseFloat(i.totalSupply)),
                 yourShare: (Number(i.balance) / Number(i.totalSupply)).toFixed(2),
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
+                hasStake: true
             }
         })
         userPairDataNonZeroSetter(userPairs)
@@ -447,6 +565,23 @@ export const LiquidityTemplate = ({isMobile}) => {
                 handleAllowanceLiquidity={onActionAllowance}
                 calculatedAmounts={removeLiquidityCalculation}
             />
+
+            <StakeDialog
+                titleDialog={titleStakePopup}
+                titleConfirmButton={titleStakeButton}
+                // @ts-ignore
+                closeCallback={handleStakeClose}
+                liquidityPoolData={removeLiquidityData as any}
+                isOpen={stakePopup}
+                disabledButton={removeLiquidityButtonDisabled}
+                disabledAllowanceButton={removeLiquidityAllowanceEnabled}
+                showAllowance={(removeLiquidityCalculation.allowance) > 0}
+                defaultValue={removeLiquidityInput}
+                handleChangeInput={handleChangeInput}
+                handleAction={onActionRemove}
+                handleAllowance={onActionAllowance}
+                calculatedAmounts={removeLiquidityCalculation}
+            />
             <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
                 <LiquidityDetail
                   firstSymbol={firstTokenSelected.symbolPair}
@@ -495,7 +630,10 @@ export const LiquidityTemplate = ({isMobile}) => {
               <SingleColumn isMobile={isMobile}>
                   <LPContainer title="My Liquidity"
                                networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
-                               lpTokens={userPairDataNonZero} />
+                               lpTokens={userPairDataNonZero}
+                               toggleAction={() => setStakingToggle(!stakingToggle)}
+                               toggleActive={stakingToggle}
+                  />
               </SingleColumn>
             }
         </>
