@@ -31,6 +31,7 @@ import { notificationStore } from '../../store/store';
 import {CasperWallet} from "../../commons/wallet/CasperWallet";
 import { MetamaskSnapWallet } from '../../commons/wallet/MetamaskSnap';
 import useConnectionPopUp from "../../hooks/useConnectionPopUp";
+import {CasperDash} from "../../commons/wallet/CasperDash";
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
 type MaybeWallet = Wallet | undefined;
@@ -186,6 +187,14 @@ export const WalletContext = ({
           await state.wallet.disconnect();
         }
         w = new CasperWallet(NETWORK_NAME)
+        await w.connect(dispatch)
+        break
+      case WalletName.CASPER_DASH:
+
+        if (state.wallet?.isConnected) {
+          await state.wallet.disconnect();
+        }
+        w = new CasperDash(NETWORK_NAME)
         await w.connect(dispatch)
         break
       default:
