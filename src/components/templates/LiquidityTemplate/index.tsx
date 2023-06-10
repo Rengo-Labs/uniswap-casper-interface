@@ -495,7 +495,10 @@ export const LiquidityTemplate = ({isMobile}) => {
               <SingleColumn isMobile={isMobile}>
                   <LPContainer title="My Liquidity"
                                networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
-                               lpTokens={userPairDataNonZero} />
+                               lpTokens={userPairDataNonZero} 
+                               toggleActive={false}
+                               toggleAction={()=>{}}
+                               />
               </SingleColumn>
             }
         </>
