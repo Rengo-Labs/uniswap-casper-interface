@@ -19,7 +19,7 @@ import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {SUPPORTED_NETWORKS} from "../../../constant";
-import { convertToUSDCurrency } from '../../../commons/utils';
+import {convertBigNumberToUIString, convertToUSDCurrency, convertUIStringToBigNumber} from '../../../commons/utils';
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -384,8 +384,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                 secondSymbol: i.token1Symbol,
                 firstAmount: i.reserve0,
                 secondAmount: i.reserve1,
-                userLP: convertToUSDCurrency(parseFloat(i.balance)),
-                totalLP: convertToUSDCurrency(parseFloat(i.totalSupply)),
+                userLP: i.balance,
+                totalLP: i.totalSupply,
                 yourShare: (100 * (Number(i.balance) / Number(i.totalSupply))).toFixed(2),
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
                 hasStake: true
