@@ -199,10 +199,11 @@ export class Client {
   ): Promise<[string, GetDeployResult]> {
     try {
       // Convert contract hash to bytes
+      console.log("ContractHash", contractHash, entryPoint, args)
+
       const contractHashAsByteArray = Uint8Array.from(
         Buffer.from(contractHash, 'hex')
       )
-
       // Create the deploy item using contractHash + entryPoint + args
       const deployItem = DeployUtil.ExecutableDeployItem.newStoredContractByHash(
         contractHashAsByteArray,

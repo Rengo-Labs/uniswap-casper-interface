@@ -39,3 +39,6 @@ export enum MenuMobileOptions {
   Settings = 'Settings',
   Community = 'Community',
 }
+
+export const LIQUIDITY_GAUGE_V3_CONTRACT_HASH = process.env.REACT_APP_LIQUIDITY_GAUGE_V3_CONTRACT_HASH
+export const LIQUIDITY_GAUGE_V3_PACKAGE_HASH = process.env.REACT_APP_LIQUIDITY_GAUGE_V3_PACKAGE_HASH

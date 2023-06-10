@@ -36,7 +36,10 @@ export const LiquidityTemplate = ({isMobile}) => {
         setRemovingPopup,
         onAddLiquidity,
         getLiquidityDetails,
-        onRemoveLiquidity
+        onRemoveLiquidity,
+        onClaimRewards,
+        onDeposit,
+        onWithdraw
     } = useContext(LiquidityProviderContext)
     const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext)
     const {calculateUSDtokens, pairState, findReservesBySymbols, getPoolList} = useContext(PairsContextProvider)
@@ -168,7 +171,7 @@ export const LiquidityTemplate = ({isMobile}) => {
       setShowRemoveLiquidityDialog(false)
     }
 
-    const onActionRemove = async () => {
+    const onRemoveAction = async () => {
       setRemoveLiquidityButtonDisabled(true)
 
       const result = await onRemoveLiquidity(
@@ -197,6 +200,26 @@ export const LiquidityTemplate = ({isMobile}) => {
       } else {
           setRemoveLiquidityButtonDisabled(false)
       }
+    }
+
+    const onStakeAndUnstakeAction = async () => {
+        setRemoveLiquidityButtonDisabled(true)
+        let result = null
+
+        if (titleStakePopup === 'Stake') {
+            result = await onDeposit(removeLiquidityCalculation.lpAmount)
+        } else {
+            result = await onWithdraw(removeLiquidityCalculation.lpAmount)
+        }
+
+        if (result) {
+
+            setRemovingPopup(false)
+            setRemoveLiquidityInput(0)
+            setShowRemoveLiquidityDialog(false)
+        } else {
+            setRemoveLiquidityButtonDisabled(false)
+        }
     }
 
     const onActionAllowance = async () => {
@@ -230,7 +253,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         }
 
         if (action === 'ClaimLP') {
-            onClaimAction(item)
+            onClaimAction()
         }
     }
 
@@ -344,33 +367,8 @@ export const LiquidityTemplate = ({isMobile}) => {
         setStakePopup(true)
     }
 
-    const onClaimAction = async (item) => {
-
-        const token0 = tokenState.tokens[item.token0Symbol]
-        const token1 = tokenState.tokens[item.token1Symbol]
-
-        const liquidityToRemove = parseFloat(item.balance) * 0.01
-        const firstReserve = parseFloat(item.reserve0) * 0.01
-        const secondReserve = parseFloat(item.reserve1) * 0.01
-
-        await onRemoveLiquidity(
-          liquidityToRemove,
-          item.decimals,
-          {
-              symbol: token0.symbolPair.replace('WCSPR', 'CSPR'),
-              packageHash: token0.packageHash,
-              decimals: token0.decimals
-          } as any, {
-              symbol: token1.symbolPair.replace('WCSPR', 'CSPR'),
-              packageHash: token1.packageHash,
-              decimals: token1.decimals
-          } as any,
-          firstReserve,
-          secondReserve,
-          slippageTolerance,
-          gasFee,
-          removeLiquidityToggle)
-
+    const onClaimAction = async () => {
+        await onClaimRewards()
     }
 
     const loadUserLP = () => {
@@ -561,7 +559,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 isRemoveLiquidityCSPR={removeLiquidityToggle}
                 handleChangeInput={handleChangeInput}
                 handleToggle={handleRemoveLiquidityToggle}
-                handleRemoveLiquidity={onActionRemove}
+                handleRemoveLiquidity={onRemoveAction}
                 handleAllowanceLiquidity={onActionAllowance}
                 calculatedAmounts={removeLiquidityCalculation}
             />
@@ -578,7 +576,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 showAllowance={(removeLiquidityCalculation.allowance) > 0}
                 defaultValue={removeLiquidityInput}
                 handleChangeInput={handleChangeInput}
-                handleAction={onActionRemove}
+                handleAction={onStakeAndUnstakeAction}
                 handleAllowance={onActionAllowance}
                 calculatedAmounts={removeLiquidityCalculation}
             />
