@@ -291,7 +291,7 @@ const handleActionRemoval = async () => {
     } as any,
     removeLiquidityCalculation.firstAmount,
     removeLiquidityCalculation.secondAmount,
-    slippageTolerance,
+    1,
     gasFee,
     removeLiquidityToggle)
 
