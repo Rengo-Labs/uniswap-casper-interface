@@ -82,15 +82,23 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             tB = 'WCSPR'
         }
 
-        const tADecimals = tokenState.tokens[tokenASymbol]?.decimals | 9
-        const tBDecimals = tokenState.tokens[tokenBSymbol]?.decimals | 9
+        const tADecimals = tokenState.tokens[tokenASymbol]?.decimals || 9
+        const tBDecimals = tokenState.tokens[tokenBSymbol]?.decimals || 9
 
         let lookUp = `${tA}-${tB}`
 
         // do a simple look up
         let pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
         if (pairData) {
-            // console.log('a', pairData)
+          /*
+            console.log('a', {
+              reserve0z: pairData.totalReserve0, 
+              tADecimals: tADecimals,
+              reserve1z: pairData.totalReserve1, 
+              tBDecimals: tBDecimals,
+              reserve0: convertUIStringToBigNumber(pairData.totalReserve0, tADecimals),
+              reserve1: convertUIStringToBigNumber(pairData.totalReserve1, tBDecimals),
+            })*/
 
             return {
                 reserve0: convertUIStringToBigNumber(pairData.totalReserve0, tADecimals),
@@ -101,10 +109,18 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         lookUp = `${tB}-${tA}`
         pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
         if (pairData) {
-            //console.log('b', pairData)
+            /*
+            console.log('b', {
+              reserve0z: pairData.totalReserve0, 
+              tADecimals: tADecimals,
+              reserve1z: pairData.totalReserve1, 
+              tBDecimals: tBDecimals,
+              reserve0: convertUIStringToBigNumber(pairData.totalReserve1, tADecimals).toString(),
+              reserve1: convertUIStringToBigNumber(pairData.totalReserve0, tBDecimals).toString(),
+            })*/
             return {
-                reserve0: convertUIStringToBigNumber(pairData.totalReserve1, tBDecimals),
-                reserve1: convertUIStringToBigNumber(pairData.totalReserve0, tADecimals),
+                reserve0: convertUIStringToBigNumber(pairData.totalReserve1, tADecimals),
+                reserve1: convertUIStringToBigNumber(pairData.totalReserve0, tBDecimals),
             }
         }
 
@@ -137,8 +153,8 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         for (let i = 1; i < path.length; i++) {
             const pair = overrideReserves[path[i].label.name] ?? path[i].label
             if (path[i - 1].id == tokenASymbol) {
-                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1, tBDecimals))
-                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0, tADecimals))
+                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1, tADecimals))
+                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0, tBDecimals))
             } else {
                 reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve0, tADecimals))
                 reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve1, tBDecimals))

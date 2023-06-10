@@ -46,7 +46,7 @@ export const calculateLiquidityDetails = async (
 
       const liquidityA = new BigNumber(reserve0)
       const liquidityB = new BigNumber(reserve1)
-      const inputValue = new BigNumber(inputValueRaw).times(Math.pow(10,token.decimals))
+      const inputValue = new BigNumber(inputValueRaw).times(Math.pow(10, token.decimals))
 
       const inputLiquidity = isA2B ? liquidityA : liquidityB
       const outputLiquidity = isA2B ? liquidityB : liquidityA
@@ -58,13 +58,14 @@ export const calculateLiquidityDetails = async (
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
       // console.log("exchangeRateA", exchangeRateA.toNumber(), "exchangeRateB", exchangeRateB.toNumber())
 
-      const ttt = inputValue.times(inputExchangeRate).div(Math.pow(10, (isA2B ? tokenA.decimals : tokenB.decimals)))
+      const ttt = inputValue.times(inputExchangeRate).div(Math.pow(10, (isA2B ? tokenB.decimals : tokenA.decimals)))
+      const decimalDiff = tokenA.decimals - tokenB.decimals
       return {
           tokensToTransfer: ttt.eq(0) ? '0' : ttt.toFixed(isA2B ? tokenB.decimals : tokenA.decimals, BigNumber.ROUND_CEIL),
-          exchangeRateA: exchangeRateA.toNumber(),
-          exchangeRateB : exchangeRateB.toNumber(),
+          exchangeRateA: exchangeRateA.toNumber() * 10 ** decimalDiff,
+          exchangeRateB : exchangeRateB.toNumber() / 10 ** decimalDiff,
           firstReserve: inputLiquidity.div(Math.pow(10, tokenA.decimals)).toString(),
-          secondReserve: outputLiquidity.div(Math.pow(10, tokenA.decimals)).toString(),
+          secondReserve: outputLiquidity.div(Math.pow(10, tokenB.decimals)).toString(),
       }
   } catch (err) {
       log.error(`getSwapDetail error: ${err}`)
