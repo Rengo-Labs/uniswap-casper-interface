@@ -386,7 +386,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 secondAmount: i.reserve1,
                 userLP: convertToUSDCurrency(parseFloat(i.balance)),
                 totalLP: convertToUSDCurrency(parseFloat(i.totalSupply)),
-                yourShare: (Number(i.balance) / Number(i.totalSupply)).toFixed(2),
+                yourShare: (100 * (Number(i.balance) / Number(i.totalSupply))).toFixed(2),
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
                 hasStake: true
             }
