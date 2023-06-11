@@ -226,18 +226,28 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
       {
         const oldState = state[`${action.payload.name}`]
 
-        const liquidityUSD = new BigNumber(convertUIStringToBigNumber(oldState.reserve0, action.payload.decimals0))
+        const liquidityUSD = new BigNumber(oldState.reserve0)
           .times(action.payload.token0Price)
-          .plus(new BigNumber(convertUIStringToBigNumber(oldState.reserve1, action.payload.decimals1)).times(action.payload.token1Price))
-          .div(10 ** 9)
+          .plus(
+            new BigNumber(oldState.reserve1)
+            .times(action.payload.token1Price)
+          )
           .toString()
-        // console.log('action.payload', action.payload, oldState.totalReserve0, oldState.totalReserve1)
+        const totalLiquidityUSD = new BigNumber(oldState.totalReserve0)
+          .times(action.payload.token0Price)
+          .plus(
+            new BigNumber(oldState.totalReserve1)
+            .times(action.payload.token1Price)
+          )
+          .toString()
+        // console.log('action.payload', action.payload, oldState.totalReserve0, oldState.totalReserve1, liquidityUSD)
 
         return {
           ...state,
           [`${action.payload.name}`]: {
             ...oldState,
             liquidityUSD,
+            totalLiquidityUSD,
             token0Price: action.payload.token0Price,
             token1Price: action.payload.token1Price,
           },

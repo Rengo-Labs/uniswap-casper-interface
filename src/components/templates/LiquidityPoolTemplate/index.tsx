@@ -123,21 +123,24 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
 
   useEffect(() => {
     setTableData(
-      getPoolList().map((item) => ({
-        contractPackage: item.packageHash.slice(5),
-        name: item.name,
-        pool: `${item.token0Symbol} - ${item.token1Symbol}`,
-        token0Icon: item.token0Icon,
-        token1Icon: item.token1Icon,
-        yourLiquidity: convertToUSDCurrency(parseFloat(item.liquidityUSD)),
-        volume7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(item.volume7d)),
-        fees7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
-        balance: item.balance,
-        isFavorite: getLocalStorageData("pool")?.includes(item.name),
-        assetsPoolToken0: `${isNaN(item.reserve0) ? 0 : item.reserve0} ${item.token0Symbol}`,
-        assetsPoolToken1: `${isNaN(item.reserve1) ? 0 : item.reserve1} ${item.token1Symbol}`,
-        yourShare: (isNaN(item.balanace) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
-      }))
+      getPoolList().map((item) => {
+        console.log('item.liquidityUSD', item.liquidityUSD)
+        return {
+          contractPackage: item.packageHash.slice(5),
+          name: item.name,
+          pool: `${item.token0Symbol} - ${item.token1Symbol}`,
+          token0Icon: item.token0Icon,
+          token1Icon: item.token1Icon,
+          yourLiquidity: convertToUSDCurrency(parseFloat(item.totalLiquidityUSD)),
+          volume7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(item.volume7d)),
+          fees7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
+          balance: item.balance,
+          isFavorite: getLocalStorageData("pool")?.includes(item.name),
+          assetsPoolToken0: `${isNaN(item.totalReserve0) ? 0 : item.totalReserve0} ${item.token0Symbol}`,
+          assetsPoolToken1: `${isNaN(item.totalReserve1) ? 0 : item.totalReserve1} ${item.token1Symbol}`,
+          yourShare: (isNaN(item.balanace) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
+        }
+      })
     );
     
   }, [pairState]);
@@ -308,6 +311,8 @@ const handleActionRemoval = async () => {
 
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
+
+    console.log('newRow', newRow)
 
     setPoolDetailRow({
       contractPackage: newRow.packageHash.slice(5),

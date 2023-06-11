@@ -47,6 +47,8 @@ export interface ConfigContext {
 export interface PairReserves {
   reserve0: BigNumber.Value
   reserve1: BigNumber.Value
+  decimals0: BigNumber.Value
+  decimals1: BigNumber.Value
 }
 export const ConfigProviderContext = createContext<ConfigContext>({} as any);
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);

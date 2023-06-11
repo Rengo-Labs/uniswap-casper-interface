@@ -35,28 +35,49 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             t = 'WCSPR'
         }
 
-        if (t === 'USDC') {
-            const ratesUSDC = findReservesBySymbols(t, 'USDT', pairTotalReserves, updateNotification)
+        if (t === 'dUSDC') {
+            return new BigNumber(1)
+            /*const ratesUSDC = findReservesBySymbols(t, 'dUSDT', pairTotalReserves, updateNotification)
 
-            return new BigNumber(ratesUSDC.reserve0).div(ratesUSDC.reserve1).plus(1).div(2)
+            console.log('CCC ratesUSDC/T', ratesUSDC.reserve0.toString(), ratesUSDC.reserve1.toString())
+
+            return new BigNumber(ratesUSDC.reserve0).div(ratesUSDC.reserve1).plus(1).div(2)*/
         }
 
-        if (t === 'USDT') {
-            const ratesUSDT = findReservesBySymbols(t, 'USDC', pairTotalReserves, updateNotification)
+        if (t === 'dUSDT') {
+            return new BigNumber(1)
+            /*const ratesUSDT = findReservesBySymbols(t, 'dUSDC', pairTotalReserves, updateNotification)
 
-            return new BigNumber(ratesUSDT.reserve0).div(ratesUSDT.reserve1).plus(1).div(2)
+            console.log('TTT ratesUSDC/T', ratesUSDT.reserve0.toString(), ratesUSDT.reserve1.toString())
+
+            return new BigNumber(ratesUSDT.reserve0).div(ratesUSDT.reserve1).plus(1).div(2)*/
         }
 
-        const ratesUSDC = findReservesBySymbols(t, 'USDC', pairTotalReserves, updateNotification)
-        const ratesUSDT = findReservesBySymbols(t, 'USDT', pairTotalReserves, updateNotification)
+        const ratesUSDC = findReservesBySymbols(t, 'dUSDC', pairTotalReserves, updateNotification)
+        const ratesUSDT = findReservesBySymbols(t, 'dUSDT', pairTotalReserves, updateNotification)
+       
+        const cr0 = new BigNumber(ratesUSDC.reserve0).div(new BigNumber(10).pow(ratesUSDC.decimals0))
+        const cr1 = new BigNumber(ratesUSDC.reserve1).div(new BigNumber(10).pow(ratesUSDC.decimals1))
+        const tr0 = new BigNumber(ratesUSDT.reserve0).div(new BigNumber(10).pow(ratesUSDT.decimals0))
+        const tr1 = new BigNumber(ratesUSDT.reserve1).div(new BigNumber(10).pow(ratesUSDT.decimals1))
 
-        // console.log('ratesUSDC/T', ratesUSDC.reserve0.toString(), ratesUSDT.reserve0.toString())
+
+/*        console.log(
+          'ratesUSDC/T', 
+          cr0.toString(),
+          cr1.toString(), 
+          tr0.toString(), 
+          tr1.toString(),
+        )*/
 
         if (ratesUSDC.reserve0.toString() === '0' || ratesUSDT.reserve0.toString() === '0') {
             return new BigNumber(0)
         }
 
-        return new BigNumber(ratesUSDC.reserve1).div(ratesUSDC.reserve0).plus(BigNumber(ratesUSDT.reserve1).div(ratesUSDT.reserve0)).div(2)
+        return new BigNumber(cr1.div(cr0)            
+          ).plus(
+            tr1.div(tr0)
+          ).div(2)
     }
 
     /**
@@ -90,8 +111,8 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         // do a simple look up
         let pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
         if (pairData) {
-          /*
-            console.log('a', {
+          
+            /*console.log('a', {
               reserve0z: pairData.totalReserve0, 
               tADecimals: tADecimals,
               reserve1z: pairData.totalReserve1, 
@@ -103,14 +124,16 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             return {
                 reserve0: convertUIStringToBigNumber(pairData.totalReserve0, tADecimals),
                 reserve1: convertUIStringToBigNumber(pairData.totalReserve1, tBDecimals),
+                decimals0: tADecimals,
+                decimals1: tBDecimals,
             }
         }
         // do different simple look up
         lookUp = `${tB}-${tA}`
         pairData = overrideReserves[lookUp] ?? orderedPairState()[lookUp]
         if (pairData) {
-            /*
-            console.log('b', {
+            
+            /*console.log('b', {
               reserve0z: pairData.totalReserve0, 
               tADecimals: tADecimals,
               reserve1z: pairData.totalReserve1, 
@@ -121,6 +144,8 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             return {
                 reserve0: convertUIStringToBigNumber(pairData.totalReserve1, tADecimals),
                 reserve1: convertUIStringToBigNumber(pairData.totalReserve0, tBDecimals),
+                decimals0: tADecimals,
+                decimals1: tBDecimals,
             }
         }
 
@@ -144,6 +169,8 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             return {
                 reserve0: new BigNumber(0),
                 reserve1: new BigNumber(0),
+                decimals0: new BigNumber(0),
+                decimals1: new BigNumber(0),
             }
         }
 
@@ -170,6 +197,8 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         return {
             reserve0: firstReserve0,
             reserve1: reserve1.times(ratio),
+            decimals0: tADecimals,
+            decimals1: tBDecimals,
         }
     }
 
