@@ -64,8 +64,8 @@ export const calculateLiquidityDetails = async (
           tokensToTransfer: ttt.eq(0) ? '0' : ttt.toFixed(isA2B ? tokenB.decimals : tokenA.decimals, BigNumber.ROUND_CEIL),
           exchangeRateA: exchangeRateA.toNumber() * 10 ** decimalDiff,
           exchangeRateB : exchangeRateB.toNumber() / 10 ** decimalDiff,
-          firstReserve: inputLiquidity.div(Math.pow(10, tokenA.decimals)).toString(),
-          secondReserve: outputLiquidity.div(Math.pow(10, tokenB.decimals)).toString(),
+          firstReserve: inputLiquidity.div(Math.pow(10, isA2B ? tokenA.decimals: tokenB.decimals)).toString(),
+          secondReserve: outputLiquidity.div(Math.pow(10, isA2B ? tokenB.decimals : tokenA.decimals)).toString(),
       }
   } catch (err) {
       log.error(`getSwapDetail error: ${err}`)

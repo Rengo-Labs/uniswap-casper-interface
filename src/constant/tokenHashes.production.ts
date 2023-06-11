@@ -64,7 +64,8 @@ export const tokenList: Record<string, Token> = {
     logoURI: wbtcIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00"
+    priceUSD: "0.00",
+    optApproval: "approve",
   },
   dUSDC: {
     name: "USD Coin",
@@ -79,7 +80,8 @@ export const tokenList: Record<string, Token> = {
     logoURI: usdcIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00"
+    priceUSD: "0.00",
+    optApproval: "approve",
   },
   dUSDT: {
     name: "USD Tether",
@@ -94,7 +96,8 @@ export const tokenList: Record<string, Token> = {
     logoURI: usdtIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00"
+    priceUSD: "0.00",
+    optApproval: "approve",
   },
   dETH: {
     name: "Wrapped Ethereum",
@@ -109,6 +112,7 @@ export const tokenList: Record<string, Token> = {
     logoURI: wethIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00"
+    priceUSD: "0.00",
+    optApproval: "approve",
   }
 }
