@@ -240,14 +240,16 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .times(action.payload.token1Price)
           )
           .toString()
-        /* console.log(
-          'action.payload', 
+        console.log(
+          'action.payload',
+          liquidityUSD,
+          totalLiquidityUSD,
           action.payload.name, 
           action.payload.token0Price,
           oldState.totalReserve0, 
           action.payload.token1Price,
           oldState.totalReserve1, 
-        )*/
+        )
 
         return {
           ...state,

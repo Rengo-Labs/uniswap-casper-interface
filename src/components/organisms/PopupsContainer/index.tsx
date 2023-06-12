@@ -119,7 +119,7 @@ export const PopupsContainer = () => {
             handleClose={handleShowSettingsOnClose}
             handleSave={handleSaveSettings}
             customNodeUrlValue={nodeUrl}
-            slippageToleranceValue={slippageTolerance.toString()}
+            slippageToleranceValue={parseFloat(slippageTolerance.toString())}
           />
 
           <WalletConnectedOptions
