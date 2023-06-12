@@ -210,17 +210,19 @@ const TokenSwapper = ({
     await changeTokenB(e);
   }
 
-  let freeAllowance = new BigNumber(firstTokenSelected.allowance || 0).toNumber();
+  let freeAllowance = new BigNumber(amountSwapTokenA || 0).times(-1).toNumber();
 
   if (!firstTokenSelected.optApproval) {
     freeAllowance = new BigNumber(freeAllowance)
-      .minus(new BigNumber(amountSwapTokenA))
+      .plus(new BigNumber(firstTokenSelected.allowance))
       .toNumber();
   }
 
   const isApproved =
       firstTokenSelected.symbol == 'CSPR' ||
       (firstTokenSelected.symbol != 'CSPR' && freeAllowance >= 0);
+
+  console.log('freeAllowance', freeAllowance)
 
   const refreshPrices = async () => {
     await refresh()

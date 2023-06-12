@@ -37,7 +37,7 @@ export const tokenList: Record<string, Token> = {
     priceUSD: "0.00",
   },
   WCSPR: {
-    name: "Wrapped Casper",
+    name: "Casper",
     chainId: 1,
     symbol: "WCSPR",
     symbolPair: "WCSPR",
@@ -52,7 +52,7 @@ export const tokenList: Record<string, Token> = {
     priceUSD: "0.00",
   },
   dBTC: {
-    name: "Wrapped BTC",
+    name: "BTC",
     chainId: 1,
     symbol: "dBTC",
     symbolPair: "dBTC",
@@ -100,7 +100,7 @@ export const tokenList: Record<string, Token> = {
     optApproval: "approve",
   },
   dETH: {
-    name: "Wrapped Ethereum",
+    name: "Ethereum",
     chainId: 1,
     symbol: "dETH",
     symbolPair: "dETH",
