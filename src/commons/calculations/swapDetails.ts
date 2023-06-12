@@ -92,7 +92,7 @@ export const calculateSwapDetails = async (
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
 
-      // console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
+      // console.log("exchangeRateA", exchangeRateA.toString(), "exchangeRateB", exchangeRateB.toString())
 
       const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
       // console.log("priceImpact", priceImpact)

@@ -22,7 +22,6 @@ interface PairsContext {
     getPoolList: () => any[],
     changeRowPriority: (name: string, checked: boolean) => void,
     calculateUSDtokens: (t0: string, t1: string, amount0: string | number, amount1: string | number, isAorB: boolean) => string[];
-    findUSDPairBySymbols: (t0: string, t1: string, amount0: string | number, amount1: string | number, tokenState) => string[];
     resetPairs: () => void;
     getPairChart: (pairPackageHash: string) => Promise<any>,
     getGlobalChart: () => Promise<any>,
@@ -66,12 +65,6 @@ export const PairsContext = ({children}: PairsContextProps) => {
 
     const calculateUSDtokens = (token0, token1, amount0, amount1, isAorB) => PairsResponsibilities(pairState, pairDispatch).calculateUSDtokens(token0, token1, amount0, amount1, isAorB)
 
-    const findUSDPairBySymbols = (token0, token1, amount0, amount1, tokenState) => {
-      const priceA = PairsResponsibilities(pairState, pairDispatch, tokenState).findUSDRateBySymbol(token0, updateNotification)
-      const priceB = PairsResponsibilities(pairState, pairDispatch, tokenState).findUSDRateBySymbol(token1, updateNotification)
-      return [priceA.toString(), priceB.toString()]
-    }
-
     const getPairChart = async (pairPackageHash): Promise<any> => {
       return PairsResponsibilities(pairState, pairDispatch).getPairChart(pairPackageHash)
     }
@@ -93,7 +86,6 @@ export const PairsContext = ({children}: PairsContextProps) => {
             getPoolList,
             changeRowPriority,
             calculateUSDtokens,
-            findUSDPairBySymbols,
             resetPairs,
             getPairChart,
             getGlobalChart
