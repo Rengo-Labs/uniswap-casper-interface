@@ -98,15 +98,10 @@ const LiquiditySwapper = ({
     handleValidate,
   } = isCSPRValid()
 
-  
-
   const tokenListFromFilter = useMemo(() => {
     const symbol = !openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol;
     return filterPopupTokens(symbol, pairState);
   }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector, pairState]);
-  
-  
-
 
   useEffect(() => {
     const favoriteData: string[] = getLocalStorageData(LOCAL_STORAGE_KEY)
