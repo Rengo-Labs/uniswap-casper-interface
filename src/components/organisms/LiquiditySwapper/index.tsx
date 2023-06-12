@@ -343,25 +343,17 @@ const LiquiditySwapper = ({
 
   const amountA = isNaN(amountSwapTokenA) ? 0 : amountSwapTokenA;
   const amountB = isNaN(amountSwapTokenB) ? 0 : amountSwapTokenB;
-  let freeAllowanceA = new BigNumber(amountA || 0).times(-1).toNumber();
-  
-  if (!firstTokenSelected.optApproval) {
-    freeAllowanceA = new BigNumber(freeAllowanceA)
-        .plus(new BigNumber(firstTokenSelected.allowance || 0))
-        .toNumber();
-  }
+  const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0)
+    .minus(new BigNumber(amountA || 0))
+    .toNumber();
 
   const isApprovedA =
     firstTokenSelected.symbol === 'CSPR' ||
     (firstTokenSelected.symbol !== 'CSPR' && freeAllowanceA >= 0);
 
-  let freeAllowanceB = new BigNumber(amountB || 0).times(-1).toNumber();
-
-  if (!secondTokenSelected.optApproval) {
-    freeAllowanceB = new BigNumber(freeAllowanceB)
-        .plus(new BigNumber(secondTokenSelected.allowance || 0))
-        .toNumber();
-  }
+  const freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0)
+    .minus(new BigNumber(amountB || 0))
+    .toNumber();
 
   const isApprovedB =
     secondTokenSelected.symbol === 'CSPR' ||
@@ -468,7 +460,7 @@ const LiquiditySwapper = ({
           <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" }, onClick: async () => {
               await requestIncreaseAllowance(
-                Math.abs(freeAllowanceA),
+                Math.abs(firstTokenSelected.optApproval ? amountA : freeAllowanceA),
                 firstTokenSelected.contractHash,
                 firstTokenSelected.decimals,
                 firstTokenSelected.optApproval
@@ -479,7 +471,7 @@ const LiquiditySwapper = ({
           <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""}, onClick: async () => {
               await requestIncreaseAllowance(
-                Math.abs(freeAllowanceB),
+                Math.abs(secondTokenSelected.optApproval ? amountB : freeAllowanceB),
                 secondTokenSelected.contractHash,
                 secondTokenSelected.decimals,
                 secondTokenSelected.optApproval

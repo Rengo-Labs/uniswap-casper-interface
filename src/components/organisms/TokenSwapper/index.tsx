@@ -84,7 +84,7 @@ const TokenSwapper = ({
   const tokenListFromFilter = useMemo(() => {
     return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
   }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector]);
-
+  
   const sortedTokenListData = tokenListData.sort((a, b) => {
     if (a.isFavorite && !b.isFavorite) {
       return -1;
@@ -210,19 +210,13 @@ const TokenSwapper = ({
     await changeTokenB(e);
   }
 
-  let freeAllowance = new BigNumber(amountSwapTokenA || 0).times(-1).toNumber();
-
-  if (!firstTokenSelected.optApproval) {
-    freeAllowance = new BigNumber(freeAllowance)
-      .plus(new BigNumber(firstTokenSelected.allowance))
+  const freeAllowance = new BigNumber(firstTokenSelected.allowance || 0)
+      .minus(new BigNumber(amountSwapTokenA))
       .toNumber();
-  }
 
   const isApproved =
       firstTokenSelected.symbol == 'CSPR' ||
       (firstTokenSelected.symbol != 'CSPR' && freeAllowance >= 0);
-
-  console.log('freeAllowance', freeAllowance)
 
   const refreshPrices = async () => {
     await refresh()
@@ -360,7 +354,7 @@ const TokenSwapper = ({
           {!isApproved && isConnected && (
               <Button type={"large"} props={{style: {width: 'auto'}, onClick: async () => {
                   await requestIncreaseAllowance(
-                      Math.abs(freeAllowance),
+                      Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ),
                       firstTokenSelected.contractHash
                   );
                 }}}>Approve {Math.abs(freeAllowance)} {firstTokenSelected.symbol}</Button>
