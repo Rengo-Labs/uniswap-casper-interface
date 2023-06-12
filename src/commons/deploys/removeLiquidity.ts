@@ -112,8 +112,8 @@ export enum RemoveLiquidityEntryPoint {
           RuntimeArgs.fromMap({
             token: new CLKey(token),
             liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0, BigNumber.ROUND_UP)),
-            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
-            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_cspr_min: CLValueBuilder.u256(new BigNumber(amountCSPRDesired).times(0).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_token_min: CLValueBuilder.u256(new BigNumber(amountTokenDesired).times(0).toFixed(0, BigNumber.ROUND_DOWN)),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
             to_purse: CLValueBuilder.uref(
@@ -149,8 +149,8 @@ export enum RemoveLiquidityEntryPoint {
             token_a: new CLKey(tokenAContract),
             token_b: new CLKey(tokenBContract),
             liquidity: CLValueBuilder.u256(new BigNumber(liquidity).toFixed(0, BigNumber.ROUND_UP)),
-            amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
-            amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(1 - slippage).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_a_min: CLValueBuilder.u256(new BigNumber(amountADesired).times(0).toFixed(0, BigNumber.ROUND_DOWN)),
+            amount_b_min: CLValueBuilder.u256(new BigNumber(amountBDesired).times(0).toFixed(0, BigNumber.ROUND_DOWN)),
             to: createRecipientAddress(publicKey),
             deadline: CLValueBuilder.u256(new BigNumber(deadline).toFixed(0)),
             
