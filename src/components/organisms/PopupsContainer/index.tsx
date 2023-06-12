@@ -11,7 +11,7 @@ import {useNavigate} from 'react-router-dom'
 
 export const PopupsContainer = () => {
   const navigate = useNavigate()
-  
+
     const {
         showSettings,
         setShowSettings,
@@ -119,7 +119,7 @@ export const PopupsContainer = () => {
             handleClose={handleShowSettingsOnClose}
             handleSave={handleSaveSettings}
             customNodeUrlValue={nodeUrl}
-            slippageToleranceValue={slippageTolerance}
+            slippageToleranceValue={slippageTolerance.toString()}
           />
 
           <WalletConnectedOptions
