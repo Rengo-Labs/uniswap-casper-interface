@@ -5,6 +5,7 @@ import isCSPRValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
 import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
+import {PairState} from "../../../reducers/PairsReducer";
 import { getLocalStorageData, setLocalStorageData } from '../../../commons/utils/persistData';
 
 interface TokenSwapperProps {
@@ -16,6 +17,7 @@ interface TokenSwapperProps {
   getProgress,
   refresh,
   calculateUSDtokens,
+  pairState: PairState,
   firstTokenSelected,
   secondTokenSelected,
   onSelectFirstToken,
@@ -67,7 +69,8 @@ const TokenSwapper = ({
                         valueAUSD,
                         valueBUSD,
                         setValueAUSD,
-                        setValueBUSD
+                        setValueBUSD,
+                        pairState,
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -81,9 +84,10 @@ const TokenSwapper = ({
   const [tokenListData, setTokenListData] = useState<any[]>([]);
 
   const tokenListFromFilter = useMemo(() => {
-    return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
-  }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector]);
-  
+    const symbol = !openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol;
+    return filterPopupTokens(symbol, pairState);
+  }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector, pairState]);
+
   const sortedTokenListData = tokenListData.sort((a, b) => {
     if (a.isFavorite && !b.isFavorite) {
       return -1;

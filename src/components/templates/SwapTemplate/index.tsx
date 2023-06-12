@@ -39,7 +39,7 @@ export const SwapTemplate = ({isMobile}) => {
         onSelectSecondToken,
         tokenState,
         onSwitchTokens,
-        filterPopupTokens,
+        filterTokenPairsByToken,
         getPercentChangeByTokens
     } = useContext(TokensProviderContext)
     // Details requirements
@@ -333,10 +333,11 @@ export const SwapTemplate = ({isMobile}) => {
                     secondTokenSelected={secondTokenSelected}
                     onSelectFirstToken={onSelectFirstToken}
                     onSelectSecondToken={onSelectSecondToken}
+                    pairState={pairState}
                     tokenState={tokenState}
                     onSwitchTokens={onSwitchTokens}
                     onActionConfirm={onActionConfirm}
-                    filterPopupTokens={filterPopupTokens}
+                    filterPopupTokens={filterTokenPairsByToken}
                     updateDetail={updateSwapDetail}
                     amountSwapTokenA={amountSwapTokenA}
                     amountSwapTokenASetter={amountSwapTokenASetter}
