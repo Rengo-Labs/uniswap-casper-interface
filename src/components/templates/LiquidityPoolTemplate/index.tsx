@@ -137,7 +137,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           isFavorite: getLocalStorageData("pool")?.includes(item.name),
           assetsPoolToken0: `${isNaN(item.totalReserve0) ? 0 : item.totalReserve0} ${item.token0Symbol}`,
           assetsPoolToken1: `${isNaN(item.totalReserve1) ? 0 : item.totalReserve1} ${item.token1Symbol}`,
-          yourShare: (isNaN(item.balance) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
+          yourShare: (isNaN(item.balance) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2),
+          apr: '0 %',
         }
       })
     );

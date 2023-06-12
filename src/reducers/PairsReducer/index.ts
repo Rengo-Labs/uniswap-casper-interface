@@ -24,6 +24,7 @@ export type PairData = {
   liquidity?: string,
   volume7d?: string,
   volume1d?: string,
+  apr?: string,
   totalSupply?: string,
   token0Price?: string,
   token1Price?: string,
