@@ -465,7 +465,7 @@ const LiquiditySwapper = ({
                 firstTokenSelected.decimals,
                 firstTokenSelected.optApproval
               );
-            }}}>Approve {Math.abs(freeAllowanceA)} {firstTokenSelected.symbol}</Button>
+            }}}>Approve {Math.abs(firstTokenSelected.optApproval ? amountA : freeAllowanceA)} {firstTokenSelected.symbol}</Button>
         )}
         {!isApprovedB && isConnected && (
           <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
@@ -476,7 +476,7 @@ const LiquiditySwapper = ({
                 secondTokenSelected.decimals,
                 secondTokenSelected.optApproval
               );
-            }}}>Approve {Math.abs(freeAllowanceB)} {secondTokenSelected.symbol}</Button>
+            }}}>Approve {Math.abs(secondTokenSelected.optApproval ? amountB : freeAllowanceB)} {secondTokenSelected.symbol}</Button>
         )}
 
         {isApprovedA && isApprovedB && isConnected && (

@@ -357,7 +357,7 @@ const TokenSwapper = ({
                       Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ),
                       firstTokenSelected.contractHash
                   );
-                }}}>Approve {Math.abs(freeAllowance)} {firstTokenSelected.symbol}</Button>
+                }}}>Approve {Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance )} {firstTokenSelected.symbol}</Button>
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{
