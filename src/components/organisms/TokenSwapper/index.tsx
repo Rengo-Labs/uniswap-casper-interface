@@ -84,7 +84,7 @@ const TokenSwapper = ({
   const tokenListFromFilter = useMemo(() => {
     return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
   }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector]);
-  
+
   const sortedTokenListData = tokenListData.sort((a, b) => {
     if (a.isFavorite && !b.isFavorite) {
       return -1;
@@ -210,9 +210,13 @@ const TokenSwapper = ({
     await changeTokenB(e);
   }
 
-  const freeAllowance = new BigNumber(firstTokenSelected.allowance || 0)
+  let freeAllowance = new BigNumber(firstTokenSelected.allowance || 0).toNumber();
+
+  if (!firstTokenSelected.optApproval) {
+    freeAllowance = new BigNumber(freeAllowance)
       .minus(new BigNumber(amountSwapTokenA))
       .toNumber();
+  }
 
   const isApproved =
       firstTokenSelected.symbol == 'CSPR' ||

@@ -343,17 +343,25 @@ const LiquiditySwapper = ({
 
   const amountA = isNaN(amountSwapTokenA) ? 0 : amountSwapTokenA;
   const amountB = isNaN(amountSwapTokenB) ? 0 : amountSwapTokenB;
-  const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0)
-    .minus(new BigNumber(amountA || 0))
-    .toNumber();
+  let freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0).toNumber();
+  
+  if (!firstTokenSelected.optApproval) {
+    freeAllowanceA = new BigNumber(freeAllowanceA)
+        .minus(new BigNumber(amountA || 0))
+        .toNumber();
+  }
 
   const isApprovedA =
     firstTokenSelected.symbol === 'CSPR' ||
     (firstTokenSelected.symbol !== 'CSPR' && freeAllowanceA >= 0);
 
-  const freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0)
-    .minus(new BigNumber(amountB || 0))
-    .toNumber();
+  let freeAllowanceB = new BigNumber(secondTokenSelected.allowance || 0).toNumber();
+
+  if (!secondTokenSelected.optApproval) {
+    freeAllowanceB = new BigNumber(freeAllowanceB)
+        .minus(new BigNumber(amountB || 0))
+        .toNumber();
+  }
 
   const isApprovedB =
     secondTokenSelected.symbol === 'CSPR' ||
