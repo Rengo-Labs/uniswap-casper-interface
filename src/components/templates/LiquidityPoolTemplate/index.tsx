@@ -116,7 +116,6 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     allowance: 0
   })
   const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
-  const { slippageTolerance, updateSlippageTolerance } = globalStore()
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
   const [showRemovingToggle, setShowRemovingToggle] = useState(true)
@@ -124,7 +123,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   useEffect(() => {
     setTableData(
       getPoolList().map((item) => {
-        console.log('item.liquidityUSD', item.liquidityUSD)
+        console.log('item.liquidityUSD', item)
         return {
           contractPackage: item.packageHash.slice(5),
           name: item.name,
@@ -138,7 +137,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           isFavorite: getLocalStorageData("pool")?.includes(item.name),
           assetsPoolToken0: `${isNaN(item.totalReserve0) ? 0 : item.totalReserve0} ${item.token0Symbol}`,
           assetsPoolToken1: `${isNaN(item.totalReserve1) ? 0 : item.totalReserve1} ${item.token1Symbol}`,
-          yourShare: (isNaN(item.balanace) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
+          yourShare: (isNaN(item.balance) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
         }
       })
     );
