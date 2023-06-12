@@ -17,7 +17,6 @@ interface TokenSwapperProps {
   getProgress,
   refresh,
   calculateUSDtokens,
-  pairState: PairState,
   firstTokenSelected,
   secondTokenSelected,
   onSelectFirstToken,
@@ -70,7 +69,6 @@ const TokenSwapper = ({
                         valueBUSD,
                         setValueAUSD,
                         setValueBUSD,
-                        pairState,
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -84,10 +82,9 @@ const TokenSwapper = ({
   const [tokenListData, setTokenListData] = useState<any[]>([]);
 
   const tokenListFromFilter = useMemo(() => {
-    const symbol = !openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol;
-    return filterPopupTokens(symbol, pairState);
-  }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector, pairState]);
-
+    return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
+  }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector]);
+  
   const sortedTokenListData = tokenListData.sort((a, b) => {
     if (a.isFavorite && !b.isFavorite) {
       return -1;

@@ -61,8 +61,8 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         const tr0 = new BigNumber(ratesUSDT.reserve0).div(new BigNumber(10).pow(ratesUSDT.decimals0))
         const tr1 = new BigNumber(ratesUSDT.reserve1).div(new BigNumber(10).pow(ratesUSDT.decimals1))
 
-
-/*        console.log(
+        /* console.log(
+          tokenSymbol,
           'ratesUSDC/T', 
           cr0.toString(),
           cr1.toString(), 
@@ -174,29 +174,53 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
             }
         }
 
+        // console.log('path', lookUp)
+
+        let first = true
         let firstReserve0 = new BigNumber(1)
         let reserve0 = new BigNumber(1)
         let reserve1 = new BigNumber(1)
         for (let i = 1; i < path.length; i++) {
             const pair = overrideReserves[path[i].label.name] ?? path[i].label
             if (path[i - 1].id == tokenASymbol) {
-                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1, tADecimals))
-                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0, tBDecimals))
+                const token0 = tokenState.tokens[tokenASymbol]
+                const token1 = tokenState.tokens[tokenBSymbol]
+
+                if (!token0 || !token1) {
+                  continue
+                }
+
+                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve0, token0.decimals))
+                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve1, token1.decimals))
+                // console.log('reserve 0', reserve0.toString(), pair.totalReserve1, token1.decimals)
+                // console.log('reserve 1', reserve1.toString(), pair.totalReserve0, token0.decimals)
             } else {
-                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve0, tADecimals))
-                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve1, tBDecimals))
+                const token0 = tokenState.tokens[tokenASymbol]
+                const token1 = tokenState.tokens[tokenBSymbol]
+
+                if (!token0 || !token1) {
+                  continue
+                }
+              
+                reserve0 = reserve0.times(convertUIStringToBigNumber(pair.totalReserve1, token1.decimals))
+                reserve1 = reserve1.times(convertUIStringToBigNumber(pair.totalReserve0, token0.decimals))
+                // console.log('reserve 0', reserve0.toString(), pair.totalReserve0, token0.decimals)
+                // console.log('reserve 1', reserve1.toString(), pair.totalReserve1, token1.decimals)
             }
 
-            if (i == 1) {
+            if (first) {
                 firstReserve0 = reserve0
+                first = false
             }
         }
 
         const ratio = firstReserve0.div(reserve0)
+        // console.log('firstReserve0', firstReserve0.toString())
+        // console.log('firstReserve1', reserve1.times(ratio).toString())
 
         return {
-            reserve0: firstReserve0,
-            reserve1: reserve1.times(ratio),
+            reserve0: convertUIStringToBigNumber(firstReserve0, tADecimals),
+            reserve1: convertUIStringToBigNumber(reserve1.times(ratio), tBDecimals),
             decimals0: tADecimals,
             decimals1: tBDecimals,
         }

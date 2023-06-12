@@ -39,7 +39,7 @@ export const SwapTemplate = ({isMobile}) => {
         onSelectSecondToken,
         tokenState,
         onSwitchTokens,
-        filterTokenPairsByToken,
+        filterPopupTokens,
         getPercentChangeByTokens
     } = useContext(TokensProviderContext)
     // Details requirements
@@ -211,6 +211,8 @@ export const SwapTemplate = ({isMobile}) => {
 
         let getSwapDetailResponse = null;
         let nextTokensToTransfer = value
+        let exchangeRateA = BigNumber(1)
+        let exchangeRateB = BigNumber(1)
 
         if (pairExist) {
             const {reserve0, reserve1} = findReservesBySymbols(
@@ -226,6 +228,8 @@ export const SwapTemplate = ({isMobile}) => {
                 value,
                 token
             );
+            exchangeRateA = getSwapDetailResponse.exchangeRateA
+            exchangeRateB = getSwapDetailResponse.exchangeRateB
             setPairPath([tokenA.symbol, tokenB.symbol])
         } else {
             const pairListPaths = listPath
@@ -238,8 +242,9 @@ export const SwapTemplate = ({isMobile}) => {
                     symbol1,
                     tokenState
                 );
+                console.log('HI')
                 const token0 = tokenState.tokens[symbol0]
-                const token1 = tokenState.tokens[symbol0]
+                const token1 = tokenState.tokens[symbol1]
                 getSwapDetailResponse = await getSwapDetails(
                     token0,
                     token1,
@@ -254,6 +259,8 @@ export const SwapTemplate = ({isMobile}) => {
                 getSwapDetailResponse.priceImpact = isNaN(priceImpactAcm) ? priceImpactAcm : priceImpactAcm.toFixed(2)
                 nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
                 pairPath.push(symbol0, symbol1)
+                exchangeRateA = exchangeRateA.times(getSwapDetailResponse.exchangeRateA)
+                exchangeRateB = exchangeRateB.times(getSwapDetailResponse.exchangeRateB)
             }
             setPairPath([...new Set(pairPath)])
         }
@@ -263,7 +270,13 @@ export const SwapTemplate = ({isMobile}) => {
         }
 
         return {
-            getSwapDetailResponse
+            getSwapDetailResponse: Object.assign(
+              getSwapDetailResponse, 
+              {
+                exchangeRateA,
+                exchangeRateB,
+              }
+            )
         }
     }
 
@@ -333,11 +346,10 @@ export const SwapTemplate = ({isMobile}) => {
                     secondTokenSelected={secondTokenSelected}
                     onSelectFirstToken={onSelectFirstToken}
                     onSelectSecondToken={onSelectSecondToken}
-                    pairState={pairState}
                     tokenState={tokenState}
                     onSwitchTokens={onSwitchTokens}
                     onActionConfirm={onActionConfirm}
-                    filterPopupTokens={filterTokenPairsByToken}
+                    filterPopupTokens={filterPopupTokens}
                     updateDetail={updateSwapDetail}
                     amountSwapTokenA={amountSwapTokenA}
                     amountSwapTokenASetter={amountSwapTokenASetter}
