@@ -20,6 +20,7 @@ import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {SUPPORTED_NETWORKS} from "../../../constant";
 import {convertBigNumberToUIString, convertToUSDCurrency, convertUIStringToBigNumber} from '../../../commons/utils';
+import {StakingProviderContext} from "../../../contexts/StakingContext";
 export const LiquidityTemplate = ({isMobile}) => {
     const {
         onIncreaseAllow,
@@ -37,10 +38,10 @@ export const LiquidityTemplate = ({isMobile}) => {
         onAddLiquidity,
         getLiquidityDetails,
         onRemoveLiquidity,
-        onClaimRewards,
-        onDeposit,
-        onWithdraw
     } = useContext(LiquidityProviderContext)
+
+    const {onAddStake, onClaimRewards, onRemoveStake, getStakeBalance} = useContext(StakingProviderContext)
+
     const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext)
     const {calculateUSDtokens, pairState, findReservesBySymbols, getPoolList} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
@@ -106,6 +107,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [titleStakePopup, setTitleStakePopup] = useState('')
     const [titleStakeButton, setTitleStakeButton] = useState('')
     const [stakingToggle, setStakingToggle] = useState(false)
+    const [showStakingAllowance, setShowStakingAllowance] = useState(true)
 
     const handleChangeInput = (value) => {
         if (value === 0) {
@@ -207,9 +209,9 @@ export const LiquidityTemplate = ({isMobile}) => {
         let result = null
 
         if (titleStakePopup === 'Stake') {
-            result = await onDeposit(removeLiquidityCalculation.lpAmount)
+            result = await onAddStake(removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
         } else {
-            result = await onWithdraw(removeLiquidityCalculation.lpAmount)
+            result = await onRemoveStake(removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
         }
 
         if (result) {
@@ -229,14 +231,14 @@ export const LiquidityTemplate = ({isMobile}) => {
     const handleNavigate = (item) => {
         Navigator(`/swap?token0=${item.token0Symbol}&token1=${item.token1Symbol}`)
     }
-    const actions = (item, action, firstSymbol, secondSymbol) => {
+    const actions = async (item, action, firstSymbol, secondSymbol) => {
         if (action === 'AddLiquidity') {
             onSelectFirstToken(tokenState.tokens[firstSymbol])
             onSelectSecondToken(tokenState.tokens[secondSymbol])
         }
 
         if (action === 'DeleteLP') {
-
+            setShowStakingAllowance(true)
             createRemovingDataForPopup(item)
         }
 
@@ -245,11 +247,13 @@ export const LiquidityTemplate = ({isMobile}) => {
         }
 
         if (action === 'StakeLP') {
+            setShowStakingAllowance(true)
             createStakeDataForPopup(item)
         }
 
         if (action === 'UnstakeLP') {
-            createUnstakeDataForPopup(item)
+            setShowStakingAllowance(false)
+            await createUnstakeDataForPopup(item)
         }
 
         if (action === 'ClaimLP') {
@@ -334,7 +338,11 @@ export const LiquidityTemplate = ({isMobile}) => {
         setStakePopup(true)
     }
 
-    const createUnstakeDataForPopup = (item) => {
+    const createUnstakeDataForPopup = async (item) => {
+        const balance = await getStakeBalance()
+        if (parseFloat(balance) == 0) {
+            return
+        }
         const token0 = tokenState.tokens[item.token0Symbol]
         const token1 = tokenState.tokens[item.token1Symbol]
 
@@ -344,7 +352,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         const data = {
             id: item.contractHash,
             tokenName: item.name,
-            liquidity: item.balance,
+            liquidity: balance,
             allowance: parseFloat(item.allowance),
             firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
             firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
@@ -363,7 +371,13 @@ export const LiquidityTemplate = ({isMobile}) => {
             ...data
         }))
 
-        setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
+        setRemoveLiquidityCalculation((prevState => ({
+            ...prevState,
+            lpAmount: 0,
+            firstAmount: 0,
+            secondAmount: 0,
+            allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)
+        })))
         setStakePopup(true)
     }
 
@@ -576,7 +590,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 isOpen={stakePopup}
                 disabledButton={removeLiquidityButtonDisabled}
                 disabledAllowanceButton={removeLiquidityAllowanceEnabled}
-                showAllowance={(removeLiquidityCalculation.allowance) > 0}
+                showAllowance={showStakingAllowance && (removeLiquidityCalculation.allowance > 0)}
                 defaultValue={removeLiquidityInput}
                 handleChangeInput={handleChangeInput}
                 handleAction={onStakeAndUnstakeAction}

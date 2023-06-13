@@ -12,7 +12,6 @@ import {
   signAndDeployRemoveLiquidity,
   sleep,
   Token,
-  signAndDeployClaim, signAndDeployDeposit, signAndDeployWithdraw
 } from '../../commons';
 import { DEADLINE, NotificationType, SUPPORTED_NETWORKS } from '../../constant';
 import {
@@ -46,9 +45,6 @@ export interface LiquidityContext {
     gasFee: number,
     refundCSPR: boolean
   ) => Promise<boolean>;
-  onClaimRewards: () => Promise<boolean>;
-  onDeposit: (amount: number | string) => Promise<boolean>;
-  onWithdraw: (amount: number | string) => Promise<boolean>;
   getLiquidityDetails: (
     tokenA: Token,
     tokenB: Token,
@@ -249,203 +245,6 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  async function onClaimRewards(): Promise<boolean> {
-    updateNotification({
-      type: NotificationType.Info,
-      title: 'Removing liquidity',
-      subtitle: '',
-      show: true,
-      isOnlyNotification: true,
-      closeManually: true
-    })
-
-    try {
-      const [deployHash, deployResult] = await signAndDeployClaim(
-        casperClient,
-        walletState.wallet
-      )
-
-      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
-      setProgressModal(true)
-      setLinkExplorer(deployUrl)
-
-      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`
-      updateNotification({
-        type: NotificationType.Info,
-        title: 'Processing...',
-        subtitle: notificationMessage,
-        show: true,
-        isOnlyNotification: true,
-        closeManually: true,
-      })
-
-      const result = await casperClient.waitForDeployExecution(deployHash)
-
-      if (result) {
-        updateNotification({
-          type: NotificationType.Success,
-          title: 'Liquidity correctly removed.',
-          subtitle: '',
-          show: true,
-          isOnlyNotification: true,
-          timeToClose: 5000
-        })
-      }
-
-      setProgressModal(false)
-      setConfirmModal(true)
-
-      await sleep(15000)
-      await refresh()
-
-      return true
-    } catch (err) {
-      setProgressModal(false)
-      await refresh()
-      updateNotification({
-        type: NotificationType.Error,
-        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
-        subtitle: '',
-        show: true,
-        isOnlyNotification: true,
-        timeToClose: 5000
-      })
-      return false
-    }
-  }
-
-  async function onDeposit(amount: number | string): Promise<boolean> {
-    updateNotification({
-      type: NotificationType.Info,
-      title: 'Removing liquidity',
-      subtitle: '',
-      show: true,
-      isOnlyNotification: true,
-      closeManually: true
-    })
-
-    try {
-      const [deployHash, deployResult] = await signAndDeployDeposit(
-        casperClient,
-        walletState.wallet,
-        amount
-      )
-
-      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
-      setProgressModal(true)
-      setLinkExplorer(deployUrl)
-
-      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`
-      updateNotification({
-        type: NotificationType.Info,
-        title: 'Processing...',
-        subtitle: notificationMessage,
-        show: true,
-        isOnlyNotification: true,
-        closeManually: true,
-      })
-
-      const result = await casperClient.waitForDeployExecution(deployHash)
-
-      if (result) {
-        updateNotification({
-          type: NotificationType.Success,
-          title: 'Liquidity correctly removed.',
-          subtitle: '',
-          show: true,
-          isOnlyNotification: true,
-          timeToClose: 5000
-        })
-      }
-
-      setProgressModal(false)
-      setConfirmModal(true)
-
-      await sleep(15000)
-      await refresh()
-
-      return true
-    } catch (err) {
-      setProgressModal(false)
-      await refresh()
-      updateNotification({
-        type: NotificationType.Error,
-        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
-        subtitle: '',
-        show: true,
-        isOnlyNotification: true,
-        timeToClose: 5000
-      })
-      return false
-    }
-  }
-
-  async function onWithdraw(amount: number | string): Promise<boolean> {
-    updateNotification({
-      type: NotificationType.Info,
-      title: 'Removing liquidity',
-      subtitle: '',
-      show: true,
-      isOnlyNotification: true,
-      closeManually: true
-    })
-
-    try {
-      const [deployHash, deployResult] = await signAndDeployWithdraw(
-        casperClient,
-        walletState.wallet,
-        amount
-      )
-
-      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
-      setProgressModal(true);
-      setLinkExplorer(deployUrl)
-
-      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
-      updateNotification({
-        type: NotificationType.Info,
-        title: 'Processing...',
-        subtitle: notificationMessage,
-        show: true,
-        isOnlyNotification: true,
-        closeManually: true,
-      })
-
-      const result = await casperClient.waitForDeployExecution(deployHash)
-
-      if (result) {
-        updateNotification({
-          type: NotificationType.Success,
-          title: 'Liquidity correctly removed.',
-          subtitle: '',
-          show: true,
-          isOnlyNotification: true,
-          timeToClose: 5000
-        })
-      }
-
-      setProgressModal(false)
-      setConfirmModal(true)
-
-      await sleep(15000)
-      await refresh()
-
-      return true
-    } catch (err) {
-      setProgressModal(false)
-      await refresh()
-      updateNotification({
-        type: NotificationType.Error,
-        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
-        subtitle: '',
-        show: true,
-        isOnlyNotification: true,
-        timeToClose: 5000
-      })
-      return false
-    }
-  }
-
   async function getLiquidityDetails(
     tokenA: Token,
     tokenB: Token,
@@ -477,9 +276,6 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         getLiquidityDetails,
         isRemovingPopupOpen,
         setRemovingPopup,
-        onClaimRewards,
-        onDeposit,
-        onWithdraw
       }}
     >
       {children}
