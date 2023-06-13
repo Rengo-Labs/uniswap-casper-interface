@@ -255,8 +255,9 @@ const LiquiditySwapper = ({
       filteredValue,
       secondTokenSelected
     );
+
     amountSwapTokenASetter(tokensToTransfer);
-    calculateUSDValues(filteredValue, tokensToTransfer, true)
+    calculateUSDValues(tokensToTransfer, filteredValue, true)
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
     if (!secondValidation) {

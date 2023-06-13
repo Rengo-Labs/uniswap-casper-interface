@@ -164,7 +164,7 @@ const TokenSwapper = ({
       isSwitched
     );
 
-    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, firstToken.symbolPair)
+    calculateUSDValues(tokensToTransfer, filteredValue, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, firstToken.symbolPair)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
     if(filteredValue) {
       handleValidate(typeof filteredValue === "number" ? filteredValue : parseFloat(filteredValue), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0);
