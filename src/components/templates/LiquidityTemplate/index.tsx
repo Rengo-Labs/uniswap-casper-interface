@@ -75,6 +75,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         tokenName: 'CSPR',
         liquidity: '0',
         allowance: 0,
+        gaugeAllowance: 0,
         firstIcon: '',
         firstName: 'CSPR',
         firstSymbol: 'CSPR',
@@ -89,25 +90,30 @@ export const LiquidityTemplate = ({isMobile}) => {
         secondLiquidity: '0',
         secondRate: '0',
         secondHash: '',
-        secondDecimals: 9
+        secondDecimals: 9,
+        gaugeContractHash: null,
+        gaugePackageHash: null
     })
     const [removeLiquidityInput, setRemoveLiquidityInput] = useState(0)
     const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
     const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
     const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
+    const [gaugeAllowanceEnabled, setGaugeAllowanceEnabled] = useState(false)
     const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
         gaugeContractHash: null,
+        gaugePackageHash: null,
         lpAmount: 0,
         firstAmount: 0,
         secondAmount: 0,
-        allowance: 0
+        allowance: 0,
+        gaugeAllowance: 0
     })
     const [showRemovingToggle, setShowRemovingToggle] = useState(false)
     const Navigator = useNavigate()
     const [stakePopup, setStakePopup] = useState(false)
     const [titleStakePopup, setTitleStakePopup] = useState('')
     const [titleStakeButton, setTitleStakeButton] = useState('')
-    const [stakingToggle, setStakingToggle] = useState(false)
+    const [stakingToggle, setStakingToggle] = useState(true)
     const [showStakingAllowance, setShowStakingAllowance] = useState(true)
 
     const handleChangeInput = (value) => {
@@ -162,7 +168,8 @@ export const LiquidityTemplate = ({isMobile}) => {
             lpAmount: lpAmount.toNumber().toFixed(removeLiquidityData.decimals),
             firstAmount: firstAmount.toNumber().toFixed(removeLiquidityData.decimals),
             secondAmount: secondAmount.toNumber().toFixed(removeLiquidityData.decimals),
-            allowance: lpAmount.toNumber() - removeLiquidityData.allowance
+            allowance: lpAmount.toNumber() - removeLiquidityData.allowance,
+            gaugeAllowance: lpAmount.toNumber() - removeLiquidityData.gaugeAllowance
         });
 
         setRemoveLiquidityCalculation(newVar)
@@ -227,6 +234,10 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     const onActionAllowance = async () => {
         await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityCalculation.decimals)
+    }
+
+    const onActionGaugeAllowance = async () => {
+        await onIncreaseAllow(removeLiquidityCalculation.gaugeAllowance, removeLiquidityData.id, removeLiquidityCalculation.decimals, "", removeLiquidityData.gaugePackageHash)
     }
 
     const handleNavigate = (item) => {
@@ -328,20 +339,21 @@ export const LiquidityTemplate = ({isMobile}) => {
             secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
             secondHash: item.contract1,
             decimals: item.decimals,
-            secondDecimals: token1.decimals
+            secondDecimals: token1.decimals,
+            gaugeContractHash: item.gaugeContractHash,
+            gaugePackageHash: item.gaugePackageHash
         }
         setRemoveLiquidityData((prevState) => ({
             ...prevState,
             ...data
         }))
 
-        setRemoveLiquidityCalculation((prevState => ({...prevState, gaugeContractHash: item.gaugeContractHash, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
+        setRemoveLiquidityCalculation((prevState => ({...prevState, gaugePackageHash: item.gaugePackageHash, gaugeContractHash: item.gaugeContractHash, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
         setStakePopup(true)
     }
 
     const createUnstakeDataForPopup = async (item) => {
-        const balance = await getStakeBalance(item.gaugeContractHash)
-        if (parseFloat(balance) == 0) {
+        if (parseFloat(item.gaugeBalance) == 0) {
             return
         }
         const token0 = tokenState.tokens[item.token0Symbol]
@@ -353,7 +365,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         const data = {
             id: item.contractHash,
             tokenName: item.name,
-            liquidity: balance,
+            liquidity: item.gaugeBalance,
             allowance: parseFloat(item.allowance),
             firstIcon: item.token0Symbol.includes('CSPR') ? csprIcon : item.token0Icon,
             firstName: item.token0Symbol.includes('CSPR') ? 'Casper' : item.token0Name,
@@ -365,7 +377,9 @@ export const LiquidityTemplate = ({isMobile}) => {
             secondSymbol: item.token1Symbol.includes('CSPR') ? 'CSPR' : item.token1Symbol,
             secondHash: item.contract1,
             decimals: item.decimals,
-            secondDecimals: token1.decimals
+            secondDecimals: token1.decimals,
+            gaugeContractHash: item.gaugeContractHash,
+            gaugePackageHash: item.gaugePackageHash
         }
         setRemoveLiquidityData((prevState) => ({
             ...prevState,
@@ -375,6 +389,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         setRemoveLiquidityCalculation((prevState => ({
             ...prevState,
             gaugeContractHash: item.gaugeContractHash,
+            gaugePackageHash: item.gaugePackageHash,
             lpAmount: 0,
             firstAmount: 0,
             secondAmount: 0,
@@ -407,7 +422,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                 yourShare: (100 * (Number(i.balance) / Number(i.totalSupply))).toFixed(2),
                 apr: '0 %',
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
-                hasStake: true
+                hasStake: parseFloat(i.gaugeBalance) > 0,
+                hasGauge: i.gaugeContractHash != null
             }
         })
         userPairDataNonZeroSetter(userPairs)
@@ -451,12 +467,14 @@ export const LiquidityTemplate = ({isMobile}) => {
 
             setRemoveLiquidityData((prevState) => ({
                 ...prevState,
-                allowance: parseFloat(pair.allowance)
+                allowance: parseFloat(pair.allowance),
+                gaugeAllowance: parseFloat(pair.gaugeAllowance)
             }))
 
             setRemoveLiquidityCalculation((prevState) => ({
                 ...prevState,
-                allowance: removeLiquidityCalculation.lpAmount - parseFloat(pair.allowance)
+                allowance: removeLiquidityCalculation.lpAmount - parseFloat(pair.allowance),
+                gaugeAllowance: removeLiquidityCalculation.lpAmount - parseFloat(pair.gaugeAllowance)
             }))
         }
 
@@ -561,6 +579,14 @@ export const LiquidityTemplate = ({isMobile}) => {
         setSecondReserve(currentFReserve);
     }
 
+    const showPairsStaked = () => {
+        if (!stakingToggle) {
+            const result = userPairDataNonZero.filter(i => parseFloat(i.gaugeBalance) != 0)
+            userPairDataNonZeroSetter(result)
+        }
+        setStakingToggle(!stakingToggle)
+    }
+
     return (
         <>
             <RemoveLiquidityDialog
@@ -592,11 +618,14 @@ export const LiquidityTemplate = ({isMobile}) => {
                 isOpen={stakePopup}
                 disabledButton={removeLiquidityButtonDisabled}
                 disabledAllowanceButton={removeLiquidityAllowanceEnabled}
+                disabledGaugeAllowanceButton={gaugeAllowanceEnabled}
                 showAllowance={showStakingAllowance && (removeLiquidityCalculation.allowance > 0)}
                 defaultValue={removeLiquidityInput}
                 handleChangeInput={handleChangeInput}
                 handleAction={onStakeAndUnstakeAction}
                 handleAllowance={onActionAllowance}
+                handleGaugeAllowance={onActionGaugeAllowance}
+                showGaugeAllowance={(removeLiquidityCalculation.gaugeAllowance <= 0)}
                 calculatedAmounts={removeLiquidityCalculation}
             />
             <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
@@ -648,8 +677,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                   <LPContainer title="My Liquidity"
                                networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
                                lpTokens={userPairDataNonZero}
-                               toggleActive={false}
-                               toggleAction={()=>{}}
+                               toggleActive={stakingToggle}
+                               toggleAction={showPairsStaked}
                                />
               </SingleColumn>
             }

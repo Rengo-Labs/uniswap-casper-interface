@@ -22,8 +22,7 @@ import {
 import {
   GAS_FEE_FOR_GAUGE_CLAIM,
   GAS_FEE_FOR_GAUGE_STAKE,
-  GAS_FEE_FOR_GAUGE_UNSTAKE,
-  LIQUIDITY_GAUGE_V3_CONTRACT_HASH,
+  GAS_FEE_FOR_GAUGE_UNSTAKE
 } from "../../constant"
 import {Some, None} from "ts-results";
 
@@ -33,7 +32,6 @@ import {Some, None} from "ts-results";
 export enum GaugeV3EntryPoint {
   CLAIM_REWARDS = "claim_rewards",
   DEPOSIT = "deposit",
-  APPROVE = "approve",
   WITHDRAW = "withdraw"
 }
 
@@ -54,7 +52,7 @@ export const signAndDeployClaim = async (
 
     return await casperClient.signAndDeployContractCall(
       wallet,
-      contractHash,
+      contractHash.slice(5),
       GaugeV3EntryPoint.CLAIM_REWARDS,
       RuntimeArgs.fromMap({
         addr:  CLValueBuilder.option(None, new CLKeyType()),
@@ -86,35 +84,11 @@ export const signAndDeployDeposit = async (
 
     return await casperClient.signAndDeployContractCall(
       wallet,
-      contractHash,
+      contractHash.slice(5),
       GaugeV3EntryPoint.DEPOSIT,
       RuntimeArgs.fromMap({
         value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
-        claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(false)))
-      }),
-      new BigNumber(GAS_FEE_FOR_GAUGE_STAKE).times(10**9),
-    )
-  } catch (err) {
-    log.error(`signAndDeployDeposit error: ${err}`)
-    throw err
-  }
-}
-
-export const signAndDeployApproveGauge = async (
-  casperClient: CasperClient,
-  wallet: Wallet,
-  contractHash: string,
-  amount: BigNumber
-): Promise<[string, GetDeployResult]> => {
-  try {
-
-    return await casperClient.signAndDeployContractCall(
-      wallet,
-      contractHash,
-      GaugeV3EntryPoint.APPROVE,
-      RuntimeArgs.fromMap({
-        value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
-        addr: CLValueBuilder.option(Some(new CLKey(wallet.publicKey))),
+        addr: CLValueBuilder.option(Some(createRecipientAddress(wallet.publicKey))),
         claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(false)))
       }),
       new BigNumber(GAS_FEE_FOR_GAUGE_STAKE).times(10**9),
@@ -143,7 +117,7 @@ export const signAndDeployWithdraw = async (
 
     return await casperClient.signAndDeployContractCall(
       wallet,
-      LIQUIDITY_GAUGE_V3_CONTRACT_HASH,
+      contractHash.slice(5),
       GaugeV3EntryPoint.WITHDRAW,
       RuntimeArgs.fromMap({
         value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
@@ -155,20 +129,4 @@ export const signAndDeployWithdraw = async (
     log.error(`signAndDeployClaim error: ${err}`)
     throw err
   }
-}
-
-export const getBalanceOf = async (casperClient: any, contractHash: string, contractPackage: string, wallet: Wallet) => {
-
-  const { Contract } = Contracts
-  const contractClient = new Contract(casperClient)
-  contractClient.setContractHash(contractHash, contractPackage)
-
-  const finalBytes = CLValueParsers.toBytes(wallet.publicKey).unwrap();
-  const itemKey = Buffer.from(finalBytes).toString("base64");
-
-  const balance = await contractClient.queryContractDictionary("balances", itemKey)
-  //const balance = await contractClient.balanceOf(wallet.publicKey)
-  console.log("staking balance", balance)
-
-  return balance
 }

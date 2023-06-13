@@ -161,6 +161,8 @@ export class APIClient {
    * @returns the allowance as a string
    */
   async getERC20Allowance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
+    if (contractHash == null) return;
+
     const erc20 = new ERC20Client(
       this._client.node,
       this._client.network,
