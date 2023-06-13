@@ -240,7 +240,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                                 },
                             });
                         }).catch(e => {
-                            console.log("Error loading pair gauge balance ", pair.name)
+                            console.log("Error loading pair gauge balance ", pair.name, e)
                             pairDispatch({
                                 type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
                                 payload: {

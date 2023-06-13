@@ -71,7 +71,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
     const [showRemoveLiquidityDialog, setShowRemoveLiquidityDialog] = useState(false)
     const [removeLiquidityData, setRemoveLiquidityData] = useState({
-        id: 'd3jd92d',
+        id: 'd3jd92de',
         tokenName: 'CSPR',
         liquidity: '0',
         allowance: 0,
@@ -269,7 +269,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         }
 
         if (action === 'ClaimLP') {
-            onClaimAction(item)
+            await onClaimAction(item)
         }
     }
 
@@ -431,7 +431,7 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     useEffect(() => {
         if (!isConnected) {
-            refresh()
+            refresh().then(() => console.log('refreshed..'))
         }
 
         showPairsStaked(stakingToggle)
@@ -582,11 +582,15 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     const showPairsStaked = (stakingToggle) => {
         if (stakingToggle) {
-            const result = userPairDataNonZero.filter(i => parseFloat(i.gaugeBalance) != 0)
+            const result = userPairDataNonZero.filter(i => i.hasGauge === true)
             userPairDataNonZeroSetter(result)
         } else {
             loadUserLP()
         }
+    }
+
+    const onStakeToggleHandler = () => {
+        setStakingToggle(!stakingToggle)
     }
 
     return (
@@ -679,8 +683,8 @@ export const LiquidityTemplate = ({isMobile}) => {
                   <LPContainer title="My Liquidity"
                                networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
                                lpTokens={userPairDataNonZero}
-                               toggleActive={false}
-                               toggleAction={() => setStakingToggle(!stakingToggle)}
+                               toggleActive={stakingToggle}
+                               toggleAction={onStakeToggleHandler}
                                />
               </SingleColumn>
             }

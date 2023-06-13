@@ -67,7 +67,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                                   },
                               });
                           }).catch(e => {
-                              console.log("Error loading pair allowance", x)
+                              console.log("Error loading pair allowance", x, e)
                               tokenDispatch({
                                   type: TokenActions.LOAD_ALLOWANCE,
                                   payload: {
@@ -98,7 +98,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                                   },
                               });
                           }).catch(e => {
-                              console.log("Error loading pair balance", x)
+                              console.log("Error loading pair balance", x, e)
                               tokenDispatch({
                                   type: TokenActions.LOAD_BALANCE,
                                   payload: {
