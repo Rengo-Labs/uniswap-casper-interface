@@ -66,12 +66,12 @@ export const signAndDeployAllowance = async (
   wallet: Wallet,
   contractHash: string,
   amount: BigNumber.Value,
-  optApproval = ""
+  optApproval = "",
+  spender = ROUTER_PACKAGE_HASH,
 ): Promise<[string, GetDeployResult]> => {
   try {
     const entryPoint = optApproval === "" ? selectAllowanceEntryPoint(amount) : optApproval
 
-    const spender = ROUTER_PACKAGE_HASH;
     const spenderByteArray = new CLByteArray(
         Uint8Array.from(Buffer.from(spender, "hex"))
     )
