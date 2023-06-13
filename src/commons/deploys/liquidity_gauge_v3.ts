@@ -4,6 +4,7 @@ import {
   CLAccountHash,
   CLByteArray, CLKey, CLOption, CLPublicKey,
   CLValueBuilder, CLValueParsers, Contracts,
+  CLKeyType,
   GetDeployResult,
   RuntimeArgs,
 } from 'casper-js-sdk'
@@ -24,7 +25,7 @@ import {
   GAS_FEE_FOR_GAUGE_UNSTAKE,
   LIQUIDITY_GAUGE_V3_CONTRACT_HASH,
 } from "../../constant"
-import {Some} from "ts-results";
+import {Some, None} from "ts-results";
 
 /**
  * All allowance smart contract endpoints
@@ -56,8 +57,8 @@ export const signAndDeployClaim = async (
       contractHash,
       GaugeV3EntryPoint.CLAIM_REWARDS,
       RuntimeArgs.fromMap({
-        addr: CLValueBuilder.option(Some(createRecipientAddress(wallet.publicKey))),
-        receiver: CLValueBuilder.option(Some(createRecipientAddress(wallet.publicKey)))
+        addr:  CLValueBuilder.option(None, new CLKeyType()),
+        receiver: CLValueBuilder.option(None, new CLKeyType()),
       }),
       new BigNumber(GAS_FEE_FOR_GAUGE_CLAIM).times(10**9),
     )    
@@ -89,7 +90,6 @@ export const signAndDeployDeposit = async (
       GaugeV3EntryPoint.DEPOSIT,
       RuntimeArgs.fromMap({
         value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
-        addr: CLValueBuilder.option(Some(new CLKey(wallet.publicKey))),
         claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(false)))
       }),
       new BigNumber(GAS_FEE_FOR_GAUGE_STAKE).times(10**9),
@@ -147,7 +147,7 @@ export const signAndDeployWithdraw = async (
       GaugeV3EntryPoint.WITHDRAW,
       RuntimeArgs.fromMap({
         value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
-        claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(false)) as any)
+        claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(true)))
       }),
       new BigNumber(GAS_FEE_FOR_GAUGE_UNSTAKE).times(10**9),
     )

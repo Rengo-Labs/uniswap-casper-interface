@@ -35,6 +35,7 @@ export type PairData = {
   token0Name?: string,
   token1Name?: string,
   decimals: number,
+  gaugeBalance?: string,
   gaugeAllowance?: string,
   gaugeContractHash?: string,
   gaugePackageHash?: string
@@ -83,6 +84,8 @@ export const initialPairsState: PairState = PAIRS
 export enum PairActions {
   ADD_BALANCE_TO_PAIR = 'ADD_BALANCE_TO_PAIR',
   ADD_ALLOWANCE_TO_PAIR = 'ADD_ALLOWANCE_TO_PAIR',
+  ADD_GAUGE_BALANCE_TO_PAIR = 'ADD_GAUGE_BALANCE_TO_PAIR',
+  ADD_GAUGE_ALLOWANCE_TO_PAIR = 'ADD_GAUGE_ALLOWANCE_TO_PAIR',
   LOAD_PAIR = 'LOAD_PAIR',
   LOAD_PAIR_USD = 'LOAD_PAIR_USD',
   CLEAN_LIQUIDITY_USD = 'CLEAN_LIQUIDITY_USD',
@@ -99,6 +102,16 @@ export type PairActionBalancePayload = {
 }
 
 export type PairActionAllowancePayload = {
+  name: string,
+  allowance: string,
+}
+
+export type PairActionGaugeBalancePayload = {
+  name: string,
+  balance: string,
+}
+
+export type PairActionGaugeAllowancePayload = {
   name: string,
   allowance: string,
 }
@@ -148,6 +161,12 @@ export type PairAction = {
   type: PairActions.ADD_ALLOWANCE_TO_PAIR,
   payload: PairActionAllowancePayload,
 } | {
+  type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
+  payload: PairActionGaugeBalancePayload,
+} | {
+  type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+  payload: PairActionGaugeAllowancePayload,
+} | {
   type: PairActions.LOAD_PAIR,
   payload: PairActionLoadPairPayLoad,
 } | {
@@ -191,6 +210,24 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             reserve1,
           },
         }
+      }
+    case PairActions.ADD_GAUGE_BALANCE_TO_PAIR:
+      console.log('GAUGE_BALANCE', action.payload.balance)
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...state[`${action.payload.name}`],
+          gaugeBalance: action.payload.balance,
+        },
+      }
+    case PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR:
+      console.log('GAUGE_ALLOWANCE', action.payload.allowance)
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...state[`${action.payload.name}`],
+          gaugeAllowance: action.payload.allowance,
+        },
       }
     case PairActions.ADD_ALLOWANCE_TO_PAIR:
       return {

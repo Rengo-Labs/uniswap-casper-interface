@@ -132,6 +132,69 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                             })
                         }),
                 )
+                if (pair.gaugeContractHash) {
+                  ps.push(
+                    apiClient
+                        .getERC20Allowance(
+                            wallet,
+                            pair.gaugeContractHash,
+                        )
+                        .then((response) => {
+                            pairDispatch({
+                                type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+                                payload: {
+                                    name: pair.name,
+                                    allowance: convertBigNumberToUIString(
+                                        new BigNumber(response),
+                                        pair.decimals
+                                    ),
+                                },
+                            });
+                        }).catch(e => {
+                            console.log("Error loading pair gauge allowance", pair.name)
+                            pairDispatch({
+                                type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+                                payload: {
+                                    name: pair.name,
+                                    allowance: convertBigNumberToUIString(
+                                      new BigNumber(0),
+                                      pair.decimals
+                                    ),
+                                },
+                            })
+                        }),
+                    apiClient
+                        .getERC20Balance(
+                            wallet,
+                            pair.gaugeContractHash,
+                        )
+                        .then((response) => {
+                            console.log(pair.name, response)
+                            pairDispatch({
+                                type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
+                                payload: {
+                                    name: pair.name,
+                                    balance: convertBigNumberToUIString(
+                                        new BigNumber(response),
+                                        pair.decimals
+                                    ),
+                                },
+                            });
+                        }).catch(e => {
+                            console.log("Error loading pair gauge balance ", pair.name)
+                            pairDispatch({
+                                type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
+                                payload: {
+                                    name: pair.name,
+                                    balance: convertBigNumberToUIString(
+                                      new BigNumber(0),
+                                      pair.decimals
+                                    ),
+                                },
+                            })
+                        }),
+                    )
+                }
             }
 
             await Promise.all(ps);

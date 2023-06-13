@@ -173,6 +173,8 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
+    gaugeBalance: '0',
+    gaugeAllowance: '0',
     gaugeContractHash: "hash-318de778a17a1bda9df6eae7ab48b64e695205af94ad932a6b3279aef57c72bd",
     gaugePackageHash: "hash-b7b13136fc2886480dfc017889eb6dc2cd3a914692f90827fe8023bcfbc3ccc2",
   },
