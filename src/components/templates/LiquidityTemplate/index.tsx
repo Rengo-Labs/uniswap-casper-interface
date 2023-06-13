@@ -679,7 +679,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                   <LPContainer title="My Liquidity"
                                networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
                                lpTokens={userPairDataNonZero}
-                               toggleActive={stakingToggle}
+                               toggleActive={false}
                                toggleAction={() => setStakingToggle(!stakingToggle)}
                                />
               </SingleColumn>
