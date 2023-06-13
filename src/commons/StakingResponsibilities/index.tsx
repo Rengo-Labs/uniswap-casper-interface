@@ -6,8 +6,6 @@ import {
 } from '../deploys/liquidity_gauge_v3'
 import {Client as CasperClient, Wallet} from "../wallet";
 import BigNumber from "bignumber.js";
-import {convertUIStringToBigNumber} from "../utils";
-
 
 export interface StakingResponsibilitiesProps {
     casperClient: CasperClient,
@@ -17,16 +15,16 @@ export interface StakingResponsibilitiesProps {
 const StakingResponsibilities = ({casperClient, wallet}: StakingResponsibilitiesProps) => {
     // TODO Add params
 
-    const onAddStake = (amount: BigNumber) => {
-        return signAndDeployDeposit(casperClient, wallet, amount)
+    const onAddStake = (contractHash: string, amount: BigNumber) => {
+        return signAndDeployDeposit(casperClient, wallet, contractHash, amount)
     }
 
-    const onRemoveStake = (amount: BigNumber) => {
-        return signAndDeployWithdraw(casperClient, wallet, amount)
+    const onRemoveStake = (contractHash: string, amount: BigNumber) => {
+        return signAndDeployWithdraw(casperClient, wallet, contractHash, amount)
     }
 
-    const onClaimRewards = () => {
-        return signAndDeployClaim(casperClient, wallet)
+    const onClaimRewards = (contractHash: string) => {
+        return signAndDeployClaim(casperClient, wallet, contractHash)
     }
 
     const getBalance = (contractHash: string) => {

@@ -32,6 +32,7 @@ import {Some} from "ts-results";
 export enum GaugeV3EntryPoint {
   CLAIM_REWARDS = "claim_rewards",
   DEPOSIT = "deposit",
+  APPROVE = "approve",
   WITHDRAW = "withdraw"
 }
 
@@ -45,13 +46,14 @@ export enum GaugeV3EntryPoint {
  */
 export const signAndDeployClaim = async (
   casperClient: CasperClient,
-  wallet: Wallet
+  wallet: Wallet,
+  contractHash: string
 ): Promise<[string, GetDeployResult]> => {
   try {
 
     return await casperClient.signAndDeployContractCall(
       wallet,
-      LIQUIDITY_GAUGE_V3_CONTRACT_HASH,
+      contractHash,
       GaugeV3EntryPoint.CLAIM_REWARDS,
       RuntimeArgs.fromMap({
         addr: CLValueBuilder.option(Some(createRecipientAddress(wallet.publicKey))),
@@ -76,14 +78,40 @@ export const signAndDeployClaim = async (
 export const signAndDeployDeposit = async (
   casperClient: CasperClient,
   wallet: Wallet,
+  contractHash: string,
   amount: BigNumber
 ): Promise<[string, GetDeployResult]> => {
   try {
 
     return await casperClient.signAndDeployContractCall(
       wallet,
-      LIQUIDITY_GAUGE_V3_CONTRACT_HASH,
+      contractHash,
       GaugeV3EntryPoint.DEPOSIT,
+      RuntimeArgs.fromMap({
+        value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
+        addr: CLValueBuilder.option(Some(new CLKey(wallet.publicKey))),
+        claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(false)))
+      }),
+      new BigNumber(GAS_FEE_FOR_GAUGE_STAKE).times(10**9),
+    )
+  } catch (err) {
+    log.error(`signAndDeployDeposit error: ${err}`)
+    throw err
+  }
+}
+
+export const signAndDeployApproveGauge = async (
+  casperClient: CasperClient,
+  wallet: Wallet,
+  contractHash: string,
+  amount: BigNumber
+): Promise<[string, GetDeployResult]> => {
+  try {
+
+    return await casperClient.signAndDeployContractCall(
+      wallet,
+      contractHash,
+      GaugeV3EntryPoint.APPROVE,
       RuntimeArgs.fromMap({
         value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
         addr: CLValueBuilder.option(Some(new CLKey(wallet.publicKey))),
@@ -108,6 +136,7 @@ export const signAndDeployDeposit = async (
 export const signAndDeployWithdraw = async (
   casperClient: CasperClient,
   wallet: Wallet,
+  contractHash: string,
   amount: BigNumber
 ): Promise<[string, GetDeployResult]> => {
   try {

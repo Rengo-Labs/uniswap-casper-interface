@@ -96,6 +96,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
     const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
     const [removeLiquidityCalculation, setRemoveLiquidityCalculation] = useState<any>({
+        gaugeContractHash: null,
         lpAmount: 0,
         firstAmount: 0,
         secondAmount: 0,
@@ -209,9 +210,9 @@ export const LiquidityTemplate = ({isMobile}) => {
         let result = null
 
         if (titleStakePopup === 'Stake') {
-            result = await onAddStake(removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
+            result = await onAddStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
         } else {
-            result = await onRemoveStake(removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
+            result = await onRemoveStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
         }
 
         if (result) {
@@ -257,7 +258,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         }
 
         if (action === 'ClaimLP') {
-            onClaimAction()
+            onClaimAction(item)
         }
     }
 
@@ -334,12 +335,12 @@ export const LiquidityTemplate = ({isMobile}) => {
             ...data
         }))
 
-        setRemoveLiquidityCalculation((prevState => ({...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
+        setRemoveLiquidityCalculation((prevState => ({...prevState, gaugeContractHash: item.gaugeContractHash, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance)})))
         setStakePopup(true)
     }
 
     const createUnstakeDataForPopup = async (item) => {
-        const balance = await getStakeBalance()
+        const balance = await getStakeBalance(item.gaugeContractHash)
         if (parseFloat(balance) == 0) {
             return
         }
@@ -373,6 +374,7 @@ export const LiquidityTemplate = ({isMobile}) => {
 
         setRemoveLiquidityCalculation((prevState => ({
             ...prevState,
+            gaugeContractHash: item.gaugeContractHash,
             lpAmount: 0,
             firstAmount: 0,
             secondAmount: 0,
@@ -381,8 +383,8 @@ export const LiquidityTemplate = ({isMobile}) => {
         setStakePopup(true)
     }
 
-    const onClaimAction = async () => {
-        await onClaimRewards()
+    const onClaimAction = async (item) => {
+        await onClaimRewards(item.gaugeContractHash)
     }
 
     const loadUserLP = () => {

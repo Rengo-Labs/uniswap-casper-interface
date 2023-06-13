@@ -34,7 +34,10 @@ export type PairData = {
   contract1?: string,
   token0Name?: string,
   token1Name?: string,
-  decimals: number
+  decimals: number,
+  gaugeAllowance?: string,
+  gaugeContractHash?: string,
+  gaugePackageHash?: string
 }
 
 export type PairState = Record<string, PairData>

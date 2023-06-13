@@ -22,10 +22,10 @@ import {ERROR_BLOCKCHAIN} from "../../constant/errors";
 import {StateHashProviderContext} from "../StateHashContext";
 import BigNumber from "bignumber.js";
 interface StakingContextProps {
-    onAddStake: (amount: BigNumber, decimals: number) => Promise<any>,
-    onRemoveStake: (amount: BigNumber, decimals: number) =>  Promise<any>
-    onClaimRewards: () =>  Promise<any>
-    getStakeBalance: () =>  Promise<any>
+    onAddStake: (contractHash: string, amount: BigNumber, decimals: number) => Promise<any>,
+    onRemoveStake: (contractHash: string, amount: BigNumber, decimals: number) =>  Promise<any>
+    onClaimRewards: (contractHash: string) =>  Promise<any>
+    getStakeBalance: (contractHash: string) =>  Promise<any>
 }
 
 export const StakingProviderContext = createContext<StakingContextProps>(null);
@@ -42,7 +42,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
   const {refresh} = useContext(StateHashProviderContext)
   const { updateNotification, dismissNotification } = notificationStore()
 
-  async function onAddStake(amount: BigNumber, decimals: number): Promise<boolean> {
+  async function onAddStake(contractHash: string, amount: BigNumber, decimals: number): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
       title: 'Add Stake',
@@ -54,6 +54,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
 
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).onAddStake(
+        contractHash,
         convertUIStringToBigNumber(amount, decimals)
       )
 
@@ -106,7 +107,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
-  async function onRemoveStake(amount: BigNumber, decimals: number): Promise<boolean> {
+  async function onRemoveStake(contractHash: string, amount: BigNumber, decimals: number): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
       title: 'Removing Stake',
@@ -118,6 +119,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
 
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).onRemoveStake(
+        contractHash,
         convertUIStringToBigNumber(amount, decimals)
       )
 
@@ -170,7 +172,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
-  async function onClaimRewards(): Promise<boolean> {
+  async function onClaimRewards(contractHash: string): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
       title: 'Claim profit',
@@ -182,7 +184,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
 
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet})
-        .onClaimRewards()
+        .onClaimRewards(contractHash)
 
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);
@@ -233,10 +235,10 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
-  const getStakeBalance = async () => {
+  const getStakeBalance = async (contractHash: string) => {
     try {
       const balance = await StakingResponsibilities({casperClient, wallet: walletState.wallet})
-        .getBalance(LIQUIDITY_GAUGE_V3_CONTRACT_HASH)
+        .getBalance(contractHash)
       return convertUIStringToBigNumber(balance, 9)
     } catch (e) {
       updateNotification({
@@ -247,7 +249,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
         isOnlyNotification: true,
         timeToClose: 5000
       })
-      console.error("Error getting stake balance for contract", LIQUIDITY_GAUGE_V3_CONTRACT_HASH)
+      console.error("Error getting stake balance for contract", contractHash)
       return '0'
     }
   }
