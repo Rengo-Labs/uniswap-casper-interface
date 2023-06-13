@@ -113,7 +113,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [stakePopup, setStakePopup] = useState(false)
     const [titleStakePopup, setTitleStakePopup] = useState('')
     const [titleStakeButton, setTitleStakeButton] = useState('')
-    const [stakingToggle, setStakingToggle] = useState(true)
+    const [stakingToggle, setStakingToggle] = useState(false)
     const [showStakingAllowance, setShowStakingAllowance] = useState(true)
 
     const handleChangeInput = (value) => {
@@ -433,11 +433,12 @@ export const LiquidityTemplate = ({isMobile}) => {
         if (!isConnected) {
             refresh()
         }
-        loadUserLP()
+
+        showPairsStaked(stakingToggle)
         progressBar(async () => {
             await refresh()
         })
-    }, [isConnected, pairState])
+    }, [isConnected, pairState, stakingToggle])
 
     useEffect(() => {
         const t0 = searchParams.get('token0');
@@ -579,12 +580,13 @@ export const LiquidityTemplate = ({isMobile}) => {
         setSecondReserve(currentFReserve);
     }
 
-    const showPairsStaked = () => {
-        if (!stakingToggle) {
+    const showPairsStaked = (stakingToggle) => {
+        if (stakingToggle) {
             const result = userPairDataNonZero.filter(i => parseFloat(i.gaugeBalance) != 0)
             userPairDataNonZeroSetter(result)
+        } else {
+            loadUserLP()
         }
-        setStakingToggle(!stakingToggle)
     }
 
     return (
@@ -678,7 +680,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                                networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
                                lpTokens={userPairDataNonZero}
                                toggleActive={stakingToggle}
-                               toggleAction={showPairsStaked}
+                               toggleAction={() => setStakingToggle(!stakingToggle)}
                                />
               </SingleColumn>
             }
