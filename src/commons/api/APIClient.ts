@@ -178,6 +178,23 @@ export class APIClient {
     return erc20.allowances(wallet.publicKey, spenderByteArray)
   }
 
+  async getERC20GaugeAllowance(wallet: Wallet, contractHash: string, packageHash: string): Promise<string> {
+    if (contractHash == null) return;
+
+    const erc20 = new ERC20Client(
+      this._client.node,
+      this._client.network,
+    );
+
+    await erc20.setContractHash(contractHash)
+
+    const packageHashByteArray = new CLByteArray(
+      Uint8Array.from(Buffer.from(packageHash.slice(5), "hex"))
+    )
+
+    return erc20.allowances(wallet.publicKey, packageHashByteArray)
+  }
+
   /**
    * Get the pair data
    *

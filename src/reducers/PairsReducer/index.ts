@@ -212,7 +212,6 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         }
       }
     case PairActions.ADD_GAUGE_BALANCE_TO_PAIR:
-      console.log('GAUGE_BALANCE', action.payload.balance)
       return {
         ...state,
         [`${action.payload.name}`]: {
@@ -221,7 +220,6 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         },
       }
     case PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR:
-      console.log('GAUGE_ALLOWANCE', action.payload.allowance)
       return {
         ...state,
         [`${action.payload.name}`]: {

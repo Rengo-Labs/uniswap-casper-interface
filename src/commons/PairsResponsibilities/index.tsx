@@ -98,16 +98,17 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                             })
                         }),
                     apiClient
-                        .getERC20Allowance(
+                        .getERC20GaugeAllowance(
                           wallet,
                           pair.gaugeContractHash,
+                          pair.gaugePackageHash
                         )
                         .then((response) => {
                             pairDispatch({
                                 type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
                                 payload: {
                                     name: pair.name,
-                                    gaugeAllowance: convertBigNumberToUIString(
+                                    allowance: convertBigNumberToUIString(
                                       new BigNumber(response),
                                       pair.decimals
                                     ),
@@ -119,7 +120,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                               type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
                               payload: {
                                   name: pair.name,
-                                  gaugeAllowance: convertBigNumberToUIString(
+                                  allowance: convertBigNumberToUIString(
                                     new BigNumber(0),
                                     pair.decimals
                                   ),
@@ -132,7 +133,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                             pair.contractHash,
                         )
                         .then((response) => {
-                            console.log(pair.name, response)
                             pairDispatch({
                                 type: PairActions.ADD_BALANCE_TO_PAIR,
                                 payload: {
@@ -166,12 +166,11 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                       pair.gaugeContractHash,
                     )
                     .then((response) => {
-                        console.log(pair.name, response)
                         pairDispatch({
                             type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
                             payload: {
                                 name: pair.name,
-                                gaugeBalance: convertBigNumberToUIString(
+                                balance: convertBigNumberToUIString(
                                   new BigNumber(response),
                                   pair.decimals
                                 )

@@ -62,7 +62,7 @@ export const PopupsContainer = () => {
             onConnect: () => onConnectWallet(WalletName.TORUS)
         },
         {
-            id: 4,
+            id: 5,
             name: 'Metamask Flask',
             icon: metamaskFlask,
             onConnect: () => onConnectWallet(WalletName.METAMASK_FLASK)
