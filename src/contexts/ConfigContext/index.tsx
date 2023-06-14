@@ -82,6 +82,7 @@ export const ConfigContextWithReducer = ({
     contractHash: string,
     decimals = 9,
     optApproval = "",
+    gaugeSpender = null
 ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
@@ -98,7 +99,8 @@ export const ConfigContextWithReducer = ({
         walletState.wallet,
         contractHash,
         convertUIStringToBigNumber(amount, decimals),
-        optApproval
+        optApproval,
+        gaugeSpender
       );
 
       setProgressModal(true);

@@ -62,12 +62,12 @@ export const signAndDeployAllowance = async (
   contractHash: string,
   amount: BigNumber.Value,
   optApproval = "",
-  spender = ROUTER_PACKAGE_HASH
+  spender
 ): Promise<[string, GetDeployResult]> => {
   try {
     const entryPoint = optApproval === "" ? selectAllowanceEntryPoint(amount) : optApproval
     const spenderByteArray = new CLByteArray(
-        Uint8Array.from(Buffer.from( spender.slice(5), "hex"))
+        Uint8Array.from(Buffer.from( spender != null ? spender.slice(5) : ROUTER_PACKAGE_HASH, "hex"))
     )
 
     return await casperClient.signAndDeployContractCall(
