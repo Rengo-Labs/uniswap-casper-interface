@@ -100,7 +100,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                     apiClient
                         .getERC20GaugeAllowance(
                           wallet,
-                          pair.gaugeContractHash,
+                          pair.contractHash,
                           pair.gaugePackageHash
                         )
                         .then((response) => {
