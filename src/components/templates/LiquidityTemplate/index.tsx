@@ -40,7 +40,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         onRemoveLiquidity,
     } = useContext(LiquidityProviderContext)
 
-    const {onAddStake, onClaimRewards, onRemoveStake, getStakeBalance} = useContext(StakingProviderContext)
+    const {onAddStake, onClaimRewards, onRemoveStake, onClaimCSTRewards} = useContext(StakingProviderContext)
 
     const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext)
     const {calculateUSDtokens, pairState, findReservesBySymbols, getPoolList} = useContext(PairsContextProvider)
@@ -62,7 +62,6 @@ export const LiquidityTemplate = ({isMobile}) => {
     const [userPairDataNonZero, userPairDataNonZeroSetter] = useState([])
     const [amountSwapTokenA, amountSwapTokenASetter] = useState<any>(0)
     const [amountSwapTokenB, amountSwapTokenBSetter] = useState<any>(0)
-    //const [isOpenedRemoving, setOpenedRemoving] = useState(isRemovingPopupOpen)
     const [currentFReserve, setFirstReserve] = useState<any>(0)
     const [currentSReserve, setSecondReserve] = useState<any>(0)
     const [valueAUSD, setValueAUSD] = useState('0')
@@ -271,6 +270,10 @@ export const LiquidityTemplate = ({isMobile}) => {
         if (action === 'ClaimLP') {
             await onClaimAction(item)
         }
+
+        if (action === 'ClaimLPCST') {
+            await onClaimCSTAction(item)
+        }
     }
 
     const handleStakeClose =  () => {
@@ -324,7 +327,6 @@ export const LiquidityTemplate = ({isMobile}) => {
         setTitleStakePopup('Stake')
         setTitleStakeButton('Stake')
 
-        console.log("Stake", item.allowance, item.gaugeAllowance)
         const data = {
             id: item.contractHash,
             tokenName: item.name,
@@ -351,6 +353,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             ...data
         }))
 
+        setShowStakingAllowance(true)
         setRemoveLiquidityCalculation((prevState => ({...prevState,
             gaugePackageHash: item.gaugePackageHash,
             gaugeContractHash: item.gaugeContractHash,
@@ -402,11 +405,17 @@ export const LiquidityTemplate = ({isMobile}) => {
             secondAmount: 0,
             allowance: parseFloat(item.gaugeBalance) - parseFloat(item.gaugeAllowance),
         })))
+        setShowStakingAllowance(false)
         setStakePopup(true)
     }
 
     const onClaimAction = async (item) => {
         await onClaimRewards(item.gaugeContractHash)
+    }
+
+    const onClaimCSTAction = async (item) => {
+        console.log("CST Rewards", item)
+        await onClaimCSTRewards(item.gaugePackageHash)
     }
 
     const loadUserLP = () => {
@@ -470,7 +479,7 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     useEffect(() => {
 
-        if (showRemoveLiquidityDialog) {
+        if (showRemoveLiquidityDialog || stakePopup) {
             const pair = pairState[removeLiquidityData.tokenName]
 
             setRemoveLiquidityData((prevState) => ({
@@ -638,7 +647,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 isOpen={stakePopup}
                 disabledButton={removeLiquidityButtonDisabled}
                 disabledAllowanceButton={removeLiquidityAllowanceEnabled}
-                showAllowance={(removeLiquidityCalculation.allowance) > 0}
+                showAllowance={showStakingAllowance && (removeLiquidityCalculation.allowance) > 0}
                 defaultValue={removeLiquidityInput}
                 handleChangeInput={handleChangeInput}
                 handleAction={onStakeAndUnstakeAction}

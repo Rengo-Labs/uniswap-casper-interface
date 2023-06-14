@@ -18,6 +18,7 @@ import {
 } from '../utils'
 
 import {
+  GAS_PRICE_FOR_APPROVAL,
   ROUTER_PACKAGE_HASH,
 } from "../../constant"
 
@@ -78,7 +79,7 @@ export const signAndDeployAllowance = async (
         spender: createRecipientAddress(spenderByteArray),
         amount: CLValueBuilder.u256(new BigNumber(amount).toFixed(0)),
       }),
-      new BigNumber(3000000000),
+      new BigNumber(GAS_PRICE_FOR_APPROVAL).times(10 ** 9),
     )
   } catch (err) {
       log.error(`signAndDeployAllowance error: ${err}`)

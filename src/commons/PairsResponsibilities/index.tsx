@@ -85,7 +85,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                                 },
                             });
                         }).catch(e => {
-                            console.log("Error loading pair allowance", pair.name)
+                            //console.log("Error loading pair allowance", pair.name)
                             pairDispatch({
                                 type: PairActions.ADD_ALLOWANCE_TO_PAIR,
                                 payload: {
@@ -115,7 +115,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                                 },
                             });
                         }).catch(e => {
-                          console.log("Error loading pair allowance", pair.name)
+                          console.log("Error loading gauge allowance", pair.name)
                           pairDispatch({
                               type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
                               payload: {
@@ -146,7 +146,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                                 },
                             });
                         }).catch(e => {
-                            console.log("Error loading pair balance ", pair.name)
+                            //console.log("Error loading pair balance ", pair.name)
                             pairDispatch({
                                 type: PairActions.ADD_BALANCE_TO_PAIR,
                                 payload: {

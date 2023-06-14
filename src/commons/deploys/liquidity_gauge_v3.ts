@@ -20,7 +20,8 @@ import {
 } from '../utils'
 
 import {
-  CST_MINTER_PACKAGE_HASH,
+  CST_MINTER_CONTRACT_HASH,
+  CST_MINTER_PACKAGE_HASH, GAS_FEE_FOR_CST_CLAIM,
   GAS_FEE_FOR_GAUGE_CLAIM,
   GAS_FEE_FOR_GAUGE_STAKE,
   GAS_FEE_FOR_GAUGE_UNSTAKE
@@ -150,14 +151,14 @@ export const signAndDeployCSTClaim = async (
 
     return await casperClient.signAndDeployContractCall(
       wallet,
-      CST_MINTER_PACKAGE_HASH,
+      CST_MINTER_CONTRACT_HASH,
       GaugeV3EntryPoint.MINT,
       RuntimeArgs.fromMap({
         gauge_addr: CLValueBuilder.key(
-          new CLByteArray(Uint8Array.from(Buffer.from(gaugePackageHash, 'hex')))
+          new CLByteArray(Uint8Array.from(Buffer.from(gaugePackageHash.slice(5), 'hex')))
         )
       }),
-      new BigNumber(GAS_FEE_FOR_GAUGE_CLAIM).times(10**9),
+      new BigNumber(GAS_FEE_FOR_CST_CLAIM).times(10**9),
     )
   } catch (err) {
     log.error(`signAndDeployClaim error: ${err}`)
