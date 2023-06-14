@@ -2,7 +2,8 @@ import {apiClient} from "../../contexts/ConfigContext";
 import {
     signAndDeployClaim,
     signAndDeployDeposit,
-    signAndDeployWithdraw
+    signAndDeployWithdraw,
+    signAndDeployCSTClaim
 } from '../deploys/liquidity_gauge_v3'
 import {Client as CasperClient, Wallet} from "../wallet";
 import BigNumber from "bignumber.js";
@@ -27,6 +28,10 @@ const StakingResponsibilities = ({casperClient, wallet}: StakingResponsibilities
         return signAndDeployClaim(casperClient, wallet, contractHash)
     }
 
+    const onClaimCSTRewards = (contractHash: string) => {
+        return signAndDeployCSTClaim(casperClient, wallet, contractHash)
+    }
+
     const getBalance = (contractHash: string) => {
         return apiClient.getERC20Balance(wallet, contractHash)
     }
@@ -35,7 +40,8 @@ const StakingResponsibilities = ({casperClient, wallet}: StakingResponsibilities
         onAddStake,
         onRemoveStake,
         onClaimRewards,
-        getBalance
+        getBalance,
+        onClaimCSTRewards
     }
 }
 

@@ -20,6 +20,7 @@ import {
 } from '../utils'
 
 import {
+  CST_MINTER_PACKAGE_HASH,
   GAS_FEE_FOR_GAUGE_CLAIM,
   GAS_FEE_FOR_GAUGE_STAKE,
   GAS_FEE_FOR_GAUGE_UNSTAKE
@@ -32,7 +33,8 @@ import {Some, None} from "ts-results";
 export enum GaugeV3EntryPoint {
   CLAIM_REWARDS = "claim_rewards",
   DEPOSIT = "deposit",
-  WITHDRAW = "withdraw"
+  WITHDRAW = "withdraw",
+  MINT = "mint"
 }
 
 /**
@@ -124,6 +126,38 @@ export const signAndDeployWithdraw = async (
         claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(true)))
       }),
       new BigNumber(GAS_FEE_FOR_GAUGE_UNSTAKE).times(10**9),
+    )
+  } catch (err) {
+    log.error(`signAndDeployClaim error: ${err}`)
+    throw err
+  }
+}
+
+/**
+ * Sign and deploy cst claim using the cst minter
+ *
+ * @param casperClient Casper Client
+ * @param wallet current Casper Wallet
+ *
+ * @returns an array containing the deploy hash and deploy result
+ */
+export const signAndDeployCSTClaim = async (
+  casperClient: CasperClient,
+  wallet: Wallet,
+  gaugePackageHash: string
+): Promise<[string, GetDeployResult]> => {
+  try {
+
+    return await casperClient.signAndDeployContractCall(
+      wallet,
+      CST_MINTER_PACKAGE_HASH,
+      GaugeV3EntryPoint.MINT,
+      RuntimeArgs.fromMap({
+        gauge_addr: CLValueBuilder.key(
+          new CLByteArray(Uint8Array.from(Buffer.from(gaugePackageHash, 'hex')))
+        )
+      }),
+      new BigNumber(GAS_FEE_FOR_GAUGE_CLAIM).times(10**9),
     )
   } catch (err) {
     log.error(`signAndDeployClaim error: ${err}`)

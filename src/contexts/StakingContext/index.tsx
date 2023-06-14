@@ -15,7 +15,6 @@ import {WalletProviderContext} from "../WalletContext";
 import {notificationStore} from "../../store/store";
 import {
   convertUIStringToBigNumber,
-  signAndDeployDeposit,
   sleep
 } from "../../commons";
 import {ERROR_BLOCKCHAIN} from "../../constant/errors";
@@ -25,6 +24,7 @@ interface StakingContextProps {
     onAddStake: (contractHash: string, amount: BigNumber, decimals: number) => Promise<any>,
     onRemoveStake: (contractHash: string, amount: BigNumber, decimals: number) =>  Promise<any>
     onClaimRewards: (contractHash: string) =>  Promise<any>
+    onClaimCSTRewards: (contractHash: string) =>  Promise<any>
     getStakeBalance: (contractHash: string) =>  Promise<any>
 }
 
@@ -235,6 +235,69 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
+  async function onClaimCSTRewards(contractHash: string): Promise<boolean> {
+    updateNotification({
+      type: NotificationType.Info,
+      title: 'Claim profit',
+      subtitle: '',
+      show: true,
+      isOnlyNotification: true,
+      closeManually: true
+    })
+
+    try {
+      const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet})
+        .onClaimCSTRewards(contractHash)
+
+      const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
+      setProgressModal(true);
+      setLinkExplorer(deployUrl)
+
+      const notificationMessage = `Your deploy is being processed, check <a href="${deployUrl}" target="_blank">here</a>`;
+      updateNotification({
+        type: NotificationType.Info,
+        title: 'Processing...',
+        subtitle: notificationMessage,
+        show: true,
+        isOnlyNotification: true,
+        closeManually: true,
+      })
+
+      const result = await casperClient.waitForDeployExecution(deployHash)
+
+      if (result) {
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'CST profit correctly claimed.',
+          subtitle: '',
+          show: true,
+          isOnlyNotification: true,
+          timeToClose: 5000
+        })
+      }
+
+      setProgressModal(false)
+      setConfirmModal(true)
+
+      await sleep(15000)
+      await refresh()
+
+      return true
+    } catch (err) {
+      setProgressModal(false)
+      await refresh()
+      updateNotification({
+        type: NotificationType.Error,
+        title: ERROR_BLOCKCHAIN[`${err}`] ? ERROR_BLOCKCHAIN[`${err}`].message : `${err}`,
+        subtitle: '',
+        show: true,
+        isOnlyNotification: true,
+        timeToClose: 5000
+      })
+      return false
+    }
+  }
+
   const getStakeBalance = async (contractHash: string) => {
     try {
       const balance = await StakingResponsibilities({casperClient, wallet: walletState.wallet})
@@ -260,7 +323,8 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
           onAddStake,
           onRemoveStake,
           onClaimRewards,
-          getStakeBalance
+          getStakeBalance,
+          onClaimCSTRewards
         }}>
             {children}
         </StakingProviderContext.Provider>
