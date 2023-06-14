@@ -80,7 +80,15 @@ const Layout = ({children}: ILayoutProps) => {
     
     useEffect(() => {
       const currentTheme = getLocalStorageData(LOCAl_STORAGE_THEME_KEY)
-      const newTheme = structuredClone(currentTheme)
+      let newTheme = ''
+      if (currentTheme.length  === 0 || currentTheme !== 'dark') {
+        newTheme = 'default'
+      } else {
+        newTheme = currentTheme
+      }
+
+      console.log(currentTheme);
+      
       toggleTheme(newTheme)
     }, [])
     
