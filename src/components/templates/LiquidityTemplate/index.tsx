@@ -18,7 +18,11 @@ import {useNavigate} from "react-router";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
-import {SUPPORTED_NETWORKS} from "../../../constant";
+import {
+  SUPPORTED_NETWORKS,
+  REWARD_TOKEN_WEEKLY_EMISSIONS,
+  REWARD_CST_WEEKLY_INFLATION_RATE,
+} from "../../../constant";
 import {convertBigNumberToUIString, convertToUSDCurrency, convertUIStringToBigNumber} from '../../../commons/utils';
 import {StakingProviderContext} from "../../../contexts/StakingContext";
 export const LiquidityTemplate = ({isMobile}) => {
@@ -422,6 +426,16 @@ export const LiquidityTemplate = ({isMobile}) => {
         const userPairs = Object.values(pairState).filter(
             (v) => parseFloat(v.balance) > 0
         ).map((i) => {
+            const rewardToken = tokenState.tokens[i.gaugeToken]
+            let apr = `0%`
+            if (!!rewardToken && i.gaugeContractHash) {
+              const rewardsAPR = new BigNumber(rewardToken.priceUSD).times(REWARD_TOKEN_WEEKLY_EMISSIONS).div(i.totalLiquidityUSD).times(100)
+              console.log('ZZZZZ')
+              console.log(rewardToken.priceUSD)
+              console.log(REWARD_TOKEN_WEEKLY_EMISSIONS)
+              console.log(i.totalLiquidityUSD)
+              apr = `${rewardsAPR}% ${rewardToken.symbol}`
+            }
             return {
                 contractPackage: i.packageHash.slice(5),
                 firstTokenIcon: i.token0Icon,
@@ -436,7 +450,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 totalUSDLP: i.totalLiquidityUSD,
                 totalLP: i.totalSupply,
                 yourShare: (100 * (Number(i.balance) / Number(i.totalSupply))).toFixed(2),
-                apr: '0 %',
+                apr,
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
                 hasStake: parseFloat(i.gaugeBalance) > 0,
                 hasGauge: i.gaugeContractHash != null

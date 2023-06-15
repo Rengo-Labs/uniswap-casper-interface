@@ -148,6 +148,12 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
+    gaugeBalance: '0',
+    gaugeAllowance: '0',
+    gaugeContractHash: "hash-f3b522cfa4bdba4865202d2cb0b4246212a1727c0086bc5d6b674adcbcf7c15e",
+    gaugePackageHash: "hash-659e7d1204a63bfb009abba1c0b713a491def25690f282a5c7f952f22d98833e",
+    gaugeToken: 'WETH',
+    gaugeCSTRewards: true,
   },
   "USDT-USDC": {
     checked: false,
@@ -177,6 +183,8 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-318de778a17a1bda9df6eae7ab48b64e695205af94ad932a6b3279aef57c72bd",
     gaugePackageHash: "hash-b7b13136fc2886480dfc017889eb6dc2cd3a914692f90827fe8023bcfbc3ccc2",
+    gaugeToken: 'WETH',
+    gaugeCSTRewards: true,
   },
   "dWBTC-WCSPR": {
     checked: false,

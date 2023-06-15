@@ -38,7 +38,9 @@ export type PairData = {
   gaugeBalance?: string,
   gaugeAllowance?: string,
   gaugeContractHash?: string,
-  gaugePackageHash?: string
+  gaugePackageHash?: string,
+  gaugeToken?: string,
+  gaugeCSTRewards?: boolean,
 }
 
 export type PairState = Record<string, PairData>
