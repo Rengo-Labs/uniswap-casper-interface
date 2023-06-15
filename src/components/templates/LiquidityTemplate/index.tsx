@@ -19,8 +19,9 @@ import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {
-  SUPPORTED_NETWORKS,
-  REWARD_TOKEN_WEEKLY_EMISSIONS
+    SUPPORTED_NETWORKS,
+    REWARD_TOKEN_WEEKLY_EMISSIONS,
+    APR_AMOUNT_WEEKS
 } from "../../../constant";
 import {convertBigNumberToUIString, convertToUSDCurrency, convertUIStringToBigNumber} from '../../../commons/utils';
 import {StakingProviderContext} from "../../../contexts/StakingContext";
@@ -426,9 +427,9 @@ export const LiquidityTemplate = ({isMobile}) => {
             (v) => parseFloat(v.balance) > 0
         ).map((i) => {
             const rewardToken = tokenState.tokens[i.gaugeToken]
-            let apr = `0%`
+            let apr = `0.00%`
             if (!!rewardToken && i.gaugeContractHash) {
-              const rewardsAPR = new BigNumber(rewardToken.priceUSD).times(REWARD_TOKEN_WEEKLY_EMISSIONS).div(i.totalLiquidityUSD).times(100)
+              const rewardsAPR = new BigNumber(rewardToken.priceUSD).times(APR_AMOUNT_WEEKS).times(REWARD_TOKEN_WEEKLY_EMISSIONS).div(i.totalLiquidityUSD).times(100).toFixed(2)
               apr = `${rewardsAPR}% ${rewardToken.symbol}`
             }
             return {
