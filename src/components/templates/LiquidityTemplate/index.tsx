@@ -215,6 +215,7 @@ export const LiquidityTemplate = ({isMobile}) => {
 
     const onStakeAndUnstakeAction = async () => {
         setRemoveLiquidityButtonDisabled(true)
+        setRemoveLiquidityAllowanceEnabled(true)
         let result = null
 
         if (titleStakePopup === 'Stake') {
@@ -225,9 +226,7 @@ export const LiquidityTemplate = ({isMobile}) => {
 
         if (result) {
 
-            setRemovingPopup(false)
             setRemoveLiquidityInput(0)
-            setShowRemoveLiquidityDialog(false)
             setStakePopup(false)
         } else {
             setRemoveLiquidityButtonDisabled(false)
@@ -325,6 +324,7 @@ export const LiquidityTemplate = ({isMobile}) => {
     }
 
     const createStakeDataForPopup = (item) => {
+        setRemoveLiquidityAllowanceEnabled(false)
         const token0 = tokenState.tokens[item.token0Symbol]
         const token1 = tokenState.tokens[item.token1Symbol]
 
@@ -362,8 +362,9 @@ export const LiquidityTemplate = ({isMobile}) => {
             gaugePackageHash: item.gaugePackageHash,
             gaugeContractHash: item.gaugeContractHash,
             lpAmount: 0, firstAmount: 0, secondAmount: 0,
-            allowance: parseFloat(item.gaugeBalance) - parseFloat(item.gaugeAllowance)})))
+            allowance: parseFloat(item.gaugeAllowance)})))
         setStakePopup(true)
+        console.log("ITem", item, parseFloat(item.gaugeBalance) - parseFloat(item.gaugeAllowance))
     }
 
     const createUnstakeDataForPopup = async (item) => {

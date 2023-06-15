@@ -242,7 +242,6 @@ export const SwapTemplate = ({isMobile}) => {
                     symbol1,
                     tokenState
                 );
-                console.log('HI')
                 const token0 = tokenState.tokens[symbol0]
                 const token1 = tokenState.tokens[symbol1]
                 getSwapDetailResponse = await getSwapDetails(
