@@ -40,7 +40,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 const price0USD = instance.findUSDRateBySymbol(p.token0Symbol, pairTotalReserves, updateNotification).toString()
                 const price1USD = instance.findUSDRateBySymbol(p.token1Symbol, pairTotalReserves, updateNotification).toString()
 
-                // console.log('AAA', p.token0Symbol, p.token1Symbol, price0USD, price1USD)
+                console.log('AAA', p.token0Symbol, p.token1Symbol, price0USD, price1USD)
 
                 pairDispatch({
                     type: PairActions.LOAD_PAIR_USD,

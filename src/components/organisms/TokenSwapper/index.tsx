@@ -164,7 +164,7 @@ const TokenSwapper = ({
       isSwitched
     );
 
-    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, firstToken.symbolPair)
+    calculateUSDValues(tokensToTransfer, filteredValue, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, firstToken.symbolPair)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
     if(filteredValue) {
       handleValidate(typeof filteredValue === "number" ? filteredValue : parseFloat(filteredValue), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0);
@@ -354,10 +354,10 @@ const TokenSwapper = ({
           {!isApproved && isConnected && (
               <Button type={"large"} props={{style: {width: 'auto'}, onClick: async () => {
                   await requestIncreaseAllowance(
-                      Math.abs(freeAllowance),
+                      Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ),
                       firstTokenSelected.contractHash
                   );
-                }}}>Approve {Math.abs(freeAllowance)} {firstTokenSelected.symbol}</Button>
+                }}}>Approve {Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance )} {firstTokenSelected.symbol}</Button>
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{

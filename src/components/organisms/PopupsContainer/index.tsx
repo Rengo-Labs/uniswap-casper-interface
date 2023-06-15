@@ -12,7 +12,7 @@ import {useNavigate} from 'react-router-dom'
 
 export const PopupsContainer = () => {
   const navigate = useNavigate()
-  
+
     const {
         showSettings,
         setShowSettings,

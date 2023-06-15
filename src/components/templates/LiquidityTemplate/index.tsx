@@ -20,8 +20,7 @@ import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {
   SUPPORTED_NETWORKS,
-  REWARD_TOKEN_WEEKLY_EMISSIONS,
-  REWARD_CST_WEEKLY_INFLATION_RATE,
+  REWARD_TOKEN_WEEKLY_EMISSIONS
 } from "../../../constant";
 import {convertBigNumberToUIString, convertToUSDCurrency, convertUIStringToBigNumber} from '../../../commons/utils';
 import {StakingProviderContext} from "../../../contexts/StakingContext";
@@ -445,11 +444,11 @@ export const LiquidityTemplate = ({isMobile}) => {
                 secondSymbol: i.token1Symbol,
                 firstAmount: i.reserve0,
                 secondAmount: i.reserve1,
-                userUSDLP: i.liquidityUSD,
-                userLP: i.balance,
-                totalUSDLP: i.totalLiquidityUSD,
-                totalLP: i.totalSupply,
-                yourShare: (100 * (Number(i.balance) / Number(i.totalSupply))).toFixed(2),
+                userUSDLP: convertToUSDCurrency(parseFloat(i.liquidityUSD)),
+                userLP: convertToUSDCurrency(parseFloat(i.liquidityUSD)),
+                totalUSDLP: convertToUSDCurrency(parseFloat(i.totalLiquidityUSD)),
+                totalLP: convertToUSDCurrency(parseFloat(i.totalLiquidityUSD)),
+                yourShare: (Number(i.balance) / Number(i.totalSupply) * 100).toFixed(2),
                 apr,
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
                 hasStake: parseFloat(i.gaugeBalance) > 0,

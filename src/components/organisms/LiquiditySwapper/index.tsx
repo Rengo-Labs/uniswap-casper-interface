@@ -255,8 +255,9 @@ const LiquiditySwapper = ({
       filteredValue,
       secondTokenSelected
     );
+
     amountSwapTokenASetter(tokensToTransfer);
-    calculateUSDValues(filteredValue, tokensToTransfer, true)
+    calculateUSDValues(tokensToTransfer, filteredValue, true)
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
     if (!secondValidation) {
@@ -460,23 +461,23 @@ const LiquiditySwapper = ({
           <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" }, onClick: async () => {
               await requestIncreaseAllowance(
-                Math.abs(freeAllowanceA),
+                Math.abs(firstTokenSelected.optApproval ? amountA : freeAllowanceA),
                 firstTokenSelected.contractHash,
                 firstTokenSelected.decimals,
                 firstTokenSelected.optApproval
               );
-            }}}>Approve {Math.abs(freeAllowanceA)} {firstTokenSelected.symbol}</Button>
+            }}}>Approve {Math.abs(firstTokenSelected.optApproval ? amountA : freeAllowanceA)} {firstTokenSelected.symbol}</Button>
         )}
         {!isApprovedB && isConnected && (
           <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""}, onClick: async () => {
               await requestIncreaseAllowance(
-                Math.abs(freeAllowanceB),
+                Math.abs(secondTokenSelected.optApproval ? amountB : freeAllowanceB),
                 secondTokenSelected.contractHash,
                 secondTokenSelected.decimals,
                 secondTokenSelected.optApproval
               );
-            }}}>Approve {Math.abs(freeAllowanceB)} {secondTokenSelected.symbol}</Button>
+            }}}>Approve {Math.abs(secondTokenSelected.optApproval ? amountB : freeAllowanceB)} {secondTokenSelected.symbol}</Button>
         )}
 
         {isApprovedA && isApprovedB && isConnected && (
