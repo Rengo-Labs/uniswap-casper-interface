@@ -429,10 +429,6 @@ export const LiquidityTemplate = ({isMobile}) => {
             let apr = `0%`
             if (!!rewardToken && i.gaugeContractHash) {
               const rewardsAPR = new BigNumber(rewardToken.priceUSD).times(REWARD_TOKEN_WEEKLY_EMISSIONS).div(i.totalLiquidityUSD).times(100)
-              console.log('ZZZZZ')
-              console.log(rewardToken.priceUSD)
-              console.log(REWARD_TOKEN_WEEKLY_EMISSIONS)
-              console.log(i.totalLiquidityUSD)
               apr = `${rewardsAPR}% ${rewardToken.symbol}`
             }
             return {
