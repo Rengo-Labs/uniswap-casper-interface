@@ -446,7 +446,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
                 hasStake: parseFloat(i.gaugeBalance) > 0,
                 hasGauge: i.gaugeContractHash != null,
-                lpStaked: i.gaugeBalance,
+                lpStaked: i.gaugeBalance ? i.gaugeBalance : 0,
             }
         })
         userPairDataNonZeroSetter(userPairs)
