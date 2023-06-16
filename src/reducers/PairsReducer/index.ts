@@ -4,6 +4,7 @@ import { TOKENS } from '../TokenReducers'
 
 import * as pairProd from '../../constant/pairHashes.production'
 import * as pairDev from '../../constant/pairHashes.development'
+import {APR_AMOUNT_WEEKS, REWARD_TOKEN_WEEKLY_EMISSIONS} from "../../constant";
 
 export type PairData = {
   checked: boolean,
@@ -93,7 +94,8 @@ export enum PairActions {
   CLEAN_LIQUIDITY_USD = 'CLEAN_LIQUIDITY_USD',
   CHANGE_PRIORITY = 'CHANGE_PRIORITY',
   //LOAD_USER_PAIR = 'LOAD_USER_PAIR',
-  RESET = 'RESET'
+  RESET = 'RESET',
+  REWARDS = 'REWARDS'
 }
 
 export type PairActionBalancePayload = {
@@ -126,6 +128,14 @@ export type PairActionLoadPairPayLoad = {
   totalReserve1: string,
   totalSupply: string,
   totalLiquidityUSD: string
+}
+
+export type PairActionLoadRewardPayLoad = {
+  name: string,
+  tokenRewardPriceUSD: string,
+  tokenRewardSymbol: string,
+  totalLiquidityUSD: string,
+  gaugeAmount: number
 }
 
 export type PairActionLoadPairUSDPayLoad = {
@@ -171,6 +181,9 @@ export type PairAction = {
 } | {
   type: PairActions.LOAD_PAIR,
   payload: PairActionLoadPairPayLoad,
+} | {
+  type: PairActions.REWARDS,
+  payload: PairActionLoadRewardPayLoad,
 } | {
   type: PairActions.LOAD_PAIR_USD,
   payload: PairActionLoadPairUSDPayLoad,
@@ -327,9 +340,33 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           }
         }
       }
-      case PairActions.RESET: {
-        return initialPairsState
+    case PairActions.RESET: {
+      return initialPairsState
+    }
+    case PairActions.REWARDS: {
+      const oldState = state[`${action.payload.name}`]
+
+      let apr = `0.00%`
+      if (!!action.payload.tokenRewardPriceUSD && oldState.gaugeContractHash) {
+        const globalRewardsAPR = new BigNumber(action.payload.tokenRewardPriceUSD).times(APR_AMOUNT_WEEKS).times(REWARD_TOKEN_WEEKLY_EMISSIONS)
+          .div(action.payload.totalLiquidityUSD).times(100)
+
+        const equitableReward = (globalRewardsAPR.div(action.payload.gaugeAmount)).toFixed(2)
+
+        apr = `${equitableReward}% ${action.payload.tokenRewardSymbol}`
       }
+
+      console.log("1558.12% WETH", action.payload.tokenRewardPriceUSD, !!action.payload.tokenRewardPriceUSD && oldState.gaugeContractHash, apr)
+
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...oldState,
+          apr: apr
+        },
+      }
+    }
+
     default:
       return state;
     /* case PairActions.LOAD_USER_PAIR:

@@ -485,6 +485,29 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         return findDailyGlobalChart()
     }
 
+    const loadGralRewards = async (tokenUSDPrices): Promise<any> => {
+
+        const pairs = Object.values(pairState)
+
+        const gaugeCounter = pairs.filter(i => i.gaugeContractHash != null).length
+        for (const pl of pairs) {
+
+            const tokenRewardPrice = tokenUSDPrices[pl.gaugeToken] ?? null
+            pairDispatch({
+                type: PairActions.REWARDS,
+                payload: {
+                    name: pl.name,
+                    totalLiquidityUSD: pl.totalLiquidityUSD,
+                    tokenRewardPriceUSD: tokenRewardPrice,
+                    tokenRewardSymbol: pl.gaugeToken,
+                    gaugeAmount: gaugeCounter
+                }
+            })
+        }
+
+        return findDailyGlobalChart()
+    }
+
     return {
         loadPairs,
         loadPairsBalanceUSD,
@@ -497,7 +520,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         calculateUSDtokens,
         findUSDRateBySymbol,
         getPairChart,
-        getGlobalChart
+        getGlobalChart,
+        loadGralRewards
     }
 }
 

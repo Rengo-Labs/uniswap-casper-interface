@@ -427,12 +427,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         const userPairs = Object.values(pairState).filter(
             (v) => parseFloat(v.balance) > 0
         ).map((i) => {
-            const rewardToken = tokenState.tokens[i.gaugeToken]
-            let apr = `0.00%`
-            if (!!rewardToken && i.gaugeContractHash) {
-              const rewardsAPR = new BigNumber(rewardToken.priceUSD).times(APR_AMOUNT_WEEKS).times(REWARD_TOKEN_WEEKLY_EMISSIONS).div(i.totalLiquidityUSD).times(100).toFixed(2)
-              apr = `${rewardsAPR}% ${rewardToken.symbol}`
-            }
+
             return {
                 contractPackage: i.packageHash.slice(5),
                 firstTokenIcon: i.token0Icon,
@@ -443,15 +438,15 @@ export const LiquidityTemplate = ({isMobile}) => {
                 firstAmount: i.reserve0,
                 secondAmount: i.reserve1,
                 userUSDLP: convertToUSDCurrency(parseFloat(i.liquidityUSD)),
-                userLP: convertToUSDCurrency(parseFloat(i.liquidityUSD)),
+                userLP: i.balance,
                 totalUSDLP: convertToUSDCurrency(parseFloat(i.totalLiquidityUSD)),
-                totalLP: convertToUSDCurrency(parseFloat(i.totalLiquidityUSD)),
+                totalLP: i.totalSupply,
                 yourShare: (Number(i.balance) / Number(i.totalSupply) * 100).toFixed(2),
-                apr,
+                apr: i.apr,
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
                 hasStake: parseFloat(i.gaugeBalance) > 0,
                 hasGauge: i.gaugeContractHash != null,
-                lpStaked: '0.00',
+                lpStaked: i.gaugeBalance,
             }
         })
         userPairDataNonZeroSetter(userPairs)

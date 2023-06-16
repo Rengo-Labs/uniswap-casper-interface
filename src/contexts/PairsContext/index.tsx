@@ -25,6 +25,7 @@ interface PairsContext {
     resetPairs: () => void;
     getPairChart: (pairPackageHash: string) => Promise<any>,
     getGlobalChart: () => Promise<any>,
+    loadRewards: (tokenUSDPrices) => Promise<any>
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -73,6 +74,10 @@ export const PairsContext = ({children}: PairsContextProps) => {
       return PairsResponsibilities(pairState, pairDispatch).getGlobalChart()
     }
 
+  const loadRewards = async (tokenUSDPrices): Promise<Record<string, PairTotalReserves>> => {
+    return await PairsResponsibilities(pairState, pairDispatch).loadGralRewards(tokenUSDPrices)
+  }
+
     return (
         <PairsContextProvider.Provider value={{
             pairState,
@@ -88,7 +93,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
             calculateUSDtokens,
             resetPairs,
             getPairChart,
-            getGlobalChart
+            getGlobalChart,
+            loadRewards
         }}>
             {children}
         </PairsContextProvider.Provider>

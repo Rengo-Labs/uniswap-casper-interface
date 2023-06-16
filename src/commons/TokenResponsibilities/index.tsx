@@ -35,7 +35,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
             tokenPrices[t.symbol] = priceUSD
         }
 
-        return tokens
+        return tokenPrices
     }
 
     const updateBalances = async (wallet: Wallet, isConnected: boolean): Promise<void> => {
