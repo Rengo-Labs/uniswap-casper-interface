@@ -154,6 +154,7 @@ export const pairList: PairState = {
     gaugePackageHash: "hash-659e7d1204a63bfb009abba1c0b713a491def25690f282a5c7f952f22d98833e",
     gaugeToken: 'WETH',
     gaugeCSTRewards: true,
+    gaugeCSTWeight: 100
   },
   "USDT-USDC": {
     checked: false,
@@ -185,6 +186,7 @@ export const pairList: PairState = {
     gaugePackageHash: "hash-b7b13136fc2886480dfc017889eb6dc2cd3a914692f90827fe8023bcfbc3ccc2",
     gaugeToken: 'WETH',
     gaugeCSTRewards: true,
+    gaugeCSTWeight: 100
   },
   "dWBTC-WCSPR": {
     checked: false,

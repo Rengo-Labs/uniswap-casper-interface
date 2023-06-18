@@ -137,10 +137,15 @@ const TokenSwapper = ({
         false
     )
 
-    calculateUSDValues(amount, tokensToTransfer,
-      firstTokenSelected.symbolPair, secondTokenSelected.symbolPair,
+    calculateUSDValues(amount,
+      tokensToTransfer,
+      firstTokenSelected.symbolPair,
+      secondTokenSelected.symbolPair,
       exchangeRateA, exchangeRateB,
-      firstTokenSelected.symbolPair)
+      firstTokenSelected.symbolPair,
+      firstTokenSelected.priceUSD,
+      secondTokenSelected.priceUSD
+    )
   }
 
   async function changeTokenA(value: string | number, isSwitched = false) {
@@ -164,7 +169,16 @@ const TokenSwapper = ({
       isSwitched
     );
 
-    calculateUSDValues(tokensToTransfer, filteredValue, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, firstToken.symbolPair)
+    calculateUSDValues(
+      filteredValue,
+      tokensToTransfer,
+      firstToken.symbolPair,
+      secondToken.symbolPair,
+      exchangeRateA,
+      exchangeRateB,
+      firstToken.symbolPair,
+      firstToken.priceUSD,
+      secondToken.priceUSD)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
     if(filteredValue) {
       handleValidate(typeof filteredValue === "number" ? filteredValue : parseFloat(filteredValue), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0);
@@ -194,7 +208,16 @@ const TokenSwapper = ({
       isSwitched
     );
 
-    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, activeToken.symbolPair)
+    calculateUSDValues(
+      filteredValue,
+      tokensToTransfer,
+      firstToken.symbolPair,
+      secondToken.symbolPair,
+      exchangeRateA,
+      exchangeRateB,
+      activeToken.symbolPair,
+      firstToken.priceUSD,
+      secondToken.priceUSD)
     amountSwapTokenASetter(formatNaN(tokensToTransfer))
     if(tokensToTransfer) {
       handleValidate(parseFloat(tokensToTransfer), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0)
@@ -222,15 +245,16 @@ const TokenSwapper = ({
     await refresh()
   };
 
-  const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected) => {
+  const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected, priceA, priceB) => {
     exchangeRateASetter(rateA);
     exchangeRateBSetter(rateB);
 
     const isA2B = symbolA == tokenSelected
 
+    console.log("swap", symbolA, priceA, amountA, symbolB, priceB, amountB, isA2B)
     const [usdA, usdB] = calculateUSDtokens(
-        symbolA,
-        symbolB,
+        priceA,
+        priceB,
         amountA,
         amountB,
         isA2B

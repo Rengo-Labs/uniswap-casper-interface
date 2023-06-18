@@ -4,7 +4,12 @@ import { TOKENS } from '../TokenReducers'
 
 import * as pairProd from '../../constant/pairHashes.production'
 import * as pairDev from '../../constant/pairHashes.development'
-import {APR_AMOUNT_WEEKS, REWARD_TOKEN_WEEKLY_EMISSIONS} from "../../constant";
+import {
+  APR_AMOUNT_WEEKS,
+  REWARD_CST_WEEKLY_INFLATION_RATE,
+  REWARD_TOKEN_WEEKLY_EMISSIONS,
+  TOTAL_GAUGE_WEIGHT_FOR_CST
+} from "../../constant";
 
 export type PairData = {
   checked: boolean,
@@ -42,6 +47,7 @@ export type PairData = {
   gaugePackageHash?: string,
   gaugeToken?: string,
   gaugeCSTRewards?: boolean,
+  gaugeCSTWeight?: number
 }
 
 export type PairState = Record<string, PairData>
@@ -133,6 +139,7 @@ export type PairActionLoadPairPayLoad = {
 export type PairActionLoadRewardPayLoad = {
   name: string,
   tokenRewardPriceUSD: string,
+  tokenCSTRewardsPriceUSD: string,
   tokenRewardSymbol: string,
   totalLiquidityUSD: string,
   gaugeAmount: number
@@ -227,6 +234,12 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         }
       }
     case PairActions.ADD_GAUGE_BALANCE_TO_PAIR:
+      let gaugeBalance = '0'
+      const oldState = state[`${action.payload.name}`]
+      if (oldState.gaugeToken != null && oldState.gaugeCSTRewards) {
+        gaugeBalance = action.payload.balance
+      }
+
       return {
         ...state,
         [`${action.payload.name}`]: {
@@ -346,17 +359,32 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
     case PairActions.REWARDS: {
       const oldState = state[`${action.payload.name}`]
 
-      let apr = `0.00%`
+      let apr = ``
       if (!!action.payload.tokenRewardPriceUSD && oldState.gaugeContractHash) {
-        const globalRewardsAPR = new BigNumber(action.payload.tokenRewardPriceUSD).times(APR_AMOUNT_WEEKS).times(REWARD_TOKEN_WEEKLY_EMISSIONS)
-          .div(action.payload.totalLiquidityUSD).times(100)
+        if (oldState.gaugeToken != null) {
+          const globalETHRewardsAPR = new BigNumber(action.payload.tokenRewardPriceUSD)
+            // (ETH price usd * ETH gauge weight) / (total number of gauge * eth weekly)  / total supply usd
+            .times(REWARD_TOKEN_WEEKLY_EMISSIONS).div(action.payload.gaugeAmount * APR_AMOUNT_WEEKS).div(action.payload.totalLiquidityUSD).times(100)
 
-        const equitableReward = (globalRewardsAPR.div(action.payload.gaugeAmount)).toFixed(2)
+          const equitableReward = globalETHRewardsAPR.isNaN() ? '0.00' : (globalETHRewardsAPR).toFixed(2)
+          apr = `${equitableReward}% ${action.payload.tokenRewardSymbol}`
+        }
 
-        apr = `${equitableReward}% ${action.payload.tokenRewardSymbol}`
+        if (oldState.gaugeCSTRewards) {
+          const globalCSTRewardsAPR = new BigNumber(action.payload.tokenCSTRewardsPriceUSD)
+            // (CST price usd * CST Yearly * cst gauge weight) / total gauge weight / total supply usd
+            .times(REWARD_CST_WEEKLY_INFLATION_RATE).times(APR_AMOUNT_WEEKS).times(oldState.gaugeCSTWeight)
+            .div(TOTAL_GAUGE_WEIGHT_FOR_CST).div(action.payload.totalLiquidityUSD).times(100)
+
+          const cstAPR = globalCSTRewardsAPR.isNaN() ? '0.00' : globalCSTRewardsAPR.toFixed(2)
+
+          apr = `${apr} ${cstAPR}% CST`
+        }
+
+        if (oldState.gaugeToken == null && !oldState.gaugeCSTRewards) {
+          apr = '0.00%'
+        }
       }
-
-      console.log("1558.12% WETH", action.payload.tokenRewardPriceUSD, !!action.payload.tokenRewardPriceUSD && oldState.gaugeContractHash, apr)
 
       return {
         ...state,

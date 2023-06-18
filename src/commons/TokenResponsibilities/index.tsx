@@ -33,6 +33,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
             })
 
             tokenPrices[t.symbol] = priceUSD
+            console.log("Prices", t.symbol, priceUSD)
         }
 
         return tokenPrices
