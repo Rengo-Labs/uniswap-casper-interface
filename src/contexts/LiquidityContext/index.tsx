@@ -140,7 +140,6 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       setConfirmModal(true);
 
-      await refresh();
       return true;
     } catch (err) {
       setProgressModal(false);
@@ -225,7 +224,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       setConfirmModal(true);
 
-      await sleep(15000);
+      await sleep(3000);
       await refresh();
 
       return true;
