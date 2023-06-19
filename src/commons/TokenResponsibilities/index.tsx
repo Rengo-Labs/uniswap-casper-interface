@@ -33,7 +33,6 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
             })
 
             tokenPrices[t.symbol] = priceUSD
-            console.log("Prices", t.symbol, priceUSD)
         }
 
         return tokenPrices
@@ -86,8 +85,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                             token.contractHash
                           )
                           .then((response) => {
-                              //console.log('balance', token, response)
-                              console.log(x, convertBigNumberToUIString(new BigNumber(response), token.decimals).toString())
+                              //console.log(x, convertBigNumberToUIString(new BigNumber(response), token.decimals).toString())
                               tokenDispatch({
                                   type: TokenActions.LOAD_BALANCE,
                                   payload: {
@@ -114,7 +112,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                     ]);
                 } else {
                     return casperClient.getBalance(wallet).then((balance) => {
-                        console.log('balance', convertBigNumberToUIString(balance, token.decimals))
+                        //console.log('balance', convertBigNumberToUIString(balance, token.decimals))
                         tokenDispatch({
                             type: TokenActions.LOAD_BALANCE,
                             payload: {

@@ -12,7 +12,7 @@ import {
   APIClient,
   Client as CasperClient,
   Network,
-  convertUIStringToBigNumber,
+  convertUIStringToBigNumber, sleep,
 } from '../../commons';
 
 import { signAndDeployAllowance } from '../../commons/deploys';
@@ -118,7 +118,6 @@ export const ConfigContextWithReducer = ({
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
-      console.log('#### waitForDeployExecution onIncreaseAllow #####', result);
 
         if (result) {
             updateNotification({
@@ -132,7 +131,8 @@ export const ConfigContextWithReducer = ({
       }
       setProgressModal(false);
       setConfirmModal(true);
-      refresh(walletState.wallet);
+      await sleep(3000)
+      await refresh(walletState.wallet)
       return true;
     } catch (err) {
         setProgressModal(false);

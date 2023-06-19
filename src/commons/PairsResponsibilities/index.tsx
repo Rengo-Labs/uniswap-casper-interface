@@ -98,36 +98,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
               })
             }),
           apiClient
-            .getERC20GaugeAllowance(
-              wallet,
-              pair.contractHash,
-              pair.gaugePackageHash
-            )
-            .then((response) => {
-              pairDispatch({
-                type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  allowance: convertBigNumberToUIString(
-                    new BigNumber(response),
-                    pair.decimals
-                  ),
-                },
-              });
-            }).catch(e => {
-              console.log("Error loading gauge allowance", pair.name)
-              pairDispatch({
-                type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  allowance: convertBigNumberToUIString(
-                    new BigNumber(0),
-                    pair.decimals
-                  ),
-                },
-              })
-            }),
-          apiClient
             .getERC20Balance(
               wallet,
               pair.contractHash,
@@ -160,24 +130,57 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 },
               })
             }),
-          apiClient
-            .getERC20Balance(
-              wallet,
-              pair.gaugeContractHash,
-            )
-            .then((response) => {
+        )
+        if (pair.gaugeContractHash) {
+          ps.push(
+            apiClient
+              .getERC20GaugeAllowance(
+                wallet,
+                pair.contractHash,
+                pair.gaugePackageHash
+              )
+              .then((response) => {
+                pairDispatch({
+                  type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+                  payload: {
+                    name: pair.name,
+                    allowance: convertBigNumberToUIString(
+                      new BigNumber(response),
+                      pair.decimals
+                    ),
+                  },
+                });
+              }).catch(e => {
+              console.log("Error loading gauge allowance", e)
               pairDispatch({
-                type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
+                type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
                 payload: {
                   name: pair.name,
-                  balance: convertBigNumberToUIString(
-                    new BigNumber(response),
+                  allowance: convertBigNumberToUIString(
+                    new BigNumber(0),
                     pair.decimals
-                  )
+                  ),
                 },
-              });
-            }).catch(e => {
-              console.log("Error loading pair balance ", pair.name)
+              })
+            }),
+            apiClient
+              .getERC20Balance(
+                wallet,
+                pair.gaugeContractHash,
+              )
+              .then((response) => {
+                pairDispatch({
+                  type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
+                  payload: {
+                    name: pair.name,
+                    balance: convertBigNumberToUIString(
+                      new BigNumber(response),
+                      pair.decimals
+                    )
+                  },
+                });
+              }).catch(e => {
+              //console.log("Error loading pair balance ", pair.name)
               pairDispatch({
                 type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
                 payload: {
@@ -189,68 +192,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                 },
               })
             }),
-        )
-        if (pair.gaugeContractHash) {
-          ps.push(
-            apiClient
-              .getERC20Allowance(
-                wallet,
-                pair.gaugeContractHash,
-              )
-              .then((response) => {
-                pairDispatch({
-                  type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
-                  payload: {
-                    name: pair.name,
-                    allowance: convertBigNumberToUIString(
-                      new BigNumber(response),
-                      pair.decimals
-                    ),
-                  },
-                });
-              }).catch(e => {
-                console.log("Error loading pair gauge allowance", pair.name)
-                pairDispatch({
-                  type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
-                  payload: {
-                    name: pair.name,
-                    allowance: convertBigNumberToUIString(
-                      new BigNumber(0),
-                      pair.decimals
-                    ),
-                  },
-                })
-              }),
-            apiClient
-              .getERC20Balance(
-                wallet,
-                pair.gaugeContractHash,
-              )
-              .then((response) => {
-                console.log(pair.name, response)
-                pairDispatch({
-                  type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
-                  payload: {
-                    name: pair.name,
-                    balance: convertBigNumberToUIString(
-                      new BigNumber(response),
-                      pair.decimals
-                    ),
-                  },
-                });
-              }).catch(e => {
-                console.log("Error loading pair gauge balance ", pair.name, e)
-                pairDispatch({
-                  type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
-                  payload: {
-                    name: pair.name,
-                    balance: convertBigNumberToUIString(
-                      new BigNumber(0),
-                      pair.decimals
-                    ),
-                  },
-                })
-              }),
             apiClient
               .getERC20TotalSupply(
                 wallet,
