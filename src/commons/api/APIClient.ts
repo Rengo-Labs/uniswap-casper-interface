@@ -181,6 +181,7 @@ export class APIClient {
   async getERC20GaugeAllowance(wallet: Wallet, contractHash: string, packageHash: string): Promise<string> {
     if (contractHash == null) return;
 
+    console.log('getERC20GaugeAllowance contractHash', contractHash)
     const erc20 = new ERC20Client(
       this._client.node,
       this._client.network,
@@ -193,6 +194,28 @@ export class APIClient {
     )
 
     return erc20.allowances(wallet.publicKey, packageHashByteArray)
+  }
+
+  /**
+   * Get the user's total supply
+   *
+   * @param wallet user wallet
+   * @param contract hash contract hash
+   * @param stateRootHash optional state root hash
+   *
+   * @returns the total supply as a string
+   */
+  async getERC20TotalSupply(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
+    if (contractHash == null) return;
+
+    console.log('getERC20TotalSupply contractHash', contractHash)
+    const erc20 = new ERC20Client(
+      this._client.node,
+      this._client.network,
+    );
+    await erc20.setContractHash(contractHash.slice(5))
+
+    return erc20.totalSupply()
   }
 
   /**
