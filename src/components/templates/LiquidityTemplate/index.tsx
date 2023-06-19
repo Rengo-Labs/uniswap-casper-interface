@@ -427,8 +427,12 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
   const loadUserLP = () => {
     const userPairs = Object.values(pairState).filter(
-      (v) => parseFloat(v.balance) > 0
+      (v) => parseFloat(v.balance) > 0 || parseFloat(v.gaugeBalance) > 0
     ).map((i) => {
+      const combinedBalance = new BigNumber(i.balance || 0).plus(i.gaugeBalance || 0)
+      
+      const ratio = combinedBalance.div(i.totalSupply)
+
       return {
         contractPackage: i.packageHash.slice(5),
         firstTokenIcon: i.token0Icon,
@@ -436,13 +440,13 @@ export const LiquidityTemplate = ({ isMobile }) => {
         isFavorite: false,
         firstSymbol: i.token0Symbol,
         secondSymbol: i.token1Symbol,
-        firstAmount: i.reserve0,
-        secondAmount: i.reserve1,
-        userUSDLP: convertToUSDCurrency(parseFloat(i.liquidityUSD)),
-        userLP: i.balance,
+        firstAmount: combinedBalance.times(i.totalReserve0).toNumber(),
+        secondAmount: combinedBalance.times(i.totalReserve1).toNumber(),
+        userUSDLP: convertToUSDCurrency(ratio.times(i.totalLiquidityUSD).toNumber()),
+        userLP: combinedBalance,
         totalUSDLP: convertToUSDCurrency(parseFloat(i.totalLiquidityUSD)),
         totalLP: i.totalSupply,
-        yourShare: `${(Number(i.balance) / Number(i.totalSupply) * 100).toFixed(2)}%`,
+        yourShare: `${(ratio.toNumber() * 100).toFixed(2)}%`,
         apr: `${i.userApr}%`,
         onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
         hasStake: parseFloat(i.gaugeBalance) > 0,
@@ -450,6 +454,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
         lpStaked: i.gaugeBalance ? i.gaugeBalance : 0,
       }
     })
+
     userPairDataNonZeroSetter(userPairs)
   }
 

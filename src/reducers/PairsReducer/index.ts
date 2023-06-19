@@ -364,8 +364,8 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
       let apr = 0
       let userAPR = 0
       if (!!action.payload.tokenRewardPriceUSD && oldState.gaugeContractHash) {
-        const pricePerLPToken = new BigNumber(oldState.totalSupply)
-        .div(action.payload.totalLiquidityUSD)
+        const pricePerLPToken = new BigNumber(action.payload.totalLiquidityUSD)
+          .div(oldState.totalSupply)
 
         const totalStakeUSD = new BigNumber(oldState.gaugeTotalStake)
           .times(pricePerLPToken)
