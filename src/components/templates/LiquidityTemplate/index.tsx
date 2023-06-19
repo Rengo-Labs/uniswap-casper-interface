@@ -218,7 +218,7 @@ export const LiquidityTemplate = ({isMobile}) => {
         setRemoveLiquidityAllowanceEnabled(true)
         let result = null
 
-        if (titleStakePopup === 'Stake') {
+        if (actionSelected === 'StakeLP') {
             result = await onAddStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
         } else {
             result = await onRemoveStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
@@ -362,7 +362,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             gaugePackageHash: item.gaugePackageHash,
             gaugeContractHash: item.gaugeContractHash,
             lpAmount: 0, firstAmount: 0, secondAmount: 0,
-            allowance: parseFloat(item.gaugeAllowance)})))
+            allowance: - parseFloat(item.gaugeAllowance)})))
         setStakePopup(true)
         console.log("ITem", item, parseFloat(item.gaugeBalance) - parseFloat(item.gaugeAllowance))
     }
@@ -408,7 +408,7 @@ export const LiquidityTemplate = ({isMobile}) => {
             lpAmount: 0,
             firstAmount: 0,
             secondAmount: 0,
-            allowance: parseFloat(item.gaugeBalance) - parseFloat(item.gaugeAllowance),
+            allowance: 0,
         })))
         setShowStakingAllowance(false)
         setStakePopup(true)
@@ -442,7 +442,7 @@ export const LiquidityTemplate = ({isMobile}) => {
                 totalUSDLP: convertToUSDCurrency(parseFloat(i.totalLiquidityUSD)),
                 totalLP: i.totalSupply,
                 yourShare: `${(Number(i.balance) / Number(i.totalSupply) * 100).toFixed(2)}%`,
-                apr: `${i.apr}%`,
+                apr: `${i.userApr}%`,
                 onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
                 hasStake: parseFloat(i.gaugeBalance) > 0,
                 hasGauge: i.gaugeContractHash != null,
