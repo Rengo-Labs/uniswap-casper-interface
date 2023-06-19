@@ -430,7 +430,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
       (v) => parseFloat(v.balance) > 0 || parseFloat(v.gaugeBalance) > 0
     ).map((i) => {
       const combinedBalance = new BigNumber(i.balance || 0).plus(i.gaugeBalance || 0)
-      
+
       const ratio = combinedBalance.div(i.totalSupply)
 
       return {
@@ -452,6 +452,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
         hasStake: parseFloat(i.gaugeBalance) > 0,
         hasGauge: i.gaugeContractHash != null,
         lpStaked: i.gaugeBalance ? i.gaugeBalance : 0,
+        hasClaimWETH: !!i.gaugeToken,
+        hasClaimCST: !!i.gaugeCSTRewards
       }
     })
 
