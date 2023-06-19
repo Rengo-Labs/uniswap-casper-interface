@@ -462,7 +462,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             const tokenRewardPrice = tokenUSDPrices[pl.gaugeToken] ?? '0'
             const tokenCSTRewardsPrice = tokenUSDPrices['CST'] ?? '0'
 
-            console.log("tokens", tokenRewardPrice, tokenCSTRewardsPrice)
             pairDispatch({
                 type: PairActions.REWARDS,
                 payload: {

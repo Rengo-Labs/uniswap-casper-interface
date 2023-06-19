@@ -47,7 +47,8 @@ export type PairData = {
   gaugePackageHash?: string,
   gaugeToken?: string,
   gaugeCSTRewards?: boolean,
-  gaugeCSTWeight?: number
+  gaugeCSTWeight?: number,
+  useApr?: string
 }
 
 export type PairState = Record<string, PairData>
@@ -267,13 +268,6 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
       {
         const oldState = state[`${action.payload.name}`]
 
-        //const balance = convertUIStringToBigNumber(oldState.balance)
-        //const totalSupply = convertUIStringToBigNumber(action.payload.totalSupply, oldState.decimals)
-        //const totalReserve0 = convertUIStringToBigNumber(action.payload.totalReserve0, action.payload.decimals0)
-        //const totalReserve1 = convertUIStringToBigNumber(action.payload.totalReserve1, action.payload.decimals1)
-        //const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
-        //const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
-
         return {
           ...state,
           [`${action.payload.name}`]: {
@@ -307,16 +301,6 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .times(action.payload.token1Price)
           )
           .toString()
-        /*console.log(
-          'action.payload',
-          liquidityUSD,
-          totalLiquidityUSD,
-          action.payload.name, 
-          action.payload.token0Price,
-          oldState.totalReserve0, 
-          action.payload.token1Price,
-          oldState.totalReserve1, 
-        )*/
 
         return {
           ...state,
@@ -359,15 +343,14 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
     case PairActions.REWARDS: {
       const oldState = state[`${action.payload.name}`]
 
-      let apr = ``
+      let apr = 0
       if (!!action.payload.tokenRewardPriceUSD && oldState.gaugeContractHash) {
         if (oldState.gaugeToken != null) {
           const globalETHRewardsAPR = new BigNumber(action.payload.tokenRewardPriceUSD)
             // (ETH price usd * ETH gauge weight) / (total number of gauge * eth weekly)  / total supply usd
             .times(REWARD_TOKEN_WEEKLY_EMISSIONS).div(action.payload.gaugeAmount * APR_AMOUNT_WEEKS).div(action.payload.totalLiquidityUSD).times(100)
 
-          const equitableReward = globalETHRewardsAPR.isNaN() ? '0.00' : (globalETHRewardsAPR).toFixed(2)
-          apr = `${equitableReward}% ${action.payload.tokenRewardSymbol}`
+          apr = globalETHRewardsAPR.isNaN() ? 0 : globalETHRewardsAPR.toNumber()
         }
 
         if (oldState.gaugeCSTRewards) {
@@ -376,13 +359,11 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .times(REWARD_CST_WEEKLY_INFLATION_RATE).times(APR_AMOUNT_WEEKS).times(oldState.gaugeCSTWeight)
             .div(TOTAL_GAUGE_WEIGHT_FOR_CST).div(action.payload.totalLiquidityUSD).times(100)
 
-          const cstAPR = globalCSTRewardsAPR.isNaN() ? '0.00' : globalCSTRewardsAPR.toFixed(2)
-
-          apr = `${apr} ${cstAPR}% CST`
+          apr = apr + (globalCSTRewardsAPR.isNaN() ? 0 : globalCSTRewardsAPR.toNumber())
         }
 
         if (oldState.gaugeToken == null && !oldState.gaugeCSTRewards) {
-          apr = '0.00%'
+          apr = 0
         }
       }
 
@@ -390,7 +371,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         ...state,
         [`${action.payload.name}`]: {
           ...oldState,
-          apr: apr
+          apr: `${apr.toFixed(2)}`
         },
       }
     }

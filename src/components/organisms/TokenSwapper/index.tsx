@@ -251,7 +251,6 @@ const TokenSwapper = ({
 
     const isA2B = symbolA == tokenSelected
 
-    console.log("swap", symbolA, priceA, amountA, symbolB, priceB, amountB, isA2B)
     const [usdA, usdB] = calculateUSDtokens(
         priceA,
         priceB,
@@ -266,20 +265,6 @@ const TokenSwapper = ({
     setValueAUSD(_usdA);
     setValueBUSD(_usdB);
   }
-
-  const popularTokens = Object.values(tokenState.tokens).map((token) => {
-    const {chainId, symbol, name, amount, logoURI}: any = token;
-    return (
-        {
-          id: chainId,
-          name: symbol,
-          fullName: name,
-          amount: amount,
-          tokenImg: logoURI,
-          favorite: false
-        }
-    );
-  });
 
   const updateLocalStorage = (
     name: string,
