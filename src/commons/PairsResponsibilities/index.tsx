@@ -463,7 +463,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             const tokenCSTRewardsPrice = tokenUSDPrices['CST'] ?? '0'
 
             pairDispatch({
-                type: PairActions.REWARDS,
+                type: PairActions.APR_REWARDS,
                 payload: {
                     name: pl.name,
                     totalLiquidityUSD: pl.totalLiquidityUSD,
