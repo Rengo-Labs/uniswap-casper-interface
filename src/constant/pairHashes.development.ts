@@ -160,7 +160,7 @@ export const pairList: PairState = {
     checked: false,
     name: "USDT-USDC",
     orderedName: '',
-    contractHash: "hash-3a3d026db92cc8e10d501d7a137a2a0e6f64b9c96c83211d80ca69fd80603fad",
+    contractHash: "hash-8942800f2d156ee87814fa41dac38e9814613f9982d7c1a39509d0a17a09699b",
     packageHash: "hash-6de9a63441e43d75e8774675407ed3d6775b0e5f3fa35382c744980733030902",
     reserve0: '0',
     reserve1: '0',
