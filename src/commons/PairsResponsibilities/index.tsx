@@ -60,7 +60,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     }
   }
 
-  async function loadPairsUserData(wallet: Wallet, isConnected = false): Promise<void> {
+  async function loadPairsUserData(wallet: Wallet, isConnected = false): Promise<any> {
     if (!isConnected) {
       return;
     }
@@ -68,6 +68,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     try {
       const ps = [];
       const pairList = Object.keys(pairState).map((x) => pairState[x]);
+      const stakingList = new Map()
       for (const pair of pairList) {
         ps.push(
           getAllowanceUpdated(wallet, pair.name, pair.decimals, pair.contractHash, ROUTER_PACKAGE_HASH, PairActions.ADD_ALLOWANCE_TO_PAIR),
@@ -75,18 +76,20 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             tokenState.tokens[pair.token0Symbol].decimals, tokenState.tokens[pair.token1Symbol].decimals)
         )
         if (pair.gaugeContractHash) {
-
           ps.push(
             getAllowanceUpdated(wallet, pair.name, pair.decimals, pair.contractHash, pair.gaugePackageHash.slice(5), PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR),
-            getPairBalance(wallet, pair.name, pair.decimals, pair.gaugeContractHash, PairActions.ADD_GAUGE_BALANCE_TO_PAIR),
-            getTotalGaugeSupply(wallet, pair.name, pair.decimals, pair.gaugeContractHash),
           )
+
+          const result = await getPairBalance(wallet, pair.name, pair.decimals, pair.gaugeContractHash, PairActions.ADD_GAUGE_BALANCE_TO_PAIR)
+          stakingList.set(pair.name, result)
         }
       }
 
       await Promise.all(ps);
+      return stakingList
     } catch (err) {
       log.error('fillPairs - PairsResponsibility', err.message);
+      return null
     }
   }
 
@@ -104,18 +107,13 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     }
   }
 
-  const getInfoResult = (infoResultMap) => {
-    const { packageHash } = infoResultMap
-    return infoResultMap[packageHash] ?? {
-      oneWeekVoluemUSD: 0,
-      oneDayVoluemUSD: 0,
-      reserveUSD: 0,
-    }
-  }
-
   const getGeneralPairData = async (pairs, pairsMap) => {
     //console.log('getGeneralPairData from PairsResponsibility')
     const results = await Promise.all(pairs.map(async (pl) => {
+
+      if (pl.gaugeContractHash) {
+        await getTotalGaugeSupply(pl.name, pl.decimals, pl.gaugeContractHash)
+      }
 
       const pairChecked = store.get(pl.name)
       changeRowPriority(pl.name, pairChecked)
@@ -281,7 +279,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     return findDailyGlobalChart()
   }
 
-  const loadGralRewards = async (tokenUSDPrices): Promise<any> => {
+  const loadGralRewards = async (tokenUSDPrices, stakingList): Promise<any> => {
 
     const pairs = Object.values(pairState)
 
@@ -308,6 +306,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
           tokenRewardSymbol: pl.gaugeToken,
           gaugeAmount: gaugeCounter,
           gaugeTotalWeight: gaugeTotalWeight,
+          gaugeBalance: stakingList.get(pl.name)
         }
       })
     }
@@ -348,8 +347,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     })
   }
 
-  const getPairBalance = async (wallet: Wallet, name: string, decimals: number, contractHash: string, action: string, token0Decimal = null, token1Decimal = null): Promise<void> => {
-    apiClient
+  const getPairBalance = async (wallet: Wallet, name: string, decimals: number, contractHash: string, action: string, token0Decimal = null, token1Decimal = null): Promise<string> => {
+    return apiClient
       .getERC20Balance(
         wallet,
         contractHash,
@@ -367,8 +366,12 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             decimals1: token1Decimal
           },
         });
+        return convertBigNumberToUIString(
+          new BigNumber(response),
+          decimals
+        )
       }).catch(e => {
-      console.log("Error loading pair balance ", name, e)
+      //console.log("Error loading pair balance ", name, e)
       pairDispatch({
         type: action,
         payload: {
@@ -379,14 +382,14 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
           )
         },
       })
+        return '0'
     })
   }
 
-  const getTotalGaugeSupply = async (wallet: Wallet, name: string, decimals: number, contractHash: string): Promise<void> => {
+  const getTotalGaugeSupply = async (name: string, decimals: number, contractHash: string): Promise<void> => {
     //
     apiClient
       .getERC20TotalSupply(
-        wallet,
         contractHash,
       )
       .then((response: any) => {

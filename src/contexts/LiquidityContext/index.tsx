@@ -224,7 +224,7 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
       setProgressModal(false);
       setConfirmModal(true);
 
-      await sleep(3000);
+      await sleep(2000);
       await refresh();
 
       return true;

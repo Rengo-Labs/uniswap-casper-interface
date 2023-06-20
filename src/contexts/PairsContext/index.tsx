@@ -16,7 +16,7 @@ interface PairsContext {
     pairDispatch,
     loadPairs: (tokenState) => Promise<Record<string, PairTotalReserves>>
     loadPairsUSD: (pairsTotalReserves: Record<string, PairTotalReserves>, tokenState) => Promise<void>,
-    loadUserPairsData: (wallet: Wallet, isConnected, tokenState: TokenState) => Promise<void>,
+    loadUserPairsData: (wallet: Wallet, isConnected, tokenState: TokenState) => Promise<any>,
     orderedPairState,
     clearUserPairsData: (pairState, tokenState: TokenState) => Promise<void>,
     findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string, tokenState) => PairReserves | undefined;
@@ -26,7 +26,7 @@ interface PairsContext {
     resetPairs: () => void;
     getPairChart: (pairPackageHash: string) => Promise<any>,
     getGlobalChart: () => Promise<any>,
-    loadRewards: (tokenUSDPrices) => Promise<any>
+    loadRewards: (tokenUSDPrices, stakingList) => Promise<any>
     reloadGaugeAllowance: (wallet, name, decimals, contractHash, gaugePackageHash) => Promise<void>
 }
 
@@ -52,7 +52,7 @@ export const PairsContext = ({children}: PairsContextProps) => {
     }
 
     const loadUserPairsData = async (wallet: Wallet, isConnected, tokenState) => {
-        await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairsUserData(wallet, isConnected)
+        return await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairsUserData(wallet, isConnected)
     }
 
     const clearUserPairsData = async (pairState, tokenState) => {
@@ -76,8 +76,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
       return PairsResponsibilities(pairState, pairDispatch).getGlobalChart()
     }
 
-    const loadRewards = async (tokenUSDPrices): Promise<Record<string, PairTotalReserves>> => {
-      return await PairsResponsibilities(pairState, pairDispatch).loadGralRewards(tokenUSDPrices)
+    const loadRewards = async (tokenUSDPrices, stakingList): Promise<Record<string, PairTotalReserves>> => {
+      return await PairsResponsibilities(pairState, pairDispatch).loadGralRewards(tokenUSDPrices, stakingList)
     }
 
     const reloadGaugeAllowance = async (wallet, name, decimals, contractHash, gaugePackageHash): Promise<void> => {

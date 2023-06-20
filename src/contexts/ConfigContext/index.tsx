@@ -140,7 +140,7 @@ export const ConfigContextWithReducer = ({
         await reloadGaugeAllowance(walletState.wallet, name, decimals, contractHash, gaugeSpender)
       }
 
-      await sleep(3000)
+      await sleep(2000)
       await refresh(walletState.wallet)
       return true;
     } catch (err) {

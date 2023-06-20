@@ -197,7 +197,7 @@ export class APIClient {
    *
    * @returns the total supply as a string
    */
-  async getERC20TotalSupply(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
+  async getERC20TotalSupply(contractHash: string, stateRootHash?: string): Promise<string> {
     if (contractHash == null) return;
 
     // console.log('getERC20TotalSupply contractHash', contractHash)

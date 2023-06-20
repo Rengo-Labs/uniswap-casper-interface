@@ -152,6 +152,7 @@ export type PairActionLoadAPRRewardPayLoad = {
   totalLiquidityUSD: string,
   gaugeAmount: number,
   gaugeTotalWeight: number,
+  gaugeBalance: string
 }
 
 export type PairActionLoadPairUSDPayLoad = {
@@ -370,7 +371,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         const totalStakeUSD = new BigNumber(oldState.gaugeTotalStake)
           .times(pricePerLPToken)
 
-        const percentStake = new BigNumber(oldState.gaugeBalance)
+        const percentStake = new BigNumber(action.payload.gaugeBalance)
           .div(oldState.gaugeTotalStake)
 
         if (oldState.gaugeToken != null) {

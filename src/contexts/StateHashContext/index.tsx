@@ -36,8 +36,8 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         return pairsToReserves
     }, [stateHash, walletState])
 
-    const getRewards = useCallback(async (tokenUSDPrices) => {
-        const rewards = await loadRewards(tokenUSDPrices)
+    const getRewards = useCallback(async (tokenUSDPrices, stakingList) => {
+        const rewards = await loadRewards(tokenUSDPrices, stakingList)
 
         return rewards
     }, [stateHash, walletState])
@@ -48,9 +48,10 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
 
     const loadUserData = useCallback(async () => {
 
+        let stakingList
         const isConnected = walletState.wallet?.isConnected ?? false
         if (walletState?.wallet) {
-            await loadUserPairsData(walletState?.wallet, isConnected, tokenState)
+            stakingList = await loadUserPairsData(walletState?.wallet, isConnected, tokenState)
             await loadTokensBalance(walletState?.wallet, isConnected)
         }
         // TODO this part of code delays more than reset data
@@ -58,7 +59,10 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
             await clearUserPairsData(pairState, tokenState)
             await clearTokensBalance(tokenState)
         }
+
+        //todo delete this in the future
         previousQuery()
+        return stakingList ?? new Map()
     }, [stateHash, walletState.wallet?.isConnected, walletState?.wallet?.publicKey])
 
     // TODO call this function on manual refresh
@@ -71,8 +75,8 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         const loadAndRefresh = async () => {
             const pairsToReserves = await getPairs()
             const tokenUSDPrices = await getTokens(pairsToReserves)
-            await loadUserData()
-            await getRewards(tokenUSDPrices)
+            const stakingList = await loadUserData()
+            await getRewards(tokenUSDPrices, stakingList)
         }
 
         loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))
