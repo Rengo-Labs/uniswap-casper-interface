@@ -151,7 +151,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
                   },
                 });
               }).catch(e => {
-              console.log("Error loading gauge allowance", e)
               pairDispatch({
                 type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
                 payload: {
@@ -456,6 +455,38 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     return findDailyGlobalChart()
   }
 
+  const getGaugeAllowanceUpdated = (wallet: Wallet, name, decimals, contractHash, gaugePackageHash) => {
+    apiClient
+      .getERC20GaugeAllowance(
+        wallet,
+        contractHash,
+        gaugePackageHash
+      )
+      .then((response) => {
+        pairDispatch({
+          type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+          payload: {
+            name: name,
+            allowance: convertBigNumberToUIString(
+              new BigNumber(response),
+              decimals
+            ),
+          },
+        });
+      }).catch(e => {
+      pairDispatch({
+        type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+        payload: {
+          name: name,
+          allowance: convertBigNumberToUIString(
+            new BigNumber(0),
+            decimals
+          ),
+        },
+      })
+    })
+  }
+
   return {
     loadPairs,
     loadPairsBalanceUSD,
@@ -469,7 +500,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     findUSDRateBySymbol,
     getPairChart,
     getGlobalChart,
-    loadGralRewards
+    loadGralRewards,
+    getGaugeAllowanceUpdated
   }
 }
 

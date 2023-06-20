@@ -20,6 +20,7 @@ import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import {WalletProviderContext} from "../WalletContext";
 import {StateHashProviderContext} from "../StateHashContext";
+import {PairsContextProvider} from "../PairsContext";
 
 export interface ConfigContext {
   slippageToleranceSelected?: number;
@@ -28,7 +29,8 @@ export interface ConfigContext {
     contractHash: string,
     decimals?: number,
     optApproval?: string,
-    gaugeSpender?: string
+    gaugeSpender?: string,
+    name?: string
   ) => Promise<boolean>;
   confirmModal: boolean;
   linkExplorer: string;
@@ -66,6 +68,7 @@ export const ConfigContextWithReducer = ({
 }) => {
   const {walletState} = useContext(WalletProviderContext)
   const {refresh} = useContext(StateHashProviderContext)
+  const {reloadGaugeAllowance} = useContext(PairsContextProvider)
 
   const [progressModal, setProgressModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -82,7 +85,8 @@ export const ConfigContextWithReducer = ({
     contractHash: string,
     decimals = 9,
     optApproval = "",
-    gaugeSpender = null
+    gaugeSpender = null,
+    name = null
 ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
@@ -131,6 +135,11 @@ export const ConfigContextWithReducer = ({
       }
       setProgressModal(false);
       setConfirmModal(true);
+
+      if (name != null) {
+        await reloadGaugeAllowance(walletState.wallet, name, decimals, contractHash, gaugeSpender)
+      }
+
       await sleep(3000)
       await refresh(walletState.wallet)
       return true;

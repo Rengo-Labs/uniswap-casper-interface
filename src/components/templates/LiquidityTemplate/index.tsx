@@ -238,7 +238,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
   }
 
   const onActionGaugeAllowance = async () => {
-    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityCalculation.decimals, "", removeLiquidityData.gaugePackageHash)
+    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityCalculation.decimals,
+      "", removeLiquidityData.gaugePackageHash, `${removeLiquidityData.firstSymbol}-${removeLiquidityData.secondSymbol}`)
   }
 
   const handleNavigate = (item) => {
