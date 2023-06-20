@@ -43,6 +43,7 @@ interface LiquiditySwapperProps {
   setValueBUSD
 }
 
+const DEFAULT_USD_TOKEN_VALUE = "0.00"
 const LOCAL_STORAGE_KEY = 'token-list'
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
@@ -92,6 +93,7 @@ const LiquiditySwapper = ({
   const [currentValue, setCurrentValue] = useState<number>(0)
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const [tokenListData, setTokenListData] = useState<any[]>([]);
+  const [initializeCalculation, setInitializeCalculation] = useState(false)
 
   const {
     disableButton: disableButtonValid,
@@ -120,6 +122,32 @@ const LiquiditySwapper = ({
     }
   });
 
+  useEffect(() => {
+    if (firstTokenSelected?.priceUSD ===  DEFAULT_USD_TOKEN_VALUE || initializeCalculation) {
+      return
+    }
+
+    const filteredValue = 1
+    const firstTokenOnMount = tokenState.tokens['CSPR']
+    const secondTokenOnMount = tokenState.tokens['WETH']
+
+    const handleExchangeCalculation = async () => {
+      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
+        firstTokenOnMount,
+        secondTokenOnMount,
+        filteredValue,
+        firstTokenOnMount,
+        false
+      );
+
+      calculateUSDValues(filteredValue, tokensToTransfer, true)
+      setUSDByTokens(exchangeRateA, exchangeRateB, true)
+
+      setInitializeCalculation(true)
+    }
+  
+    handleExchangeCalculation()
+  }, [firstTokenSelected])
 
 
   useEffect(() => {
