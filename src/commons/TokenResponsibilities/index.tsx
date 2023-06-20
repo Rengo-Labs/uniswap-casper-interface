@@ -49,66 +49,8 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
                 if (token.contractHash) {
                     return Promise.all([
-                        apiClient
-                          .getERC20Allowance(
-                            wallet,
-                            token.contractHash
-                          )
-                          .then((response) => {
-                              //console.log('allowance', token, response)
-                              tokenDispatch({
-                                  type: TokenActions.LOAD_ALLOWANCE,
-                                  payload: {
-                                      name: x,
-                                      allowance: convertBigNumberToUIString(
-                                        new BigNumber(response),
-                                        token.decimals
-                                      ),
-                                  },
-                              });
-                          }).catch(e => {
-                              console.log("Error loading pair allowance", x, e)
-                              tokenDispatch({
-                                  type: TokenActions.LOAD_ALLOWANCE,
-                                  payload: {
-                                      name: x,
-                                      allowance: convertBigNumberToUIString(
-                                        new BigNumber(0),
-                                        token.decimals
-                                      ),
-                                  },
-                              })
-                          }),
-                        apiClient
-                          .getERC20Balance(
-                            wallet,
-                            token.contractHash
-                          )
-                          .then((response) => {
-                              //console.log(x, convertBigNumberToUIString(new BigNumber(response), token.decimals).toString())
-                              tokenDispatch({
-                                  type: TokenActions.LOAD_BALANCE,
-                                  payload: {
-                                      name: x,
-                                      amount: convertBigNumberToUIString(
-                                        new BigNumber(response),
-                                        token.decimals
-                                      ),
-                                  },
-                              });
-                          }).catch(e => {
-                              console.log("Error loading pair balance", x, e)
-                              tokenDispatch({
-                                  type: TokenActions.LOAD_BALANCE,
-                                  payload: {
-                                      name: x,
-                                      amount: convertBigNumberToUIString(
-                                        new BigNumber(0),
-                                        token.decimals
-                                      ),
-                                  },
-                            })
-                          }),
+                        getAllowance(wallet, x, token.decimals, token.contractHash),
+                        getTokenBalance(wallet, x, token.decimals, token.contractHash),
                     ]);
                 } else {
                     return casperClient.getBalance(wallet).then((balance) => {
@@ -306,6 +248,72 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         return getBalanceProfitByContractHash(packageHash)
     }
 
+    const getAllowance = async (wallet, name, decimals, contractHash): Promise<void> => {
+        apiClient
+          .getERC20Allowance(
+            wallet,
+            contractHash
+          )
+          .then((response) => {
+              //console.log('allowance', token, response)
+              tokenDispatch({
+                  type: TokenActions.LOAD_ALLOWANCE,
+                  payload: {
+                      name: name,
+                      allowance: convertBigNumberToUIString(
+                        new BigNumber(response),
+                        decimals
+                      ),
+                  },
+              });
+          }).catch(e => {
+            console.log("Error loading pair allowance", name, e)
+            tokenDispatch({
+                type: TokenActions.LOAD_ALLOWANCE,
+                payload: {
+                    name: name,
+                    allowance: convertBigNumberToUIString(
+                      new BigNumber(0),
+                      decimals
+                    ),
+                },
+            })
+        })
+    }
+
+    const getTokenBalance = async (wallet, name, decimals, contractHash): Promise<void> => {
+        apiClient
+          .getERC20Balance(
+            wallet,
+            contractHash
+          )
+          .then((response) => {
+              //console.log(x, convertBigNumberToUIString(new BigNumber(response), token.decimals).toString())
+              tokenDispatch({
+                  type: TokenActions.LOAD_BALANCE,
+                  payload: {
+                      name: name,
+                      amount: convertBigNumberToUIString(
+                        new BigNumber(response),
+                        decimals
+                      ),
+                  },
+              });
+          }).catch(e => {
+            //console.log("Error loading pair balance", name, e)
+            tokenDispatch({
+                type: TokenActions.LOAD_BALANCE,
+                payload: {
+                    name: name,
+                    amount: convertBigNumberToUIString(
+                      new BigNumber(0),
+                      decimals
+                    ),
+                },
+            })
+        })
+    }
+
     return {
         loadTokenUSD,
         updateBalances,
@@ -319,7 +327,9 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         getBalancesProfit,
         getHistoricalTokensChartPrices,
         getTokensChartData,
-        getPercentChangeByTokens
+        getPercentChangeByTokens,
+        getAllowance,
+        getTokenBalance
     }
 
 }

@@ -5,6 +5,7 @@ import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
 import {notificationStore} from "../../store/store";
 import {TokenState} from "../../reducers/TokenReducers";
+import {ROUTER_PACKAGE_HASH} from "../../constant";
 
 interface PairsContextProps {
     children: ReactNode
@@ -80,7 +81,7 @@ export const PairsContext = ({children}: PairsContextProps) => {
     }
 
     const reloadGaugeAllowance = async (wallet, name, decimals, contractHash, gaugePackageHash): Promise<void> => {
-      return PairsResponsibilities(pairState, pairDispatch).getGaugeAllowanceUpdated(wallet, name, decimals, contractHash, gaugePackageHash)
+      return PairsResponsibilities(pairState, pairDispatch).getAllowanceUpdated(wallet, name, decimals, contractHash, gaugePackageHash, ROUTER_PACKAGE_HASH)
     }
 
     return (

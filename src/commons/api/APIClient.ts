@@ -18,6 +18,7 @@ import { initialTokenState } from '../../reducers/TokenReducers'
 import { ERC20Client } from 'casper-erc20-js-client'
 const { Contract } = Contracts
 import {globalStore} from "../../store/store";
+import {cardActionAreaClasses} from "@mui/material";
 export const enum ERC20Keys {
   TOTAL_SUPPLY = 'total_supply',
 }
@@ -48,10 +49,26 @@ export interface PairUserDataResponse {
  * Client for working with Caspwerswap API
  */
 export class APIClient {
+  _instance = null;
 
   constructor(
     private _client: CasperClient,
   ){
+  }
+
+  createInstance = (): ERC20Client => {
+    const erc20 = new ERC20Client(
+      this._client.node,
+      this._client.network,
+    );
+    return erc20
+  }
+
+  getInstance = (): ERC20Client => {
+    if(this._instance == null) {
+      this._instance = this.createInstance()
+    }
+    return this._instance
   }
 
   /**
@@ -141,10 +158,7 @@ export class APIClient {
    * @returns the balance as a string
    */
   async getERC20Balance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
-    const erc20 = new ERC20Client(
-      this._client.node,
-      this._client.network,
-    );
+    const erc20 = this.getInstance()
 
     await erc20.setContractHash(contractHash)
 
@@ -160,40 +174,18 @@ export class APIClient {
    *
    * @returns the allowance as a string
    */
-  async getERC20Allowance(wallet: Wallet, contractHash: string, stateRootHash?: string): Promise<string> {
+  async getERC20Allowance(wallet: Wallet, contractHash: string, spender = ROUTER_PACKAGE_HASH): Promise<string> {
     if (contractHash == null) return;
 
-    const erc20 = new ERC20Client(
-      this._client.node,
-      this._client.network,
-    );
+    const erc20 = this.getInstance()
 
     await erc20.setContractHash(contractHash)
 
-    const spender = ROUTER_PACKAGE_HASH;
     const spenderByteArray = new CLByteArray(
         Uint8Array.from(Buffer.from(spender, "hex"))
     )
 
     return erc20.allowances(wallet.publicKey, spenderByteArray)
-  }
-
-  async getERC20GaugeAllowance(wallet: Wallet, contractHash: string, packageHash: string): Promise<string> {
-    if (contractHash == null) return;
-
-    // console.log('getERC20GaugeAllowance contractHash', contractHash)
-    const erc20 = new ERC20Client(
-      this._client.node,
-      this._client.network,
-    );
-
-    await erc20.setContractHash(contractHash)
-
-    const packageHashByteArray = new CLByteArray(
-      Uint8Array.from(Buffer.from(packageHash.slice(5), "hex"))
-    )
-
-    return erc20.allowances(wallet.publicKey, packageHashByteArray)
   }
 
   /**
@@ -209,10 +201,8 @@ export class APIClient {
     if (contractHash == null) return;
 
     // console.log('getERC20TotalSupply contractHash', contractHash)
-    const erc20 = new ERC20Client(
-      this._client.node,
-      this._client.network,
-    );
+    const erc20 = this.getInstance()
+
     await erc20.setContractHash(contractHash.slice(5))
 
     return erc20.totalSupply()
@@ -292,8 +282,8 @@ export class APIClient {
 
     try {
       const [allowance, balance]: any[] = await Promise.all([
-        this.getERC20Allowance(wallet, contractHash, srh).catch(e => '0'),
-        this.getERC20Balance(wallet, contractHash, srh),
+        this.getERC20Allowance(wallet, contractHash).catch(e => '0'),
+        this.getERC20Balance(wallet, contractHash),
       ])
 
       return {

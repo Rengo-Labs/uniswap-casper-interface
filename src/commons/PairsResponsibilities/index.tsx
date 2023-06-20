@@ -1,12 +1,14 @@
 import { findPairChartData, findDailyGlobalChart, getPairData } from "../api/ApolloQueries";
 import store from "store2";
-import { convertBigNumberToUIString, log } from "../utils";
+import {convertBigNumberToUIString, log, sleep} from "../utils";
 import BigNumber from "bignumber.js";
 import { PairActions, PairData, PairState } from "../../reducers/PairsReducer";
 import { apiClient, PairReserves } from "../../contexts/ConfigContext";
 import { Wallet } from "../wallet";
 import { TokenState } from "../../reducers/TokenReducers";
 import { pairFinder } from "../pairFinder";
+import {CLByteArray} from "casper-js-sdk";
+import {ROUTER_PACKAGE_HASH} from "../../constant";
 
 export interface PairTotalReserves {
   totalReserve0: BigNumber.Value,
@@ -68,158 +70,16 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
       const pairList = Object.keys(pairState).map((x) => pairState[x]);
       for (const pair of pairList) {
         ps.push(
-          apiClient
-            .getERC20Allowance(
-              wallet,
-              pair.contractHash,
-            )
-            .then((response) => {
-              pairDispatch({
-                type: PairActions.ADD_ALLOWANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  allowance: convertBigNumberToUIString(
-                    new BigNumber(response),
-                    pair.decimals
-                  ),
-                },
-              });
-            }).catch(e => {
-              //console.log("Error loading pair allowance", pair.name)
-              pairDispatch({
-                type: PairActions.ADD_ALLOWANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  allowance: convertBigNumberToUIString(
-                    new BigNumber(0),
-                    pair.decimals
-                  ),
-                },
-              })
-            }),
-          apiClient
-            .getERC20Balance(
-              wallet,
-              pair.contractHash,
-            )
-            .then((response) => {
-              pairDispatch({
-                type: PairActions.ADD_BALANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  balance: convertBigNumberToUIString(
-                    new BigNumber(response),
-                    pair.decimals
-                  ),
-                  decimals0: tokenState.tokens[pair.token0Symbol].decimals,
-                  decimals1: tokenState.tokens[pair.token1Symbol].decimals
-                },
-              });
-            }).catch(e => {
-              //console.log("Error loading pair balance ", pair.name)
-              pairDispatch({
-                type: PairActions.ADD_BALANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  balance: convertBigNumberToUIString(
-                    new BigNumber(0),
-                    pair.decimals
-                  ),
-                  decimals0: tokenState.tokens[pair.token0Symbol].decimals,
-                  decimals1: tokenState.tokens[pair.token1Symbol].decimals
-                },
-              })
-            }),
+          getAllowanceUpdated(wallet, pair.name, pair.decimals, pair.contractHash, ROUTER_PACKAGE_HASH, PairActions.ADD_ALLOWANCE_TO_PAIR),
+          getPairBalance(wallet, pair.name, pair.decimals, pair.contractHash, PairActions.ADD_BALANCE_TO_PAIR,
+            tokenState.tokens[pair.token0Symbol].decimals, tokenState.tokens[pair.token1Symbol].decimals)
         )
         if (pair.gaugeContractHash) {
+
           ps.push(
-            apiClient
-              .getERC20GaugeAllowance(
-                wallet,
-                pair.contractHash,
-                pair.gaugePackageHash
-              )
-              .then((response) => {
-                pairDispatch({
-                  type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
-                  payload: {
-                    name: pair.name,
-                    allowance: convertBigNumberToUIString(
-                      new BigNumber(response),
-                      pair.decimals
-                    ),
-                  },
-                });
-              }).catch(e => {
-              pairDispatch({
-                type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  allowance: convertBigNumberToUIString(
-                    new BigNumber(0),
-                    pair.decimals
-                  ),
-                },
-              })
-            }),
-            apiClient
-              .getERC20Balance(
-                wallet,
-                pair.gaugeContractHash,
-              )
-              .then((response) => {
-                pairDispatch({
-                  type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
-                  payload: {
-                    name: pair.name,
-                    balance: convertBigNumberToUIString(
-                      new BigNumber(response),
-                      pair.decimals
-                    )
-                  },
-                });
-              }).catch(e => {
-              //console.log("Error loading pair balance ", pair.name)
-              pairDispatch({
-                type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
-                payload: {
-                  name: pair.name,
-                  gaugeBalance: convertBigNumberToUIString(
-                    new BigNumber(0),
-                    pair.decimals
-                  )
-                },
-              })
-            }),
-            apiClient
-              .getERC20TotalSupply(
-                wallet,
-                pair.gaugeContractHash,
-              )
-              .then((response: any) => {
-                pairDispatch({
-                  type: PairActions.ADD_GAUGE_TOTAL_STAKE_TO_PAIR,
-                  payload: {
-                    name: pair.name,
-                    totalStake: convertBigNumberToUIString(
-                      new BigNumber(response.toNumber()),
-                      pair.decimals
-                    ),
-                  },
-                });
-              }).catch(e => {
-                console.log("Error loading pair gauge total stake ", pair.name, e)
-                pairDispatch({
-                  type: PairActions.ADD_GAUGE_TOTAL_STAKE_TO_PAIR,
-                  payload: {
-                    name: pair.name,
-                    balance: convertBigNumberToUIString(
-                      new BigNumber(0),
-                      pair.decimals
-                    ),
-                  },
-                })
-              }),
+            getAllowanceUpdated(wallet, pair.name, pair.decimals, pair.contractHash, pair.gaugePackageHash.slice(5), PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR),
+            getPairBalance(wallet, pair.name, pair.decimals, pair.gaugeContractHash, PairActions.ADD_GAUGE_BALANCE_TO_PAIR),
+            getTotalGaugeSupply(wallet, pair.name, pair.decimals, pair.gaugeContractHash),
           )
         }
       }
@@ -455,30 +315,98 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     return findDailyGlobalChart()
   }
 
-  const getGaugeAllowanceUpdated = (wallet: Wallet, name, decimals, contractHash, gaugePackageHash) => {
+  const getAllowanceUpdated = (wallet: Wallet, name: string, decimals: number, contractHash: string, gaugePackageHash: string, action: string) => {
     apiClient
-      .getERC20GaugeAllowance(
+      .getERC20Allowance(
         wallet,
         contractHash,
         gaugePackageHash
       )
       .then((response) => {
+          pairDispatch({
+            type: action,
+            payload: {
+              name: name,
+              allowance: convertBigNumberToUIString(
+                new BigNumber(response),
+                decimals
+              ),
+            },
+          });
+      }).catch(e => {
+        console.log("failed - gauge allowance", name)
         pairDispatch({
-          type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+          type: action,
           payload: {
             name: name,
             allowance: convertBigNumberToUIString(
+              new BigNumber(0),
+              decimals
+            ),
+          },
+        })
+    })
+  }
+
+  const getPairBalance = async (wallet: Wallet, name: string, decimals: number, contractHash: string, action: string, token0Decimal = null, token1Decimal = null): Promise<void> => {
+    apiClient
+      .getERC20Balance(
+        wallet,
+        contractHash,
+      )
+      .then((response) => {
+        pairDispatch({
+          type: action,
+          payload: {
+            name,
+            balance: convertBigNumberToUIString(
               new BigNumber(response),
+              decimals
+            ),
+            decimals0: token0Decimal,
+            decimals1: token1Decimal
+          },
+        });
+      }).catch(e => {
+      console.log("Error loading pair balance ", name, e)
+      pairDispatch({
+        type: action,
+        payload: {
+          name,
+          balance: convertBigNumberToUIString(
+            new BigNumber(0),
+            decimals
+          )
+        },
+      })
+    })
+  }
+
+  const getTotalGaugeSupply = async (wallet: Wallet, name: string, decimals: number, contractHash: string): Promise<void> => {
+    //
+    apiClient
+      .getERC20TotalSupply(
+        wallet,
+        contractHash,
+      )
+      .then((response: any) => {
+        pairDispatch({
+          type: PairActions.ADD_GAUGE_TOTAL_STAKE_TO_PAIR,
+          payload: {
+            name,
+            totalStake: convertBigNumberToUIString(
+              new BigNumber(response.toNumber()),
               decimals
             ),
           },
         });
       }).catch(e => {
+      console.log("Error loading pair gauge total stake ", name, e)
       pairDispatch({
-        type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+        type: PairActions.ADD_GAUGE_TOTAL_STAKE_TO_PAIR,
         payload: {
-          name: name,
-          allowance: convertBigNumberToUIString(
+          name,
+          balance: convertBigNumberToUIString(
             new BigNumber(0),
             decimals
           ),
@@ -501,7 +429,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     getPairChart,
     getGlobalChart,
     loadGralRewards,
-    getGaugeAllowanceUpdated
+    getAllowanceUpdated,
+    getPairBalance
   }
 }
 

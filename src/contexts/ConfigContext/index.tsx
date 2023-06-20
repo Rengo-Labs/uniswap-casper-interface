@@ -123,7 +123,7 @@ export const ConfigContextWithReducer = ({
 
       const result = await casperClient.waitForDeployExecution(deployHash);
 
-        if (result) {
+      if (result) {
             updateNotification({
               type: NotificationType.Success,
               title: 'Processed...',
