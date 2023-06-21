@@ -36,8 +36,8 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         return pairsToReserves
     }, [stateHash, walletState])
 
-    const getRewards = useCallback(async (tokenUSDPrices, stakingList) => {
-        const rewards = await loadRewards(tokenUSDPrices, stakingList)
+    const getRewards = useCallback(async (tokenUSDPrices) => {
+        const rewards = await loadRewards(tokenUSDPrices, walletState.wallet)
 
         return rewards
     }, [stateHash, walletState])
@@ -48,10 +48,9 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
 
     const loadUserData = useCallback(async () => {
 
-        let stakingList
         const isConnected = walletState.wallet?.isConnected ?? false
         if (walletState?.wallet) {
-            stakingList = await loadUserPairsData(walletState?.wallet, isConnected, tokenState)
+            await loadUserPairsData(walletState?.wallet, isConnected, tokenState)
             await loadTokensBalance(walletState?.wallet, isConnected)
         }
         // TODO this part of code delays more than reset data
@@ -62,7 +61,6 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
 
         //todo delete this in the future
         previousQuery()
-        return stakingList ?? new Map()
     }, [stateHash, walletState.wallet?.isConnected, walletState?.wallet?.publicKey])
 
     // TODO call this function on manual refresh
@@ -75,8 +73,8 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         const loadAndRefresh = async () => {
             const pairsToReserves = await getPairs()
             const tokenUSDPrices = await getTokens(pairsToReserves)
-            const stakingList = await loadUserData()
-            await getRewards(tokenUSDPrices, stakingList)
+            await loadUserData()
+            await getRewards(tokenUSDPrices)
         }
 
         loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))

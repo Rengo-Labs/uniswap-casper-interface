@@ -217,7 +217,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   }
 
   const onActionAllowance = async () => {
-    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityData.decimals)
+    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityData.decimals,
+      "", null, `${removeLiquidityData.firstSymbol}-${removeLiquidityData.secondSymbol}`, true, false)
   }
 
   const handleRemoveLiquidity =  () => {

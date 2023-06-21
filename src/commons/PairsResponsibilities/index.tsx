@@ -80,8 +80,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             getAllowanceUpdated(wallet, pair.name, pair.decimals, pair.contractHash, pair.gaugePackageHash.slice(5), PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR),
           )
 
-          const result = await getPairBalance(wallet, pair.name, pair.decimals, pair.gaugeContractHash, PairActions.ADD_GAUGE_BALANCE_TO_PAIR)
-          stakingList.set(pair.name, result)
         }
       }
 
@@ -279,7 +277,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     return findDailyGlobalChart()
   }
 
-  const loadGralRewards = async (tokenUSDPrices, stakingList): Promise<any> => {
+  const loadGralRewards = async (tokenUSDPrices, wallet: Wallet): Promise<any> => {
 
     const pairs = Object.values(pairState)
 
@@ -291,8 +289,13 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
       }
       return hasGauge
     }).length
-    for (const pl of pairs) {
 
+    await Promise.all(pairs.map(async pl => {
+
+      let balance = '0'
+      if (wallet?.isConnected) {
+        balance = await getPairBalance(wallet, pl.name, pl.decimals, pl.gaugeContractHash, PairActions.ADD_GAUGE_BALANCE_TO_PAIR)
+      }
       const tokenRewardPrice = tokenUSDPrices[pl.gaugeToken] ?? '0'
       const tokenCSTRewardsPrice = tokenUSDPrices['CST'] ?? '0'
 
@@ -306,10 +309,10 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
           tokenRewardSymbol: pl.gaugeToken,
           gaugeAmount: gaugeCounter,
           gaugeTotalWeight: gaugeTotalWeight,
-          gaugeBalance: stakingList.get(pl.name)
+          gaugeBalance: balance
         }
       })
-    }
+    }))
 
     return findDailyGlobalChart()
   }
@@ -333,7 +336,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             },
           });
       }).catch(e => {
-        console.log("failed - gauge allowance", name)
+        console.log("failed - allowance", action, name)
         pairDispatch({
           type: action,
           payload: {

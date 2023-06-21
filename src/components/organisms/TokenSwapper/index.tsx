@@ -128,7 +128,7 @@ const TokenSwapper = ({
 
   async function requestIncreaseAllowance(amount, contractHash) {
     console.log("Amount of approved tokens before increasing it", firstTokenSelected.symbolPair, firstTokenSelected.decimals, firstTokenSelected.allowance)
-    await onIncreaseAllow(amount, contractHash, firstTokenSelected.decimals, firstTokenSelected.optApproval)
+    await onIncreaseAllow(amount, contractHash, firstTokenSelected.decimals, firstTokenSelected.optApproval, null, firstTokenSelected.symbol)
     const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
         firstTokenSelected,
         secondTokenSelected,

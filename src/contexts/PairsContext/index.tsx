@@ -26,8 +26,8 @@ interface PairsContext {
     resetPairs: () => void;
     getPairChart: (pairPackageHash: string) => Promise<any>,
     getGlobalChart: () => Promise<any>,
-    loadRewards: (tokenUSDPrices, stakingList) => Promise<any>
-    reloadGaugeAllowance: (wallet, name, decimals, contractHash, gaugePackageHash) => Promise<void>
+    loadRewards: (tokenUSDPrices, wallet) => Promise<any>
+    reloadGaugeAllowances: (wallet, name, decimals, contractHash, gaugePackageHash, action) => Promise<void>
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -76,12 +76,12 @@ export const PairsContext = ({children}: PairsContextProps) => {
       return PairsResponsibilities(pairState, pairDispatch).getGlobalChart()
     }
 
-    const loadRewards = async (tokenUSDPrices, stakingList): Promise<Record<string, PairTotalReserves>> => {
-      return await PairsResponsibilities(pairState, pairDispatch).loadGralRewards(tokenUSDPrices, stakingList)
+    const loadRewards = async (tokenUSDPrices, wallet): Promise<Record<string, PairTotalReserves>> => {
+      return await PairsResponsibilities(pairState, pairDispatch).loadGralRewards(tokenUSDPrices, wallet)
     }
 
-    const reloadGaugeAllowance = async (wallet, name, decimals, contractHash, gaugePackageHash): Promise<void> => {
-      return PairsResponsibilities(pairState, pairDispatch).getAllowanceUpdated(wallet, name, decimals, contractHash, gaugePackageHash, ROUTER_PACKAGE_HASH)
+    const reloadGaugeAllowances = async (wallet, name, decimals, contractHash, gaugePackageHash, action): Promise<void> => {
+      return PairsResponsibilities(pairState, pairDispatch).getAllowanceUpdated(wallet, name, decimals, contractHash, gaugePackageHash, action)
     }
 
     return (
@@ -101,7 +101,7 @@ export const PairsContext = ({children}: PairsContextProps) => {
             getPairChart,
             getGlobalChart,
             loadRewards,
-            reloadGaugeAllowance
+            reloadGaugeAllowances
         }}>
             {children}
         </PairsContextProvider.Provider>
