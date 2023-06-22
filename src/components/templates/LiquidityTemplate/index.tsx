@@ -449,7 +449,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
         totalUSDLP: isNaN(parseFloat(i.totalLiquidityUSD)) ? '$0.00' : convertToUSDCurrency(parseFloat(i.totalLiquidityUSD)),
         totalLP: i.totalSupply,
         yourShare: `${(ratio.toNumber() * 100).toFixed(2)}%`,
-        apr: `${i.userApr}%`,
+        apr: `${i.apr}%`,
         onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
         hasStake: parseFloat(i.gaugeBalance) > 0,
         hasGauge: i.gaugeContractHash != null,
