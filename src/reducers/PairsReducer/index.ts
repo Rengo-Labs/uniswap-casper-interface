@@ -4,6 +4,7 @@ import { TOKENS } from '../TokenReducers'
 
 import * as pairProd from '../../constant/pairHashes.production'
 import * as pairDev from '../../constant/pairHashes.development'
+import * as pairInt from '../../constant/pairHashes.integration'
 import {
   APR_AMOUNT_WEEKS,
   REWARD_CST_WEEKLY_INFLATION_RATE,
@@ -54,7 +55,13 @@ export type PairData = {
 
 export type PairState = Record<string, PairData>
 
-const RAW_PAIRS = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? pairDev.pairList : pairProd.pairList
+const RAW_PAIRS = ('casper-testing' === process.env.REACT_APP_NETWORK_KEY)
+  ? pairDev.pairList
+  : (
+    'integration-test' === process.env.REACT_APP_NETWORK_KEY
+      ? pairInt.pairList
+      : pairProd.pairList
+  )
 export const PAIRS: PairState = {}
 
 Object.values(RAW_PAIRS).map((p) => {
@@ -399,11 +406,11 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           const rewardPriceXWeekly = new BigNumber(action.payload.tokenCSTRewardsPriceUSD)
             .times(REWARD_CST_WEEKLY_INFLATION_RATE)
           // (CST price usd * CST Yearly * cst gauge weight) / total gauge weight / total supply usd
-          const yearlyWeightedReward = rewardPriceXWeekly  
+          const yearlyWeightedReward = rewardPriceXWeekly
             .times(APR_AMOUNT_WEEKS)
             .times(oldState.gaugeCSTWeight)
             .div(action.payload.gaugeTotalWeight)
-          
+
           const globalRewardsAPR = yearlyWeightedReward
             .div(action.payload.totalLiquidityUSD)
             .times(100)
