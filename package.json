@@ -5,6 +5,7 @@
   "license": "GPLv3",
   "scripts": {
     "start": "npx env-cmd -f .env.development react-app-rewired start",
+    "start-production": "npx env-cmd -f .env.production react-app-rewired start",
     "build": "npx env-cmd -f .env.development react-app-rewired build",
     "build-production": "npx env-cmd -f .env.production react-app-rewired build",
     "lint": "eslint .",
@@ -16,6 +17,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.5",
+    "@casperholders/casper-snap-helper": "^1.0.5",
     "@emotion/react": "^11.10.5",
     "@fontsource/epilogue": "^4.5.11",
     "@mui/material": "^5.11.5",

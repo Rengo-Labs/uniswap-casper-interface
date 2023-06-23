@@ -104,9 +104,6 @@ const LiquiditySwapper = ({
     const symbol = !openPoolDialog.firstSelector ? firstTokenSelected.symbol : secondTokenSelected.symbol;
     return filterPopupTokens(symbol, pairState);
   }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector, pairState]);
-  
-  
-
 
   useEffect(() => {
     const favoriteData: string[] = getLocalStorageData(LOCAL_STORAGE_KEY)
@@ -249,7 +246,7 @@ const LiquiditySwapper = ({
     setTokenToTransfers(tokensToTransfer)
 
     amountSwapTokenASetter(tokensToTransfer);
-    calculateUSDValues(filteredValue, tokensToTransfer, true)
+    calculateUSDValues(tokensToTransfer, filteredValue, true)
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
   }
 
@@ -349,8 +346,8 @@ const LiquiditySwapper = ({
 
   const calculateUSDValues = (amountA, amountB, isAorB) => {
     const [usdA, usdB] = calculateUSDtokens(
-      firstTokenSelected.symbolPair,
-      secondTokenSelected.symbolPair,
+      firstTokenSelected.priceUSD,
+      secondTokenSelected.priceUSD,
       amountA,
       amountB,
       isAorB

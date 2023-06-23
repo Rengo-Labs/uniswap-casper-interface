@@ -37,7 +37,7 @@ export const tokenList: Record<string, Token> = {
     priceUSD: "0.00",
   },
   WCSPR: {
-    name: "Wrapped Casper",
+    name: "Casper",
     chainId: 1,
     symbol: "WCSPR",
     symbolPair: "WCSPR",
@@ -52,11 +52,11 @@ export const tokenList: Record<string, Token> = {
     priceUSD: "0.00",
   },
   dBTC: {
-    name: "Wrapped BTC",
+    name: "BTC",
     chainId: 1,
     symbol: "dBTC",
     symbolPair: "dBTC",
-    decimals: 9,
+    decimals: 8,
     contractHash:
       "hash-3e46fdbcd0e5882ef2130456195f1658f02789b4b69a8e8e1dde773c2565555a",
     packageHash:
@@ -64,14 +64,15 @@ export const tokenList: Record<string, Token> = {
     logoURI: wbtcIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00"
+    priceUSD: "0.00",
+    optApproval: "approve",
   },
   dUSDC: {
     name: "USD Coin",
     chainId: 1,
     symbol: "dUSDC",
     symbolPair: "dUSDC",
-    decimals: 9,
+    decimals: 6,
     contractHash:
       "hash-48bd364532febf044cca8d2d716336b93d27458ce0aa48ad292ca28304fa8649",
     packageHash:
@@ -79,14 +80,15 @@ export const tokenList: Record<string, Token> = {
     logoURI: usdcIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00"
+    priceUSD: "0.00",
+    optApproval: "approve",
   },
   dUSDT: {
     name: "USD Tether",
     chainId: 1,
     symbol: "dUSDT",
     symbolPair: "dUSDT",
-    decimals: 9,
+    decimals: 6,
     contractHash:
       "hash-b53fa728c7074c84f35407f4d0989eb4133d391402b7ce13b7feeb01479a4f01",
     packageHash:
@@ -94,14 +96,15 @@ export const tokenList: Record<string, Token> = {
     logoURI: usdtIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00"
+    priceUSD: "0.00",
+    optApproval: "approve",
   },
   dETH: {
-    name: "Wrapped Ethereum",
+    name: "Ethereum",
     chainId: 1,
     symbol: "dETH",
     symbolPair: "dETH",
-    decimals: 9,
+    decimals: 18,
     contractHash:
       "hash-012f8f3689ddf5c7a92ddeb54a311afb660051bb5fab3568dbb3d796809be8c6",
     packageHash:
@@ -109,6 +112,7 @@ export const tokenList: Record<string, Token> = {
     logoURI: wethIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00"
+    priceUSD: "0.00",
+    optApproval: "approve",
   }
 }

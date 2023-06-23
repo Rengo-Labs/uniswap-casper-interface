@@ -193,8 +193,8 @@ const LiquidityNewModule = () => {
 
   const calculateUSDValues = (amountA, amountB, isAorB) => {
     const [usdA, usdB] = calculateUSDtokens(
-      firstTokenSelected.symbolPair,
-      secondTokenSelected.symbolPair,
+      firstTokenSelected.priceUSD,
+      secondTokenSelected.priceUSD,
       amountA,
       amountB,
       isAorB

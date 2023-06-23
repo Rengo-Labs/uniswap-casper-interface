@@ -5,6 +5,7 @@ import isCSPRValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
 import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
+import {PairState} from "../../../reducers/PairsReducer";
 import { getLocalStorageData, setLocalStorageData } from '../../../commons/utils/persistData';
 
 interface TokenSwapperProps {
@@ -67,7 +68,7 @@ const TokenSwapper = ({
                         valueAUSD,
                         valueBUSD,
                         setValueAUSD,
-                        setValueBUSD
+                        setValueBUSD,
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -127,7 +128,7 @@ const TokenSwapper = ({
 
   async function requestIncreaseAllowance(amount, contractHash) {
     console.log("Amount of approved tokens before increasing it", firstTokenSelected.symbolPair, firstTokenSelected.decimals, firstTokenSelected.allowance)
-    await onIncreaseAllow(amount, contractHash, firstTokenSelected.decimals, firstTokenSelected.optApproval)
+    await onIncreaseAllow(amount, contractHash, firstTokenSelected.decimals, firstTokenSelected.optApproval, null, firstTokenSelected.symbol)
     const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
         firstTokenSelected,
         secondTokenSelected,
@@ -136,10 +137,15 @@ const TokenSwapper = ({
         false
     )
 
-    calculateUSDValues(amount, tokensToTransfer,
-      firstTokenSelected.symbolPair, secondTokenSelected.symbolPair,
+    calculateUSDValues(amount,
+      tokensToTransfer,
+      firstTokenSelected.symbolPair,
+      secondTokenSelected.symbolPair,
       exchangeRateA, exchangeRateB,
-      firstTokenSelected.symbolPair)
+      firstTokenSelected.symbolPair,
+      firstTokenSelected.priceUSD,
+      secondTokenSelected.priceUSD
+    )
   }
 
   async function changeTokenA(filteredValue: number, isSwitched = false) {
@@ -159,7 +165,16 @@ const TokenSwapper = ({
       isSwitched
     );
 
-    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, firstToken.symbolPair)
+    calculateUSDValues(
+      filteredValue,
+      tokensToTransfer,
+      firstToken.symbolPair,
+      secondToken.symbolPair,
+      exchangeRateA,
+      exchangeRateB,
+      firstToken.symbolPair,
+      firstToken.priceUSD,
+      secondToken.priceUSD)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
 
     if (filteredValue) {
@@ -199,7 +214,16 @@ const TokenSwapper = ({
       isSwitched
     );
 
-    calculateUSDValues(filteredValue, tokensToTransfer, firstToken.symbolPair, secondToken.symbolPair, exchangeRateA, exchangeRateB, activeToken.symbolPair)
+    calculateUSDValues(
+      filteredValue,
+      tokensToTransfer,
+      firstToken.symbolPair,
+      secondToken.symbolPair,
+      exchangeRateA,
+      exchangeRateB,
+      activeToken.symbolPair,
+      firstToken.priceUSD,
+      secondToken.priceUSD)
     amountSwapTokenASetter(formatNaN(tokensToTransfer))
 
     if (tokensToTransfer) {
@@ -232,15 +256,15 @@ const TokenSwapper = ({
     await refresh()
   };
 
-  const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected) => {
+  const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected, priceA, priceB) => {
     exchangeRateASetter(rateA);
     exchangeRateBSetter(rateB);
 
     const isA2B = symbolA == tokenSelected
 
     const [usdA, usdB] = calculateUSDtokens(
-        symbolA,
-        symbolB,
+        priceA,
+        priceB,
         amountA,
         amountB,
         isA2B
@@ -252,20 +276,6 @@ const TokenSwapper = ({
     setValueAUSD(_usdA);
     setValueBUSD(_usdB);
   }
-
-  const popularTokens = Object.values(tokenState.tokens).map((token) => {
-    const {chainId, symbol, name, amount, logoURI}: any = token;
-    return (
-        {
-          id: chainId,
-          name: symbol,
-          fullName: name,
-          amount: amount,
-          tokenImg: logoURI,
-          favorite: false
-        }
-    );
-  });
 
   const updateLocalStorage = (
     name: string,
@@ -364,10 +374,10 @@ const TokenSwapper = ({
           {!isApproved && isConnected && (
               <Button type={"large"} props={{style: {width: 'auto'}, onClick: async () => {
                   await requestIncreaseAllowance(
-                      Math.abs(freeAllowance),
+                      Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ),
                       firstTokenSelected.contractHash
                   );
-                }}}>Approve {Math.abs(freeAllowance)} {firstTokenSelected.symbol}</Button>
+                }}}>Approve {Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance )} {firstTokenSelected.symbol}</Button>
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{

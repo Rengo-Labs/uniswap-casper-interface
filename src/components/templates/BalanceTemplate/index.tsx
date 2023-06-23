@@ -5,6 +5,7 @@ import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
 import {PairsContextProvider} from "../../../contexts/PairsContext";
 import {SUPPORTED_NETWORKS} from "../../../constant";
+import BigNumber from "bignumber.js";
 
 export const BalanceTemplate = ({isMobile}) => {
     const {isConnected} = useContext(WalletProviderContext)
@@ -14,17 +15,18 @@ export const BalanceTemplate = ({isMobile}) => {
 
     const getBalance = async (tokenState) => {
         return Promise.all(Object.values(tokenState.tokens).map(async (token) => {
-          const {symbol, name, amount, logoURI, packageHash}: any = token;
+          const {symbol, name, amount, logoURI, packageHash, priceUSD}: any = token;
           const data = await getBalancesProfit(packageHash)
-          //getHistoricalTokenPrices(packageHash)
-          //const result = await getHistoricalTokensChartPrices("hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a", "hash-28eed3da2b123334c7913d84c4aea0ed426fd268d29410cb12c6bc8a453183f6")
+
           return (
             {
               contractPackage: symbol === 'CSPR' ? tokenState.tokens['WCSPR'].packageHash.slice(5) : packageHash.slice(5),
               id: symbol,
               crypto: name,
               cryptoIcon: logoURI,
-              mycrypto: Number(amount),
+              marketprice: isNaN(priceUSD) ? 0 : Number(priceUSD).toFixed(2),
+              mybalance: (isNaN(amount) || isNaN(priceUSD)) ? 0 : BigNumber(amount * priceUSD).toFixed(2),
+              mycrypto: amount ? Number(amount) : 0,
               '24h': Number(data.yesterday.toFixed(2)),
               '7d': Number(data.sevenDays.toFixed(2)),
               '15d': Number(data.fifteenDays.toFixed(2)),

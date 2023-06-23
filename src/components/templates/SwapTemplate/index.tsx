@@ -91,7 +91,7 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const setPackageHashIfSymbolIsCSPR = (token) => {
-        const CSPRPackageHash = 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a'
+        const CSPRPackageHash = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a' : 'hash-c6649901da894d4ac2c77c0ae217190f79cabc8c0c91788ee997f670b8bdd05e'
         if (token.symbol === 'CSPR') {
             token.packageHash = CSPRPackageHash;
         }
@@ -211,6 +211,8 @@ export const SwapTemplate = ({isMobile}) => {
 
         let getSwapDetailResponse = null;
         let nextTokensToTransfer = value
+        let exchangeRateA = BigNumber(1)
+        let exchangeRateB = BigNumber(1)
 
         if (pairExist) {
             const {reserve0, reserve1} = findReservesBySymbols(
@@ -226,6 +228,8 @@ export const SwapTemplate = ({isMobile}) => {
                 value,
                 token
             );
+            exchangeRateA = getSwapDetailResponse.exchangeRateA
+            exchangeRateB = getSwapDetailResponse.exchangeRateB
             setPairPath([tokenA.symbol, tokenB.symbol])
         } else {
             const pairListPaths = listPath
@@ -239,7 +243,7 @@ export const SwapTemplate = ({isMobile}) => {
                     tokenState
                 );
                 const token0 = tokenState.tokens[symbol0]
-                const token1 = tokenState.tokens[symbol0]
+                const token1 = tokenState.tokens[symbol1]
                 getSwapDetailResponse = await getSwapDetails(
                     token0,
                     token1,
@@ -254,6 +258,8 @@ export const SwapTemplate = ({isMobile}) => {
                 getSwapDetailResponse.priceImpact = isNaN(priceImpactAcm) ? priceImpactAcm : priceImpactAcm.toFixed(2)
                 nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
                 pairPath.push(symbol0, symbol1)
+                exchangeRateA = exchangeRateA.times(getSwapDetailResponse.exchangeRateA)
+                exchangeRateB = exchangeRateB.times(getSwapDetailResponse.exchangeRateB)
             }
             setPairPath([...new Set(pairPath)])
         }
@@ -263,7 +269,13 @@ export const SwapTemplate = ({isMobile}) => {
         }
 
         return {
-            getSwapDetailResponse
+            getSwapDetailResponse: Object.assign(
+              getSwapDetailResponse, 
+              {
+                exchangeRateA,
+                exchangeRateB,
+              }
+            )
         }
     }
 

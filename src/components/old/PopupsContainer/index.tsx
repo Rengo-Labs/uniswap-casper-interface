@@ -3,6 +3,7 @@ import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
 import {Settings, WalletConnectedOptions, WalletConnection, Notification} from "rengo-ui-kit";
 import casperWallet from "../../../assets/newDesignIcons/casper-wallet.svg";
+import metamaskFlask from "../../../assets/newDesignIcons/metaMaskFlask.svg";
 import {WalletName} from "../../../commons";
 import torusWallet from "../../../assets/newDesignIcons/torus-wallet.svg";
 import {globalStore, notificationStore} from "../../../store/store";
@@ -50,6 +51,12 @@ export const PopupsContainer = () => {
             name: 'Torus Wallet',
             icon: torusWallet,
             onConnect: () => onConnectWallet(WalletName.TORUS)
+        },
+        {
+            id: 4,
+            name: 'Metamask Flask',
+            icon: metamaskFlask,
+            onConnect: () => onConnectWallet(WalletName.METAMASK_FLASK)
         },
     ]
 
@@ -132,7 +139,7 @@ export const PopupsContainer = () => {
                 handleClose={handleShowSettings}
                 handleSave={handleSaveSettings}
                 customNodeUrlValue={nodeUrl}
-                slippageToleranceValue={slippageTolerance}
+                slippageToleranceValue={slippageTolerance.toString()}
             />
 
             <WalletConnectedOptions

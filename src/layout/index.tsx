@@ -17,6 +17,7 @@ import {ConfigProviderContext} from "../contexts/ConfigContext";
 import CasperLoader from "../components/organisms/CasperLoader";
 import { useLocation } from 'react-router-dom'
 import { useLoader } from '../hooks/useLoader'
+import { getLocalStorageData, setLocalStorageData } from "../commons/utils/persistData";
 
 export interface ILayoutProps {
     children?: React.ReactElement;
@@ -37,6 +38,8 @@ const GlobalStyle = createGlobalStyle<{ selectedTheme: string }>`
     background-color: ${({selectedTheme}) => selectedTheme === AvailableThemes.Default ? '#E5F5FC' : '#241E52'};
   }
 `;
+
+const LOCAl_STORAGE_THEME_KEY = 'current-theme'
 
 const Layout = ({children}: ILayoutProps) => {
     const menuRef = useRef(null);
@@ -74,8 +77,21 @@ const Layout = ({children}: ILayoutProps) => {
 
     const deviceType = useDeviceType()
     const isMobile = deviceType === 'mobile'
+    
+    useEffect(() => {
+      const currentTheme = getLocalStorageData(LOCAl_STORAGE_THEME_KEY)
+      let newTheme = ''
+      if (currentTheme.length  === 0 || currentTheme !== 'dark') {
+        newTheme = 'default'
+      } else {
+        newTheme = currentTheme
+      }
 
-
+      console.log(currentTheme);
+      
+      toggleTheme(newTheme)
+    }, [])
+    
     const handleShowSettings = () => {
         setShowSettings(!showSettings);
     }
@@ -152,6 +168,12 @@ const Layout = ({children}: ILayoutProps) => {
         },
     ];
 
+    const handleThemeSwitch = () => {
+      const currentTheme = selectedTheme === AvailableThemes.Dark ? AvailableThemes.Default : AvailableThemes.Dark
+      toggleTheme(currentTheme)
+      setLocalStorageData(LOCAl_STORAGE_THEME_KEY, currentTheme)
+    }
+
     return (
         <Container selectedTheme={selectedTheme}>
             <GlobalStyle selectedTheme={selectedTheme}/>
@@ -164,8 +186,7 @@ const Layout = ({children}: ILayoutProps) => {
                 rightAction={rightAction}
                 toggle={{
                     isActive: selectedTheme === AvailableThemes.Dark,
-                    toggle: () =>
-                        toggleTheme(selectedTheme === AvailableThemes.Dark ? AvailableThemes.Default : AvailableThemes.Dark),
+                    toggle: () => handleThemeSwitch(),
                     labelText: "",
                     variant: ToggleVariant.ThemeSwitcher,
                 }}

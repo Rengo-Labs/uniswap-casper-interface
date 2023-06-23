@@ -20,7 +20,7 @@ export const StateHashProviderContext = createContext<StateHashContext>({} as an
 
 export const StateHashContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
-    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, resetPairs} = useContext(PairsContextProvider)
+    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, resetPairs, loadRewards} = useContext(PairsContextProvider)
     const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance, resetTokens} = useContext(TokensProviderContext)
     const {walletState} = useContext(WalletProviderContext)
 
@@ -36,8 +36,14 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         return pairsToReserves
     }, [stateHash, walletState])
 
+    const getRewards = useCallback(async (tokenUSDPrices) => {
+        const rewards = await loadRewards(tokenUSDPrices, walletState.wallet)
+
+        return rewards
+    }, [stateHash, walletState])
+
     const getTokens = useCallback(async (pairsToReserves) => {
-        await loadTokensUSD(pairsToReserves, pairState)
+        return await loadTokensUSD(pairsToReserves, pairState)
     }, [stateHash, walletState])
 
     const loadUserData = useCallback(async () => {
@@ -52,6 +58,8 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
             await clearUserPairsData(pairState, tokenState)
             await clearTokensBalance(tokenState)
         }
+
+        //todo delete this in the future
         previousQuery()
     }, [stateHash, walletState.wallet?.isConnected, walletState?.wallet?.publicKey])
 
@@ -64,8 +72,9 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     useEffect(() => {
         const loadAndRefresh = async () => {
             const pairsToReserves = await getPairs()
-            await getTokens(pairsToReserves)
+            const tokenUSDPrices = await getTokens(pairsToReserves)
             await loadUserData()
+            await getRewards(tokenUSDPrices)
         }
 
         loadAndRefresh().then(() => console.log('#### loaded pairs and tokens with StateHashContext ####'))

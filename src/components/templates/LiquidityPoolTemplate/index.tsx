@@ -116,28 +116,31 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     allowance: 0
   })
   const [removeLiquidityToggle, setRemoveLiquidityToggle] = useState(true)
-  const { slippageTolerance, updateSlippageTolerance } = globalStore()
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
   const [showRemovingToggle, setShowRemovingToggle] = useState(true)
 
   useEffect(() => {
     setTableData(
-      getPoolList().map((item) => ({
-        contractPackage: item.packageHash.slice(5),
-        name: item.name,
-        pool: `${item.token0Symbol} - ${item.token1Symbol}`,
-        token0Icon: item.token0Icon,
-        token1Icon: item.token1Icon,
-        yourLiquidity: convertToUSDCurrency(parseFloat(item.liquidityUSD)),
-        volume7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(item.volume7d)),
-        fees7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
-        balance: item.balance,
-        isFavorite: getLocalStorageData("pool")?.includes(item.name),
-        assetsPoolToken0: `${isNaN(item.reserve0) ? 0 : item.reserve0} ${item.token0Symbol}`,
-        assetsPoolToken1: `${isNaN(item.reserve1) ? 0 : item.reserve1} ${item.token1Symbol}`,
-        yourShare: (isNaN(item.balanace) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2)
-      }))
+      getPoolList().map((item) => {
+        console.log('item.liquidityUSD', item)
+        return {
+          contractPackage: item.packageHash.slice(5),
+          name: item.name,
+          pool: `${item.token0Symbol} - ${item.token1Symbol}`,
+          token0Icon: item.token0Icon,
+          token1Icon: item.token1Icon,
+          yourLiquidity: convertToUSDCurrency(parseFloat(item.totalLiquidityUSD)),
+          volume7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(item.volume7d)),
+          fees7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
+          balance: item.balance,
+          isFavorite: getLocalStorageData("pool")?.includes(item.name),
+          assetsPoolToken0: `${isNaN(item.totalReserve0) ? 0 : item.totalReserve0} ${item.token0Symbol}`,
+          assetsPoolToken1: `${isNaN(item.totalReserve1) ? 0 : item.totalReserve1} ${item.token1Symbol}`,
+          yourShare: (isNaN(item.balance) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2),
+          apr: item.apr,
+        }
+      })
     );
     
   }, [pairState]);
@@ -214,7 +217,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   }
 
   const onActionAllowance = async () => {
-    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityData.decimals)
+    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityData.decimals,
+      "", null, `${removeLiquidityData.firstSymbol}-${removeLiquidityData.secondSymbol}`, true, false)
   }
 
   const handleRemoveLiquidity =  () => {
@@ -291,7 +295,7 @@ const handleActionRemoval = async () => {
     } as any,
     removeLiquidityCalculation.firstAmount,
     removeLiquidityCalculation.secondAmount,
-    slippageTolerance,
+    1,
     gasFee,
     removeLiquidityToggle)
 
@@ -308,6 +312,8 @@ const handleActionRemoval = async () => {
 
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
+
+    console.log('newRow', newRow)
 
     setPoolDetailRow({
       contractPackage: newRow.packageHash.slice(5),
