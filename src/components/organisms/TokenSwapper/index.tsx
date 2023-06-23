@@ -239,7 +239,8 @@ const TokenSwapper = ({
 
   const isApproved =
       firstTokenSelected.symbol == 'CSPR' ||
-      (firstTokenSelected.symbol != 'CSPR' && freeAllowance >= 0);
+      (firstTokenSelected.symbol != 'CSPR' && freeAllowance >= 0) ||
+      (firstTokenSelected.symbol == 'WCSPR' && secondTokenSelected.symbol === 'CSPR')
 
   const refreshPrices = async () => {
     await refresh()
