@@ -38,6 +38,7 @@ interface TokenSwapperProps {
   setValueBUSD
 }
 
+const DEFAULT_USD_TOKEN_VALUE = "0.00"
 const LOCAL_STORAGE_KEY = 'token-list'
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
@@ -80,6 +81,7 @@ const TokenSwapper = ({
       isCSPRValid();
   const [lastChanged, setLastChanged] = useState('A');
   const [tokenListData, setTokenListData] = useState<any[]>([]);
+  const [initializeCalculation, setInitializeCalculation] = useState(false)
 
   const tokenListFromFilter = useMemo(() => {
     return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
@@ -148,15 +150,51 @@ const TokenSwapper = ({
     )
   }
 
-  async function changeTokenA(filteredValue: number, isSwitched = false) {
-    setLastChanged('A');
-    setCurrentValue(filteredValue)
+  useEffect(() => {
+    if (firstTokenSelected?.priceUSD === DEFAULT_USD_TOKEN_VALUE || initializeCalculation) {
+      return
+    }
 
-    updateDetailAndUSDValuesForInputA(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected, isSwitched)
+    const filteredValue = 1
+    const firstTokenOnMount = tokenState.tokens['CSPR']
+    const twoTokenOnMount = tokenState.tokens['WETH']
+
+    const handleExchangeCalculation = async () => {
+      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
+        firstTokenOnMount,
+        twoTokenOnMount,
+        filteredValue,
+        firstTokenOnMount,
+        false
+      );
+
+      calculateUSDValues(
+        filteredValue,
+        tokensToTransfer,
+        firstTokenOnMount.symbolPair,
+        twoTokenOnMount.symbolPair,
+        exchangeRateA,
+        exchangeRateB,
+        firstTokenOnMount.symbolPair,
+        firstTokenOnMount.priceUSD,
+        twoTokenOnMount.priceUSD)
+
+      setInitializeCalculation(true)
+    }
+  
+    handleExchangeCalculation()
+  }, [firstTokenSelected])
+  
+  async function changeTokenA(value:  number, isSwitched = false) {
+    setLastChanged('A');
+    setCurrentValue(value)
+
+    updateDetailAndUSDValuesForInputA(firstTokenSelected, secondTokenSelected, value, firstTokenSelected, isSwitched)
   }
 
   const updateDetailAndUSDValuesForInputA = async (firstToken, secondToken, filteredValue, activeToken, isSwitched) => {
     amountSwapTokenASetter(filteredValue);
+
     const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
       firstToken,
       secondToken,
