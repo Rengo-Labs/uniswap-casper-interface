@@ -76,7 +76,7 @@ const TokenSwapper = ({
   const [exchangeRateB, exchangeRateBSetter] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentValue, setCurrentValue] = useState<number>(0);
-  const { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification } =
+  const { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification, cleanValidationState } =
       isCSPRValid();
   const [lastChanged, setLastChanged] = useState('A');
   const [tokenListData, setTokenListData] = useState<any[]>([]);
@@ -148,13 +148,9 @@ const TokenSwapper = ({
     )
   }
 
-  async function changeTokenA(value: string | number, isSwitched = false) {
+  async function changeTokenA(filteredValue: number, isSwitched = false) {
     setLastChanged('A');
-
-    let filteredValue = formatNaN(value);
-    if (filteredValue < 0) {
-      filteredValue = Math.abs(filteredValue);
-    }
+    setCurrentValue(filteredValue)
 
     updateDetailAndUSDValuesForInputA(firstTokenSelected, secondTokenSelected, filteredValue, firstTokenSelected, isSwitched)
   }
@@ -180,8 +176,18 @@ const TokenSwapper = ({
       firstToken.priceUSD,
       secondToken.priceUSD)
     amountSwapTokenBSetter(formatNaN(tokensToTransfer))
-    if(filteredValue) {
-      handleValidate(typeof filteredValue === "number" ? filteredValue : parseFloat(filteredValue), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0);
+
+    if (filteredValue) {
+      cleanValidationState(typeof filteredValue === "number" ? filteredValue : parseFloat(filteredValue), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0)
+    }
+  }
+
+  const handleTokenInputsValidation = (amountSwapTokenA, amountSwapTokenB) => {
+    const isFirstTokenValueInvalid = handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0)
+    const isSecondTokenValueInvalid = handleValidate(amountSwapTokenA, parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0)
+
+    if (!isFirstTokenValueInvalid && !isSecondTokenValueInvalid) {
+      onActionConfirm(amountSwapTokenA, amountSwapTokenB)
     }
   }
 
@@ -219,14 +225,19 @@ const TokenSwapper = ({
       firstToken.priceUSD,
       secondToken.priceUSD)
     amountSwapTokenASetter(formatNaN(tokensToTransfer))
-    if(tokensToTransfer) {
-      handleValidate(parseFloat(tokensToTransfer), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0)
+
+    if (tokensToTransfer) {
+      cleanValidationState(parseFloat(tokensToTransfer), parseFloat(firstToken.amount), gasPriceSelectedForSwapping || 0)
     }
   }
 
   const handleChangeA = async (e) => {
-    setCurrentValue(e)
-    await changeTokenA(e)
+    let filteredValue = formatNaN(e);
+    if (filteredValue < 0) {
+      filteredValue = Math.abs(filteredValue);
+    }
+    
+    await changeTokenA(filteredValue)
   };
 
   const handleChangeB = async (e) => {
@@ -371,13 +382,16 @@ const TokenSwapper = ({
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{
-                disabled: disableButton ||
-                  amountSwapTokenA <= 0 ||
-                  amountSwapTokenB <= 0 ||
-                  amountSwapTokenA > parseFloat(firstTokenSelected.amount) ||
-                  isProcessingTransaction ||
-                  disableButton,
-                style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB)}}>SWAP</Button>
+                  disabled: disableButton ||
+                    amountSwapTokenA <= 0 ||
+                    amountSwapTokenB <= 0 ||
+                    isProcessingTransaction ||
+                    disableButton,
+                  style: {width: 'auto'},
+                  onClick: () => handleTokenInputsValidation(amountSwapTokenA, amountSwapTokenB)
+                }}>
+                  SWAP
+              </Button>
           )}
         </div>
         {openPoolDialog.open && (
