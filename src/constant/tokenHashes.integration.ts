@@ -56,7 +56,7 @@ export const tokenList: Record<string, Token> = {
     chainId: 1,
     symbol: "dBTC",
     symbolPair: "dBTC",
-    decimals: 8,
+    decimals: 9,
     contractHash:
       "hash-8604fa804afb17593d8625b5e667dd8b7e2e984a6f50e2d8446b088ce544fc7d",
     packageHash:
@@ -72,7 +72,7 @@ export const tokenList: Record<string, Token> = {
     chainId: 1,
     symbol: "dUSDC",
     symbolPair: "dUSDC",
-    decimals: 6,
+    decimals: 9,
     contractHash:
       "hash-45043899ae260f320f0efe11287b04470aab44548a93b0eec948dbcdf6bc1846",
     packageHash:
@@ -88,7 +88,7 @@ export const tokenList: Record<string, Token> = {
     chainId: 1,
     symbol: "dUSDT",
     symbolPair: "dUSDT",
-    decimals: 6,
+    decimals: 9,
     contractHash:
       "hash-c42797478e004fa301c3bd32db78b434c58ab8ab5624de130e6d5a5bd3e9d31c",
     packageHash:
@@ -104,7 +104,7 @@ export const tokenList: Record<string, Token> = {
     chainId: 1,
     symbol: "dETH",
     symbolPair: "dETH",
-    decimals: 18,
+    decimals: 9,
     contractHash:
       "hash-f898715a7c5d2922de51d283cf8a0fc87d2952b568b73d86fd4ec337af7ae7fe",
     packageHash:
