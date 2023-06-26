@@ -37,6 +37,9 @@ interface IPoolDetailRow {
   volume7D: string;
   fees7D: string;
   isFavorite?: boolean;
+  yourStaked: string;
+  stakedPercentage: string;
+  yourAPR: string;
 }
 
 const poolDetailsRowDefault = {
@@ -55,6 +58,9 @@ const poolDetailsRowDefault = {
   volume7D: "",
   fees7D: "",
   isFavorite: false,
+  yourStaked: "0",
+  stakedPercentage: "0.00 %",
+  yourAPR: "0.00 %"
 };
 
 export const LiquidityPoolTemplate = ({ isMobile }) => {
@@ -123,7 +129,6 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   useEffect(() => {
     setTableData(
       getPoolList().map((item) => {
-        console.log('item.liquidityUSD', item)
         return {
           contractPackage: item.packageHash.slice(5),
           name: item.name,
@@ -313,7 +318,26 @@ const handleActionRemoval = async () => {
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
 
-    console.log('newRow', newRow)
+    const getStakePercentage = () => {
+      let yourStake = 0
+      let gaugeTotalStake = 0
+
+      if (newRow.gaugeBalance) {
+        yourStake = newRow.gaugeBalance
+      }
+
+      if (newRow.gaugeTotalStake) {
+        gaugeTotalStake = parseFloat(newRow.gaugeTotalStake)
+      }
+
+      const operationCalculation = (yourStake / gaugeTotalStake) * 100
+
+      if (!operationCalculation || !Number.isFinite(operationCalculation)) {
+        return "0.00 %"
+      }
+
+      return `${((yourStake / gaugeTotalStake) * 100).toFixed(2)} %`
+    }
 
     setPoolDetailRow({
       contractPackage: newRow.packageHash.slice(5),
@@ -333,6 +357,9 @@ const handleActionRemoval = async () => {
       volume7D: convertToUSDCurrency(newRow.volume7dUSD || 0),
       fees7D: `${convertToUSDCurrency(isNaN(newRow.volume7d) ? 0 : new BigNumber(newRow.volume7d).times(0.003).toNumber())}`,
       isFavorite: getLocalStorageData("pool")?.includes(name),
+      yourStaked: newRow.gaugeBalance ? newRow.gaugeBalance : "0",
+      stakedPercentage: getStakePercentage(),
+      yourAPR: newRow.userApr ? `${newRow.userApr} %` : "0.00 %"
     });
     setShowPoolDetails(true);
   };
@@ -433,6 +460,9 @@ const handleActionRemoval = async () => {
             yourLiquidityTokens={poolDetailRow.yourLiquidityTokens}
             volume7D={poolDetailRow.volume7D}
             fees7D={poolDetailRow.fees7D}
+            yourStaked={poolDetailRow.yourStaked}
+            stakedPercentage={poolDetailRow.stakedPercentage}
+            yourAPR={poolDetailRow.yourAPR}
           />
 
           <RemoveLiquidityDialog
