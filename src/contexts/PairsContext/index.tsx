@@ -5,6 +5,7 @@ import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
 import {notificationStore} from "../../store/store";
 import {TokenState} from "../../reducers/TokenReducers";
+import {ROUTER_PACKAGE_HASH} from "../../constant";
 
 interface PairsContextProps {
     children: ReactNode
@@ -15,7 +16,7 @@ interface PairsContext {
     pairDispatch,
     loadPairs: (tokenState) => Promise<Record<string, PairTotalReserves>>
     loadPairsUSD: (pairsTotalReserves: Record<string, PairTotalReserves>, tokenState) => Promise<void>,
-    loadUserPairsData: (wallet: Wallet, isConnected, tokenState: TokenState) => Promise<void>,
+    loadUserPairsData: (wallet: Wallet, isConnected, tokenState: TokenState) => Promise<any>,
     orderedPairState,
     clearUserPairsData: (pairState, tokenState: TokenState) => Promise<void>,
     findReservesBySymbols?: (tokenASymbol: string, tokenBSymbol: string, tokenState) => PairReserves | undefined;
@@ -25,7 +26,8 @@ interface PairsContext {
     resetPairs: () => void;
     getPairChart: (pairPackageHash: string) => Promise<any>,
     getGlobalChart: () => Promise<any>,
-    loadRewards: (tokenUSDPrices) => Promise<any>
+    loadRewards: (tokenUSDPrices, wallet) => Promise<any>
+    reloadGaugeAllowances: (wallet, name, decimals, contractHash, gaugePackageHash, action) => Promise<void>
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -50,7 +52,7 @@ export const PairsContext = ({children}: PairsContextProps) => {
     }
 
     const loadUserPairsData = async (wallet: Wallet, isConnected, tokenState) => {
-        await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairsUserData(wallet, isConnected)
+        return await PairsResponsibilities(pairState, pairDispatch, tokenState).loadPairsUserData(wallet, isConnected)
     }
 
     const clearUserPairsData = async (pairState, tokenState) => {
@@ -74,9 +76,13 @@ export const PairsContext = ({children}: PairsContextProps) => {
       return PairsResponsibilities(pairState, pairDispatch).getGlobalChart()
     }
 
-  const loadRewards = async (tokenUSDPrices): Promise<Record<string, PairTotalReserves>> => {
-    return await PairsResponsibilities(pairState, pairDispatch).loadGralRewards(tokenUSDPrices)
-  }
+    const loadRewards = async (tokenUSDPrices, wallet): Promise<Record<string, PairTotalReserves>> => {
+      return await PairsResponsibilities(pairState, pairDispatch).loadGralRewards(tokenUSDPrices, wallet)
+    }
+
+    const reloadGaugeAllowances = async (wallet, name, decimals, contractHash, gaugePackageHash, action): Promise<void> => {
+      return PairsResponsibilities(pairState, pairDispatch).getAllowanceUpdated(wallet, name, decimals, contractHash, gaugePackageHash, action)
+    }
 
     return (
         <PairsContextProvider.Provider value={{
@@ -94,7 +100,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
             resetPairs,
             getPairChart,
             getGlobalChart,
-            loadRewards
+            loadRewards,
+            reloadGaugeAllowances
         }}>
             {children}
         </PairsContextProvider.Provider>

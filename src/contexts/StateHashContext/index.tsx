@@ -37,7 +37,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     }, [stateHash, walletState])
 
     const getRewards = useCallback(async (tokenUSDPrices) => {
-        const rewards = await loadRewards(tokenUSDPrices)
+        const rewards = await loadRewards(tokenUSDPrices, walletState.wallet)
 
         return rewards
     }, [stateHash, walletState])
@@ -58,6 +58,8 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
             await clearUserPairsData(pairState, tokenState)
             await clearTokensBalance(tokenState)
         }
+
+        //todo delete this in the future
         previousQuery()
     }, [stateHash, walletState.wallet?.isConnected, walletState?.wallet?.publicKey])
 

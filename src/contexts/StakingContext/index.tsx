@@ -88,7 +88,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       setProgressModal(false)
       setConfirmModal(true)
 
-      await sleep(15000)
+      await sleep(2000)
       await refresh()
 
       return true
@@ -153,7 +153,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       setProgressModal(false)
       setConfirmModal(true)
 
-      await sleep(15000)
+      await sleep(2000)
       await refresh()
 
       return true
@@ -216,7 +216,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       setProgressModal(false)
       setConfirmModal(true)
 
-      await sleep(15000)
+      await sleep(2000)
       await refresh()
 
       return true
@@ -279,7 +279,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       setProgressModal(false)
       setConfirmModal(true)
 
-      await sleep(15000)
+      await sleep(2000)
       await refresh()
 
       return true

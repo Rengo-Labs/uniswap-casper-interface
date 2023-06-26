@@ -5,8 +5,10 @@ import {
   CLByteArray, CLKey, CLOption, CLPublicKey,
   CLValueBuilder, CLValueParsers, Contracts,
   CLKeyType,
+  CLBoolType,
   GetDeployResult,
   RuntimeArgs,
+  CLBool,
 } from 'casper-js-sdk'
 
 import {
@@ -124,7 +126,7 @@ export const signAndDeployWithdraw = async (
       GaugeV3EntryPoint.WITHDRAW,
       RuntimeArgs.fromMap({
         value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
-        claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(true)))
+        claim_rewards: CLValueBuilder.option(None, new CLBoolType())
       }),
       new BigNumber(GAS_FEE_FOR_GAUGE_UNSTAKE).times(10**9),
     )

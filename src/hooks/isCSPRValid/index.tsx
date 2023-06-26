@@ -18,35 +18,46 @@ const isCSPRValid = () => {
       timeToClose: 5000,
     });
 
+    const isInvalidTransaction = (currentValue: number, gasFee: number, balance: number,  tokenSymbol, aplicationToken) => {
+      if (tokenSymbol === aplicationToken) {
+        return (Number(currentValue) + Number(gasFee)) > balance
+      } else {
+        if (Number(currentValue) > balance) {
+         return true
+        } 
+
+        return gasFee > Number(tokenState.tokens[aplicationToken].amount) && Number(currentValue) > 0
+      }
+    }
+
+
+  const cleanValidationState = (
+    currentValue: number,
+    balance: number,
+    gasFee: number,
+    tokenSymbol = firstTokenSelected.symbol) => {
+      const applicationToken = 'CSPR'
+      const showNotifier = isInvalidTransaction(currentValue, gasFee, balance, tokenSymbol, applicationToken)
+  
+      if (!showNotifier) {
+        setDisableButton(showNotifier)
+      }
+  }
+
   const handleValidate = (
     currentValue: number,
     balance: number,
     gasFee: number,
     tokenSymbol = firstTokenSelected.symbol
   ) => {
-    const aplicationToken = 'CSPR'
-    let showNotifier = false
-    if (tokenSymbol === aplicationToken) {
-      if (Number(currentValue) + Number(gasFee) > balance) {
-        showNotifier = true
-      } else {
-        showNotifier = false
-      }
-    } else {
-      if (Number(currentValue) > balance) {
-        showNotifier = true
-      } else if (gasFee > Number(tokenState.tokens[aplicationToken].amount) && Number(currentValue) > 0) {
-        showNotifier = true
-      } else {
-        showNotifier = false
-      }
-    }
-
+    const applicationToken = 'CSPR'
+    const showNotifier = isInvalidTransaction(currentValue, gasFee, balance, tokenSymbol, applicationToken)
     if (showNotifier) {
       showNotification(`Insufficient Balance for the token : ${tokenSymbol}`)
     } else {
       dismissNotification()
     }
+
     setDisableButton(showNotifier)
     return showNotifier
   };
@@ -57,6 +68,7 @@ const isCSPRValid = () => {
     handleValidate,
     showNotification,
     dismissNotification,
+    cleanValidationState
   };
 };
 

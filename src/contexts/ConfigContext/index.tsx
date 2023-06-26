@@ -4,7 +4,7 @@ import React, {
   ReactNode, useContext,
   useState,
 } from 'react';
-import {NODE_ADDRESS, NotificationType, SUPPORTED_NETWORKS} from '../../constant';
+import {NODE_ADDRESS, NotificationType, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS} from '../../constant';
 
 const NETWORK_NAME = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? Network.CASPER_TESTNET : Network.CASPER_MAINNET;
 
@@ -12,7 +12,7 @@ import {
   APIClient,
   Client as CasperClient,
   Network,
-  convertUIStringToBigNumber,
+  convertUIStringToBigNumber, sleep,
 } from '../../commons';
 
 import { signAndDeployAllowance } from '../../commons/deploys';
@@ -20,6 +20,9 @@ import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import {WalletProviderContext} from "../WalletContext";
 import {StateHashProviderContext} from "../StateHashContext";
+import {PairsContextProvider} from "../PairsContext";
+import {PairActions} from "../../reducers/PairsReducer";
+import {TokensProviderContext} from "../TokensContext";
 
 export interface ConfigContext {
   slippageToleranceSelected?: number;
@@ -28,7 +31,10 @@ export interface ConfigContext {
     contractHash: string,
     decimals?: number,
     optApproval?: string,
-    gaugeSpender?: string
+    gaugeSpender?: string,
+    name?: string,
+    isPairContract?: boolean,
+    isGauge?: boolean
   ) => Promise<boolean>;
   confirmModal: boolean;
   linkExplorer: string;
@@ -66,6 +72,8 @@ export const ConfigContextWithReducer = ({
 }) => {
   const {walletState} = useContext(WalletProviderContext)
   const {refresh} = useContext(StateHashProviderContext)
+  const {reloadGaugeAllowances} = useContext(PairsContextProvider)
+  const {reloadTokenAllowances} = useContext(TokensProviderContext)
 
   const [progressModal, setProgressModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -82,7 +90,10 @@ export const ConfigContextWithReducer = ({
     contractHash: string,
     decimals = 9,
     optApproval = "",
-    gaugeSpender = null
+    gaugeSpender = null,
+    name = null,
+    isPairContract = false,
+    isGauge = false
 ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
@@ -118,9 +129,8 @@ export const ConfigContextWithReducer = ({
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
-      console.log('#### waitForDeployExecution onIncreaseAllow #####', result);
 
-        if (result) {
+      if (result) {
             updateNotification({
               type: NotificationType.Success,
               title: 'Processed...',
@@ -132,7 +142,11 @@ export const ConfigContextWithReducer = ({
       }
       setProgressModal(false);
       setConfirmModal(true);
-      refresh(walletState.wallet);
+
+      await reloadAllowances(name, decimals, contractHash, gaugeSpender, isPairContract, isGauge)
+
+      await sleep(2000)
+      await refresh(walletState.wallet)
       return true;
     } catch (err) {
         setProgressModal(false);
@@ -146,6 +160,16 @@ export const ConfigContextWithReducer = ({
       });
       refresh(walletState.wallet);
       return false;
+    }
+  }
+
+  const reloadAllowances = async (name, decimals, contractHash, gaugeSpender, isPairContract, isGauge): Promise<void> => {
+    if (isPairContract) {
+      await reloadGaugeAllowances(walletState.wallet, name, decimals, contractHash,
+        isGauge ? gaugeSpender : ROUTER_PACKAGE_HASH,
+        isGauge ? PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR : PairActions.ADD_ALLOWANCE_TO_PAIR)
+    } else {
+      await reloadTokenAllowances(walletState.wallet, name, decimals, contractHash)
     }
   }
 
