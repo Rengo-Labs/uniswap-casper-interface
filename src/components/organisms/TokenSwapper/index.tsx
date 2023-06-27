@@ -82,6 +82,7 @@ const TokenSwapper = ({
   const [lastChanged, setLastChanged] = useState('A');
   const [tokenListData, setTokenListData] = useState<any[]>([]);
   const [initializeCalculation, setInitializeCalculation] = useState(false)
+  const [disableAllowanceButton, setDisableAllowanceButton] = useState(false)
 
   const tokenListFromFilter = useMemo(() => {
     return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
@@ -148,6 +149,7 @@ const TokenSwapper = ({
       firstTokenSelected.priceUSD,
       secondTokenSelected.priceUSD
     )
+    setDisableAllowanceButton(false)
   }
 
   useEffect(() => {
@@ -411,7 +413,8 @@ const TokenSwapper = ({
               <Button type={"large"} props={{style: {width: 'auto'}, onClick: () => onConnectWallet()}}>Connect Wallet</Button>
           )}
           {!isApproved && isConnected && (
-              <Button type={"large"} props={{style: {width: 'auto'}, onClick: async () => {
+              <Button type={"large"} props={{disabled: disableAllowanceButton, style: {width: 'auto'}, onClick: async () => {
+                  setDisableAllowanceButton(true);
                   await requestIncreaseAllowance(
                       Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ),
                       firstTokenSelected.contractHash

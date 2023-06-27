@@ -4,8 +4,8 @@ import { Container, SubHeader } from "./styles";
 import { useTheme } from "styled-components";
 import { PairsContextProvider } from "../../../contexts/PairsContext";
 import { ProgressBarProviderContext } from "../../../contexts/ProgressBarContext";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { ConfigProviderContext, convertNumber } from "../../../contexts/ConfigContext";
+import { useContext, useEffect, useState } from "react";
+import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
 import { StateHashProviderContext } from "../../../contexts/StateHashContext";
@@ -16,7 +16,6 @@ import {
 import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
-import { globalStore } from "../../../store/store";
 import { TokensProviderContext } from "../../../contexts/TokensContext";
 import {SUPPORTED_NETWORKS} from "../../../constant";
 import { convertToUSDCurrency } from "../../../commons/utils";
@@ -125,6 +124,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
   const [showRemovingToggle, setShowRemovingToggle] = useState(true)
+  const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
 
   useEffect(() => {
     setTableData(
@@ -224,6 +224,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const onActionAllowance = async () => {
     await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityData.decimals,
       "", null, `${removeLiquidityData.firstSymbol}-${removeLiquidityData.secondSymbol}`, true, false)
+    setRemoveLiquidityAllowanceEnabled(false)
   }
 
   const handleRemoveLiquidity =  () => {
@@ -473,14 +474,14 @@ const handleActionRemoval = async () => {
             liquidityPoolData={removeLiquidityData as any}
             isOpen={showRemoveLiquidityDialog}
             disabledButton={removeLiquidityButtonDisabled}
-            disabledAllowanceButton={false}
+            disabledAllowanceButton={removeLiquidityAllowanceEnabled}
             showAllowance={(removeLiquidityCalculation.allowance) > 0}
             defaultValue={removeLiquidityInput}
             isRemoveLiquidityCSPR={removeLiquidityToggle}
             handleChangeInput={handleChangeInput}
             handleToggle={handleRemoveLiquidityToggle}
             handleRemoveLiquidity={handleActionRemoval}
-            handleAllowanceLiquidity={onActionAllowance}
+            handleAllowanceLiquidity={() => {setRemoveLiquidityAllowanceEnabled(true); onActionAllowance()}}
             calculatedAmounts={removeLiquidityCalculation}
           />
         </Container>

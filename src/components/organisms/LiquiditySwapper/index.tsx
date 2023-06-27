@@ -89,12 +89,12 @@ const LiquiditySwapper = ({
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0);
 
-  const [lastChanged, setLastChanged] = useState('');
   const [currentValue, setCurrentValue] = useState<number>(0)
   const [tokenToTransfer, setTokenToTransfers] = useState<any>(0)
-  const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
   const [tokenListData, setTokenListData] = useState<any[]>([]);
   const [initializeCalculation, setInitializeCalculation] = useState(false)
+  const [disableAllowanceButtonA, setDisableAllowanceButtonA] = useState(false)
+  const [disableAllowanceButtonB, setDisableAllowanceButtonB] = useState(false)
 
   const {
     disableButton: disableButtonValid,
@@ -224,7 +224,6 @@ const LiquiditySwapper = ({
       filteredValue = Math.abs(filteredValue);
     }
 
-    setLastChanged('A');
     setCurrentValue(filteredValue)
     amountSwapTokenASetter(filteredValue);
     const {tokensToTransfer, exchangeRateA, exchangeRateB} = await updateDetail(
@@ -263,7 +262,6 @@ const LiquiditySwapper = ({
       filteredValue = Math.abs(filteredValue);
     }
 
-    setLastChanged('B');
     amountSwapTokenBSetter(filteredValue);
     const {tokensToTransfer, exchangeRateA, exchangeRateB} = await updateDetail(
       firstTokenSelected,
@@ -428,7 +426,7 @@ const LiquiditySwapper = ({
     }
   }
 
-  const handleAllowanceApproval = async (selectedToken) => {
+  const handleAllowanceApproval = async (selectedToken, isAorB) => {
     const isFirstTokenValueInvalid = handleValidate( currentValue, parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
     const isSecondTokenValueInvalid = handleValidate(parseFloat(tokenToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0, firstTokenSelected.symbol)
     
@@ -439,6 +437,7 @@ const LiquiditySwapper = ({
         selectedToken.decimals,
         selectedToken.optApproval
       );
+      isAorB ? setDisableAllowanceButtonA(false) : setDisableAllowanceButtonB(false)
     }
   }
 
@@ -489,14 +488,16 @@ const LiquiditySwapper = ({
 
         {!isApprovedA && isConnected && (
           <Button type={"large"} props={{
+            disabled: disableAllowanceButtonA,
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" },
-            onClick: async () => handleAllowanceApproval(firstTokenSelected)
+            onClick: async () => {setDisableAllowanceButtonA(true); handleAllowanceApproval(firstTokenSelected, true)}
           }}>Approve {Math.abs(freeAllowanceA)} {firstTokenSelected.symbol}</Button>
         )}
         {!isApprovedB && isConnected && (
           <Button type={"large"} props={{
+            disabled: disableAllowanceButtonB,
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""},
-            onClick: async () => handleAllowanceApproval(secondTokenSelected)
+            onClick: async () => {setDisableAllowanceButtonB(true); handleAllowanceApproval(secondTokenSelected, false)}
             }}>
               Approve {Math.abs(freeAllowanceB)} {secondTokenSelected.symbol}</Button>
         )}

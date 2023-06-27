@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import LiquidityDetail from "../../organisms/LiquidityDetail";
 import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import { WalletProviderContext } from "../../../contexts/WalletContext";
@@ -19,11 +19,9 @@ import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {
-  SUPPORTED_NETWORKS,
-  REWARD_TOKEN_WEEKLY_EMISSIONS,
-  APR_AMOUNT_WEEKS
+  SUPPORTED_NETWORKS
 } from "../../../constant";
-import { convertBigNumberToUIString, convertToUSDCurrency, convertUIStringToBigNumber } from '../../../commons/utils';
+import { convertToUSDCurrency } from '../../../commons/utils';
 import { StakingProviderContext } from "../../../contexts/StakingContext";
 export const LiquidityTemplate = ({ isMobile }) => {
   const {
@@ -236,11 +234,13 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const onActionAllowance = async () => {
     await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityCalculation.decimals,
       "", null, `${removeLiquidityData.firstSymbol}-${removeLiquidityData.secondSymbol}`, true, false)
+    setRemoveLiquidityAllowanceEnabled(false)
   }
 
   const onActionGaugeAllowance = async () => {
-    await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityCalculation.decimals,
+    const result = await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityCalculation.decimals,
       "", removeLiquidityData.gaugePackageHash, `${removeLiquidityData.firstSymbol}-${removeLiquidityData.secondSymbol}`, true, true)
+    setRemoveLiquidityAllowanceEnabled(false)
   }
 
   const handleNavigate = (item) => {
@@ -651,7 +651,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
         handleChangeInput={handleChangeInput}
         handleToggle={handleRemoveLiquidityToggle}
         handleRemoveLiquidity={onRemoveAction}
-        handleAllowanceLiquidity={onActionAllowance}
+        handleAllowanceLiquidity={() => {setRemoveLiquidityAllowanceEnabled(true); onActionAllowance()}}
         calculatedAmounts={removeLiquidityCalculation}
       />
 
@@ -668,7 +668,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
         defaultValue={removeLiquidityInput}
         handleChangeInput={handleChangeInput}
         handleAction={onStakeAndUnstakeAction}
-        handleAllowance={onActionGaugeAllowance}
+        handleAllowance={() => {setRemoveLiquidityAllowanceEnabled(true); onActionGaugeAllowance()}}
         calculatedAmounts={removeLiquidityCalculation}
       />
       <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
