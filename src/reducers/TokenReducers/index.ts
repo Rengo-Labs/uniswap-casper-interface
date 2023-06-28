@@ -6,17 +6,9 @@ export interface TokenState {
   secondTokenSelected: string,
 }
 
-import * as tokenProd from '../../constant/tokenHashes.production'
-import * as tokenDev from '../../constant/tokenHashes.development'
-import * as tokenInt from '../../constant/tokenHashes.integration'
+import {tokenData, secondInitialToken} from '../../constant/bootEnvironmet'
 
-const RAW_TOKENS = ('casper-testing' === process.env.REACT_APP_NETWORK_KEY)
-  ? tokenDev.tokenList
-  : (
-    'integration-test' === process.env.REACT_APP_NETWORK_KEY
-      ? tokenInt.tokenList
-      : tokenProd.tokenList
-  )
+const RAW_TOKENS = tokenData
 export const TOKENS: Record<string, Token> = {}
 
 Object.values(RAW_TOKENS).map((t) => {
@@ -27,7 +19,7 @@ Object.values(RAW_TOKENS).map((t) => {
 export const initialTokenState: TokenState = {
   tokens: TOKENS,
   firstTokenSelected: 'CSPR',
-  secondTokenSelected: 'casper-testing' !== process.env.REACT_APP_NETWORK_KEY ? 'dETH' : 'WETH',
+  secondTokenSelected: secondInitialToken,
 };
 
 export enum TokenActions {

@@ -15,6 +15,7 @@ import isCSPRValid from "../../../hooks/isCSPRValid";
 import {globalStore} from "../../../store/store";
 import {PLATFORM_GAS_FEE} from '../../../constant'
 import BigNumber from "bignumber.js";
+import {CSPRPackageHash} from '../../../constant/bootEnvironmet'
 
 export const SwapTemplate = ({isMobile}) => {
     const {
@@ -91,11 +92,6 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const setPackageHashIfSymbolIsCSPR = (token) => {
-        const CSPRPackageHash = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a' : (
-          'casper' === process.env.REACT_APP_NETWORK_KEY ?
-            'hash-c6649901da894d4ac2c77c0ae217190f79cabc8c0c91788ee997f670b8bdd05e' :
-            'hash-6b7453749234eb23f6e81aa2fe01b3a8f4bafb94247942a6ac0d77e952978afa'
-        )
         if (token.symbol === 'CSPR') {
             token.packageHash = CSPRPackageHash;
         }

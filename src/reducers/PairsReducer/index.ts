@@ -5,11 +5,11 @@ import { TOKENS } from '../TokenReducers'
 import * as pairProd from '../../constant/pairHashes.production'
 import * as pairDev from '../../constant/pairHashes.development'
 import * as pairInt from '../../constant/pairHashes.integration'
+import {pairData, firstInitialToken, secondInitialToken} from '../../constant/bootEnvironmet'
 import {
   APR_AMOUNT_WEEKS,
   REWARD_CST_WEEKLY_INFLATION_RATE,
-  REWARD_TOKEN_WEEKLY_EMISSIONS,
-  TOTAL_GAUGE_WEIGHT_FOR_CST
+  REWARD_TOKEN_WEEKLY_EMISSIONS
 } from "../../constant";
 
 export type PairData = {
@@ -55,13 +55,7 @@ export type PairData = {
 
 export type PairState = Record<string, PairData>
 
-const RAW_PAIRS = ('casper-testing' === process.env.REACT_APP_NETWORK_KEY)
-  ? pairDev.pairList
-  : (
-    'integration-test' === process.env.REACT_APP_NETWORK_KEY
-      ? pairInt.pairList
-      : pairProd.pairList
-  )
+const RAW_PAIRS = pairData
 export const PAIRS: PairState = {}
 
 Object.values(RAW_PAIRS).map((p) => {

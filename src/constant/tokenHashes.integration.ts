@@ -28,7 +28,7 @@ export const tokenList: Record<string, Token> = {
     symbolPair: "CST",
     decimals: 9,
     contractHash:
-      "hash-9d0235fe7f4ac6ba71cf251c68fdd945ecf449d0b8aecb66ab0cbc18e80b3477",
+      "hash-3ab25923574f4cc18148a39af69c66c07a611f13464ebab97d5e1daf6ee38018",
     packageHash:
       "hash-93d38a928e5a9a3030e60dc207b478a746a4369f5dbaf20f085fe4e19f4b12d2",
     logoURI: cstIcon,
@@ -74,7 +74,7 @@ export const tokenList: Record<string, Token> = {
     symbolPair: "dUSDC",
     decimals: 9,
     contractHash:
-      "hash-45043899ae260f320f0efe11287b04470aab44548a93b0eec948dbcdf6bc1846",
+      "hash-9101dd2402246443b2f8a0f08c4635ab9416e0284e15a6f6884a414c768fcf45",
     packageHash:
       "hash-ab9ee4e04ec83f768346dfd0230404fa7dc9bfce8b1324af32bdbce076bc9f97",
     logoURI: usdcIcon,
