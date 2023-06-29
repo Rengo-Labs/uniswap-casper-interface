@@ -14,7 +14,8 @@ import {
   ConfigActions,
 } from '../../reducers';
 
-const NETWORK_NAME = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? Network.CASPER_TESTNET : Network.CASPER_MAINNET;
+import {networkName} from '../../constant/bootEnvironmet'
+const NETWORK_NAME = networkName
 
 import {
   CasperSignerWallet,
