@@ -14,7 +14,13 @@ import {
   ConfigActions,
 } from '../../reducers';
 
-const NETWORK_NAME = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? Network.CASPER_TESTNET : Network.CASPER_MAINNET;
+const NETWORK_NAME = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY 
+  ? Network.CASPER_TESTNET 
+  : (
+    'integration-test' === process.env.REACT_APP_NETWORK_KEY ?
+      Network.CASPER_INTEGRATION :
+      Network.CASPER_MAINNET
+  );
 
 import {
   CasperSignerWallet,

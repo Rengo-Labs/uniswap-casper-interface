@@ -6,7 +6,13 @@ import React, {
 } from 'react';
 import {NODE_ADDRESS, NotificationType, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS} from '../../constant';
 
-const NETWORK_NAME = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? Network.CASPER_TESTNET : Network.CASPER_MAINNET;
+const NETWORK_NAME = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY 
+  ? Network.CASPER_TESTNET 
+  : (
+    'integration-test' === process.env.REACT_APP_NETWORK_KEY ?
+      Network.CASPER_INTEGRATION :
+      Network.CASPER_MAINNET
+  );
 
 import {
   APIClient,

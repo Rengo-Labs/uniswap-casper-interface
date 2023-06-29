@@ -11,5 +11,6 @@ export const enum WalletName {
 export const enum Network {
   CASPER_TESTNET = 'casper-test',
   CASPER_MAINNET = 'casper',
+  CASPER_INTEGRATION = 'integration-test',
   NONE = 'none',
 }
