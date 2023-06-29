@@ -7,11 +7,7 @@ import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
 import {PairState} from "../../../reducers/PairsReducer";
 import {TokenState} from "../../../reducers/TokenReducers";
 import { getLocalStorageData, setLocalStorageData } from '../../../commons/utils/persistData';
-
-enum tokenType {
-  tokenA = 'tokenA',
-  tokenB = 'tokenB',
-}
+import {firstInitialToken, secondInitialToken} from '../../../constant/bootEnvironmet'
 
 interface LiquiditySwapperProps {
   onIncreaseAllow,
@@ -130,8 +126,8 @@ const LiquiditySwapper = ({
     }
 
     const filteredValue = 1
-    const firstTokenOnMount = tokenState.tokens['CSPR']
-    const secondTokenOnMount = tokenState.tokens['WETH']
+    const firstTokenOnMount = tokenState.tokens[firstInitialToken]
+    const secondTokenOnMount = tokenState.tokens[secondInitialToken]
 
     const handleExchangeCalculation = async () => {
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
