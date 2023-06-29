@@ -129,20 +129,23 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   useEffect(() => {
     setTableData(
       getPoolList().map((item) => {
+        const combinedBalance = new BigNumber(item.balance || 0).plus(item.gaugeBalance || 0)
+
+        const ratio = combinedBalance.div(item.totalSupply)
         return {
           contractPackage: item.packageHash.slice(5),
           name: item.name,
           pool: `${item.token0Symbol} - ${item.token1Symbol}`,
           token0Icon: item.token0Icon,
           token1Icon: item.token1Icon,
-          yourLiquidity: convertToUSDCurrency(parseFloat(item.totalLiquidityUSD)),
+          yourLiquidity: ratio.times(item.totalLiquidityUSD).isNaN() ? '$0.00':convertToUSDCurrency(ratio.times(item.totalLiquidityUSD).toNumber()),
           volume7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(item.volume7d)),
           fees7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
-          balance: item.balance,
+          balance: combinedBalance.isNaN() ? '0' : combinedBalance.toFixed(item.decimals),
           isFavorite: getLocalStorageData("pool")?.includes(item.name),
           assetsPoolToken0: `${isNaN(item.totalReserve0) ? 0 : item.totalReserve0} ${item.token0Symbol}`,
           assetsPoolToken1: `${isNaN(item.totalReserve1) ? 0 : item.totalReserve1} ${item.token1Symbol}`,
-          yourShare: (isNaN(item.balance) || isNaN(item.totalSupply)) ? '0.00' : (Number(item.balance) / Number(item.totalSupply)).toFixed(2),
+          yourShare: `${(ratio.toNumber() * 100).toFixed(2)}%`,
           apr: item.apr,
         }
       })
@@ -165,7 +168,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         }))
     }
 
-}, [tokenState])
+  }, [tokenState])
 
   const handleShowPoolDetails = () => {
     setPoolDetailRow(poolDetailsRowDefault);
@@ -319,6 +322,10 @@ const handleActionRemoval = async () => {
   const handleView = (name: string) => {
     const newRow = getPoolList().filter((item) => item.name === name)[0];
 
+    const combinedBalance = new BigNumber(newRow.balance || 0).plus(newRow.gaugeBalance || 0)
+
+    const ratio = combinedBalance.div(newRow.totalSupply)
+
     const getStakePercentage = () => {
       let yourStake = 0
       let gaugeTotalStake = 0
@@ -346,15 +353,13 @@ const handleActionRemoval = async () => {
       token1Icon: newRow.token1Icon,
       token0Symbol: newRow.token0Symbol,
       token1Symbol: newRow.token1Symbol,
-      yourLiquidityTokens: `${newRow.balance} ${newRow.orderedName}`,
+      yourLiquidityTokens: `${combinedBalance.isNaN() ? '0' : combinedBalance.toFixed(newRow.decimals)} ${newRow.orderedName}`,
       assetsPooled: {
         asset0: `${isNaN(newRow.reserve0) ? 0 : newRow.reserve0} ${newRow.token0Symbol}`,
         asset1: `${isNaN(newRow.reserve1) ? 0 : newRow.reserve1} ${newRow.token1Symbol}`,
       },
-      yourShare: (isNaN(newRow.balance) || isNaN(newRow.totalSupply) || Number(newRow.totalSupply) == 0) ? '0.00' : (Number(newRow.balance) / Number(newRow.totalSupply)).toFixed(
-        2
-      ),
-      yourLiquidity: convertToUSDCurrency(parseFloat(newRow.liquidityUSD)) ,
+      yourShare: `${(ratio.toNumber() * 100).toFixed(2)}%`,
+      yourLiquidity: ratio.times(newRow.totalLiquidityUSD).isNaN() ? '$0.00':convertToUSDCurrency(ratio.times(newRow.totalLiquidityUSD).toNumber()),
       volume7D: convertToUSDCurrency(newRow.volume7dUSD || 0),
       fees7D: `${convertToUSDCurrency(isNaN(newRow.volume7d) ? 0 : new BigNumber(newRow.volume7d).times(0.003).toNumber())}`,
       isFavorite: getLocalStorageData("pool")?.includes(name),
