@@ -74,7 +74,7 @@ export const tokenList: Record<string, Token> = {
     symbolPair: "dUSDC",
     decimals: 9,
     contractHash:
-      "hash-9101dd2402246443b2f8a0f08c4635ab9416e0284e15a6f6884a414c768fcf45",
+      "hash-45043899ae260f320f0efe11287b04470aab44548a93b0eec948dbcdf6bc1846",
     packageHash:
       "hash-ab9ee4e04ec83f768346dfd0230404fa7dc9bfce8b1324af32bdbce076bc9f97",
     logoURI: usdcIcon,
