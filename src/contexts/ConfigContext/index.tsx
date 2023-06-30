@@ -145,8 +145,8 @@ export const ConfigContextWithReducer = ({
 
       await reloadAllowances(name, decimals, contractHash, gaugeSpender, isPairContract, isGauge)
 
-      await sleep(2000)
-      await refresh(walletState.wallet)
+      //await sleep(2000)
+      //await refresh(walletState.wallet)
       return true;
     } catch (err) {
         setProgressModal(false);
@@ -158,7 +158,7 @@ export const ConfigContextWithReducer = ({
         isOnlyNotification: true,
         timeToClose: 5000
       });
-      refresh(walletState.wallet);
+      //refresh(walletState.wallet);
       return false;
     }
   }

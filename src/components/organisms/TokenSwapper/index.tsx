@@ -5,8 +5,8 @@ import isCSPRValid from '../../../hooks/isCSPRValid';
 import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
 import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
-import {PairState} from "../../../reducers/PairsReducer";
 import { getLocalStorageData, setLocalStorageData } from '../../../commons/utils/persistData';
+import {firstInitialToken, secondInitialToken} from '../../../constant/bootEnvironmet'
 
 interface TokenSwapperProps {
   onIncreaseAllow,
@@ -158,8 +158,8 @@ const TokenSwapper = ({
     }
 
     const filteredValue = 1
-    const firstTokenOnMount = tokenState.tokens['CSPR']
-    const twoTokenOnMount = tokenState.tokens['WETH']
+    const firstTokenOnMount = tokenState.tokens[firstInitialToken]
+    const twoTokenOnMount = tokenState.tokens[secondInitialToken]
 
     const handleExchangeCalculation = async () => {
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(

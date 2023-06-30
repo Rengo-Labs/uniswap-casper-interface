@@ -176,6 +176,7 @@ export const SwapTemplate = ({isMobile}) => {
         token = firstTokenSelected,
         isSwitched = false
     ) {
+        console.log("updateSwapDetail", tokenA, tokenB, secondTokenSelected)
         if (validAndCalculateCSPRToWCSPR(tokenA, tokenB, isSwitched)) {
             const pairPath = []
             pairPath.push(tokenA.symbol)
