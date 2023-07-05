@@ -29,7 +29,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-f697be7ecd0968cd36f23e66c8469dc6e0a0e0122ecd2cb0a2671ceac952ca5a",
     gaugePackageHash: "hash-e6cb9588cd0b9ccced2b4223372fe2d50fed1dcca4946498a0a432c8e43cdd09",
-    gaugeToken: 'WETH',
+    gaugeToken: 'dETH',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -61,7 +61,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-f6679a9858dea37e9c3784fb1dc7b61451ea5892aa67d2d44d390b6bc0c0afb3",
     gaugePackageHash: "hash-ecffaef74914bc43dca1215095eeffb1c09d56706b2ad3e2a029d844c0952674",
-    gaugeToken: 'WETH',
+    gaugeToken: 'dETH',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -92,7 +92,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-ae4094d43fd61c7cc6726f6b23c1aa473167afb0216bb7153e916d6209fd4504",
     gaugePackageHash: "hash-6dd30b6cca0c92e3c61e188cbaea46f06c85c4b5cc0c7b03aae764f6ed4a0a77",
-    gaugeToken: 'WETH',
+    gaugeToken: 'dETH',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -124,7 +124,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-513019cb6b04a53985b851b42f5dc79537c4f8319c8fae135e18f4dbffec14c8",
     gaugePackageHash: "hash-df50148b4f479cd920870f2edb93cc164ab16ad8242c2e356ca9ec0a207a91b4",
-    gaugeToken: 'WETH',
+    gaugeToken: 'dETH',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -156,7 +156,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-f6d0f9feb2c247c368b9432277e48dd49e4635e1e0dc7451867e0ec351950820",
     gaugePackageHash: "hash-665945e276ca268ac84c04c2682df41587a35bac3879db03d2e30a84d11d7380",
-    gaugeToken: 'WETH',
+    gaugeToken: 'dETH',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -188,7 +188,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-a268eb519580c7d7bbb77ca440b95c8fab43566f2aa49d8dd4bfbff25ec635ab",
     gaugePackageHash: "hash-0ff3a9cb0cfb8629bc3b252b37f6f4fc1b3e2e9b976cbd1ce4618ede9c6790f0",
-    gaugeToken: 'WETH',
+    gaugeToken: 'dETH',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   }

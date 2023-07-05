@@ -427,27 +427,6 @@ export const LiquidityTemplate = ({ isMobile }) => {
     await onClaimCSTRewards(item.gaugePackageHash)
   }
 
-  const getStakePercentage = (newRow) => {
-    let yourStake = 0
-    let gaugeTotalStake = 0
-
-    if (newRow.gaugeBalance) {
-      yourStake = newRow.gaugeBalance
-    }
-
-    if (newRow.gaugeTotalStake) {
-      gaugeTotalStake = parseFloat(newRow.gaugeTotalStake)
-    }
-
-    const operationCalculation = (yourStake / gaugeTotalStake) * 100
-
-    if (!operationCalculation || !Number.isFinite(operationCalculation)) {
-      return "0.00 %"
-    }
-
-    return `${((yourStake / gaugeTotalStake) * 100).toFixed(2)} %`
-  }
-
   const loadUserLP = () => {
     const userPairs = Object.values(pairState).filter(
       (v) => parseFloat(v.balance) > 0 || parseFloat(v.gaugeBalance) > 0
@@ -455,6 +434,27 @@ export const LiquidityTemplate = ({ isMobile }) => {
       const combinedBalance = new BigNumber(i.balance || 0).plus(i.gaugeBalance || 0)
 
       const ratio = combinedBalance.div(i.totalSupply)
+
+      const getStakePercentage = (i) => {
+        let yourStake = 0
+        let gaugeTotalStake = 0
+
+        if (i.gaugeBalance) {
+          yourStake = parseFloat(i.gaugeBalance)
+        }
+
+        if (i.gaugeTotalStake) {
+          gaugeTotalStake = parseFloat(i.gaugeTotalStake)
+        }
+
+        const operationCalculation = (yourStake / gaugeTotalStake) * 100
+
+        if (!operationCalculation || !Number.isFinite(operationCalculation)) {
+          return "0.00 %"
+        }
+
+        return `${((yourStake / gaugeTotalStake) * 100).toFixed(2)} %`
+      }
 
       return {
         contractPackage: i.packageHash.slice(5),
@@ -475,8 +475,11 @@ export const LiquidityTemplate = ({ isMobile }) => {
         hasStake: parseFloat(i.gaugeBalance) > 0,
         hasGauge: i.gaugeContractHash != null,
         lpStaked: i.gaugeBalance ? `${i.gaugeBalance} (${getStakePercentage(i)})` : 0,
+        hasBalance: parseFloat(i.balance) > 0,
         hasClaimWETH: !!i.gaugeToken,
-        hasClaimCST: !!i.gaugeCSTRewards
+        hasClaimCST: !!i.gaugeCSTRewards,
+        rewardETHTitle: i.gaugeToken,
+        rewardCSTTitle: 'CST',
       }
     })
 
