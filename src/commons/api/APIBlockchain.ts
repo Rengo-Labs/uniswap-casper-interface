@@ -188,6 +188,34 @@ export class BlockchainAPI {
     return [];
   };
 
+  getRewards = async (
+      accountHash: string,
+      hashDeploys: string,
+      page = 1,
+      limit = 10,
+  ) => {
+    console.log("#### getRewards ####", accountHash, hashDeploys)
+
+    const res = await axios.get(
+      `${API_BLOCKCHAIN_INFO}/${BlockchainAPIQuery.ACCOUNT}/${accountHash.slice(13)}/erc20-token-actions?page=${page}&limit=${limit}&fields=deploy,contract_package&with_amounts_in_currency_id=1`
+    );
+    if (res.data) {
+      return res.data.data.filter((item) => {
+        return item.deployHash === hashDeploys;
+      }).map((item) => {
+         return {
+           deployHash: item.deployHash,
+           amount: item.amount,
+           tokenName: item.contract_package.contract_name,
+           symbol: item.metadata.symbol,
+           decimals: item.metadata.decimals,
+         }
+      });
+    }
+
+    return [];
+  }
+
   // blockchain status
   // https://event-store-api-clarity-testnet.make.services/rpc/info_get_status
 

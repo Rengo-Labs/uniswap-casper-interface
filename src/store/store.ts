@@ -1,7 +1,7 @@
 import create from 'zustand';
 import {devtools} from 'zustand/middleware';
 import {NotificationType, NODE_ADDRESS} from '../constant';
-import {IGlobalStore, INotification, INotificationStore} from './types';
+import {IGlobalStore, INotification, INotificationStore, IStakeNotification, IStakeNotificationStore} from './types';
 
 export const globalStore = create(
     devtools<IGlobalStore>((set) => ({
@@ -41,6 +41,33 @@ export const notificationStore = create(
                 ...state,
                 notification: {
                     ...state.notification,
+                    show: false,
+                },
+            })),
+    }))
+);
+
+export const stakeNotificationStore = create(
+    devtools<IStakeNotificationStore>((set) => ({
+        stakeNotification: {
+            show: false,
+            data: {
+                amount: '0.00',
+                symbol: '',
+                tokenName: '',
+                tokenImage: '',
+            },
+        },
+        updateStakeNotification: (notificationValues: IStakeNotification) =>{
+            set(() => ({
+                stakeNotification: structuredClone(notificationValues)
+            }))
+        },
+        dismissStakeNotification: () =>
+            set((state: IStakeNotificationStore) => ({
+                ...state,
+                notification: {
+                    ...state.stakeNotification,
                     show: false,
                 },
             })),

@@ -18,8 +18,24 @@ export interface INotification {
   onClose?: () => void;
 }
 
+export interface IStakeNotification {
+    show: boolean;
+    data: {
+        amount: string;
+        symbol: string;
+        tokenName: string;
+        tokenImage: string;
+    };
+}
+
 export interface INotificationStore {
   notification: INotification
   updateNotification: (notification: INotification) => void;
   dismissNotification: () => void;
+}
+
+export interface IStakeNotificationStore {
+    stakeNotification: IStakeNotification
+    updateStakeNotification: (notification: IStakeNotification) => void;
+    dismissStakeNotification: () => void;
 }

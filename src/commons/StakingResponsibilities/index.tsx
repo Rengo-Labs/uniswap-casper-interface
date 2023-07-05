@@ -7,12 +7,14 @@ import {
 } from '../deploys/liquidity_gauge_v3'
 import {Client as CasperClient, Wallet} from "../wallet";
 import BigNumber from "bignumber.js";
+import {BlockchainAPI} from '../api/APIBlockchain'
 
 export interface StakingResponsibilitiesProps {
     casperClient: CasperClient,
     wallet: Wallet
 }
 
+const client = new BlockchainAPI()
 const StakingResponsibilities = ({casperClient, wallet}: StakingResponsibilitiesProps) => {
     // TODO Add params
 
@@ -36,12 +38,17 @@ const StakingResponsibilities = ({casperClient, wallet}: StakingResponsibilities
         return apiClient.getERC20Balance(wallet, contractHash)
     }
 
+    const getStakeRewards = (accountHash: string, deployHash: string) => {
+        return client.getRewards(accountHash, deployHash)
+    }
+
     return {
         onAddStake,
         onRemoveStake,
         onClaimRewards,
         getBalance,
-        onClaimCSTRewards
+        onClaimCSTRewards,
+        getStakeRewards
     }
 }
 

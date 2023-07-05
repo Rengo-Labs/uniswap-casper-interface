@@ -1,5 +1,5 @@
-import {NotificationMessage} from "rengo-ui-kit";
-import { notificationStore } from '../../../store/store';
+import {NotificationMessage, StakeMessage} from "rengo-ui-kit";
+import { notificationStore, stakeNotificationStore } from '../../../store/store';
 import { NotificationType } from "../../../constant";
 
 const defaultState = {
@@ -11,8 +11,20 @@ const defaultState = {
   closeManually: false,
 }
 
+const defaultStakeState = {
+  show: false,
+  data: {
+    amount: '0.00',
+    symbol: '',
+    tokenName: '',
+    tokenImage: '',
+  }
+}
+
 export const NotificationSystem = () => {
   const { notification, updateNotification, dismissNotification } = notificationStore();
+  const { stakeNotification, updateStakeNotification } = stakeNotificationStore();
+
   const onDismiss = () => {
     dismissNotification();
   }
@@ -20,6 +32,11 @@ export const NotificationSystem = () => {
   const onClose = () => {
     updateNotification({ ...defaultState, show: false });
   }
+
+  const onCloseStake = () => {
+    updateStakeNotification({ ...defaultStakeState, show: false });
+  }
+
   return (
       <>
         {notification.show && (
@@ -33,6 +50,15 @@ export const NotificationSystem = () => {
                 isOnlyNotification={notification.isOnlyNotification}
                 autoCloseDelay={notification.timeToClose}
                 closeManually={notification.closeManually}
+            />
+        )}
+        {stakeNotification.show && (
+            <StakeMessage
+                isOpen={stakeNotification.show}
+                tokenImg={stakeNotification.data.tokenImage}
+                tokenName={stakeNotification.data.tokenName}
+                amount={stakeNotification.data.amount}
+                closeCallback={onCloseStake}
             />
         )}
       </>

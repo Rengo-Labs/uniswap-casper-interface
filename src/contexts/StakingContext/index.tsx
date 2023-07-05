@@ -1,31 +1,23 @@
-import React, {createContext, ReactNode, useContext, useState, useMemo, useEffect} from "react";
-import {
-  LIQUIDITY_GAUGE_V3_CONTRACT_HASH,
-  LIQUIDITY_GAUGE_V3_PACKAGE_HASH,
-  NotificationType,
-  SUPPORTED_NETWORKS
-} from "../../constant";
+import React, {createContext, ReactNode, useContext} from "react";
+import {NotificationType, SUPPORTED_NETWORKS} from "../../constant";
 import StakingResponsibilities from '../../commons/StakingResponsibilities'
-import {
-  apiClient,
-  casperClient,
-  ConfigProviderContext,
-} from '../ConfigContext';
+import {casperClient, ConfigProviderContext,} from '../ConfigContext';
 import {WalletProviderContext} from "../WalletContext";
 import {notificationStore} from "../../store/store";
-import {
-  convertUIStringToBigNumber,
-  sleep
-} from "../../commons";
+import {stakeNotificationStore} from "../../store/store";
+import {convertUIStringToBigNumber, sleep} from "../../commons";
 import {ERROR_BLOCKCHAIN} from "../../constant/errors";
 import {StateHashProviderContext} from "../StateHashContext";
 import BigNumber from "bignumber.js";
+import {TokensProviderContext} from "../TokensContext";
+
 interface StakingContextProps {
     onAddStake: (contractHash: string, amount: BigNumber, decimals: number) => Promise<any>,
     onRemoveStake: (contractHash: string, amount: BigNumber, decimals: number) =>  Promise<any>
     onClaimRewards: (contractHash: string) =>  Promise<any>
     onClaimCSTRewards: (contractHash: string) =>  Promise<any>
     getStakeBalance: (contractHash: string) =>  Promise<any>
+    onGetStakeRewards: (accountHash: string, deployHash: string) =>  Promise<any>
 }
 
 export const StakingProviderContext = createContext<StakingContextProps>(null);
@@ -38,9 +30,13 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     setProgressModal,
   } = useContext(ConfigProviderContext)
 
+  const {tokenState} = useContext(TokensProviderContext)
+
+
   const {walletState} = useContext(WalletProviderContext)
   const {refresh} = useContext(StateHashProviderContext)
   const { updateNotification, dismissNotification } = notificationStore()
+  const { updateStakeNotification } = stakeNotificationStore()
 
   async function onAddStake(contractHash: string, amount: BigNumber, decimals: number): Promise<boolean> {
     updateNotification({
@@ -140,6 +136,24 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       const result = await casperClient.waitForDeployExecution(deployHash)
 
       if (result) {
+        const stakeAmountResult = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).getStakeRewards(walletState.wallet.accountHashString, deployHash)
+        console.log('stakeAmountResult', stakeAmountResult)
+
+        if(stakeAmountResult.length > 0) {
+          console.log('##### tokenState #####', tokenState)
+          const token = tokenState.tokens[stakeAmountResult[0].tokenName]
+          console.log('##### token #####', token)
+          updateStakeNotification({
+            show: true,
+            data: {
+              amount: stakeAmountResult[0].amount,
+              tokenImage: token.logoURI,
+              tokenName: token.name,
+              symbol: token.symbol
+            }
+          })
+        }
+
         updateNotification({
           type: NotificationType.Success,
           title: 'Stake correctly removed.',
@@ -203,14 +217,32 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       const result = await casperClient.waitForDeployExecution(deployHash)
 
       if (result) {
-        updateNotification({
-          type: NotificationType.Success,
-          title: 'Profit correctly claimed.',
-          subtitle: '',
-          show: true,
-          isOnlyNotification: true,
-          timeToClose: 5000
-        })
+        const stakeAmountResult = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).getStakeRewards(walletState.wallet.accountHashString, deployHash)
+        console.log('stakeAmountResult', stakeAmountResult)
+
+        if(stakeAmountResult.length === 0) {
+          updateNotification({
+            type: NotificationType.Success,
+            title: 'You don\'t have WETH rewards to be claimed.',
+            subtitle: '',
+            show: true,
+            isOnlyNotification: true,
+            timeToClose: 5000
+          })
+        } else {
+          console.log('##### tokenState #####', tokenState)
+          const token = tokenState.tokens[stakeAmountResult[0].tokenName]
+          console.log('##### token #####', token)
+          updateStakeNotification({
+            show: true,
+            data: {
+              amount: stakeAmountResult[0].amount,
+              tokenImage: token.logoURI,
+              tokenName: token.name,
+              symbol: token.symbol
+            }
+          })
+        }
       }
 
       setProgressModal(false)
@@ -266,14 +298,32 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       const result = await casperClient.waitForDeployExecution(deployHash)
 
       if (result) {
-        updateNotification({
-          type: NotificationType.Success,
-          title: 'CST profit correctly claimed.',
-          subtitle: '',
-          show: true,
-          isOnlyNotification: true,
-          timeToClose: 5000
-        })
+        const stakeAmountResult = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).getStakeRewards(walletState.wallet.accountHashString, deployHash)
+        console.log('stakeAmountResult', stakeAmountResult)
+
+        if(stakeAmountResult.length === 0) {
+          updateNotification({
+            type: NotificationType.Success,
+            title: 'You don\'t have CST rewards to be claimed.',
+            subtitle: '',
+            show: true,
+            isOnlyNotification: true,
+            timeToClose: 5000
+          })
+        } else {
+          console.log('##### tokenState #####', tokenState)
+          const token = tokenState.tokens[stakeAmountResult[0].tokenName]
+          console.log('##### token #####', token)
+          updateStakeNotification({
+            show: true,
+            data: {
+              amount: stakeAmountResult[0].amount,
+              tokenImage: token.logoURI,
+              tokenName: token.name,
+              symbol: token.symbol
+            }
+          })
+        }
       }
 
       setProgressModal(false)
@@ -317,6 +367,15 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
+  const onGetStakeRewards = async (accountHash: string, deployHash: string) => {
+    try {
+      return await StakingResponsibilities({casperClient, wallet: walletState.wallet})
+          .getStakeRewards(accountHash, deployHash)
+    } catch (e) {
+      console.error("Error getting stake rewards", e)
+    }
+  }
+
 
     return (
         <StakingProviderContext.Provider value={{
@@ -324,7 +383,8 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
           onRemoveStake,
           onClaimRewards,
           getStakeBalance,
-          onClaimCSTRewards
+          onClaimCSTRewards,
+          onGetStakeRewards
         }}>
             {children}
         </StakingProviderContext.Provider>
