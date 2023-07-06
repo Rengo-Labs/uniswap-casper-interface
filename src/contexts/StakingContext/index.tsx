@@ -13,7 +13,7 @@ import {TokensProviderContext} from "../TokensContext";
 
 interface StakingContextProps {
     onAddStake: (contractHash: string, amount: BigNumber, decimals: number) => Promise<any>,
-    onRemoveStake: (contractHash: string, amount: BigNumber, decimals: number) =>  Promise<any>
+    onRemoveStake: (contractHash: string, amount: BigNumber, decimals: number, rewardSymbol: string) =>  Promise<any>
     onClaimRewards: (contractHash: string) =>  Promise<any>
     onClaimCSTRewards: (contractHash: string) =>  Promise<any>
     getStakeBalance: (contractHash: string) =>  Promise<any>
@@ -103,7 +103,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
-  async function onRemoveStake(contractHash: string, amount: BigNumber, decimals: number): Promise<boolean> {
+  async function onRemoveStake(contractHash: string, amount: BigNumber, decimals: number, rewardSymbol: string): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
       title: 'Removing Stake',
@@ -136,24 +136,6 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       const result = await casperClient.waitForDeployExecution(deployHash)
 
       if (result) {
-        const stakeAmountResult = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).getStakeRewards(walletState.wallet.accountHashString, deployHash)
-        console.log('stakeAmountResult', stakeAmountResult)
-
-        if(stakeAmountResult.length > 0) {
-          console.log('##### tokenState #####', tokenState)
-          const token = tokenState.tokens[stakeAmountResult[0].symbol]
-          console.log('##### token #####', token)
-          updateStakeNotification({
-            show: true,
-            data: {
-              amount: stakeAmountResult[0].amount,
-              tokenImage: token.logoURI,
-              tokenName: token.name,
-              symbol: token.symbol
-            }
-          })
-        }
-
         updateNotification({
           type: NotificationType.Success,
           title: 'Stake correctly removed.',
@@ -223,7 +205,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
         if(stakeAmountResult.length === 0) {
           updateNotification({
             type: NotificationType.Success,
-            title: 'You don\'t have WETH rewards to be claimed.',
+            title: 'You don\'t have any rewards to be claimed.',
             subtitle: '',
             show: true,
             isOnlyNotification: true,
@@ -303,7 +285,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
         if(stakeAmountResult.length === 0) {
           updateNotification({
             type: NotificationType.Success,
-            title: 'You don\'t have CST rewards to be claimed.',
+            title: 'You don\'t have any rewards to be claimed.',
             subtitle: '',
             show: true,
             isOnlyNotification: true,
