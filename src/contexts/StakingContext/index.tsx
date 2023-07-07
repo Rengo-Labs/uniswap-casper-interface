@@ -5,12 +5,11 @@ import {casperClient, ConfigProviderContext,} from '../ConfigContext';
 import {WalletProviderContext} from "../WalletContext";
 import {notificationStore} from "../../store/store";
 import {stakeNotificationStore} from "../../store/store";
-import {convertUIStringToBigNumber, sleep} from "../../commons";
+import {convertUIStringToBigNumber, convertBigNumberToUIString,  sleep} from "../../commons";
 import {ERROR_BLOCKCHAIN} from "../../constant/errors";
 import {StateHashProviderContext} from "../StateHashContext";
 import BigNumber from "bignumber.js";
 import {TokensProviderContext} from "../TokensContext";
-
 interface StakingContextProps {
     onAddStake: (contractHash: string, amount: BigNumber, decimals: number) => Promise<any>,
     onRemoveStake: (contractHash: string, amount: BigNumber, decimals: number, rewardSymbol: string) =>  Promise<any>
@@ -218,7 +217,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
           updateStakeNotification({
             show: true,
             data: {
-              amount: stakeAmountResult[0].amount,
+              amount: convertBigNumberToUIString(stakeAmountResult[0].amount, stakeAmountResult[0].decimals),
               tokenImage: token.logoURI,
               tokenName: token.name,
               symbol: token.symbol
@@ -296,7 +295,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
           updateStakeNotification({
             show: true,
             data: {
-              amount: stakeAmountResult[0].amount,
+              amount: convertBigNumberToUIString(stakeAmountResult[0].amount, stakeAmountResult[0].decimals),
               tokenImage: token.logoURI,
               tokenName: token.name,
               symbol: token.symbol
