@@ -49,7 +49,7 @@ export const BalanceTemplate = ({isMobile}) => {
         })
         .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
 
-      return BigNumber(priceUSD).times(isNaN(tokenSum) ? 0 : tokenSum).toFixed(2)
+      return BigNumber(isNaN(priceUSD)?0:priceUSD).times(isNaN(tokenSum) ? 0 : tokenSum).toFixed(2)
     }
 
     useEffect(() => {
