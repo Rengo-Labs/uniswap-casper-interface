@@ -238,6 +238,8 @@ const LiquiditySwapper = ({
   const handleChangeA = (value) => {
     cleanValidationState(parseFloat(value), parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
     changeTokenA(value);
+    setDisableAllowanceButtonA(false)
+    setDisableAllowanceButtonB(false)
   };
 
   const setUSDByTokens = (rateA, rateB, value) => {
@@ -278,7 +280,9 @@ const LiquiditySwapper = ({
       parseFloat(secondTokenSelected.amount),
       gasPriceSelectedForLiquidity || 0,
       secondTokenSelected.symbol)
-    changeTokenB(value);
+    changeTokenB(value)
+    setDisableAllowanceButtonA(false)
+    setDisableAllowanceButtonB(false)
   };
 
   const selectAndCloseToken = async (token: Token) => {
@@ -317,31 +321,6 @@ const LiquiditySwapper = ({
     )
     amountSwapTokenASetter(tokensToTransfer)
   }
-
-
-  const disableButton = (amount0, amount1) => {
-    if (isNaN(amount0)) {
-      return true;
-    }
-    if (isNaN(amount1)) {
-      return true;
-    }
-    if (!isConnected) {
-      return true;
-    }
-    if (
-      parseFloat(amount0) <= 0 ||
-      parseFloat(amount0) > parseFloat(firstTokenSelected.amount.toString())
-    ) {
-      return true;
-    }
-    if (
-      parseFloat(amount1) <= 0 ||
-      parseFloat(amount1) > parseFloat(secondTokenSelected.amount.toString())
-    ) {
-      return true;
-    }
-  };
 
   const amountA = isNaN(amountSwapTokenA) ? 0 : amountSwapTokenA;
   const amountB = isNaN(amountSwapTokenB) ? 0 : amountSwapTokenB;
@@ -423,9 +402,9 @@ const LiquiditySwapper = ({
   }
 
   const handleAllowanceApproval = async (selectedToken, isAorB) => {
-    const isFirstTokenValueInvalid = handleValidate( currentValue, parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
-    const isSecondTokenValueInvalid = handleValidate(parseFloat(tokenToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0, firstTokenSelected.symbol)
-    
+    const isFirstTokenValueInvalid = handleValidate( amountSwapTokenA, parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
+    const isSecondTokenValueInvalid = handleValidate(parseFloat(amountSwapTokenB), parseFloat(secondTokenSelected.amount), gasPriceSelectedForLiquidity || 0, secondTokenSelected.symbol)
+
     if (!isFirstTokenValueInvalid && !isSecondTokenValueInvalid) {
       await requestIncreaseAllowance(
         Math.abs(freeAllowanceB),
