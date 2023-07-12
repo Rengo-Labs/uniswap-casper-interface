@@ -648,7 +648,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
   const showPairsStaked = (stakingToggle) => {
     if (stakingToggle) {
-      const result = userPairDataNonZero.filter(i => i.hasGauge === true)
+      const result = userPairDataNonZero.filter(i => i.hasStake === true && i.hasGauge === true)
       userPairDataNonZeroSetter(result)
     } else {
       loadUserLP()
