@@ -18,6 +18,7 @@ import CasperLoader from "../components/organisms/CasperLoader";
 import { useLocation } from 'react-router-dom'
 import { useLoader } from '../hooks/useLoader'
 import { getLocalStorageData, setLocalStorageData } from "../commons/utils/persistData";
+import { getIPfromUser } from "../commons/utils";
 
 export interface ILayoutProps {
     children?: React.ReactElement;
@@ -61,6 +62,7 @@ const Layout = ({children}: ILayoutProps) => {
     } as OptAction
     const [rightAction, setRightAction] = useState(rightActionInit);
     const [pathName, setPathName] = useState('')
+    const [ip, setIp] = useState('')
 
     const {
         isConnected,
@@ -77,7 +79,7 @@ const Layout = ({children}: ILayoutProps) => {
 
     const deviceType = useDeviceType()
     const isMobile = deviceType === 'mobile'
-    
+
     useEffect(() => {
       const currentTheme = getLocalStorageData(LOCAl_STORAGE_THEME_KEY)
       let newTheme = ''
@@ -87,11 +89,15 @@ const Layout = ({children}: ILayoutProps) => {
         newTheme = currentTheme
       }
 
-      console.log(currentTheme);
-      
-      toggleTheme(newTheme)
+      //console.log(currentTheme);
+      toggleTheme(newTheme);
+
+      getIPfromUser().then((res) => {
+            console.log("IP from user", res)
+            setIp(res)
+        })
     }, [])
-    
+
     const handleShowSettings = () => {
         setShowSettings(!showSettings);
     }
