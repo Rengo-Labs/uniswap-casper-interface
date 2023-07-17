@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.5",
-    "@casperholders/casper-snap-helper": "https://github.com/casperholders/casper-snap",
+    "@casperholders/casper-snap-helper": "^1.0.2",
     "@emotion/react": "^11.10.5",
     "@fontsource/epilogue": "^4.5.11",
     "@mui/material": "^5.11.5",
