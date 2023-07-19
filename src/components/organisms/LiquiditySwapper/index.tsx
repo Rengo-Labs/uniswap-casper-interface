@@ -401,13 +401,13 @@ const LiquiditySwapper = ({
     }
   }
 
-  const handleAllowanceApproval = async (selectedToken, isAorB) => {
+  const handleAllowanceApproval = async (selectedToken, freeAllowance, isAorB) => {
     const isFirstTokenValueInvalid = handleValidate( amountSwapTokenA, parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
     const isSecondTokenValueInvalid = handleValidate(parseFloat(amountSwapTokenB), parseFloat(secondTokenSelected.amount), gasPriceSelectedForLiquidity || 0, secondTokenSelected.symbol)
 
     if (!isFirstTokenValueInvalid && !isSecondTokenValueInvalid) {
       await requestIncreaseAllowance(
-        Math.abs(freeAllowanceB),
+        Math.abs(selectedToken.optApproval ? isAorB ? amountSwapTokenA : amountSwapTokenB : freeAllowance),
         selectedToken.contractHash,
         selectedToken.decimals,
         selectedToken.optApproval
@@ -465,16 +465,16 @@ const LiquiditySwapper = ({
           <Button type={"large"} props={{
             disabled: disableAllowanceButtonA,
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" },
-            onClick: async () => {setDisableAllowanceButtonA(true); handleAllowanceApproval(firstTokenSelected, true)}
-          }}>Approve {Math.abs(freeAllowanceA)} {firstTokenSelected.symbol}</Button>
+            onClick: async () => {setDisableAllowanceButtonA(true); handleAllowanceApproval(firstTokenSelected, freeAllowanceA, true)}
+          }}>Approve {Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowanceA)} {firstTokenSelected.symbol}</Button>
         )}
         {!isApprovedB && isConnected && (
           <Button type={"large"} props={{
             disabled: disableAllowanceButtonB,
             style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""},
-            onClick: async () => {setDisableAllowanceButtonB(true); handleAllowanceApproval(secondTokenSelected, false)}
+            onClick: async () => {setDisableAllowanceButtonB(true); handleAllowanceApproval(secondTokenSelected, freeAllowanceB, false)}
             }}>
-              Approve {Math.abs(freeAllowanceB)} {secondTokenSelected.symbol}</Button>
+              Approve {Math.abs(secondTokenSelected.optApproval ? amountSwapTokenB : freeAllowanceB)} {secondTokenSelected.symbol}</Button>
         )}
 
         {isApprovedA && isApprovedB && isConnected && (
