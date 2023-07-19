@@ -370,7 +370,6 @@ export const LiquidityTemplate = ({ isMobile }) => {
       gaugeToken: item.gaugeToken
     })))
     setStakePopup(true)
-    console.log("ITem", item, parseFloat(item.gaugeBalance) - parseFloat(item.gaugeAllowance))
   }
 
   const createUnstakeDataForPopup = async (item) => {
@@ -425,7 +424,6 @@ export const LiquidityTemplate = ({ isMobile }) => {
   }
 
   const onClaimCSTAction = async (item) => {
-    console.log("CST Rewards", item)
     await onClaimCSTRewards(item.gaugePackageHash)
   }
 

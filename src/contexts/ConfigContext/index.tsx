@@ -130,7 +130,9 @@ export const ConfigContextWithReducer = ({
 
       const result = await casperClient.waitForDeployExecution(deployHash);
 
+      await refresh(walletState.wallet)
       if (result) {
+        await sleep(2000)
             updateNotification({
               type: NotificationType.Success,
               title: 'Processed...',
@@ -143,10 +145,6 @@ export const ConfigContextWithReducer = ({
       setProgressModal(false);
       setConfirmModal(true);
 
-      await reloadAllowances(name, decimals, contractHash, gaugeSpender, isPairContract, isGauge)
-
-      //await sleep(2000)
-      //await refresh(walletState.wallet)
       return true;
     } catch (err) {
         setProgressModal(false);
@@ -158,7 +156,6 @@ export const ConfigContextWithReducer = ({
         isOnlyNotification: true,
         timeToClose: 5000
       });
-      //refresh(walletState.wallet);
       return false;
     }
   }

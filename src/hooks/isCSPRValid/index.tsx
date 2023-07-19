@@ -19,7 +19,6 @@ const isCSPRValid = () => {
     });
 
     const isInvalidTransaction = (currentValue: number, gasFee: number, balance: number,  tokenSymbol, aplicationToken) => {
-      console.log(currentValue, balance, tokenSymbol, aplicationToken)
       if (tokenSymbol === aplicationToken) {
         return (Number(currentValue) + Number(gasFee)) > balance
       } else {
@@ -40,7 +39,7 @@ const isCSPRValid = () => {
       const applicationToken = 'CSPR'
       const showNotifier = isInvalidTransaction(currentValue, gasFee, balance, tokenSymbol, applicationToken)
 
-      console.log(currentValue, balance, tokenSymbol, applicationToken)
+      //console.log(currentValue, balance, tokenSymbol, applicationToken)
       if (!showNotifier) {
         setDisableButton(showNotifier)
       }

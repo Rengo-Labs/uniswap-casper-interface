@@ -295,7 +295,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
           updateStakeNotification({
             show: true,
             data: {
-              amount: convertBigNumberToUIString(stakeAmountResult[0].amount, stakeAmountResult[0].decimals),
+              amount: convertBigNumberToUIString(BigNumber(stakeAmountResult[0].amount), stakeAmountResult[0].decimals),
               tokenImage: token.logoURI,
               tokenName: token.name,
               symbol: token.symbol
