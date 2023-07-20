@@ -280,6 +280,7 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const validAndCalculateCSPRToWCSPR = (tokenA: Token, tokenB: Token, isSwitched): boolean => {
+        console.log("Validate", tokenA.symbol, tokenB.symbol, tokenA.symbol === 'CSPR' && tokenB.symbol === 'WCSPR', tokenA.symbol === 'WCSPR' && tokenB.symbol === 'CSPR')
         let isValid = false
         if (tokenA.symbol === 'CSPR' && tokenB.symbol === 'WCSPR') {
             isValid = true
@@ -290,10 +291,10 @@ export const SwapTemplate = ({isMobile}) => {
         if (isValid) {
             updateSlippageTolerance(0)
             setPairPath([tokenA.symbol, tokenB.symbol])
-        }
-        if (isSwitched) {
+            gasFeeSetter(9)
+        } else if (isSwitched) {
             updateSlippageTolerance(0.5)
-            gasFeeSetter(isValid ? 9 : adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol, 0))
+            gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol, 0))
         }
 
         return isValid
