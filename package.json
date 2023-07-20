@@ -9,7 +9,7 @@
     "start-integration": "npx env-cmd -f .env.integration react-app-rewired start",
     "build": "npx env-cmd -f .env.development react-app-rewired build",
     "build-production": "npx env-cmd -f .env.production react-app-rewired build",
-    "build-integration": "npx env-cmd -f .env.integration react-app-rewired build",
+    "build-integration": "npx env-cmd -f .env.integration react-app-rewired --max-old-space-size=8192 build",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "test": "react-app-rewired test --maxWorkers=50%",
