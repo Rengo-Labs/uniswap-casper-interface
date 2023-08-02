@@ -15,6 +15,8 @@ let firstInitialToken
 let secondInitialToken
 let CSPRPackageHash
 let networkName: Network
+let USDT_SYMBOL: string
+let USDC_SYMBOL: string
 
 switch (process.env.REACT_APP_NETWORK_KEY) {
   case 'casper-testing':
@@ -24,6 +26,8 @@ switch (process.env.REACT_APP_NETWORK_KEY) {
     secondInitialToken = 'WETH'
     CSPRPackageHash = 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a'
     networkName = Network.CASPER_TESTNET
+    USDT_SYMBOL = 'USDT'
+    USDC_SYMBOL = 'USDC'
     break
   case 'integration-test':
     pairData = pairInt.pairList
@@ -32,6 +36,8 @@ switch (process.env.REACT_APP_NETWORK_KEY) {
     secondInitialToken = 'dETH'
     CSPRPackageHash = 'hash-6b7453749234eb23f6e81aa2fe01b3a8f4bafb94247942a6ac0d77e952978afa'
     networkName = Network.CASPER_INTEGRATION
+    USDT_SYMBOL = 'dUSDT'
+    USDC_SYMBOL = 'dUSDC'
     break
   case 'casper':
     pairData = pairProd.pairList
@@ -40,6 +46,8 @@ switch (process.env.REACT_APP_NETWORK_KEY) {
     secondInitialToken = 'dETH'
     CSPRPackageHash = 'hash-c6649901da894d4ac2c77c0ae217190f79cabc8c0c91788ee997f670b8bdd05e'
     networkName = Network.CASPER_MAINNET
+    USDT_SYMBOL = 'dUSDT'
+    USDC_SYMBOL = 'dUSDC'
     break
   default:
     pairData = pairDev.pairList
@@ -48,6 +56,8 @@ switch (process.env.REACT_APP_NETWORK_KEY) {
     secondInitialToken = 'WETH'
     CSPRPackageHash = 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a'
     networkName = Network.CASPER_TESTNET
+    USDT_SYMBOL = 'USDT'
+    USDC_SYMBOL = 'USDC'
 }
 
 export {
@@ -56,5 +66,7 @@ export {
   firstInitialToken,
   secondInitialToken,
   CSPRPackageHash,
-  networkName
+  networkName,
+  USDT_SYMBOL,
+  USDC_SYMBOL
 }

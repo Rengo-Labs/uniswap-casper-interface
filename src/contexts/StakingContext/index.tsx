@@ -199,7 +199,6 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
 
       if (result) {
         const stakeAmountResult = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).getStakeRewards(walletState.wallet.accountHashString, deployHash)
-        console.log('stakeAmountResult', stakeAmountResult)
 
         if(stakeAmountResult.length === 0) {
           updateNotification({
@@ -211,9 +210,8 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
             timeToClose: 5000
           })
         } else {
-          console.log('##### tokenState #####', tokenState)
           const token = tokenState.tokens[stakeAmountResult[0].symbol]
-          console.log('##### token #####', token)
+          dismissNotification()
           updateStakeNotification({
             show: true,
             data: {
@@ -292,6 +290,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
           })
         } else {
           const token = tokenState.tokens[stakeAmountResult[0].symbol]
+          dismissNotification()
           updateStakeNotification({
             show: true,
             data: {

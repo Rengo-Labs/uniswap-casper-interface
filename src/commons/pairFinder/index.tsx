@@ -7,11 +7,9 @@ import { TokenState } from "../../reducers/TokenReducers";
 import { getPath } from "../calculations";
 import { NotificationType } from "../../constant";
 import { PairTotalReserves } from "../PairsResponsibilities";
+import {USDC_SYMBOL, USDT_SYMBOL} from "../../constant/bootEnvironmet";
 
 export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
-
-    const USDT_SYMBOL = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? 'USDT' : 'dUSDT'
-    const USDC_SYMBOL = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? 'USDC' : 'dUSDC'
 
     const orderedPairState = () : Record<string, PairTotalReserves> => {
         const orderedPairs: Record<string, PairTotalReserves> = {}

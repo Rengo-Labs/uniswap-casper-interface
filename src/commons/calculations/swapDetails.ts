@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
-import { APIClient, Token } from '../api'
-import { log, fixAmountOfZeros } from '../utils'
+import { Token } from '../api'
+import { log } from '../utils'
 import {PLATFORM_GAS_FEE} from "../../constant";
 
 /**

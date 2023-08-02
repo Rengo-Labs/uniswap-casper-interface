@@ -2,10 +2,7 @@ import BigNumber from "bignumber.js"
 import { convertBigNumberToUIString, convertUIStringToBigNumber } from "../../commons"
 import { TOKENS } from '../TokenReducers'
 
-import * as pairProd from '../../constant/pairHashes.production'
-import * as pairDev from '../../constant/pairHashes.development'
-import * as pairInt from '../../constant/pairHashes.integration'
-import {pairData, firstInitialToken, secondInitialToken} from '../../constant/bootEnvironmet'
+import {pairData} from '../../constant/bootEnvironmet'
 import {
   APR_AMOUNT_WEEKS,
   REWARD_CST_WEEKLY_INFLATION_RATE,
