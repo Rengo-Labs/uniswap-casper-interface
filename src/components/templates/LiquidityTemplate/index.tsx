@@ -118,11 +118,11 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const [actionSelected, setActionSelected] = useState('')
 
   const handleChangeInput = (value) => {
-    if (value === 0) {
+    if (BigNumber(removeLiquidityCalculation.lpAmount).toNumber() <= 0) {
       setRemoveLiquidityButtonDisabled(true)
     }
 
-    if (value > 0 && removeLiquidityButtonDisabled) {
+    if (BigNumber(removeLiquidityCalculation.lpAmount).toNumber() > 0) {
       setRemoveLiquidityButtonDisabled(false)
     }
 
@@ -325,8 +325,6 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
     setRemoveLiquidityCalculation((prevState => ({ ...prevState, lpAmount: 0, firstAmount: 0, secondAmount: 0, allowance: parseFloat(item.liquidity) - parseFloat(item.allowance) })))
     setShowRemoveLiquidityDialog(true)
-    //setRemoveLiquidityAllowanceEnabled(true)
-    console.log("Create Remove", removeLiquidityAllowanceEnabled, showRemoveLiquidityDialog, parseFloat(item.allowance), item.balance)
   }
 
   const createStakeDataForPopup = (item) => {
@@ -689,7 +687,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
         closeCallback={handleStakeClose}
         liquidityPoolData={removeLiquidityData as any}
         isOpen={stakePopup}
-        disabledButton={removeLiquidityButtonDisabled}
+        disabledButton={removeLiquidityButtonDisabled && BigNumber(removeLiquidityCalculation.lpAmount).toNumber() <= 0}
         disabledAllowanceButton={removeLiquidityAllowanceEnabled}
         showAllowance={showStakingAllowance && (removeLiquidityCalculation.allowance) > 0}
         defaultValue={removeLiquidityInput}
