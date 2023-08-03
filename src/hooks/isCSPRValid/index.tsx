@@ -54,7 +54,7 @@ const isCSPRValid = () => {
     const applicationToken = 'CSPR'
     const showNotifier = isInvalidTransaction(currentValue, gasFee, balance, tokenSymbol, applicationToken)
     if (showNotifier) {
-      showNotification(`Insufficient Balance for the token : ${tokenSymbol}`)
+      showNotification(gasFee < Number(tokenState.tokens[applicationToken].amount) ? `Insufficient Balance for the token : ${tokenSymbol}` : `Insufficient Balance for the token : ${applicationToken}`)
     } else {
       dismissNotification()
     }

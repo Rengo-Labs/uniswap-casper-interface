@@ -394,10 +394,12 @@ const LiquiditySwapper = ({
 
   const handleAddLiquidity = () => {
     const tokenAIsInvalid = handleValidate( currentValue, parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
-    const secondValidation = handleValidate(parseFloat(tokenToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0, firstTokenSelected.symbol)
-  
-    if (!tokenAIsInvalid && !secondValidation) {
-      onActionConfirm(amountSwapTokenA, amountSwapTokenB)
+
+    if (!tokenAIsInvalid) {
+      const secondValidation = handleValidate(parseFloat(tokenToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0, secondTokenSelected.symbol)
+      if (!secondValidation) {
+        onActionConfirm(amountSwapTokenA, amountSwapTokenB)
+      }
     }
   }
 

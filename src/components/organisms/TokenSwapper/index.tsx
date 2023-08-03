@@ -223,10 +223,9 @@ const TokenSwapper = ({
   }
 
   const handleTokenInputsValidation = (amountSwapTokenA, amountSwapTokenB) => {
-    const isFirstTokenValueInvalid = handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0)
-    const isSecondTokenValueInvalid = handleValidate(amountSwapTokenA, parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0)
+    const isFirstTokenValueInvalid = handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0, firstTokenSelected.symbol)
 
-    if (!isFirstTokenValueInvalid && !isSecondTokenValueInvalid) {
+    if (!isFirstTokenValueInvalid) {
       onActionConfirm(amountSwapTokenA, amountSwapTokenB)
     }
   }

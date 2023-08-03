@@ -280,7 +280,6 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const validAndCalculateCSPRToWCSPR = (tokenA: Token, tokenB: Token, isSwitched): boolean => {
-        console.log("Validate", tokenA.symbol, tokenB.symbol, tokenA.symbol === 'CSPR' && tokenB.symbol === 'WCSPR', tokenA.symbol === 'WCSPR' && tokenB.symbol === 'CSPR')
         let isValid = false
         if (tokenA.symbol === 'CSPR' && tokenB.symbol === 'WCSPR') {
             isValid = true
