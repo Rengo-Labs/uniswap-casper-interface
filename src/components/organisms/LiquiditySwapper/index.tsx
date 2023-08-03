@@ -481,7 +481,10 @@ const LiquiditySwapper = ({
 
         {isApprovedA && isApprovedB && isConnected && (
           <Button type={"large"} props={{
-              disabled: isProcessingTransaction || disableButtonValid,
+              disabled: isProcessingTransaction ||
+                amountSwapTokenA <= 0 ||
+                amountSwapTokenB <= 0 ||
+                disableButtonValid,
               style: {width: 'auto'},
               onClick: () => handleAddLiquidity() }}
               >
