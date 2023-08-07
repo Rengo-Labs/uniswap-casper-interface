@@ -740,7 +740,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
         />
       </DoubleColumn>
       {
-        isConnected && userPairDataNonZero.length > 0 &&
+        isConnected &&
         <SingleColumn isMobile={isMobile}>
           <LPContainer title="My Liquidity"
             networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`}
