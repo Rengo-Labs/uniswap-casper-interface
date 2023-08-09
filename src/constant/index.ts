@@ -56,3 +56,4 @@ export const REWARD_CST_WEEKLY_INFLATION_RATE = process.env.REACT_APP_REWARD_CST
 
 export const APR_AMOUNT_WEEKS= parseInt(process.env.REACT_APP_APR_AMOUNT_WEEKS)
 export const TOTAL_GAUGE_WEIGHT_FOR_CST = parseInt(process.env.REACT_APP_TOTAL_GAUGE_WEIGHT_FOR_CST)
+export const GEOLOCATION_URL = process.env.REACT_APP_GEOLOCATION_URL
