@@ -15,7 +15,9 @@
     "test": "react-app-rewired test --maxWorkers=50%",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "cypress-open": "cypress open",
+    "cypress-run": "cypress run"
   },
   "dependencies": {
     "@apollo/client": "^3.7.5",
