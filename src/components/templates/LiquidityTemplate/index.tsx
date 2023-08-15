@@ -118,11 +118,11 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const [actionSelected, setActionSelected] = useState('')
 
   const handleChangeInput = (value) => {
-    if (BigNumber(removeLiquidityCalculation.lpAmount).toNumber() <= 0) {
+    if (value == 0) {
       setRemoveLiquidityButtonDisabled(true)
     }
 
-    if (BigNumber(removeLiquidityCalculation.lpAmount).toNumber() > 0) {
+    if (value > 0) {
       setRemoveLiquidityButtonDisabled(false)
     }
 
@@ -234,9 +234,11 @@ export const LiquidityTemplate = ({ isMobile }) => {
   }
 
   const onActionAllowance = async () => {
+    console.log("Start - removeLiquidityAllowanceEnabled", removeLiquidityAllowanceEnabled)
     await onIncreaseAllow(removeLiquidityCalculation.allowance, removeLiquidityData.id, removeLiquidityCalculation.decimals,
       "", null, `${removeLiquidityData.firstSymbol}-${removeLiquidityData.secondSymbol}`, true, false)
     setRemoveLiquidityAllowanceEnabled(false)
+    console.log("Begin - removeLiquidityAllowanceEnabled", removeLiquidityAllowanceEnabled)
   }
 
   const onActionGaugeAllowance = async () => {
@@ -265,8 +267,12 @@ export const LiquidityTemplate = ({ isMobile }) => {
     }
 
     if (action === 'StakeLP') {
-      setShowStakingAllowance(true)
-      createStakeDataForPopup(item)
+      if (parseFloat(item.balance) === 0) {
+        showNotification('Insufficient Balance for making Stake')
+      } else {
+        setShowStakingAllowance(true)
+        createStakeDataForPopup(item)
+      }
     }
 
     if (action === 'UnstakeLP') {
@@ -496,6 +502,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
     progressBar(async () => {
       await refresh()
     })
+
+    console.log("ShowRemove", removeLiquidityAllowanceEnabled)
   }, [isConnected, pairState, stakingToggle])
 
   useEffect(() => {
@@ -556,7 +564,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
       gasFee,
       pair.packageHash
     );
-    refresh()
+    //refresh()
     amountSwapTokenASetter(0)
     amountSwapTokenBSetter(0)
     setValueAUSD('0')

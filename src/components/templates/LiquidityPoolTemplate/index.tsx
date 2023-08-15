@@ -371,9 +371,6 @@ const handleActionRemoval = async () => {
   };
 
   useEffect(() => {
-    progressBar(async () => {
-      await refresh();
-    });
 
     return () => {
       progressBar(async () => {
