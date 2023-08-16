@@ -503,7 +503,6 @@ export const LiquidityTemplate = ({ isMobile }) => {
       await refresh()
     })
 
-    console.log("ShowRemove", removeLiquidityAllowanceEnabled)
   }, [isConnected, pairState, stakingToggle])
 
   useEffect(() => {
@@ -695,7 +694,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
         closeCallback={handleStakeClose}
         liquidityPoolData={removeLiquidityData as any}
         isOpen={stakePopup}
-        disabledButton={removeLiquidityButtonDisabled && BigNumber(removeLiquidityCalculation.lpAmount).toNumber() <= 0}
+        disabledButton={removeLiquidityButtonDisabled}
         disabledAllowanceButton={removeLiquidityAllowanceEnabled}
         showAllowance={showStakingAllowance && (removeLiquidityCalculation.allowance) > 0}
         defaultValue={removeLiquidityInput}
