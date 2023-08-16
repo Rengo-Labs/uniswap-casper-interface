@@ -210,17 +210,29 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
             timeToClose: 5000
           })
         } else {
-          const token = tokenState.tokens[stakeAmountResult[0].symbol]
           dismissNotification()
-          updateStakeNotification({
-            show: true,
-            data: {
-              amount: convertBigNumberToUIString(stakeAmountResult[0].amount, stakeAmountResult[0].decimals),
-              tokenImage: token.logoURI,
-              tokenName: token.name,
-              symbol: token.symbol
-            }
-          })
+          const token = tokenState.tokens[stakeAmountResult[0].symbol]
+          if (token == null ) {
+            updateNotification({
+              type: NotificationType.Success,
+              title: 'The claimed token does not exist.',
+              subtitle: '',
+              show: true,
+              isOnlyNotification: true,
+              timeToClose: 5000
+            })
+          } else {
+
+            updateStakeNotification({
+              show: true,
+              data: {
+                amount: convertBigNumberToUIString(stakeAmountResult[0].amount, stakeAmountResult[0].decimals),
+                tokenImage: token.logoURI,
+                tokenName: token.name,
+                symbol: token.symbol
+              }
+            })
+          }
         }
       }
 
@@ -289,17 +301,28 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
             timeToClose: 5000
           })
         } else {
-          const token = tokenState.tokens[stakeAmountResult[0].symbol]
           dismissNotification()
-          updateStakeNotification({
-            show: true,
-            data: {
-              amount: convertBigNumberToUIString(BigNumber(stakeAmountResult[0].amount), stakeAmountResult[0].decimals),
-              tokenImage: token.logoURI,
-              tokenName: token.name,
-              symbol: token.symbol
-            }
-          })
+          const token = tokenState.tokens[stakeAmountResult[0].symbol]
+          if (token == null ) {
+            updateNotification({
+              type: NotificationType.Success,
+              title: 'The claimed token does not exist.',
+              subtitle: '',
+              show: true,
+              isOnlyNotification: true,
+              timeToClose: 5000
+            })
+          } else {
+            updateStakeNotification({
+              show: true,
+              data: {
+                amount: convertBigNumberToUIString(BigNumber(stakeAmountResult[0].amount), stakeAmountResult[0].decimals),
+                tokenImage: token.logoURI,
+                tokenName: token.name,
+                symbol: token.symbol
+              }
+            })
+          }
         }
       }
 

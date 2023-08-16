@@ -118,11 +118,11 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const [actionSelected, setActionSelected] = useState('')
 
   const handleChangeInput = (value) => {
-    if (BigNumber(removeLiquidityCalculation.lpAmount).toNumber() <= 0) {
+    if (value == 0) {
       setRemoveLiquidityButtonDisabled(true)
     }
 
-    if (BigNumber(removeLiquidityCalculation.lpAmount).toNumber() > 0) {
+    if (value > 0) {
       setRemoveLiquidityButtonDisabled(false)
     }
 
@@ -265,8 +265,12 @@ export const LiquidityTemplate = ({ isMobile }) => {
     }
 
     if (action === 'StakeLP') {
-      setShowStakingAllowance(true)
-      createStakeDataForPopup(item)
+      if (parseFloat(item.balance) === 0) {
+        showNotification('Insufficient Balance for making Stake')
+      } else {
+        setShowStakingAllowance(true)
+        createStakeDataForPopup(item)
+      }
     }
 
     if (action === 'UnstakeLP') {
@@ -496,6 +500,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
     progressBar(async () => {
       await refresh()
     })
+
   }, [isConnected, pairState, stakingToggle])
 
   useEffect(() => {
@@ -556,7 +561,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
       gasFee,
       pair.packageHash
     );
-    refresh()
+    //refresh()
     amountSwapTokenASetter(0)
     amountSwapTokenBSetter(0)
     setValueAUSD('0')
@@ -687,7 +692,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
         closeCallback={handleStakeClose}
         liquidityPoolData={removeLiquidityData as any}
         isOpen={stakePopup}
-        disabledButton={removeLiquidityButtonDisabled && BigNumber(removeLiquidityCalculation.lpAmount).toNumber() <= 0}
+        disabledButton={removeLiquidityButtonDisabled}
         disabledAllowanceButton={removeLiquidityAllowanceEnabled}
         showAllowance={showStakingAllowance && (removeLiquidityCalculation.allowance) > 0}
         defaultValue={removeLiquidityInput}
