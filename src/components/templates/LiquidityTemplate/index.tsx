@@ -291,7 +291,6 @@ export const LiquidityTemplate = ({ isMobile }) => {
     }
 
     if (action === 'ClaimLP') {
-      console.log("CST Balance", tokenState.tokens[item.gaugeToken].amount)
       setRewardToken(item.gaugeToken)
       setRewardAmount(parseFloat(tokenState.tokens[item.gaugeToken].amount))
       await onClaimAction(item)
@@ -299,7 +298,6 @@ export const LiquidityTemplate = ({ isMobile }) => {
     }
 
     if (action === 'ClaimLPCST') {
-      console.log("CST Balance", tokenState.tokens['CST'], tokenState.tokens['CST'].amount)
       setRewardToken('CST')
       setRewardAmount(parseFloat(tokenState.tokens['CST'].amount))
       await onClaimCSTAction(item)
@@ -570,11 +568,12 @@ export const LiquidityTemplate = ({ isMobile }) => {
     }
 
     if (showClaimedNotification) {
-      showRewardNotification(tokenState.tokens[rewardToken].amount, counterUpdateForClaims)
 
       if (counterUpdateForClaims >= 10) {
         setShowClaimedNotification(false)
         setCounterUpdateForClaims(-1)
+
+        showRewardNotification(tokenState.tokens[rewardToken].amount, counterUpdateForClaims)
       }
 
       setCounterUpdateForClaims(counterUpdateForClaims => counterUpdateForClaims + 1)
