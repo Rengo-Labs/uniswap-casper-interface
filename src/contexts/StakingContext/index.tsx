@@ -1,4 +1,4 @@
-import React, {createContext, ReactNode, useContext} from "react";
+import React, {createContext, ReactNode, useContext, useState} from "react";
 import {NotificationType, SUPPORTED_NETWORKS} from "../../constant";
 import StakingResponsibilities from '../../commons/StakingResponsibilities'
 import {casperClient, ConfigProviderContext,} from '../ConfigContext';
@@ -16,7 +16,11 @@ interface StakingContextProps {
     onClaimRewards: (contractHash: string) =>  Promise<any>
     onClaimCSTRewards: (contractHash: string) =>  Promise<any>
     getStakeBalance: (contractHash: string) =>  Promise<any>
-    onGetStakeRewards: (accountHash: string, deployHash: string) =>  Promise<any>
+    onGetStakeRewards: (accountHash: string, deployHash: string) =>  Promise<any>,
+    showRewardNotification: (newBalance, retryCounter: number) => Promise<void>,
+    rewardToken: string,
+    setRewardToken: (rewardToken: string) => void,
+    setRewardAmount: (rewardAmount: number) => void
 }
 
 export const StakingProviderContext = createContext<StakingContextProps>(null);
@@ -36,6 +40,8 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
   const {refresh} = useContext(StateHashProviderContext)
   const { updateNotification, dismissNotification } = notificationStore()
   const { updateStakeNotification } = stakeNotificationStore()
+  const [rewardToken, setRewardToken] = useState('')
+  const [rewardAmount, setRewardAmount] = useState(0.00)
 
   async function onAddStake(contractHash: string, amount: BigNumber, decimals: number): Promise<boolean> {
     updateNotification({
@@ -196,7 +202,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       })
 
       const result = await casperClient.waitForDeployExecution(deployHash)
-
+/*
       if (result) {
         const stakeAmountResult = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).getStakeRewards(walletState.wallet.accountHashString, deployHash)
 
@@ -234,12 +240,11 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
             })
           }
         }
-      }
+      }*/
 
       setProgressModal(false)
       setConfirmModal(true)
 
-      await sleep(2000)
       await refresh()
 
       return true
@@ -287,7 +292,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       })
 
       const result = await casperClient.waitForDeployExecution(deployHash)
-
+/*
       if (result) {
         const stakeAmountResult = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).getStakeRewards(walletState.wallet.accountHashString, deployHash)
 
@@ -325,11 +330,10 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
           }
         }
       }
-
+*/
       setProgressModal(false)
       setConfirmModal(true)
 
-      await sleep(2000)
       await refresh()
 
       return true
@@ -376,17 +380,59 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
+  const showRewardNotification = async (newBalance, retryCounter: number) => {
 
-    return (
-        <StakingProviderContext.Provider value={{
-          onAddStake,
-          onRemoveStake,
-          onClaimRewards,
-          getStakeBalance,
-          onClaimCSTRewards,
-          onGetStakeRewards
-        }}>
-            {children}
-        </StakingProviderContext.Provider>
-    )
+    const claimedReward = BigNumber(newBalance).minus(BigNumber(rewardAmount))
+    if(retryCounter >= 10 && claimedReward.toNumber() == 0) {
+      updateNotification({
+        type: NotificationType.Success,
+        title: 'You don\'t have any rewards to be claimed.',
+        subtitle: '',
+        show: true,
+        isOnlyNotification: true,
+        timeToClose: 5000
+      })
+    } else {
+      dismissNotification()
+      const token = tokenState.tokens[rewardToken]
+      if (token == null ) {
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'The claimed token does not exist.',
+          subtitle: '',
+          show: true,
+          isOnlyNotification: true,
+          timeToClose: 5000
+        })
+      } else {
+
+        updateStakeNotification({
+          show: true,
+          data: {
+            amount: BigNumber(claimedReward).toString(),
+            tokenImage: token.logoURI,
+            tokenName: token.name,
+            symbol: token.symbol
+          }
+        })
+      }
+    }
+  }
+
+  return (
+      <StakingProviderContext.Provider value={{
+        onAddStake,
+        onRemoveStake,
+        onClaimRewards,
+        getStakeBalance,
+        onClaimCSTRewards,
+        onGetStakeRewards,
+        showRewardNotification,
+        rewardToken,
+        setRewardToken,
+        setRewardAmount
+      }}>
+          {children}
+      </StakingProviderContext.Provider>
+  )
 }

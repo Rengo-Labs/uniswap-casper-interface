@@ -42,7 +42,16 @@ export const LiquidityTemplate = ({ isMobile }) => {
     onRemoveLiquidity,
   } = useContext(LiquidityProviderContext)
 
-  const { onAddStake, onClaimRewards, onRemoveStake, onClaimCSTRewards } = useContext(StakingProviderContext)
+  const {
+    onAddStake,
+    onClaimRewards,
+    onRemoveStake,
+    onClaimCSTRewards,
+    showRewardNotification,
+    rewardToken,
+    setRewardToken,
+    setRewardAmount
+  } = useContext(StakingProviderContext)
 
   const { progressBar, getProgress, clearProgress } = useContext(ProgressBarProviderContext)
   const { calculateUSDtokens, pairState, findReservesBySymbols, getPoolList } = useContext(PairsContextProvider)
@@ -116,6 +125,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const [stakingToggle, setStakingToggle] = useState(false)
   const [showStakingAllowance, setShowStakingAllowance] = useState(true)
   const [actionSelected, setActionSelected] = useState('')
+  const [showClaimedNotification, setShowClaimedNotification] = useState(false)
+  const [counterUpdateForClaims, setCounterUpdateForClaims] = useState(0)
 
   const handleChangeInput = (value) => {
     if (value == 0) {
@@ -249,6 +260,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
     Navigator(`/swap?token0=${item.token0Symbol}&token1=${item.token1Symbol}`)
   }
   const actions = async (item, action, firstSymbol, secondSymbol) => {
+    setShowClaimedNotification(false)
     setActionSelected(action)
     if (action === 'AddLiquidity') {
       onSelectFirstToken(tokenState.tokens[firstSymbol])
@@ -279,11 +291,19 @@ export const LiquidityTemplate = ({ isMobile }) => {
     }
 
     if (action === 'ClaimLP') {
+      console.log("CST Balance", tokenState.tokens[item.gaugeToken].amount)
+      setRewardToken(item.gaugeToken)
+      setRewardAmount(parseFloat(tokenState.tokens[item.gaugeToken].amount))
       await onClaimAction(item)
+      setShowClaimedNotification(true)
     }
 
     if (action === 'ClaimLPCST') {
+      console.log("CST Balance", tokenState.tokens['CST'], tokenState.tokens['CST'].amount)
+      setRewardToken('CST')
+      setRewardAmount(parseFloat(tokenState.tokens['CST'].amount))
       await onClaimCSTAction(item)
+      setShowClaimedNotification(true)
     }
   }
 
@@ -549,6 +569,16 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
     }
 
+    if (showClaimedNotification) {
+      showRewardNotification(tokenState.tokens[rewardToken].amount, counterUpdateForClaims)
+
+      if (counterUpdateForClaims >= 10) {
+        setShowClaimedNotification(false)
+        setCounterUpdateForClaims(-1)
+      }
+
+      setCounterUpdateForClaims(counterUpdateForClaims => counterUpdateForClaims + 1)
+    }
   }, [tokenState])
 
   async function onLiquidity(amountA, amountB) {
