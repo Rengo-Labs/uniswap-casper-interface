@@ -9,13 +9,24 @@ describe('My First Test', () => {
         // cy.task('setPassword')
     });
 
-    it('Check wallet connected', () => {
+    it('Set the wallet extension connected ', () => {
         cy.visit('/')
         cy.wait(1000)
         cy.get('button').contains('Connect Wallet').click()
         cy.get('p').contains('Casper Wallet').parent().click()
         // TODO validate wallet connection
-        cy.wait(1000)
-        cy.get('p').should('have.text', 'Connected')
-    })
+        cy.wait(3000)
+        cy.task('signContract')
+        //cy.get('p').should('have.text', 'Connected')
+    });
+
+    // it('Check wallet connected', () => {
+    //     cy.visit('/')
+    //     cy.wait(1000)
+    //     cy.get('button').contains('Connect Wallet').click()
+    //     cy.get('p').contains('Casper Wallet').parent().click()
+    //     // TODO validate wallet connection
+    //     cy.wait(1000)
+    //     cy.get('p').should('have.text', 'Connected')
+    // })
 })

@@ -40,13 +40,12 @@ async function setOnboarding() {
         // third screen - Recovery phrase
         await page.waitForSelector('button');
         await page.click('button:nth-child(2)');
-        await page.waitForNavigation();
+        // await page.waitForNavigation();
         // fourth screen - Confirm recovery phrase
-        await page.waitForSelector('textarea');
-        await page.type('textarea', walletRecoveryPhrase);
-        await  page.waitForSelector('button');
+        const [textarea] = await page.$x('//textarea[@name="phrase"]');
+        await textarea.type(walletRecoveryPhrase);
+        await page.waitForSelector('button');
         await page.click('button');
-        await page.waitForNavigation();
 
         return page;
     } else {
@@ -87,20 +86,17 @@ async function signContract() {
             defaultViewport: null,
         });
 
-        const page = await browser.newPage();
-        await page.goto(extensionPopupURL, {
-            waitUntil: 'networkidle0', // 'networkidle0' is very useful for SPAs.
+        const pages = await browser.pages();
+        const popup = pages.find(page => {
+            console.log('#### page.url()', page.url())
+            return page
         });
-
-        // selector for signing contract
-        const openTabs = await browser.targets();
-        const globalPage = openTabs.map((page) => {
-            console.log('#### page @@@', page)
-            return page.page()
-        })
-        console.log('#### globalPage @@@', globalPage)
-
-        return page;
+        console.log('#### popup', popup);
+        // condicionales
+        // caso 1: popup para conectar
+        // caso 2: popup para firmar
+        // caso 3: popup para poner contraseña
+        return popup;
     } else {
         throw new Error('debuggingPort not provided');
     }
