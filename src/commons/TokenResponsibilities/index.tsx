@@ -288,7 +288,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
             contractHash
           )
           .then((response) => {
-              //console.log(x, convertBigNumberToUIString(new BigNumber(response), token.decimals).toString())
+              console.log(convertBigNumberToUIString(new BigNumber(response), 9).toString())
               tokenDispatch({
                   type: TokenActions.LOAD_BALANCE,
                   payload: {
@@ -300,7 +300,7 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
                   },
               });
           }).catch(e => {
-            //console.log("Error loading pair balance", name, e)
+            console.log("Error loading pair balance", name, e)
             tokenDispatch({
                 type: TokenActions.LOAD_BALANCE,
                 payload: {

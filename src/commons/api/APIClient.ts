@@ -165,6 +165,18 @@ export class APIClient {
     return erc20.balanceOf(wallet.publicKey)
   }
 
+  async getERC20RewardAccumulated(gaugePackage, contractHash: string): Promise<string> {
+    const erc20 = this.getInstance()
+
+    await erc20.setContractHash(contractHash)
+
+    const spenderByteArray = new CLByteArray(
+      Uint8Array.from(Buffer.from(gaugePackage, "hex"))
+    )
+
+    return erc20.balanceOf(spenderByteArray)
+  }
+
   /**
    * Get the user's allowance
    *

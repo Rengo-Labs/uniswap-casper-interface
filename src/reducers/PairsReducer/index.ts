@@ -47,7 +47,8 @@ export type PairData = {
   gaugeToken?: string,
   gaugeCSTRewards?: boolean,
   gaugeCSTWeight?: number,
-  userApr?: string
+  userApr?: string,
+  totalReward?: string
 }
 
 export type PairState = Record<string, PairData>
@@ -102,7 +103,8 @@ export enum PairActions {
   //LOAD_USER_PAIR = 'LOAD_USER_PAIR',
   ADD_GAUGE_TOTAL_STAKE_TO_PAIR = 'ADD_GAUGE_TOTAL_STAKE_TO_PAIR',
   RESET = 'RESET',
-  APR_REWARDS = 'APR_REWARDS'
+  APR_REWARDS = 'APR_REWARDS',
+  LOAD_TOTAL_REWARD_FOR_PAIR = 'LOAD_TOTAL_REWARD_FOR_PAIR',
 }
 
 export type PairActionBalancePayload = {
@@ -115,6 +117,11 @@ export type PairActionBalancePayload = {
 export type PairActionAllowancePayload = {
   name: string,
   allowance: string,
+}
+
+export type PairActionTotalRewardPayload = {
+  name: string,
+  totalReward: string,
 }
 
 export type PairActionGaugeBalancePayload = {
@@ -202,6 +209,9 @@ export type PairAction = {
 } | {
   type: PairActions.APR_REWARDS,
   payload: PairActionLoadAPRRewardPayLoad,
+} | {
+  type: PairActions.LOAD_TOTAL_REWARD_FOR_PAIR,
+  payload: PairActionTotalRewardPayload,
 } | {
   type: PairActions.LOAD_PAIR_USD,
   payload: PairActionLoadPairUSDPayLoad,
@@ -422,6 +432,16 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           ...oldState,
           apr: `${apr.toFixed(2)}`,
           userApr: `${userAPR.toFixed(2)}`
+        },
+      }
+    }
+
+    case PairActions.LOAD_TOTAL_REWARD_FOR_PAIR: {
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...state[`${action.payload.name}`],
+          totalReward: action.payload.totalReward,
         },
       }
     }

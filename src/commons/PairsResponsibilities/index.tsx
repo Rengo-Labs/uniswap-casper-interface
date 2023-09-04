@@ -80,6 +80,9 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             getAllowanceUpdated(wallet, pair.name, pair.decimals, pair.contractHash, pair.gaugePackageHash.slice(5), PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR),
           )
 
+          ps.push(
+            getTotalRewardAccumulated(pair.name, pair.decimals, tokenState.tokens[pair.gaugeToken].contractHash, pair.gaugePackageHash.slice(5), PairActions.LOAD_TOTAL_REWARD_FOR_PAIR)
+          )
         }
       }
 
@@ -350,6 +353,39 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     })
   }
 
+  const getTotalRewardAccumulated = (name: string, decimals: number, tokenContractHash: string, gaugePackageHash: string, action: string) => {
+    apiClient
+      .getERC20RewardAccumulated(
+        gaugePackageHash,
+        tokenContractHash
+      )
+      .then((response) => {
+        console.log("Accumulated Reward", name, response)
+        pairDispatch({
+          type: action,
+          payload: {
+            name: name,
+            totalReward: convertBigNumberToUIString(
+              new BigNumber(response),
+              decimals
+            ),
+          },
+        });
+      }).catch(e => {
+      console.log("failed - allowance", action, name)
+      pairDispatch({
+        type: action,
+        payload: {
+          name: name,
+          totalReward: convertBigNumberToUIString(
+            new BigNumber(0),
+            decimals
+          ),
+        },
+      })
+    })
+  }
+
   const getPairBalance = async (wallet: Wallet, name: string, decimals: number, contractHash: string, action: string, token0Decimal = null, token1Decimal = null): Promise<string> => {
     return apiClient
       .getERC20Balance(
@@ -436,7 +472,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     getGlobalChart,
     loadGralRewards,
     getAllowanceUpdated,
-    getPairBalance
+    getPairBalance,
+    getTotalRewardAccumulated
   }
 }
 
