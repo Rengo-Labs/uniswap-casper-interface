@@ -43,6 +43,11 @@ const PoolResponsibilities = (pairState, pairDispatch) => {
                 Header: 'APR 7D',
                 accessor: 'oneYFees',
             },
+            {
+                id: 6,
+                Header: 'Ac. Reward',
+                accessor: 'accumulatedReward',
+            },
         ];
     }
 

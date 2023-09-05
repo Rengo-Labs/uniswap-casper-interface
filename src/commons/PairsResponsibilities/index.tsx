@@ -79,10 +79,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
           ps.push(
             getAllowanceUpdated(wallet, pair.name, pair.decimals, pair.contractHash, pair.gaugePackageHash.slice(5), PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR),
           )
-
-          ps.push(
-            getTotalRewardAccumulated(pair.name, pair.decimals, tokenState.tokens[pair.gaugeToken].contractHash, pair.gaugePackageHash.slice(5), PairActions.LOAD_TOTAL_REWARD_FOR_PAIR)
-          )
         }
       }
 
@@ -114,6 +110,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
 
       if (pl.gaugeContractHash) {
         await getTotalGaugeSupply(pl.name, pl.decimals, pl.gaugeContractHash)
+        await getTotalRewardAccumulated(pl.name, pl.decimals, tokenState.tokens[pl.gaugeToken].contractHash, pl.gaugePackageHash.slice(5))
       }
 
       const pairChecked = store.get(pl.name)
@@ -353,7 +350,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     })
   }
 
-  const getTotalRewardAccumulated = (name: string, decimals: number, tokenContractHash: string, gaugePackageHash: string, action: string) => {
+  const getTotalRewardAccumulated = (name: string, decimals: number, tokenContractHash: string, gaugePackageHash: string) => {
     apiClient
       .getERC20RewardAccumulated(
         gaugePackageHash,
@@ -362,7 +359,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
       .then((response) => {
         console.log("Accumulated Reward", name, response)
         pairDispatch({
-          type: action,
+          type: PairActions.LOAD_TOTAL_REWARD_FOR_PAIR,
           payload: {
             name: name,
             totalReward: convertBigNumberToUIString(
@@ -372,9 +369,9 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
           },
         });
       }).catch(e => {
-      console.log("failed - allowance", action, name)
+      console.log("failed - Accumulated reward", PairActions.LOAD_TOTAL_REWARD_FOR_PAIR, name)
       pairDispatch({
-        type: action,
+        type: PairActions.LOAD_TOTAL_REWARD_FOR_PAIR,
         payload: {
           name: name,
           totalReward: convertBigNumberToUIString(
