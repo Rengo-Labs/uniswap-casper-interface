@@ -18,7 +18,6 @@ import { initialTokenState } from '../../reducers/TokenReducers'
 import { ERC20Client } from 'casper-erc20-js-client'
 const { Contract } = Contracts
 import {globalStore} from "../../store/store";
-import {cardActionAreaClasses} from "@mui/material";
 export const enum ERC20Keys {
   TOTAL_SUPPLY = 'total_supply',
 }
@@ -120,13 +119,12 @@ export class APIClient {
    *
    * @returns the dictionary item
    */
-   async getDictionaryItem(contractHash: string, dictionaryKey: string, itemKey: string, stateRootHash?: string): Promise<string> {
+   async getDictionaryItem(contractHash: string, dictionaryKey: string, itemKey: string, stateRootHash?: string, hasItem?: boolean): Promise<string> {
 
 
     // set up the contract client
     const contractClient = new Contract(this._client.casperClient)
     contractClient.setContractHash(contractHash)
-
     let srh = stateRootHash ?? ''
 
     if (!srh) {
@@ -134,13 +132,18 @@ export class APIClient {
     }
 
     try {
-      const result = await contractClient.queryContractDictionary(
-        dictionaryKey,
-        itemKey,
-        srh,
-      )
+      if (hasItem) {
+        const result = await contractClient.queryContractDictionary(
+          dictionaryKey,
+          itemKey,
+          srh,
+        )
+        return result.toString()
+      } else {
+        const result = await contractClient.queryContractData([dictionaryKey])
+        return result.toString()
+      }
 
-      return result.toString()
     } catch (e) {
       //console.log(contractHash, dictionaryKey, itemKey, srh)
       console.log('get erc20 get dictionary error', e)
@@ -166,15 +169,22 @@ export class APIClient {
   }
 
   async getERC20RewardAccumulated(gaugePackage, contractHash: string): Promise<string> {
-    const erc20 = this.getInstance()
+    //const erc20 = this.getInstance()
 
-    await erc20.setContractHash(contractHash)
-
+    //await erc20.setContractHash(contractHash)
+/*
     const spenderByteArray = new CLByteArray(
       Uint8Array.from(Buffer.from(gaugePackage, "hex"))
-    )
+    )*/
 
-    return erc20.balanceOf(spenderByteArray)
+    //return erc20.balanceOf(spenderByteArray)
+    return this.getDictionaryItem(
+      gaugePackage,
+      'diag_reward_data_amount_1',
+      null,
+      '',
+      false
+    )
   }
 
   /**

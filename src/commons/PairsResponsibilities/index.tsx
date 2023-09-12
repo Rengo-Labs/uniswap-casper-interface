@@ -110,7 +110,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
 
       if (pl.gaugeContractHash) {
         await getTotalGaugeSupply(pl.name, pl.decimals, pl.gaugeContractHash)
-        await getTotalRewardAccumulated(pl.name, pl.decimals, tokenState.tokens[pl.gaugeToken].contractHash, pl.gaugePackageHash.slice(5))
+        await getTotalRewardAccumulated(pl.name, pl.decimals, tokenState.tokens[pl.gaugeToken].contractHash, pl.gaugeContractHash)
       }
 
       const pairChecked = store.get(pl.name)
