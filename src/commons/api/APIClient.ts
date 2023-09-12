@@ -180,7 +180,7 @@ export class APIClient {
     //return erc20.balanceOf(spenderByteArray)
     return this.getDictionaryItem(
       gaugePackage,
-      'diag_reward_data_amount_1',
+      'reward_data_amount',
       null,
       '',
       false
