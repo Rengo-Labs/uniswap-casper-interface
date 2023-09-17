@@ -28,7 +28,7 @@ export const tokenList: Record<string, Token> = {
     symbolPair: "CST",
     decimals: 9,
     contractHash:
-      "hash-595c463ecbf8b61ff76c91dc90297283989ad41077fba88a8a4f76cc5f2976c2",
+      "hash-7a437ac8dda6425bf65c3ae8a4c6ff0f40a629f8a2373c1069162ac638bf935f",
     packageHash:
       "hash-b9b912b1f4a2d4171dff3e04b20a8f6f4f0f2d79dfb782de988145ce257ae639",
     logoURI: cstIcon,
