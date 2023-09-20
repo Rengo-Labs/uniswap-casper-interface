@@ -152,6 +152,13 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
+    gaugeBalance: '0',
+    gaugeAllowance: '0',
+    gaugeContractHash: "hash-116a10b108466973b96e29ba5d2f0a0e4c2c46df2141d846061d5ffd944c6d1b",
+    gaugePackageHash: "hash-93e991d261b6395e400ba58a0024fc2eb29e05cff5f347ee20d192a10ac0a630",
+    gaugeToken: 'WCSPR',
+    gaugeCSTRewards: true,
+    gaugeCSTWeight: 100
   },
   "dUSDC-dUSDT": {
     checked: false,
