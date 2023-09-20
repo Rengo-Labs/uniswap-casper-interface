@@ -25,6 +25,13 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
+    gaugeBalance: '0',
+    gaugeAllowance: '0',
+    gaugeContractHash: "hash-e095576e36a87129e10e53410105c62b5d47218d27d6f5064be18cc3170bc715",
+    gaugePackageHash: "hash-ae3cc2460c953222c03b393017a2f0f03ca63e15abfb0423e75c2bcde7ef94c0",
+    gaugeToken: 'WCSPR',
+    gaugeCSTRewards: true,
+    gaugeCSTWeight: 100
   },
   "WCSPR-dBTC": {
     checked: false,
@@ -50,6 +57,13 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
+    gaugeBalance: '0',
+    gaugeAllowance: '0',
+    gaugeContractHash: "hash-7c9a8c5280beda1cd6edfa97f202bc056e1c88cfcebbaa533f222a32effd97ed",
+    gaugePackageHash: "hash-721ae7189ce3ea70fbd45321c874447bac351d76350f4e13bf95d4717a7e7863",
+    gaugeToken: 'WCSPR',
+    gaugeCSTRewards: true,
+    gaugeCSTWeight: 100
   },
   "WCSPR-dETH": {
     checked: false,
@@ -74,6 +88,13 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
+    gaugeBalance: '0',
+    gaugeAllowance: '0',
+    gaugeContractHash: "hash-5a0575ea1eafe6ed814e7acb50ef69e6f87b56823e06699ebf0a516a35a96460",
+    gaugePackageHash: "hash-c8985547282ec469ac7dd11107acbf170859bd7ede68e31f1a2ad7dd2bebfadc",
+    gaugeToken: 'WCSPR',
+    gaugeCSTRewards: true,
+    gaugeCSTWeight: 100
   },
   "WCSPR-dUSDT": {
     checked: false,
@@ -101,8 +122,8 @@ export const pairList: PairState = {
     decimals: 9,
     gaugeBalance: '0',
     gaugeAllowance: '0',
-    gaugeContractHash: "hash-5e3f1ea02808b563735d66778d7f39ac767f2a179db31b536a57828f5e4bde4a",
-    gaugePackageHash: "hash-00c06b430b22f13d47b8557099806603abefdacc28715d4c8409c651cb5ef470",
+    gaugeContractHash: "hash-85e96bad8ff557bbcdb52e4c7550dfefb3b108a5fdfefd46cac7f32d4905ed24",
+    gaugePackageHash: "hash-fe33afff2d93fe6f2a7154254687001628bde9292c8f5f54717866008112136e",
     gaugeToken: 'WCSPR',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
@@ -131,13 +152,6 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
-    gaugeBalance: '0',
-    gaugeAllowance: '0',
-    gaugeContractHash: "hash-bc048119a916b6ad58e328581f7699e55d48b9e09969b1b2d38dbcde1e2337e0",
-    gaugePackageHash: "hash-6c9bda1863d6c798d7da6bf14a94e167cfffe83579dcdc12bc61319b050af34d",
-    gaugeToken: 'WCSPR',
-    gaugeCSTRewards: true,
-    gaugeCSTWeight: 100
   },
   "dUSDC-dUSDT": {
     checked: false,
@@ -163,5 +177,12 @@ export const pairList: PairState = {
     liquidityUSD: '0',
     totalLiquidityUSD: '0',
     decimals: 9,
+    gaugeBalance: '0',
+    gaugeAllowance: '0',
+    gaugeContractHash: "hash-94801363d8ba0a4f6616a49e958b138038ad37a1bf0f0191af2cf7f2b426d40f",
+    gaugePackageHash: "hash-6b81b811ceaa4e99f2628326c4f3e192d7c0e07c03150be797b8e75e5422de3e",
+    gaugeToken: 'WCSPR',
+    gaugeCSTRewards: true,
+    gaugeCSTWeight: 100
   }
 }
