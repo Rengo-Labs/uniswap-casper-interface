@@ -31,6 +31,7 @@ export class Client {
     private _network: Network,
     private _node = '',
   ) {
+    console.log('Node', _node)
     this.casperClient = new CasperClient(_node)
   }
 

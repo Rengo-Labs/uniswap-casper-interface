@@ -19,6 +19,8 @@ import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {
+  GAS_FEE_FOR_GAUGE_CLAIM,
+  GAS_FEE_FOR_GAUGE_STAKE, GAS_FEE_FOR_GAUGE_UNSTAKE,
   SUPPORTED_NETWORKS
 } from "../../../constant";
 import { convertToUSDCurrency } from '../../../commons/utils';
@@ -229,9 +231,17 @@ export const LiquidityTemplate = ({ isMobile }) => {
     let result = null
 
     if (actionSelected === 'StakeLP') {
-      result = await onAddStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
+      if (parseFloat(GAS_FEE_FOR_GAUGE_STAKE) <= parseFloat(tokenState.tokens['CSPR'].amount)) {
+        result = await onAddStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
+      } else {
+        showNotification()
+      }
     } else {
-      result = await onRemoveStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals, removeLiquidityData.gaugeToken)
+      if (parseFloat(GAS_FEE_FOR_GAUGE_UNSTAKE) <= parseFloat(tokenState.tokens['CSPR'].amount)) {
+        result = await onRemoveStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals, removeLiquidityData.gaugeToken)
+      } else {
+        showNotification()
+      }
     }
 
     if (result) {
@@ -291,6 +301,11 @@ export const LiquidityTemplate = ({ isMobile }) => {
     }
 
     if (action === 'ClaimLP') {
+      if (parseFloat(GAS_FEE_FOR_GAUGE_CLAIM) > parseFloat(tokenState.tokens['CSPR'].amount)) {
+        showNotification()
+        return;
+      }
+
       setRewardToken(item.gaugeToken)
       setRewardAmount(parseFloat(tokenState.tokens[item.gaugeToken].amount))
       await onClaimAction(item)
@@ -298,6 +313,10 @@ export const LiquidityTemplate = ({ isMobile }) => {
     }
 
     if (action === 'ClaimLPCST') {
+      if (parseFloat(GAS_FEE_FOR_GAUGE_CLAIM) > parseFloat(tokenState.tokens['CSPR'].amount)) {
+        showNotification()
+        return;
+      }
       setRewardToken('CST')
       setRewardAmount(parseFloat(tokenState.tokens['CST'].amount))
       await onClaimCSTAction(item)

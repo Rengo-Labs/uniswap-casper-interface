@@ -56,6 +56,7 @@ export class APIClient {
   }
 
   createInstance = (): ERC20Client => {
+    console.log(this._client.node, this._client.network)
     const erc20 = new ERC20Client(
       this._client.node,
       this._client.network,
