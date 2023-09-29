@@ -35,7 +35,8 @@ interface TokenSwapperProps {
   valueAUSD,
   valueBUSD,
   setValueAUSD,
-  setValueBUSD
+  setValueBUSD,
+  disableSecondToken,
 }
 
 const DEFAULT_USD_TOKEN_VALUE = "0.00"
@@ -70,6 +71,7 @@ const TokenSwapper = ({
                         valueBUSD,
                         setValueAUSD,
                         setValueBUSD,
+                        disableSecondToken
                       }: TokenSwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
@@ -87,7 +89,7 @@ const TokenSwapper = ({
   const tokenListFromFilter = useMemo(() => {
     return filterPopupTokens([firstTokenSelected.symbol, secondTokenSelected.symbol], openPoolDialog.firstSelector);
   }, [firstTokenSelected.symbol, secondTokenSelected.symbol, openPoolDialog.firstSelector]);
-  
+
   const sortedTokenListData = tokenListData.sort((a, b) => {
     if (a.isFavorite && !b.isFavorite) {
       return -1;
@@ -183,10 +185,10 @@ const TokenSwapper = ({
 
       setInitializeCalculation(true)
     }
-  
+
     handleExchangeCalculation()
   }, [firstTokenSelected])
-  
+
   async function changeTokenA(value:  number, isSwitched = false) {
     setLastChanged('A');
     setCurrentValue(value)
@@ -275,7 +277,7 @@ const TokenSwapper = ({
     if (filteredValue < 0) {
       filteredValue = Math.abs(filteredValue);
     }
-    
+
     await changeTokenA(filteredValue)
   };
 
@@ -357,7 +359,7 @@ const TokenSwapper = ({
 
   const handlerFavoriteToken = (tokenName: string) => {
     const currentPersistedData: string[] = getLocalStorageData(LOCAL_STORAGE_KEY);
-    
+
     const isPresent = currentPersistedData.includes(tokenName);
 
     updateTokenListData(tokenName, isPresent)
@@ -406,6 +408,7 @@ const TokenSwapper = ({
                   tokenPrice={valueBUSD}
                   gasFee={gasPriceSelectedForSwapping}
                   iconSize='36px'
+                  disabled={disableSecondToken}
         />
         <div style={{display: "flex", justifyContent: "right"}}>
           {!isConnected && (
