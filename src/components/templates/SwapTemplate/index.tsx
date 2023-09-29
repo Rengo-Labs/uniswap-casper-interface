@@ -76,6 +76,7 @@ export const SwapTemplate = ({isMobile}) => {
     })
 
     const [platformGas, setPlatformGas] = useState(PLATFORM_GAS_FEE)
+    const [disableSecondToken, setDisableSecondToken] = useState(true)
 
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
@@ -270,7 +271,7 @@ export const SwapTemplate = ({isMobile}) => {
 
         return {
             getSwapDetailResponse: Object.assign(
-              getSwapDetailResponse, 
+              getSwapDetailResponse,
               {
                 exchangeRateA,
                 exchangeRateB,
@@ -360,6 +361,7 @@ export const SwapTemplate = ({isMobile}) => {
                     valueBUSD={valueBUSD}
                     setValueAUSD={setValueAUSD}
                     setValueBUSD={setValueBUSD}
+                    disableSecondToken={disableSecondToken}
                 />
             </DoubleColumn>
         </>
