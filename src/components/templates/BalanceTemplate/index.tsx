@@ -47,7 +47,7 @@ export const BalanceTemplate = ({isMobile}) => {
         .map((pair) => {
           return pair.token0Symbol === tokenSymbol ? parseFloat(pair.reserve0) : parseFloat(pair.reserve1)
         })
-        .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+        .reduce((accumulator, currentValue) => isNaN(currentValue) ? 0 : accumulator + currentValue, 0)
 
       return BigNumber(isNaN(priceUSD)?0:priceUSD).times(isNaN(tokenSum) ? 0 : tokenSum).toFixed(2)
     }
