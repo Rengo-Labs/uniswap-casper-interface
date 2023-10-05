@@ -48,8 +48,7 @@ export type PairData = {
   gaugeCSTRewards?: boolean,
   gaugeCSTWeight?: number,
   userApr?: string,
-  totalReward?: string,
-  gaugeClaimRewards?: boolean
+  totalReward?: string
 }
 
 export type PairState = Record<string, PairData>
@@ -400,7 +399,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .times(100)
             .times(percentStake)
 
-          apr += globalRewardsAPR.isNaN() ? 0 : globalRewardsAPR.toNumber()
+          apr += (globalRewardsAPR.isNaN() || parseFloat(action.payload.totalLiquidityUSD) == 0) ? 0 : globalRewardsAPR.toNumber()
           userAPR += userRewardsAPR.isNaN() ? 0 : userRewardsAPR.toNumber()
         }
 

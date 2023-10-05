@@ -127,7 +127,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
 
   useEffect(() => {
-    const gaugeAmount = Object.values(pairState).filter(p => p.gaugeClaimRewards).length
+    const gaugeAmount = Object.values(pairState).filter(p => !!p.gaugeToken).length
     setTableData(
       getPoolList().map((item) => {
         const combinedBalance = new BigNumber(item.balance || 0).plus(item.gaugeBalance || 0)
