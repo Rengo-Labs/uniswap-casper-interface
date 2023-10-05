@@ -37,7 +37,7 @@ export const tokenList: Record<string, Token> = {
     priceUSD: "0.00",
   },
   WCSPR: {
-    name: "Casper",
+    name: "Wrapped Casper",
     chainId: 1,
     symbol: "WCSPR",
     symbolPair: "WCSPR",
