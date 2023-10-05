@@ -17,7 +17,7 @@ import { LiquidityProviderContext } from "../../../contexts/LiquidityContext";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { TokensProviderContext } from "../../../contexts/TokensContext";
-import {SUPPORTED_NETWORKS} from "../../../constant";
+import {REWARD_CST_WEEKLY_INFLATION_RATE, SUPPORTED_NETWORKS} from "../../../constant";
 import { convertToUSDCurrency } from "../../../commons/utils";
 
 interface IPoolDetailRow {
@@ -147,7 +147,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           assetsPoolToken1: `${isNaN(item.totalReserve1) ? 0 : item.totalReserve1} ${item.token1Symbol}`,
           yourShare: `${isNaN(ratio.toNumber()) ? '0.00' : (ratio.toNumber() * 100).toFixed(2)}`,
           apr: item.totalSupply == 0 ? 'N/A' : `${item.apr} %`,
-          accumulatedReward: item.totalReward ?? 'N/A'
+          accumulatedReward1: item.totalReward != null ?`${item.totalReward} ${item.gaugeToken}` : 'N/A',
+          accumulatedReward2: item.gaugeCSTRewards ? `${REWARD_CST_WEEKLY_INFLATION_RATE} CST` : 'N/A'
         }
       })
     );
