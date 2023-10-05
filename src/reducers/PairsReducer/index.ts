@@ -48,7 +48,8 @@ export type PairData = {
   gaugeCSTRewards?: boolean,
   gaugeCSTWeight?: number,
   userApr?: string,
-  totalReward?: string
+  totalReward?: string,
+  gaugeClaimRewards?: boolean
 }
 
 export type PairState = Record<string, PairData>

@@ -127,6 +127,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
 
   useEffect(() => {
+    const gaugeAmount = Object.values(pairState).filter(p => p.gaugeClaimRewards).length
     setTableData(
       getPoolList().map((item) => {
         const combinedBalance = new BigNumber(item.balance || 0).plus(item.gaugeBalance || 0)
@@ -148,7 +149,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           yourShare: `${isNaN(ratio.toNumber()) ? '0.00' : (ratio.toNumber() * 100).toFixed(2)}`,
           apr: item.totalSupply == 0 ? 'N/A' : `${item.apr} %`,
           accumulatedReward1: item.totalReward != null ?`${item.totalReward} ${item.gaugeToken}` : 'N/A',
-          accumulatedReward2: item.gaugeCSTRewards ? `${REWARD_CST_WEEKLY_INFLATION_RATE} CST` : 'N/A'
+          accumulatedReward2: item.gaugeCSTRewards ? `${parseFloat(REWARD_CST_WEEKLY_INFLATION_RATE)/gaugeAmount} CST` : 'N/A'
         }
       })
     );

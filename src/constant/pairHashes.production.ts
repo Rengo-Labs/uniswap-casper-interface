@@ -188,7 +188,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-94801363d8ba0a4f6616a49e958b138038ad37a1bf0f0191af2cf7f2b426d40f",
     gaugePackageHash: "hash-6b81b811ceaa4e99f2628326c4f3e192d7c0e07c03150be797b8e75e5422de3e",
-    gaugeToken: 'WCSPR',
+    gaugeToken: null,
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   }

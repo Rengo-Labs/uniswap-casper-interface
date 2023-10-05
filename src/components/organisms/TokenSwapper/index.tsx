@@ -312,8 +312,8 @@ const TokenSwapper = ({
         isA2B
     )
 
-    const _usdA = isNaN(parseFloat(usdA)) ? "0.00" : usdA;
-    const _usdB = isNaN(parseFloat(usdB)) ? "0.00" : usdB;
+    const _usdA = isNaN(parseFloat(usdA)) ? "0.0000" : usdA;
+    const _usdB = isNaN(parseFloat(usdB)) ? "0.0000" : usdB;
 
     setValueAUSD(_usdA);
     setValueBUSD(_usdB);

@@ -28,7 +28,7 @@ export const BalanceTemplate = ({isMobile}) => {
               id: symbol,
               crypto: name,
               cryptoIcon: logoURI,
-              marketprice: isNaN(priceUSD) ? 0 : Number(priceUSD).toFixed(2),
+              marketprice: isNaN(priceUSD) ? 0 : Number(priceUSD).toFixed(4),
               mybalance: (isNaN(amount) || isNaN(priceUSD)) ? 0 : BigNumber(amount * priceUSD).toFixed(2),
               mypools: getAccumulationPool(symbol, priceUSD, pairs),
               mycrypto: amount ? Number(amount) : 0,

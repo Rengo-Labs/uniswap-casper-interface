@@ -200,8 +200,8 @@ const LiquidityNewModule = () => {
       isAorB
     );
 
-    setValueAUSD(isNaN(parseFloat(usdA)) ? '0.00' : usdA);
-    setValueBUSD(isNaN(parseFloat(usdB)) ? '0.00' : usdB);
+    setValueAUSD(isNaN(parseFloat(usdA)) ? '0.0000' : usdA);
+    setValueBUSD(isNaN(parseFloat(usdB)) ? '0.0000' : usdB);
   };
 
   async function onConnect() {
