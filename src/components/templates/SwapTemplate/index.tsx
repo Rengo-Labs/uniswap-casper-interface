@@ -67,8 +67,8 @@ export const SwapTemplate = ({isMobile}) => {
             token1price: 0
         }
     ])
-    const [valueAUSD, setValueAUSD] = useState('0.00');
-    const [valueBUSD, setValueBUSD] = useState('0.00');
+    const [valueAUSD, setValueAUSD] = useState('0.0000');
+    const [valueBUSD, setValueBUSD] = useState('0.0000');
 
     const [priceAndPercentage, setPriceAndPercentage] = useState({
         priceUSD: 0,
@@ -139,8 +139,8 @@ export const SwapTemplate = ({isMobile}) => {
     const resetTokenValues =  () => {
         amountSwapTokenASetter(0);
         amountSwapTokenBSetter(0);
-        setValueAUSD('0')
-        setValueBUSD('0')
+        setValueAUSD('0.0000')
+        setValueBUSD('0.0000')
     }
 
     const setPriceImpact = (priceImpact = 0) => {

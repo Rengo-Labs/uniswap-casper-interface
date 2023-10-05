@@ -263,8 +263,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
   const findUSDRateBySymbol = (symbol, updateNotification) => pairFinder(pairState, tokenState).findUSDRateBySymbol(symbol, pairsToMap(), updateNotification)
 
   const calculateUSDtokens = (token0Price: string, token1Price: string, amount0: string | number, amount1: string | number, isAorB: boolean): string[] => {
-    const priceA = new BigNumber(amount0).times(isAorB ? token0Price : token1Price).toFixed(2)
-    const priceB = new BigNumber(amount1).times(isAorB ? token1Price : token0Price).toFixed(2)
+    const priceA = new BigNumber(amount0).times(isAorB ? token0Price : token1Price).toFixed(4)
+    const priceB = new BigNumber(amount1).times(isAorB ? token1Price : token0Price).toFixed(4)
 
     return [priceA, priceB]
   }
