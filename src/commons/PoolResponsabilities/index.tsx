@@ -45,7 +45,7 @@ const PoolResponsibilities = (pairState, pairDispatch) => {
             },
             {
                 id: 6,
-                Header: 'Ac. Reward',
+                Header: 'Weekly Rewards',
                 accessor: 'accumulatedReward',
             },
         ];
