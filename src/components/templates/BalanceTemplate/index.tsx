@@ -54,7 +54,7 @@ export const BalanceTemplate = ({isMobile}) => {
 
     useEffect(() => {
       getBalance(tokenState).then(r => {
-        getGlobalChart()
+        //getGlobalChart()
         setData(r)
       })
     }, [tokenState, isConnected])

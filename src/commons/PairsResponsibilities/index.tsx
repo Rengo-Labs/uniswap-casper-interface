@@ -7,7 +7,6 @@ import { apiClient, PairReserves } from "../../contexts/ConfigContext";
 import { Wallet } from "../wallet";
 import { TokenState } from "../../reducers/TokenReducers";
 import { pairFinder } from "../pairFinder";
-import {CLByteArray} from "casper-js-sdk";
 import {ROUTER_PACKAGE_HASH} from "../../constant";
 
 export interface PairTotalReserves {
@@ -110,7 +109,9 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
 
       if (pl.gaugeContractHash) {
         await getTotalGaugeSupply(pl.name, pl.decimals, pl.gaugeContractHash)
-        await getTotalRewardAccumulated(pl.name, pl.decimals, tokenState.tokens[pl.gaugeToken].contractHash, pl.gaugeContractHash)
+        if (pl.gaugeToken) {
+          await getTotalRewardAccumulated(pl.name, pl.decimals, tokenState.tokens[pl.gaugeToken].contractHash, pl.gaugeContractHash)
+        }
       }
 
       const pairChecked = store.get(pl.name)
@@ -270,7 +271,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
   }
 
   const getPairChart = async (pairPackageHash): Promise<any> => {
-    return findPairChartData(pairPackageHash)
+    //return findPairChartData(pairPackageHash)
   }
 
   const getGlobalChart = async (): Promise<any> => {
@@ -314,7 +315,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
       })
     }))
 
-    return findDailyGlobalChart()
+    //return findDailyGlobalChart()
   }
 
   const getAllowanceUpdated = (wallet: Wallet, name: string, decimals: number, contractHash: string, gaugePackageHash: string, action: string) => {
