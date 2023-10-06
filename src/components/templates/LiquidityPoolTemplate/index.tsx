@@ -139,7 +139,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           pool: `${item.token0Symbol} - ${item.token1Symbol}`,
           token0Icon: item.token0Icon,
           token1Icon: item.token1Icon,
-          yourLiquidity: ratio.times(item.totalLiquidityUSD).isNaN() ? '$0.00':convertToUSDCurrency(ratio.times(item.totalLiquidityUSD).toNumber()),
+          yourLiquidity: isNaN(item.totalLiquidityUSD)? '$0.00':convertToUSDCurrency(Number(item.totalLiquidityUSD)),
           volume7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(item.volume7d)),
           fees7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
           balance: combinedBalance.isNaN() ? '0' : combinedBalance.toFixed(item.decimals),
