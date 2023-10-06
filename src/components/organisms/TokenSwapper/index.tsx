@@ -408,6 +408,7 @@ const TokenSwapper = ({
                   tokenPrice={valueBUSD}
                   gasFee={gasPriceSelectedForSwapping}
                   iconSize='36px'
+                  disabled={disableSecondToken}
         />
         <div style={{display: "flex", justifyContent: "right"}}>
           {!isConnected && (
