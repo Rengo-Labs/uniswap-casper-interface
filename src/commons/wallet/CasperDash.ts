@@ -1,48 +1,74 @@
 import store from 'store2'
 import { log } from '../utils'
+
 import {
   CasperServiceByJsonRPC,
   CLPublicKey,
   DeployUtil,
-  Signer,
 } from 'casper-js-sdk'
+
 import {
   Wallet,
 } from './Wallet'
+
 import { Network, WalletName } from './types'
 import { NODE_ADDRESS } from '../../constant'
-export const CASPERSIGNER_PUBKEY_KEY = 'cs-pubk'
 import {globalStore} from "../../store/store";
+import {ConfigActions} from "../../reducers";
+import {CasperWalletEvents} from "./CasperWallet";
 
-export enum CasperSignerEvents {
-  CONNECT = 'signer:connected',
-  DISCONNECT = 'signer:disconnected'
+export const CASPER_DASH_PUB_KEY = 'cd-pubk'
+
+export enum CasperDashEvents {
+  CONNECT = 'casperdash:connected',
+  DISCONNECT = 'casperdash:disconnected',
+  ACTIVE_WALLET = 'casperdash:activeKeyChanged'
 }
 
+export type WalletState = {
+  isLocked: boolean;
+  isConnected: boolean;
+  activeKey: string;
+};
+
 /**
- * Casper Signer Wallet
+ * Casper Wallet
  */
-export class CasperSignerWallet implements Wallet{
+export class CasperDash implements Wallet{
   private _connectPromise?: Promise<string>
   private _connectEventHandler: any
+  private _activeWallet: any
   private _disconnectEventHandler: any
   private _previousConnectReject: any
   private _publicKey?: CLPublicKey
   private _isConnected = false
 
+  private _casperDashInstance = null;
+
   constructor(
     private _network: Network,
   ){
-    const pubKeyHex = store.get(CASPERSIGNER_PUBKEY_KEY)
+    const pubKeyHex = store.get(CASPER_DASH_PUB_KEY)
 
     if (pubKeyHex) {
       try {
         this._publicKey = CLPublicKey.fromHex(pubKeyHex)
       } catch(e) {
-        log.warn(`Casper Signer - constructor warning, could not decode cached hex: ${pubKeyHex}`)
+        log.warn(`Casper Dash - constructor warning, could not decode cached hex: ${pubKeyHex}`)
       }
     }
   }
+
+  getCasperDashInstance = () => {
+    try {
+      if (this._casperDashInstance == null) {
+        this._casperDashInstance = (window as any).casperDashHelper;
+      }
+      return this._casperDashInstance;
+    } catch (err) {}
+    throw Error('Please install the Casper Dash Extension.');
+  };
+
 
   // is the wallet connected?
   get isConnected(): boolean {
@@ -84,24 +110,45 @@ export class CasperSignerWallet implements Wallet{
    *
    * @returns the the public key on success or throw error
    */
-  async connect(): Promise<string> {
+  async connect(dispatch = null): Promise<string> {
     if (this.isConnected) {
       return
     }
 
-    // If connecting just return the connect promise
-    if (this._connectPromise) {
-      return this._connectPromise
-    }
-
     try {
       // check if we're connected
-      const signerIsConnected = await Signer.isConnected()
+      const signerIsConnected = await this.getCasperDashInstance().isConnected()
+
+      if (dispatch != null) {
+        // detect when the account switched
+        this._activeWallet = async (event: CustomEventInit<{ activeKey: string; isConnected: boolean }>) => {
+          try {
+
+            await this.getActiveKey()
+
+            dispatch({
+              type: ConfigActions.SELECT_MAIN_PURSE,
+              payload: { mainPurse: event.detail?.activeKey  },
+            });
+
+            dispatch({
+              type: ConfigActions.CONNECT_WALLET,
+              payload: { wallet: this },
+            });
+          } catch (err) {
+            console.error(err);
+          }
+        }
+
+        window.addEventListener(
+          CasperDashEvents.ACTIVE_WALLET,
+          this._activeWallet,
+        );
+      }
 
       // if it is connected then set connect to true
       if (signerIsConnected) {
         this._isConnected = true
-        await this.getActiveKey();
         return
       }
 
@@ -118,7 +165,7 @@ export class CasperSignerWallet implements Wallet{
         // if there is a connect event handler then stop listening to it
         if (this._connectEventHandler) {
           window.removeEventListener(
-            CasperSignerEvents.CONNECT,
+            CasperDashEvents.CONNECT,
             this._connectEventHandler,
           )
         }
@@ -126,7 +173,7 @@ export class CasperSignerWallet implements Wallet{
         // if there is a disconnect event handler then stop listening to it
         if (this._disconnectEventHandler) {
           window.removeEventListener(
-            CasperSignerEvents.DISCONNECT,
+            CasperDashEvents.DISCONNECT,
             this._disconnectEventHandler,
           )
         }
@@ -138,45 +185,45 @@ export class CasperSignerWallet implements Wallet{
             const key = await this.getActiveKey()
 
             this._isConnected = true
-            log.info('CasperSigner: Connected')
+            log.info('CasperWallet: Connected')
             this._connectEventHandler = undefined
             this._connectPromise = undefined
 
             resolve(key)
           } catch (err) {
-            log.error(`Casper Signer - connect error: ${err}`)
+            log.error(`CasperWallet - connect error: ${err}`)
           }
         }
 
         // create a new disconnect event handler
         this._disconnectEventHandler = (msg) => {
           this._isConnected = false
-          log.info('CasperSigner: Disconnected')
+          log.info('CasperWallet: Disconnected')
           this._disconnectEventHandler = undefined
         }
 
         // start litening to connect
         window.addEventListener(
-          CasperSignerEvents.CONNECT,
+          CasperDashEvents.CONNECT,
           this._connectEventHandler,
           { once: true },
         )
 
         // start listening to disconnect
         window.addEventListener(
-          CasperSignerEvents.DISCONNECT,
+          CasperDashEvents.DISCONNECT,
           this._disconnectEventHandler,
           { once: true },
         )
       })
 
       // finally try and connect
-      Signer.sendConnectionRequest()
+      await this.getCasperDashInstance().requestConnection()
 
       // return the connect promise
       return this._connectPromise
     } catch (err) {
-      log.error(`Casper Signer - connect error: ${err}`)
+      log.error(`Casper Wallet - connect error: ${err}`)
       this._connectPromise = undefined
 
       // rethrow error
@@ -191,10 +238,10 @@ export class CasperSignerWallet implements Wallet{
    */
   async getActiveKey(): Promise<string> {
     // fetch the key
-    const key = await Signer.getActivePublicKey()
+    const key = await this.getCasperDashInstance().getActivePublicKey()
 
     // store key
-    store.set(CASPERSIGNER_PUBKEY_KEY, key)
+    store.set(CASPER_DASH_PUB_KEY, key)
 
     // convert key to CLPublicKey type
     this._publicKey = CLPublicKey.fromHex(key)
@@ -213,7 +260,11 @@ export class CasperSignerWallet implements Wallet{
     }
 
     try {
-      return Signer.disconnectFromSite()
+      window.removeEventListener(
+        CasperWalletEvents.ACTIVE_WALLET,
+        this._activeWallet,
+      )
+      return this.getCasperDashInstance().disconnectFromSite();
     } catch (err) {
       log.error(`Casper Signer - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
 
@@ -234,15 +285,12 @@ export class CasperSignerWallet implements Wallet{
       // Convert the deploy to a raw json
       const deployJSON = DeployUtil.deployToJson(deploy)
       // Sign the deploy with the signer
-      const signedDeployJSON = await Signer.sign(
-        deployJSON,
-        this.publicKeyHex.toLowerCase(),
-        this.publicKeyHex.toLowerCase(),
-      )
+
+      const signedDeployJSON = await this.getCasperDashInstance().sign(deployJSON, this.publicKeyHex, this.publicKeyHex);
       // Convert the signed deploy json to a deploy
       return DeployUtil.deployFromJson(signedDeployJSON).unwrap()
     } catch (err) {
-      log.error(`Casper Signer - signAndDeploy error: ${err}`)
+      log.error(`Casper Wallet - signAndDeploy error: ${err}`)
       throw err
     }
   }

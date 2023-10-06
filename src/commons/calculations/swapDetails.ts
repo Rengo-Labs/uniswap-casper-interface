@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
-import { APIClient, Token } from '../api'
-import { log, fixAmountOfZeros } from '../utils'
+import { Token } from '../api'
+import { log } from '../utils'
 import {PLATFORM_GAS_FEE} from "../../constant";
 
 /**
@@ -41,7 +41,7 @@ export const calculateSwapDetails = async (
     token: Token,
     fee = PLATFORM_GAS_FEE
 ): Promise<SwapDetails> => {
-  try {     
+  try {
       const isA2B = token.symbol == tokenA.symbol
 
       // console.log('xyz-reserve0', reserve0.toString())
@@ -51,7 +51,7 @@ export const calculateSwapDetails = async (
       const liquidityB = new BigNumber(reserve1)
       const inputValue = new BigNumber(inputValueRaw).times(10 ** (isA2B ? tokenA.decimals : tokenB.decimals))
       const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
-      
+
       // console.log('xyz-inputValue', inputValue.toString())
       // console.log(inputValueRaw.toString(), inputValue.toString(), reserve0.toString(), reserve1.toString())
 

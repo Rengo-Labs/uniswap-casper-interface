@@ -4,15 +4,15 @@ import React, {
   ReactNode, useContext,
   useState,
 } from 'react';
-import {NODE_ADDRESS, NotificationType, SUPPORTED_NETWORKS} from '../../constant';
+import {NODE_ADDRESS, NotificationType, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS} from '../../constant';
 
-const NETWORK_NAME = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? Network.CASPER_TESTNET : Network.CASPER_MAINNET;
+import {networkName} from '../../constant/bootEnvironmet'
+const NETWORK_NAME = networkName
 
 import {
   APIClient,
   Client as CasperClient,
-  Network,
-  convertUIStringToBigNumber,
+  convertUIStringToBigNumber, sleep,
 } from '../../commons';
 
 import { signAndDeployAllowance } from '../../commons/deploys';
@@ -20,6 +20,9 @@ import { notificationStore } from '../../store/store';
 import { ERROR_BLOCKCHAIN } from "../../constant/errors";
 import {WalletProviderContext} from "../WalletContext";
 import {StateHashProviderContext} from "../StateHashContext";
+import {PairsContextProvider} from "../PairsContext";
+import {PairActions} from "../../reducers/PairsReducer";
+import {TokensProviderContext} from "../TokensContext";
 
 export interface ConfigContext {
   slippageToleranceSelected?: number;
@@ -27,7 +30,11 @@ export interface ConfigContext {
     amount: number | string,
     contractHash: string,
     decimals?: number,
-    optApproval?: string
+    optApproval?: string,
+    gaugeSpender?: string,
+    name?: string,
+    isPairContract?: boolean,
+    isGauge?: boolean
   ) => Promise<boolean>;
   confirmModal: boolean;
   linkExplorer: string;
@@ -65,6 +72,8 @@ export const ConfigContextWithReducer = ({
 }) => {
   const {walletState} = useContext(WalletProviderContext)
   const {refresh} = useContext(StateHashProviderContext)
+  const {reloadGaugeAllowances} = useContext(PairsContextProvider)
+  const {reloadTokenAllowances} = useContext(TokensProviderContext)
 
   const [progressModal, setProgressModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -80,7 +89,11 @@ export const ConfigContextWithReducer = ({
     amount: number | string,
     contractHash: string,
     decimals = 9,
-    optApproval = ""
+    optApproval = "",
+    gaugeSpender = null,
+    name = null,
+    isPairContract = false,
+    isGauge = false
 ): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
@@ -97,7 +110,8 @@ export const ConfigContextWithReducer = ({
         walletState.wallet,
         contractHash,
         convertUIStringToBigNumber(amount, decimals),
-        optApproval
+        optApproval,
+        gaugeSpender
       );
 
       setProgressModal(true);
@@ -115,9 +129,10 @@ export const ConfigContextWithReducer = ({
       });
 
       const result = await casperClient.waitForDeployExecution(deployHash);
-      console.log('#### waitForDeployExecution onIncreaseAllow #####', result);
 
-        if (result) {
+      await refresh(walletState.wallet)
+      if (result) {
+        await sleep(2000)
             updateNotification({
               type: NotificationType.Success,
               title: 'Processed...',
@@ -129,7 +144,7 @@ export const ConfigContextWithReducer = ({
       }
       setProgressModal(false);
       setConfirmModal(true);
-      refresh(walletState.wallet);
+
       return true;
     } catch (err) {
         setProgressModal(false);
@@ -141,8 +156,17 @@ export const ConfigContextWithReducer = ({
         isOnlyNotification: true,
         timeToClose: 5000
       });
-      refresh(walletState.wallet);
       return false;
+    }
+  }
+
+  const reloadAllowances = async (name, decimals, contractHash, gaugeSpender, isPairContract, isGauge): Promise<void> => {
+    if (isPairContract) {
+      await reloadGaugeAllowances(walletState.wallet, name, decimals, contractHash,
+        isGauge ? gaugeSpender : ROUTER_PACKAGE_HASH,
+        isGauge ? PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR : PairActions.ADD_ALLOWANCE_TO_PAIR)
+    } else {
+      await reloadTokenAllowances(walletState.wallet, name, decimals, contractHash)
     }
   }
 

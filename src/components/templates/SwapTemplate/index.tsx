@@ -15,6 +15,7 @@ import isCSPRValid from "../../../hooks/isCSPRValid";
 import {globalStore} from "../../../store/store";
 import {PLATFORM_GAS_FEE} from '../../../constant'
 import BigNumber from "bignumber.js";
+import {CSPRPackageHash} from '../../../constant/bootEnvironmet'
 
 export const SwapTemplate = ({isMobile}) => {
     const {
@@ -66,8 +67,8 @@ export const SwapTemplate = ({isMobile}) => {
             token1price: 0
         }
     ])
-    const [valueAUSD, setValueAUSD] = useState('0.00');
-    const [valueBUSD, setValueBUSD] = useState('0.00');
+    const [valueAUSD, setValueAUSD] = useState('0.0000');
+    const [valueBUSD, setValueBUSD] = useState('0.0000');
 
     const [priceAndPercentage, setPriceAndPercentage] = useState({
         priceUSD: 0,
@@ -75,6 +76,7 @@ export const SwapTemplate = ({isMobile}) => {
     })
 
     const [platformGas, setPlatformGas] = useState(PLATFORM_GAS_FEE)
+    const [disableSecondToken, setDisableSecondToken] = useState(true)
 
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
@@ -91,7 +93,6 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const setPackageHashIfSymbolIsCSPR = (token) => {
-        const CSPRPackageHash = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a' : 'hash-c6649901da894d4ac2c77c0ae217190f79cabc8c0c91788ee997f670b8bdd05e'
         if (token.symbol === 'CSPR') {
             token.packageHash = CSPRPackageHash;
         }
@@ -138,8 +139,8 @@ export const SwapTemplate = ({isMobile}) => {
     const resetTokenValues =  () => {
         amountSwapTokenASetter(0);
         amountSwapTokenBSetter(0);
-        setValueAUSD('0')
-        setValueBUSD('0')
+        setValueAUSD('0.0000')
+        setValueBUSD('0.0000')
     }
 
     const setPriceImpact = (priceImpact = 0) => {
@@ -242,7 +243,6 @@ export const SwapTemplate = ({isMobile}) => {
                     symbol1,
                     tokenState
                 );
-                console.log('HI')
                 const token0 = tokenState.tokens[symbol0]
                 const token1 = tokenState.tokens[symbol1]
                 getSwapDetailResponse = await getSwapDetails(
@@ -271,7 +271,7 @@ export const SwapTemplate = ({isMobile}) => {
 
         return {
             getSwapDetailResponse: Object.assign(
-              getSwapDetailResponse, 
+              getSwapDetailResponse,
               {
                 exchangeRateA,
                 exchangeRateB,
@@ -291,10 +291,10 @@ export const SwapTemplate = ({isMobile}) => {
         if (isValid) {
             updateSlippageTolerance(0)
             setPairPath([tokenA.symbol, tokenB.symbol])
-        }
-        if (isSwitched) {
+            gasFeeSetter(9)
+        } else if (isSwitched) {
             updateSlippageTolerance(0.5)
-            gasFeeSetter(isValid ? 9 : adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol, 0))
+            gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol, 0))
         }
 
         return isValid
@@ -361,6 +361,7 @@ export const SwapTemplate = ({isMobile}) => {
                     valueBUSD={valueBUSD}
                     setValueAUSD={setValueAUSD}
                     setValueBUSD={setValueBUSD}
+                    disableSecondToken={disableSecondToken}
                 />
             </DoubleColumn>
         </>

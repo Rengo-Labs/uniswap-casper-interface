@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {Menu, UIProviderContext, ToggleVariant, useDeviceType} from "rengo-ui-kit";
+import {Menu, UIProviderContext, ToggleVariant, useDeviceType, GeolocationMessage} from "rengo-ui-kit";
 import {createGlobalStyle} from 'styled-components';
 import {useNavigate} from "react-router-dom";
 import casperIcon from "../assets/newDesignIcons/casperIcon.svg";
@@ -15,8 +15,10 @@ import {WalletProviderContext} from "../contexts/WalletContext";
 import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
 import {ConfigProviderContext} from "../contexts/ConfigContext";
 import CasperLoader from "../components/organisms/CasperLoader";
-import { useLocation } from 'react-router-dom'
-import { useLoader } from '../hooks/useLoader'
+import {useLocation} from 'react-router-dom'
+import {useLoader} from '../hooks/useLoader'
+import {getLocalStorageData, setLocalStorageData} from "../commons/utils/persistData";
+import {getCountryFromIP, getIPfromUser} from "../commons/utils";
 
 export interface ILayoutProps {
     children?: React.ReactElement;
@@ -38,6 +40,8 @@ const GlobalStyle = createGlobalStyle<{ selectedTheme: string }>`
   }
 `;
 
+const LOCAl_STORAGE_THEME_KEY = 'current-theme'
+
 const Layout = ({children}: ILayoutProps) => {
     const menuRef = useRef(null);
     const location = useLocation()
@@ -58,6 +62,7 @@ const Layout = ({children}: ILayoutProps) => {
     } as OptAction
     const [rightAction, setRightAction] = useState(rightActionInit);
     const [pathName, setPathName] = useState('')
+    const [isSanctionedCounty, setIsSanctionedCountry] = useState(false)
 
     const {
         isConnected,
@@ -75,6 +80,29 @@ const Layout = ({children}: ILayoutProps) => {
     const deviceType = useDeviceType()
     const isMobile = deviceType === 'mobile'
 
+    const callGeoLocationService = async () => {
+        const ip = await getIPfromUser()
+        if (!ip) { return }
+        console.log('IP from user', ip)
+        const data = await getCountryFromIP(ip)
+        if (!data) { return }
+        setIsSanctionedCountry(data.isSanctioned)
+    }
+
+    useEffect(() => {
+        const currentTheme = getLocalStorageData(LOCAl_STORAGE_THEME_KEY)
+        let newTheme = ''
+        if (currentTheme.length === 0 || currentTheme !== 'dark') {
+            newTheme = 'default'
+        } else {
+            newTheme = currentTheme
+        }
+
+        //console.log(currentTheme);
+        toggleTheme(newTheme);
+
+        callGeoLocationService().then(() => console.log('geolocation service called'))
+    }, [])
 
     const handleShowSettings = () => {
         setShowSettings(!showSettings);
@@ -85,12 +113,12 @@ const Layout = ({children}: ILayoutProps) => {
     }
 
     useEffect(() => {
-      setPathName(location.pathname)
-      if (location.pathname === pathName) {
-        return
-      }
+        setPathName(location.pathname)
+        if (location.pathname === pathName) {
+            return
+        }
 
-      setLoader(1000, true)
+        setLoader(1000, true)
     }, [location])
 
 
@@ -109,14 +137,13 @@ const Layout = ({children}: ILayoutProps) => {
                 onActionConnected: () => handleWalletOptions()
             }))
             setShowConnectionPopup(false)
-        }else {
+        } else {
             setRightAction(prevState => ({
                 ...prevState,
                 ...rightActionInit
             }))
         }
     }, [isConnected, walletState])
-
 
 
     const routes = [
@@ -152,31 +179,44 @@ const Layout = ({children}: ILayoutProps) => {
         },
     ];
 
+    const handleThemeSwitch = () => {
+        const currentTheme = selectedTheme === AvailableThemes.Dark ? AvailableThemes.Default : AvailableThemes.Dark
+        toggleTheme(currentTheme)
+        setLocalStorageData(LOCAl_STORAGE_THEME_KEY, currentTheme)
+    }
+
     return (
         <Container selectedTheme={selectedTheme}>
             <GlobalStyle selectedTheme={selectedTheme}/>
-            <Menu
-                ref={menuRef}
-                title="casperswap"
-                links={routes}
-                menuIcon={casperIcon}
-                casperIcon={casperLogo}
-                rightAction={rightAction}
-                toggle={{
-                    isActive: selectedTheme === AvailableThemes.Dark,
-                    toggle: () =>
-                        toggleTheme(selectedTheme === AvailableThemes.Dark ? AvailableThemes.Default : AvailableThemes.Dark),
-                    labelText: "",
-                    variant: ToggleVariant.ThemeSwitcher,
-                }}
-                handleRedirect={() => navigate("/")}
-            />
+            {
+                // TODO check if user is in sanctioned country
+                isSanctionedCounty ? <GeolocationMessage/> :
+                    (
+                        <>
+                            <Menu
+                                ref={menuRef}
+                                title="casperswap"
+                                links={routes}
+                                menuIcon={casperIcon}
+                                casperIcon={casperLogo}
+                                rightAction={rightAction}
+                                toggle={{
+                                    isActive: selectedTheme === AvailableThemes.Dark,
+                                    toggle: () => handleThemeSwitch(),
+                                    labelText: "",
+                                    variant: ToggleVariant.ThemeSwitcher,
+                                }}
+                                handleRedirect={() => navigate("/")}
+                            />
 
-            <ChildrenContainer
-                menuHeight={menuHeight}
-                isMobile={isMobile}>
-                {loading ? <CasperLoader /> : children}
-            </ChildrenContainer>
+                            <ChildrenContainer
+                                menuHeight={menuHeight}
+                                isMobile={isMobile}>
+                                {loading ? <CasperLoader/> : children}
+                            </ChildrenContainer>
+                        </>
+                    )
+            }
         </Container>
     );
 };

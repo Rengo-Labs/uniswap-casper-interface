@@ -252,7 +252,7 @@ const SwapNewModule = () => {
         : 'Low Price Impact'
     );
 
-    calculateUSDValues(value, tokensToTransfer, tokenA.symbolPair, tokenB.symbolPair, exchangeRateA, exchangeRateB, token.symbolPair);
+    calculateUSDValues(value, tokensToTransfer, tokenA.symbolPair, tokenB.symbolPair, exchangeRateA, exchangeRateB, token.symbolPair, tokenA.priceUSD, tokenB.priceUSD);
     return tokensToTransfer;
   }
 
@@ -421,12 +421,12 @@ const SwapNewModule = () => {
     await refresh()
   };
 
-  const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected) => {
+  const calculateUSDValues = (amountA: string | number, amountB: string | number, symbolA, symbolB, rateA, rateB, tokenSelected, priceA, priceB) => {
     const isA2B = symbolA == tokenSelected
 
     const [usdA, usdB] = calculateUSDtokens(
-      symbolA,
-      symbolB,
+      priceA,
+      priceB,
       amountA,
       amountB,
       isA2B

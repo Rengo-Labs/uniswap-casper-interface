@@ -7,11 +7,7 @@ import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
 import {PairState} from "../../../reducers/PairsReducer";
 import {TokenState} from "../../../reducers/TokenReducers";
 import { getLocalStorageData, setLocalStorageData } from '../../../commons/utils/persistData';
-
-enum tokenType {
-  tokenA = 'tokenA',
-  tokenB = 'tokenB',
-}
+import {firstInitialToken, secondInitialToken} from '../../../constant/bootEnvironmet'
 
 interface LiquiditySwapperProps {
   onIncreaseAllow,
@@ -43,6 +39,7 @@ interface LiquiditySwapperProps {
   setValueBUSD
 }
 
+const DEFAULT_USD_TOKEN_VALUE = "0.00"
 const LOCAL_STORAGE_KEY = 'token-list'
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
@@ -88,14 +85,17 @@ const LiquiditySwapper = ({
   const [exchangeRateA, exchangeRateASetter] = useState<any>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<any>(0);
 
-  const [lastChanged, setLastChanged] = useState('');
   const [currentValue, setCurrentValue] = useState<number>(0)
-  const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForLiquidity)
+  const [tokenToTransfer, setTokenToTransfers] = useState<any>(0)
   const [tokenListData, setTokenListData] = useState<any[]>([]);
+  const [initializeCalculation, setInitializeCalculation] = useState(false)
+  const [disableAllowanceButtonA, setDisableAllowanceButtonA] = useState(false)
+  const [disableAllowanceButtonB, setDisableAllowanceButtonB] = useState(false)
 
   const {
     disableButton: disableButtonValid,
     handleValidate,
+    cleanValidationState
   } = isCSPRValid()
 
   const tokenListFromFilter = useMemo(() => {
@@ -120,6 +120,32 @@ const LiquiditySwapper = ({
     }
   });
 
+  useEffect(() => {
+    if (firstTokenSelected?.priceUSD ===  DEFAULT_USD_TOKEN_VALUE || initializeCalculation) {
+      return
+    }
+
+    const filteredValue = 1
+    const firstTokenOnMount = tokenState.tokens[firstInitialToken]
+    const secondTokenOnMount = tokenState.tokens[secondInitialToken]
+
+    const handleExchangeCalculation = async () => {
+      const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
+        firstTokenOnMount,
+        secondTokenOnMount,
+        filteredValue,
+        firstTokenOnMount,
+        false
+      );
+
+      calculateUSDValues(filteredValue, tokensToTransfer, true)
+      setUSDByTokens(exchangeRateA, exchangeRateB, true)
+
+      setInitializeCalculation(true)
+    }
+  
+    handleExchangeCalculation()
+  }, [firstTokenSelected])
 
 
   useEffect(() => {
@@ -194,8 +220,7 @@ const LiquiditySwapper = ({
       filteredValue = Math.abs(filteredValue);
     }
 
-    setLastChanged('A');
-
+    setCurrentValue(filteredValue)
     amountSwapTokenASetter(filteredValue);
     const {tokensToTransfer, exchangeRateA, exchangeRateB} = await updateDetail(
       firstTokenSelected,
@@ -208,24 +233,13 @@ const LiquiditySwapper = ({
     setUSDByTokens(exchangeRateA, exchangeRateB, true)
 
     amountSwapTokenBSetter(tokensToTransfer);
-    if (! firstValidation) {
-      handleValidate(
-        parseFloat(tokensToTransfer),
-        parseFloat(secondTokenSelected.amount),
-        gasPriceSelectedForLiquidity || 0,
-        secondTokenSelected.symbol
-      )
-    }
   }
 
   const handleChangeA = (value) => {
-    setCurrentValue(value)
-    const firstValidation = handleValidate(
-      parseFloat(value),
-      parseFloat(firstTokenSelected.amount),
-      gasPriceSelectedForLiquidity || 0
-    )
-    changeTokenA(value, firstValidation);
+    cleanValidationState(parseFloat(value), parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
+    changeTokenA(value);
+    setDisableAllowanceButtonA(false)
+    setDisableAllowanceButtonB(false)
   };
 
   const setUSDByTokens = (rateA, rateB, value) => {
@@ -246,8 +260,6 @@ const LiquiditySwapper = ({
       filteredValue = Math.abs(filteredValue);
     }
 
-    setLastChanged('B');
-
     amountSwapTokenBSetter(filteredValue);
     const {tokensToTransfer, exchangeRateA, exchangeRateB} = await updateDetail(
       firstTokenSelected,
@@ -255,28 +267,22 @@ const LiquiditySwapper = ({
       filteredValue,
       secondTokenSelected
     );
-    amountSwapTokenASetter(tokensToTransfer);
-    calculateUSDValues(filteredValue, tokensToTransfer, true)
-    setUSDByTokens(exchangeRateA, exchangeRateB, true)
+    setTokenToTransfers(tokensToTransfer)
 
-    if (!secondValidation) {
-      handleValidate(
-        parseFloat(tokensToTransfer),
-        parseFloat(firstTokenSelected.amount),
-        gasPriceSelectedForLiquidity || 0,
-        firstTokenSelected.symbol
-      )
-    }
+    amountSwapTokenASetter(tokensToTransfer);
+    calculateUSDValues(tokensToTransfer, filteredValue, true)
+    setUSDByTokens(exchangeRateA, exchangeRateB, true)
   }
 
   const handleChangeB = async (value) => {
-    const secondValidation = handleValidate(
+    cleanValidationState(
       parseFloat(value),
       parseFloat(secondTokenSelected.amount),
       gasPriceSelectedForLiquidity || 0,
-      secondTokenSelected.symbol
-    )
-    changeTokenB(value, secondValidation);
+      secondTokenSelected.symbol)
+    changeTokenB(value)
+    setDisableAllowanceButtonA(false)
+    setDisableAllowanceButtonB(false)
   };
 
   const selectAndCloseToken = async (token: Token) => {
@@ -316,31 +322,6 @@ const LiquiditySwapper = ({
     amountSwapTokenASetter(tokensToTransfer)
   }
 
-
-  const disableButton = (amount0, amount1) => {
-    if (isNaN(amount0)) {
-      return true;
-    }
-    if (isNaN(amount1)) {
-      return true;
-    }
-    if (!isConnected) {
-      return true;
-    }
-    if (
-      parseFloat(amount0) <= 0 ||
-      parseFloat(amount0) > parseFloat(firstTokenSelected.amount.toString())
-    ) {
-      return true;
-    }
-    if (
-      parseFloat(amount1) <= 0 ||
-      parseFloat(amount1) > parseFloat(secondTokenSelected.amount.toString())
-    ) {
-      return true;
-    }
-  };
-
   const amountA = isNaN(amountSwapTokenA) ? 0 : amountSwapTokenA;
   const amountB = isNaN(amountSwapTokenB) ? 0 : amountSwapTokenB;
   const freeAllowanceA = new BigNumber(firstTokenSelected.allowance || 0)
@@ -366,8 +347,8 @@ const LiquiditySwapper = ({
 
   const calculateUSDValues = (amountA, amountB, isAorB) => {
     const [usdA, usdB] = calculateUSDtokens(
-      firstTokenSelected.symbolPair,
-      secondTokenSelected.symbolPair,
+      firstTokenSelected.priceUSD,
+      secondTokenSelected.priceUSD,
       amountA,
       amountB,
       isAorB
@@ -409,6 +390,32 @@ const LiquiditySwapper = ({
 
     updateTokenListData(tokenName, isPresent)
     updateLocalStorage(tokenName, currentPersistedData, isPresent)
+  }
+
+  const handleAddLiquidity = () => {
+    const tokenAIsInvalid = handleValidate( currentValue, parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
+
+    if (!tokenAIsInvalid) {
+      const secondValidation = handleValidate(parseFloat(tokenToTransfer), parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0, secondTokenSelected.symbol)
+      if (!secondValidation) {
+        onActionConfirm(amountSwapTokenA, amountSwapTokenB)
+      }
+    }
+  }
+
+  const handleAllowanceApproval = async (selectedToken, freeAllowance, isAorB) => {
+    const isFirstTokenValueInvalid = handleValidate( amountSwapTokenA, parseFloat(firstTokenSelected.amount), gasPriceSelectedForLiquidity || 0)
+    const isSecondTokenValueInvalid = handleValidate(parseFloat(amountSwapTokenB), parseFloat(secondTokenSelected.amount), gasPriceSelectedForLiquidity || 0, secondTokenSelected.symbol)
+
+    if (!isFirstTokenValueInvalid && !isSecondTokenValueInvalid) {
+      await requestIncreaseAllowance(
+        Math.abs(selectedToken.optApproval ? isAorB ? amountSwapTokenA : amountSwapTokenB : freeAllowance),
+        selectedToken.contractHash,
+        selectedToken.decimals,
+        selectedToken.optApproval
+      );
+      isAorB ? setDisableAllowanceButtonA(false) : setDisableAllowanceButtonB(false)
+    }
   }
 
   return (
@@ -457,31 +464,32 @@ const LiquiditySwapper = ({
         )}
 
         {!isApprovedA && isConnected && (
-          <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
-            style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" }, onClick: async () => {
-              await requestIncreaseAllowance(
-                Math.abs(freeAllowanceA),
-                firstTokenSelected.contractHash,
-                firstTokenSelected.decimals,
-                firstTokenSelected.optApproval
-              );
-            }}}>Approve {Math.abs(freeAllowanceA)} {firstTokenSelected.symbol}</Button>
+          <Button type={"large"} props={{
+            disabled: disableAllowanceButtonA,
+            style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": "" },
+            onClick: async () => {setDisableAllowanceButtonA(true); handleAllowanceApproval(firstTokenSelected, freeAllowanceA, true)}
+          }}>Approve {Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowanceA)} {firstTokenSelected.symbol}</Button>
         )}
         {!isApprovedB && isConnected && (
-          <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB),
-            style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""}, onClick: async () => {
-              await requestIncreaseAllowance(
-                Math.abs(freeAllowanceB),
-                secondTokenSelected.contractHash,
-                secondTokenSelected.decimals,
-                secondTokenSelected.optApproval
-              );
-            }}}>Approve {Math.abs(freeAllowanceB)} {secondTokenSelected.symbol}</Button>
+          <Button type={"large"} props={{
+            disabled: disableAllowanceButtonB,
+            style: {width: 'auto', flex: !isApprovedA && !isApprovedB ? "1": ""},
+            onClick: async () => {setDisableAllowanceButtonB(true); handleAllowanceApproval(secondTokenSelected, freeAllowanceB, false)}
+            }}>
+              Approve {Math.abs(secondTokenSelected.optApproval ? amountSwapTokenB : freeAllowanceB)} {secondTokenSelected.symbol}</Button>
         )}
 
         {isApprovedA && isApprovedB && isConnected && (
-          <Button type={"large"} props={{disabled: disableButton(amountSwapTokenA, amountSwapTokenB) || isProcessingTransaction || disableButtonValid,
-            style: {width: 'auto'}, onClick: () => onActionConfirm(amountSwapTokenA, amountSwapTokenB)}}>Add Liquidity</Button>
+          <Button type={"large"} props={{
+              disabled: isProcessingTransaction ||
+                amountSwapTokenA <= 0 ||
+                amountSwapTokenB <= 0 ||
+                disableButtonValid,
+              style: {width: 'auto'},
+              onClick: () => handleAddLiquidity() }}
+              >
+                Add Liquidity
+          </Button>
         )}
       </div>
       {openPoolDialog.open && (

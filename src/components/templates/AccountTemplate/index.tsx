@@ -105,7 +105,7 @@ export const AccountTemplate = ({ isMobile }) => {
       value,
       6
     )} CSPR ($${convertAllFormatsToUIFixedString(
-      Number(value) * priceUsd,
+      Number(value) * (priceUsd ?? 0),
       2
     )})`;
 

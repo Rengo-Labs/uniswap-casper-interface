@@ -28,9 +28,9 @@ export const tokenList: Record<string, Token> = {
     symbolPair: "CST",
     decimals: 9,
     contractHash:
-      "hash-7a437ac8dda6425bf65c3ae8a4c6ff0f40a629f8a2373c1069162ac638bf935f",
+      "hash-3ab25923574f4cc18148a39af69c66c07a611f13464ebab97d5e1daf6ee38018",
     packageHash:
-      "hash-b9b912b1f4a2d4171dff3e04b20a8f6f4f0f2d79dfb782de988145ce257ae639",
+      "hash-93d38a928e5a9a3030e60dc207b478a746a4369f5dbaf20f085fe4e19f4b12d2",
     logoURI: cstIcon,
     amount: "0.0000",
     allowance: "0.0000",
@@ -43,9 +43,9 @@ export const tokenList: Record<string, Token> = {
     symbolPair: "WCSPR",
     decimals: 9,
     contractHash:
-      "hash-6b7453749234eb23f6e81aa2fe01b3a8f4bafb94247942a6ac0d77e952978afa",
+      "hash-8c0d3b3461921a2fd9f8e337e13226863e19426a9065ac5fd9cc4aa32a15f61e",
     packageHash:
-      "hash-c6649901da894d4ac2c77c0ae217190f79cabc8c0c91788ee997f670b8bdd05e",
+      "hash-ef602ea773953c82b9d3b4eef1b45b54e9fd40d1f82ed290e674c965539b1226",
     logoURI: wcsprIcon,
     amount: "0.0000",
     allowance: "0.0000",
@@ -56,63 +56,59 @@ export const tokenList: Record<string, Token> = {
     chainId: 1,
     symbol: "dBTC",
     symbolPair: "dBTC",
-    decimals: 8,
+    decimals: 9,
     contractHash:
-      "hash-3e46fdbcd0e5882ef2130456195f1658f02789b4b69a8e8e1dde773c2565555a",
+      "hash-8604fa804afb17593d8625b5e667dd8b7e2e984a6f50e2d8446b088ce544fc7d",
     packageHash:
-      "hash-c44d2505862832d8043fbe32f068b92895f84b2e479f8a29954a94fce6835360",
+      "hash-db80ad6c6a5d40ef146c3470e2dc4f31203b1e146b3b470c5cae5cbc3d4edc30",
     logoURI: wbtcIcon,
     amount: "0.0000",
     allowance: "0.0000",
-    priceUSD: "0.00",
-    optApproval: "approve",
+    priceUSD: "0.00"
   },
   dUSDC: {
     name: "USD Coin",
     chainId: 1,
     symbol: "dUSDC",
     symbolPair: "dUSDC",
-    decimals: 6,
+    decimals: 9,
     contractHash:
-      "hash-48bd364532febf044cca8d2d716336b93d27458ce0aa48ad292ca28304fa8649",
+      "hash-45043899ae260f320f0efe11287b04470aab44548a93b0eec948dbcdf6bc1846",
     packageHash:
-      "hash-354f65e7c195e246c6f1171b8c0c036794593b3fd84c2442046519e1d4c15cc0",
+      "hash-ab9ee4e04ec83f768346dfd0230404fa7dc9bfce8b1324af32bdbce076bc9f97",
     logoURI: usdcIcon,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00",
-    optApproval: "approve",
   },
   dUSDT: {
     name: "USD Tether",
     chainId: 1,
     symbol: "dUSDT",
     symbolPair: "dUSDT",
-    decimals: 6,
+    decimals: 9,
     contractHash:
-      "hash-b53fa728c7074c84f35407f4d0989eb4133d391402b7ce13b7feeb01479a4f01",
+      "hash-c42797478e004fa301c3bd32db78b434c58ab8ab5624de130e6d5a5bd3e9d31c",
     packageHash:
-      "hash-6a39adb3af054cbd3055e07213ec55343d8e785ac8a43b9717fb21da55dc1f40",
+      "hash-ec22366d01926cc86916d4e76ec31cbd5bbad23629fd41c56d1205d6481c3e30",
     logoURI: usdtIcon,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00",
-    optApproval: "approve",
   },
   dETH: {
     name: "Ethereum",
     chainId: 1,
     symbol: "dETH",
     symbolPair: "dETH",
-    decimals: 18,
+    decimals: 9,
     contractHash:
-      "hash-012f8f3689ddf5c7a92ddeb54a311afb660051bb5fab3568dbb3d796809be8c6",
+      "hash-f898715a7c5d2922de51d283cf8a0fc87d2952b568b73d86fd4ec337af7ae7fe",
     packageHash:
-      "hash-afc752ad814c4e05cafb25fb676fd74b65f1a340c5b5f0055814d3dd5115280a",
+      "hash-3cbdf16b0ac8d789b82629a0315ff06a25689eb166513800496e074c0c318057",
     logoURI: wethIcon,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00",
-    optApproval: "approve",
   }
 }

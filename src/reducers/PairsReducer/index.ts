@@ -2,8 +2,12 @@ import BigNumber from "bignumber.js"
 import { convertBigNumberToUIString, convertUIStringToBigNumber } from "../../commons"
 import { TOKENS } from '../TokenReducers'
 
-import * as pairProd from '../../constant/pairHashes.production'
-import * as pairDev from '../../constant/pairHashes.development'
+import {pairData} from '../../constant/bootEnvironmet'
+import {
+  APR_AMOUNT_WEEKS,
+  REWARD_CST_WEEKLY_INFLATION_RATE,
+  REWARD_TOKEN_WEEKLY_EMISSIONS
+} from "../../constant";
 
 export type PairData = {
   checked: boolean,
@@ -24,6 +28,7 @@ export type PairData = {
   liquidity?: string,
   volume7d?: string,
   volume1d?: string,
+  apr?: string,
   totalSupply?: string,
   token0Price?: string,
   token1Price?: string,
@@ -33,12 +38,22 @@ export type PairData = {
   contract1?: string,
   token0Name?: string,
   token1Name?: string,
-  decimals: number
+  decimals: number,
+  gaugeBalance?: string,
+  gaugeTotalStake?: string,
+  gaugeAllowance?: string,
+  gaugeContractHash?: string,
+  gaugePackageHash?: string,
+  gaugeToken?: string,
+  gaugeCSTRewards?: boolean,
+  gaugeCSTWeight?: number,
+  userApr?: string,
+  totalReward?: string
 }
 
 export type PairState = Record<string, PairData>
 
-const RAW_PAIRS = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? pairDev.pairList : pairProd.pairList
+const RAW_PAIRS = pairData
 export const PAIRS: PairState = {}
 
 Object.values(RAW_PAIRS).map((p) => {
@@ -79,12 +94,17 @@ export const initialPairsState: PairState = PAIRS
 export enum PairActions {
   ADD_BALANCE_TO_PAIR = 'ADD_BALANCE_TO_PAIR',
   ADD_ALLOWANCE_TO_PAIR = 'ADD_ALLOWANCE_TO_PAIR',
+  ADD_GAUGE_BALANCE_TO_PAIR = 'ADD_GAUGE_BALANCE_TO_PAIR',
+  ADD_GAUGE_ALLOWANCE_TO_PAIR = 'ADD_GAUGE_ALLOWANCE_TO_PAIR',
   LOAD_PAIR = 'LOAD_PAIR',
   LOAD_PAIR_USD = 'LOAD_PAIR_USD',
   CLEAN_LIQUIDITY_USD = 'CLEAN_LIQUIDITY_USD',
   CHANGE_PRIORITY = 'CHANGE_PRIORITY',
   //LOAD_USER_PAIR = 'LOAD_USER_PAIR',
-  RESET = 'RESET'
+  ADD_GAUGE_TOTAL_STAKE_TO_PAIR = 'ADD_GAUGE_TOTAL_STAKE_TO_PAIR',
+  RESET = 'RESET',
+  APR_REWARDS = 'APR_REWARDS',
+  LOAD_TOTAL_REWARD_FOR_PAIR = 'LOAD_TOTAL_REWARD_FOR_PAIR',
 }
 
 export type PairActionBalancePayload = {
@@ -99,6 +119,26 @@ export type PairActionAllowancePayload = {
   allowance: string,
 }
 
+export type PairActionTotalRewardPayload = {
+  name: string,
+  totalReward: string,
+}
+
+export type PairActionGaugeBalancePayload = {
+  name: string,
+  balance: string,
+}
+
+export type PairActionGaugeAllowancePayload = {
+  name: string,
+  allowance: string,
+}
+
+export type PairActionGaugeTotalStakePayload = {
+  name: string,
+  totalStake: string,
+}
+
 export type PairActionLoadPairPayLoad = {
   name: string,
   volume7d: string,
@@ -107,6 +147,17 @@ export type PairActionLoadPairPayLoad = {
   totalReserve1: string,
   totalSupply: string,
   totalLiquidityUSD: string
+}
+
+export type PairActionLoadAPRRewardPayLoad = {
+  name: string,
+  tokenRewardPriceUSD: string,
+  tokenCSTRewardsPriceUSD: string,
+  tokenRewardSymbol: string,
+  totalLiquidityUSD: string,
+  gaugeAmount: number,
+  gaugeTotalWeight: number,
+  gaugeBalance: string
 }
 
 export type PairActionLoadPairUSDPayLoad = {
@@ -144,8 +195,23 @@ export type PairAction = {
   type: PairActions.ADD_ALLOWANCE_TO_PAIR,
   payload: PairActionAllowancePayload,
 } | {
+  type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
+  payload: PairActionGaugeBalancePayload,
+} | {
+  type: PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR,
+  payload: PairActionGaugeAllowancePayload,
+} | {
+  type: PairActions.ADD_GAUGE_TOTAL_STAKE_TO_PAIR,
+  payload: PairActionGaugeTotalStakePayload,
+} | {
   type: PairActions.LOAD_PAIR,
   payload: PairActionLoadPairPayLoad,
+} | {
+  type: PairActions.APR_REWARDS,
+  payload: PairActionLoadAPRRewardPayLoad,
+} | {
+  type: PairActions.LOAD_TOTAL_REWARD_FOR_PAIR,
+  payload: PairActionTotalRewardPayload,
 } | {
   type: PairActions.LOAD_PAIR_USD,
   payload: PairActionLoadPairUSDPayLoad,
@@ -159,8 +225,8 @@ export type PairAction = {
   type: PairActions.LOAD_USER_PAIR,
   payload: PairActionLoadUserPairPayLoad,
 }*/ | {
-    type: PairActions.RESET,
-    }
+  type: PairActions.RESET,
+}
 
 export function PairsReducer(state: PairState, action: PairAction): PairState {
   switch (action.type) {
@@ -188,6 +254,19 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           },
         }
       }
+    case PairActions.ADD_GAUGE_BALANCE_TO_PAIR:
+      let gaugeBalance = '0'
+      const oldState = state[`${action.payload.name}`]
+      if (oldState.gaugeToken != null && oldState.gaugeCSTRewards) {
+        gaugeBalance = action.payload.balance
+      }
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...state[`${action.payload.name}`],
+          gaugeBalance: action.payload.balance,
+        },
+      }
     case PairActions.ADD_ALLOWANCE_TO_PAIR:
       return {
         ...state,
@@ -196,16 +275,25 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           allowance: action.payload.allowance,
         },
       }
+    case PairActions.ADD_GAUGE_ALLOWANCE_TO_PAIR:
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...state[`${action.payload.name}`],
+          gaugeAllowance: action.payload.allowance,
+        },
+      }
+    case PairActions.ADD_GAUGE_TOTAL_STAKE_TO_PAIR:
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...state[`${action.payload.name}`],
+          gaugeTotalStake: action.payload.totalStake,
+        },
+      }
     case PairActions.LOAD_PAIR:
       {
         const oldState = state[`${action.payload.name}`]
-
-        //const balance = convertUIStringToBigNumber(oldState.balance)
-        //const totalSupply = convertUIStringToBigNumber(action.payload.totalSupply, oldState.decimals)
-        //const totalReserve0 = convertUIStringToBigNumber(action.payload.totalReserve0, action.payload.decimals0)
-        //const totalReserve1 = convertUIStringToBigNumber(action.payload.totalReserve1, action.payload.decimals1)
-        //const reserve0 = convertBigNumberToUIString(totalReserve0.times(balance.div(totalSupply)))
-        //const reserve1 = convertBigNumberToUIString(totalReserve1.times(balance.div(totalSupply)))
 
         return {
           ...state,
@@ -230,26 +318,16 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           .times(action.payload.token0Price)
           .plus(
             new BigNumber(oldState.reserve1)
-            .times(action.payload.token1Price)
+              .times(action.payload.token1Price)
           )
           .toString()
         const totalLiquidityUSD = new BigNumber(oldState.totalReserve0)
           .times(action.payload.token0Price)
           .plus(
             new BigNumber(oldState.totalReserve1)
-            .times(action.payload.token1Price)
+              .times(action.payload.token1Price)
           )
           .toString()
-        /*console.log(
-          'action.payload',
-          liquidityUSD,
-          totalLiquidityUSD,
-          action.payload.name, 
-          action.payload.token0Price,
-          oldState.totalReserve0, 
-          action.payload.token1Price,
-          oldState.totalReserve1, 
-        )*/
 
         return {
           ...state,
@@ -263,17 +341,17 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         }
       }
     case PairActions.CLEAN_LIQUIDITY_USD:
-    {
-      const oldState = state[`${action.payload.name}`]
+      {
+        const oldState = state[`${action.payload.name}`]
 
-      return {
-        ...state,
-        [`${action.payload.name}`]: {
-          ...oldState,
-          liquidityUSD: "0"
-        },
+        return {
+          ...state,
+          [`${action.payload.name}`]: {
+            ...oldState,
+            liquidityUSD: "0"
+          },
+        }
       }
-    }
     case PairActions.CHANGE_PRIORITY:
       {
         const oldState = state[`${action.payload.name}`]
@@ -286,9 +364,88 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
           }
         }
       }
-      case PairActions.RESET: {
-        return initialPairsState
+    case PairActions.RESET: {
+      return initialPairsState
+    }
+    case PairActions.APR_REWARDS: {
+      const oldState = state[`${action.payload.name}`]
+
+      let apr = 0
+      let userAPR = 0
+      if (!!action.payload.tokenRewardPriceUSD && oldState.gaugeContractHash) {
+        const pricePerLPToken = new BigNumber(action.payload.totalLiquidityUSD)
+          .div(oldState.totalSupply)
+
+        const totalStakeUSD = new BigNumber(oldState.gaugeTotalStake)
+          .times(pricePerLPToken)
+
+        const percentStake = new BigNumber(action.payload.gaugeBalance)
+          .div(oldState.gaugeTotalStake)
+
+        if (oldState.gaugeToken != null) {
+          const rewardPriceXWeekly = new BigNumber(action.payload.tokenRewardPriceUSD)
+            .times(REWARD_TOKEN_WEEKLY_EMISSIONS)
+          // (ETH price usd * ETH gauge weight) / (total number of gauge * eth weekly)  / total supply usd
+          const yearlyWeightedReward = rewardPriceXWeekly
+            .times(APR_AMOUNT_WEEKS)
+            .div(action.payload.gaugeAmount)
+
+          const globalRewardsAPR = yearlyWeightedReward
+            .div(action.payload.totalLiquidityUSD)
+            .times(100)
+
+          const userRewardsAPR = yearlyWeightedReward
+            .div(totalStakeUSD)
+            .times(100)
+            .times(percentStake)
+
+          apr += (globalRewardsAPR.isNaN() || parseFloat(action.payload.totalLiquidityUSD) == 0) ? 0 : globalRewardsAPR.toNumber()
+          userAPR += userRewardsAPR.isNaN() ? 0 : userRewardsAPR.toNumber()
+        }
+
+        if (oldState.gaugeCSTRewards) {
+          const rewardPriceXWeekly = new BigNumber(action.payload.tokenCSTRewardsPriceUSD)
+            .times(REWARD_CST_WEEKLY_INFLATION_RATE)
+          // (CST price usd * CST Yearly * cst gauge weight) / total gauge weight / total supply usd
+          const yearlyWeightedReward = rewardPriceXWeekly
+            .times(APR_AMOUNT_WEEKS)
+            .times(oldState.gaugeCSTWeight)
+            .div(action.payload.gaugeTotalWeight)
+
+          const globalRewardsAPR = yearlyWeightedReward
+            .div(action.payload.totalLiquidityUSD)
+            .times(100)
+
+          const userRewardsAPR = yearlyWeightedReward
+            .div(totalStakeUSD)
+            .times(100)
+            .times(percentStake)
+
+          apr += globalRewardsAPR.isNaN() ? 0 : globalRewardsAPR.toNumber()
+          userAPR += userRewardsAPR.isNaN() ? 0 : userRewardsAPR.toNumber()
+        }
       }
+
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...oldState,
+          apr: `${apr.toFixed(2)}`,
+          userApr: `${userAPR.toFixed(2)}`
+        },
+      }
+    }
+
+    case PairActions.LOAD_TOTAL_REWARD_FOR_PAIR: {
+      return {
+        ...state,
+        [`${action.payload.name}`]: {
+          ...state[`${action.payload.name}`],
+          totalReward: action.payload.totalReward,
+        },
+      }
+    }
+
     default:
       return state;
     /* case PairActions.LOAD_USER_PAIR:

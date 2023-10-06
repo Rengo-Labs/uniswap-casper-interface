@@ -16,6 +16,8 @@ import {PoolContext} from "./PoolContext";
 import {WalletContext} from "./WalletContext";
 import {UiProvider} from 'rengo-ui-kit';
 import {LoadingProvider} from "./LoaderContext";
+import {StakingContext} from "./StakingContext";
+
 export const BigContext = ({children}: { children: ReactNode }) => {
     return (
         <UiProvider>
@@ -27,20 +29,22 @@ export const BigContext = ({children}: { children: ReactNode }) => {
                                 <ConfigContextWithReducer>
                                     <SwapContext>
                                         <LiquidityContext>
-                                            <ProgressBarContextWithReducer>
-                                                <NotificationSystem/>
-                                                <TorusContext>
-                                                    <InitialContext>
-                                                        <TokensContext2>
-                                                            <LiquidityContext>
-                                                                <LoadingProvider>
-                                                                    {children}
-                                                                </LoadingProvider>
-                                                            </LiquidityContext>
-                                                        </TokensContext2>
-                                                    </InitialContext>
-                                                </TorusContext>
-                                            </ProgressBarContextWithReducer>
+                                            <StakingContext>
+                                                <ProgressBarContextWithReducer>
+                                                    <NotificationSystem/>
+                                                    <TorusContext>
+                                                        <InitialContext>
+                                                            <TokensContext2>
+                                                                <LiquidityContext>
+                                                                    <LoadingProvider>
+                                                                        {children}
+                                                                    </LoadingProvider>
+                                                                </LiquidityContext>
+                                                            </TokensContext2>
+                                                        </InitialContext>
+                                                    </TorusContext>
+                                                </ProgressBarContextWithReducer>
+                                            </StakingContext>
                                         </LiquidityContext>
                                     </SwapContext>
                                     <PopupsContainer/>

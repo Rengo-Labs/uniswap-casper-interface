@@ -14,7 +14,8 @@ import {
   ConfigActions,
 } from '../../reducers';
 
-const NETWORK_NAME = 'casper-testing' === process.env.REACT_APP_NETWORK_KEY ? Network.CASPER_TESTNET : Network.CASPER_MAINNET;
+import {networkName} from '../../constant/bootEnvironmet'
+const NETWORK_NAME = networkName
 
 import {
   CasperSignerWallet,
@@ -29,7 +30,9 @@ import {
 import { ConfigState } from '../../reducers/ConfigReducers';
 import { notificationStore } from '../../store/store';
 import {CasperWallet} from "../../commons/wallet/CasperWallet";
+import { MetamaskSnapWallet } from '../../commons/wallet/MetamaskSnap';
 import useConnectionPopUp from "../../hooks/useConnectionPopUp";
+import {CasperDash} from "../../commons/wallet/CasperDash";
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
 type MaybeWallet = Wallet | undefined;
@@ -125,6 +128,24 @@ export const WalletContext = ({
     let w: MaybeWallet;
 
     switch (name) {
+      case WalletName.METAMASK_FLASK:
+        try {
+          if (state.wallet?.isConnected) {
+            await state.wallet.disconnect();
+          }
+
+          w = new MetamaskSnapWallet(NETWORK_NAME);
+          await w.connect();
+        } catch (e) {
+          debounceConnect = false;
+          throw e;
+        }
+
+        if (!w?.publicKey) {
+          debounceConnect = false;
+          throw new Error('metamask error');
+        }
+        break;
       case WalletName.CASPER_SIGNER:
         try {
           if (state.wallet?.isConnected) {
@@ -167,6 +188,14 @@ export const WalletContext = ({
           await state.wallet.disconnect();
         }
         w = new CasperWallet(NETWORK_NAME)
+        await w.connect(dispatch)
+        break
+      case WalletName.CASPER_DASH:
+
+        if (state.wallet?.isConnected) {
+          await state.wallet.disconnect();
+        }
+        w = new CasperDash(NETWORK_NAME)
         await w.connect(dispatch)
         break
       default:
