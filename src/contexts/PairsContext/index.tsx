@@ -5,7 +5,6 @@ import {Wallet} from "../../commons";
 import {PairReserves} from "../ConfigContext";
 import {notificationStore} from "../../store/store";
 import {TokenState} from "../../reducers/TokenReducers";
-import {ROUTER_PACKAGE_HASH} from "../../constant";
 
 interface PairsContextProps {
     children: ReactNode
