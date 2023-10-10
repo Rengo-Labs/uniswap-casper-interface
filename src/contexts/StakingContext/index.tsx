@@ -176,7 +176,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
   async function onClaimRewards(contractHash: string): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
-      title: 'Claim profit',
+      title: 'Claim Rewards',
       subtitle: '',
       show: true,
       isOnlyNotification: true,
@@ -266,7 +266,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
   async function onClaimCSTRewards(contractHash: string): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
-      title: 'Claim profit',
+      title: 'Claim Rewards',
       subtitle: '',
       show: true,
       isOnlyNotification: true,

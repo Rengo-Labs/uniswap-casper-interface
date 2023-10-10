@@ -56,7 +56,7 @@ export const NotificationSystem = () => {
             <StakeMessage
                 isOpen={stakeNotification.show}
                 tokenImg={stakeNotification.data.tokenImage}
-                tokenName={stakeNotification.data.tokenName}
+                tokenName={stakeNotification.data.symbol}
                 amount={stakeNotification.data.amount}
                 closeCallback={onCloseStake}
             />
