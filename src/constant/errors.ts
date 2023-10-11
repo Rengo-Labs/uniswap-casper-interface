@@ -27,19 +27,19 @@ export const ERROR_BLOCKCHAIN = {
     message: "Error: This function requires first token to be WCSPR."
   },
   "Error: Contract execution: User error: 74": {
-    message: "Error: Sent token amount exceeds slippage"
+    message: "Error: Slippage exceeded, increase slippage and try again."
   },
   "Error: Contract execution: User error: 76": {
-    message: "Error: Sent token amount exceeds slippage."
+    message: "Error: Slippage exceeded, increase slippage and try again."
   },
   "Error: Contract execution: User error: 77": {
     message: "Error: This function requires second token to be WCSPR."
   },
   "Error: Contract execution: User error: 78": {
-    message: "Error: Received token amount exceeds slippage."
+    message: "Error: Slippage exceeded, increase slippage and try again."
   },
   "Error: Contract execution: User error: 82": {
-    message: "Error: Add liquidity optimal amounts exceed slippage."
+    message: "Error: Slippage exceeded, increase slippage and try again."
   },
   "Error: Contract execution: User error: 83": {
     message: "Error: Deploy timed out."
