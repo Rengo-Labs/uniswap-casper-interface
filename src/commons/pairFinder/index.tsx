@@ -59,7 +59,7 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
         return new BigNumber(cr1.div(cr0)            
           ).plus(
             tr1.div(tr0)
-          ).div(2)
+          ).div(4)
     }
 
     /**
@@ -117,7 +117,7 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
           tA,
           tB,
           Object.values(tokenState.tokens),
-          Object.values(pairState)
+          Object.values(overrideReserves)
         )
 
         if (!path || !path.length) {
