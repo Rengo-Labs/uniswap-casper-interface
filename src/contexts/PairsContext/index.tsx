@@ -26,7 +26,8 @@ interface PairsContext {
     getPairChart: (pairPackageHash: string) => Promise<any>,
     getGlobalChart: () => Promise<any>,
     loadRewards: (tokenUSDPrices, wallet) => Promise<any>
-    reloadGaugeAllowances: (wallet, name, decimals, contractHash, gaugePackageHash, action) => Promise<void>
+    reloadGaugeAllowances: (wallet, name, decimals, contractHash, gaugePackageHash, action) => Promise<void>,
+    getTVL: () => string
 }
 
 export const PairsContextProvider = createContext<PairsContext>({} as any)
@@ -83,6 +84,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
       return PairsResponsibilities(pairState, pairDispatch).getAllowanceUpdated(wallet, name, decimals, contractHash, gaugePackageHash, action)
     }
 
+    const getTVL = () => PairsResponsibilities(pairState, pairDispatch).getTVL(pairState)
+
     return (
         <PairsContextProvider.Provider value={{
             pairState,
@@ -100,7 +103,8 @@ export const PairsContext = ({children}: PairsContextProps) => {
             getPairChart,
             getGlobalChart,
             loadRewards,
-            reloadGaugeAllowances
+            reloadGaugeAllowances,
+            getTVL
         }}>
             {children}
         </PairsContextProvider.Provider>

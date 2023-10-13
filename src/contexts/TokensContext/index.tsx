@@ -31,7 +31,8 @@ interface TokensContext {
     getDeploysInfo?: (wallet: Wallet) => Promise<BlockchainInfo[]>,
     getAccountDetail?: (wallet: Wallet) => Promise<AccountInfo>,
     getTransfersDetail?: (wallet: Wallet) => Promise<TransferInfo[]>,
-    reloadTokenAllowances?: (wallet: Wallet, name, decimals, contractHash) => Promise<void>
+    reloadTokenAllowances?: (wallet: Wallet, name, decimals, contractHash) => Promise<void>,
+    getCSTMarket?: () => string
 }
 
 export const TokensProviderContext = createContext<TokensContext>({} as any)
@@ -112,6 +113,10 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
       return TokenResponsibilities(tokenState, tokenDispatch).getAllowance(wallet, name, decimals, contractHash)
     }
 
+    const getCSTMarket = () => {
+      return TokenResponsibilities(tokenState, tokenDispatch).getCSTMarket()
+    }
+
     return (
         <TokensProviderContext.Provider
             value={{
@@ -136,7 +141,8 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
                 getAccountDetail,
                 getTransfersDetail,
                 getPercentChangeByTokens,
-                reloadTokenAllowances
+                reloadTokenAllowances,
+                getCSTMarket
             }}>
             {children}
         </TokensProviderContext.Provider>

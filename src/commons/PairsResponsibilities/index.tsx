@@ -1,6 +1,6 @@
 import { findPairChartData, findDailyGlobalChart, getPairData } from "../api/ApolloQueries";
 import store from "store2";
-import {convertBigNumberToUIString, log, sleep} from "../utils";
+import {convertBigNumberToUIString, convertToUSDCurrency, log, sleep} from "../utils";
 import BigNumber from "bignumber.js";
 import { PairActions, PairData, PairState } from "../../reducers/PairsReducer";
 import { apiClient, PairReserves } from "../../contexts/ConfigContext";
@@ -43,7 +43,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         const price0USD = instance.findUSDRateBySymbol(p.token0Symbol, pairTotalReserves, updateNotification).toString()
         const price1USD = instance.findUSDRateBySymbol(p.token1Symbol, pairTotalReserves, updateNotification).toString()
 
-        // console.log('AAA', p.token0Symbol, p.token1Symbol, price0USD, price1USD)
+        console.log('AAA', p.token0Symbol, p.token1Symbol, price0USD, price1USD)
 
         pairDispatch({
           type: PairActions.LOAD_PAIR_USD,
@@ -267,6 +267,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
   const findUSDRateBySymbol = (symbol, updateNotification) => pairFinder(pairState, tokenState).findUSDRateBySymbol(symbol, pairsToMap(), updateNotification)
 
   const calculateUSDtokens = (token0Price: string, token1Price: string, amount0: string | number, amount1: string | number, isAorB: boolean): string[] => {
+    console.log("Tokens Prices", token0Price, token1Price, isAorB)
     const priceA = new BigNumber(amount0).times(isAorB ? token0Price : token1Price).toFixed(4)
     const priceB = new BigNumber(amount1).times(isAorB ? token1Price : token0Price).toFixed(4)
 
@@ -457,6 +458,16 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     })
   }
 
+  const getTVL = (pairState: Record<string, PairData>): string => {
+    const pairs = Object.values(pairState)
+
+    const tvl = pairs.reduce((acc, pl) => {
+      return acc += parseFloat(pl.totalLiquidityUSD)
+    }, 0).toFixed(2)
+
+    return convertToUSDCurrency(parseFloat(tvl))
+  };
+
   return {
     loadPairs,
     loadPairsBalanceUSD,
@@ -473,7 +484,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     loadGralRewards,
     getAllowanceUpdated,
     getPairBalance,
-    getTotalRewardAccumulated
+    getTotalRewardAccumulated,
+    getTVL
   }
 }
 
