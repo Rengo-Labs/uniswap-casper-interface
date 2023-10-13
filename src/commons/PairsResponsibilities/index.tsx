@@ -43,7 +43,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         const price0USD = instance.findUSDRateBySymbol(p.token0Symbol, pairTotalReserves, updateNotification).toString()
         const price1USD = instance.findUSDRateBySymbol(p.token1Symbol, pairTotalReserves, updateNotification).toString()
 
-        console.log('AAA', p.token0Symbol, p.token1Symbol, price0USD, price1USD)
+        //console.log('AAA', p.token0Symbol, p.token1Symbol, price0USD, price1USD)
 
         pairDispatch({
           type: PairActions.LOAD_PAIR_USD,
@@ -267,7 +267,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
   const findUSDRateBySymbol = (symbol, updateNotification) => pairFinder(pairState, tokenState).findUSDRateBySymbol(symbol, pairsToMap(), updateNotification)
 
   const calculateUSDtokens = (token0Price: string, token1Price: string, amount0: string | number, amount1: string | number, isAorB: boolean): string[] => {
-    console.log("Tokens Prices", token0Price, token1Price, isAorB)
     const priceA = new BigNumber(amount0).times(isAorB ? token0Price : token1Price).toFixed(4)
     const priceB = new BigNumber(amount1).times(isAorB ? token1Price : token0Price).toFixed(4)
 
