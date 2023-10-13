@@ -13,7 +13,7 @@ import { DoubleColumn } from "../../../layout/DoubleColumn";
 import { useSearchParams } from "react-router-dom";
 import { globalStore } from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
-import { LPContainer, RemoveLiquidityDialog, StakeDialog } from 'rengo-ui-kit';
+import {LPContainer, PlatformBalance, RemoveLiquidityDialog, StakeDialog} from 'rengo-ui-kit';
 import { useNavigate } from "react-router";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
@@ -57,7 +57,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
   const { progressBar, getProgress, clearProgress } = useContext(ProgressBarProviderContext)
   const { calculateUSDtokens, pairState, findReservesBySymbols, getPoolList } = useContext(PairsContextProvider)
-  const { refresh } = useContext(StateHashProviderContext)
+  const { refresh, tvl, cstMarket } = useContext(StateHashProviderContext)
   const {
     firstTokenSelected,
     secondTokenSelected,
@@ -713,6 +713,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
   return (
     <>
+      <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+      <PlatformBalance title='Total Value Locked:' value={tvl}/>
       <RemoveLiquidityDialog
         showToggle={showRemovingToggle}
         firstRate={removeLiquidityData.firstRate}

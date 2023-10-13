@@ -1,5 +1,5 @@
 import { SingleColumn } from "../../../layout/SingleColumn";
-import { PoolTable, LPSearch, PoolItemDetails, RemoveLiquidityDialog } from "rengo-ui-kit";
+import { PoolTable, LPSearch, PoolItemDetails, RemoveLiquidityDialog, PlatformBalance } from "rengo-ui-kit";
 import { Container, SubHeader } from "./styles";
 import { useTheme } from "styled-components";
 import { PairsContextProvider } from "../../../contexts/PairsContext";
@@ -65,7 +65,7 @@ const poolDetailsRowDefault = {
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
   const { getPoolList, pairState } = useContext(PairsContextProvider);
-  const { refresh } = useContext(StateHashProviderContext);
+  const { refresh, tvl, cstMarket } = useContext(StateHashProviderContext);
   const { progressBar, clearProgress, getProgress } = useContext(
     ProgressBarProviderContext
   );
@@ -423,6 +423,8 @@ const handleActionRemoval = async () => {
 
   return (
     <div>
+      <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+      <PlatformBalance title='Total Value Locked:' value={tvl}/>
       <SingleColumn isMobile={isMobile} title="Liquidity Pool">
         <Container isMobile={isMobile}>
           <SubHeader theme={theme}>

@@ -16,6 +16,7 @@ import {globalStore} from "../../../store/store";
 import {PLATFORM_GAS_FEE} from '../../../constant'
 import BigNumber from "bignumber.js";
 import {CSPRPackageHash} from '../../../constant/bootEnvironmet'
+import {PlatformBalance} from "rengo-ui-kit";
 
 export const SwapTemplate = ({isMobile}) => {
     const {
@@ -32,7 +33,7 @@ export const SwapTemplate = ({isMobile}) => {
         useContext(SwapProviderContext);
     const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext);
     const {calculateUSDtokens, pairState, findReservesBySymbols} = useContext(PairsContextProvider)
-    const {refresh} = useContext(StateHashProviderContext)
+    const {refresh, tvl, cstMarket} = useContext(StateHashProviderContext)
     const {
         firstTokenSelected,
         secondTokenSelected,
@@ -302,6 +303,8 @@ export const SwapTemplate = ({isMobile}) => {
 
     return (
         <>
+            <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+            <PlatformBalance title='Total Value Locked:' value={tvl}/>
             <DoubleColumn isMobile={isMobile} title="Swap">
                 <SwapDetail
                     firstTokenImg={firstTokenSelected.logoURI || ''}

@@ -45,7 +45,7 @@ export const PopupsContainer = () => {
         },
         {
             id: 3,
-            name: 'Casper Dash',
+            name: 'CasperDash',
             icon: casperWallet,
             onConnect: () => onConnectWallet(WalletName.CASPER_DASH)
         },

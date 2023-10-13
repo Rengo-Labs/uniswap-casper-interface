@@ -1,18 +1,19 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {SingleColumn} from "../../../layout/SingleColumn";
-import {BalanceTable} from "rengo-ui-kit";
+import {BalanceTable, PlatformBalance} from "rengo-ui-kit";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
 import {PairsContextProvider} from "../../../contexts/PairsContext";
 import {SUPPORTED_NETWORKS} from "../../../constant";
 import BigNumber from "bignumber.js";
 import {PairData} from "../../../reducers/PairsReducer";
+import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 
 export const BalanceTemplate = ({isMobile}) => {
     const {isConnected} = useContext(WalletProviderContext)
     const {tokenState, getBalancesProfit} = useContext(TokensProviderContext)
     const {getPoolList} = useContext(PairsContextProvider)
-    const {getGlobalChart} = useContext(PairsContextProvider)
+    const {tvl, cstMarket} = useContext(StateHashProviderContext)
     const [data, setData] = useState([])
 
     const getBalance = async (tokenState) => {
@@ -61,9 +62,11 @@ export const BalanceTemplate = ({isMobile}) => {
 
     return (
         <>
-            <SingleColumn isMobile={isMobile} title="Your Balance">
-                <BalanceTable networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`} data={data}/>
-            </SingleColumn>
+          <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+          <PlatformBalance title='Total Value Locked:' value={tvl}/>
+          <SingleColumn isMobile={isMobile} title="Your Balance">
+              <BalanceTable networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`} data={data}/>
+          </SingleColumn>
         </>
     );
 }

@@ -78,7 +78,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       if (result) {
         updateNotification({
           type: NotificationType.Success,
-          title: 'Stake correctly added.',
+          title: 'Stake Successfully Added.',
           subtitle: '',
           show: true,
           isOnlyNotification: true,
@@ -143,7 +143,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
       if (result) {
         updateNotification({
           type: NotificationType.Success,
-          title: 'Stake correctly removed.',
+          title: 'Stake Successfully Removed.',
           subtitle: '',
           show: true,
           isOnlyNotification: true,
