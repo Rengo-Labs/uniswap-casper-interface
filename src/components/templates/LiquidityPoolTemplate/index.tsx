@@ -64,8 +64,8 @@ const poolDetailsRowDefault = {
 
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
-  const { getPoolList, pairState } = useContext(PairsContextProvider);
-  const { refresh, tvl, cstMarket } = useContext(StateHashProviderContext);
+  const { getPoolList, pairState, getTVL } = useContext(PairsContextProvider);
+  const { refresh } = useContext(StateHashProviderContext);
   const { progressBar, clearProgress, getProgress } = useContext(
     ProgressBarProviderContext
   );
@@ -74,7 +74,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     onRemoveLiquidity} = useContext(LiquidityProviderContext)
 
   const {
-      tokenState
+      tokenState,
+      getCSTMarket
     } = useContext(TokensProviderContext)
 
   const {
@@ -125,6 +126,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
   const [showRemovingToggle, setShowRemovingToggle] = useState(true)
   const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
+  const [tvl, setTVL] = useState('$0.00')
+  const [cstMarket, setCSTMarket] = useState('$0.00')
 
   useEffect(() => {
     const gaugeAmount = Object.values(pairState).filter(p => !!p.gaugeToken).length
@@ -154,6 +157,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
       })
     );
 
+    setCSTMarket(getCSTMarket())
   }, [pairState]);
 
   useEffect(() => {
@@ -171,6 +175,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         }))
     }
 
+    setTVL(getTVL())
   }, [tokenState])
 
   const handleShowPoolDetails = () => {

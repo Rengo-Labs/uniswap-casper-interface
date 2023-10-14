@@ -7,14 +7,14 @@ import {PairsContextProvider} from "../../../contexts/PairsContext";
 import {SUPPORTED_NETWORKS} from "../../../constant";
 import BigNumber from "bignumber.js";
 import {PairData} from "../../../reducers/PairsReducer";
-import {StateHashProviderContext} from "../../../contexts/StateHashContext";
 
 export const BalanceTemplate = ({isMobile}) => {
     const {isConnected} = useContext(WalletProviderContext)
-    const {tokenState, getBalancesProfit} = useContext(TokensProviderContext)
-    const {getPoolList} = useContext(PairsContextProvider)
-    const {tvl, cstMarket} = useContext(StateHashProviderContext)
+    const {tokenState, getBalancesProfit, getCSTMarket} = useContext(TokensProviderContext)
+    const {getPoolList, getTVL} = useContext(PairsContextProvider)
     const [data, setData] = useState([])
+    const [tvl, setTVL] = useState('$0.00')
+    const [cstMarket, setCSTMarket] = useState('$0.00')
 
     const getBalance = async (tokenState) => {
         const pairs = getPoolList()
@@ -58,6 +58,8 @@ export const BalanceTemplate = ({isMobile}) => {
         //getGlobalChart()
         setData(r)
       })
+      setTVL(getTVL())
+      setCSTMarket(getCSTMarket())
     }, [tokenState, isConnected])
 
     return (

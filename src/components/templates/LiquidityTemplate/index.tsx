@@ -56,8 +56,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
   } = useContext(StakingProviderContext)
 
   const { progressBar, getProgress, clearProgress } = useContext(ProgressBarProviderContext)
-  const { calculateUSDtokens, pairState, findReservesBySymbols, getPoolList } = useContext(PairsContextProvider)
-  const { refresh, tvl, cstMarket } = useContext(StateHashProviderContext)
+  const { calculateUSDtokens, pairState, findReservesBySymbols, getPoolList, getTVL } = useContext(PairsContextProvider)
+  const { refresh } = useContext(StateHashProviderContext)
   const {
     firstTokenSelected,
     secondTokenSelected,
@@ -65,7 +65,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
     onSelectSecondToken,
     tokenState,
     onSwitchTokens,
-    filterTokenPairsByToken
+    filterTokenPairsByToken,
+    getCSTMarket
   } = useContext(TokensProviderContext)
   const { showNotification } = isCSPRValid();
   const [searchParams, setSearchParams] = useSearchParams()
@@ -129,6 +130,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const [actionSelected, setActionSelected] = useState('')
   const [showClaimedNotification, setShowClaimedNotification] = useState(false)
   const [counterUpdateForClaims, setCounterUpdateForClaims] = useState(0)
+  const [tvl, setTVL] = useState('$0.00')
+  const [cstMarket, setCSTMarket] = useState('$0.00')
 
   const handleChangeInput = (value) => {
     if (value == 0) {
@@ -538,6 +541,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
       await refresh()
     })
 
+    setTVL(getTVL())
   }, [isConnected, pairState, stakingToggle])
 
   useEffect(() => {
@@ -597,6 +601,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
       setCounterUpdateForClaims(counterUpdateForClaims => counterUpdateForClaims + 1)
     }
+
+    setCSTMarket(getCSTMarket())
   }, [tokenState])
 
   async function onLiquidity(amountA, amountB) {

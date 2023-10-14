@@ -14,16 +14,12 @@ interface StateHashContext {
     setStateHash: (hash: string) => void,
     getLatestRootHash: () => Promise<string>,
     refresh: (wallet?) => Promise<void>,
-    cstMarket?: string,
-    tvl?: string
 }
 
 export const StateHashProviderContext = createContext<StateHashContext>({} as any)
 
 export const StateHashContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
-    const [cstMarket, setCSTMarket] = useState('0')
-    const [tvl, setTVL] = useState('0')
     const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, loadRewards, getTVL} = useContext(PairsContextProvider)
     const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance, getCSTMarket} = useContext(TokensProviderContext)
     const {walletState} = useContext(WalletProviderContext)
@@ -71,8 +67,6 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
     const refresh = async () => {
         // si tenemos la wallet y sea manual
         await getRootHash()
-        setTVL(getTVL())
-        setCSTMarket(getCSTMarket())
     }
 
     useEffect(() => {
@@ -109,9 +103,7 @@ export const StateHashContext = ({children}: StateHashContextProps) => {
         stateHash,
         setStateHash,
         getLatestRootHash,
-        refresh,
-        cstMarket,
-        tvl
+        refresh
     }), [stateHash, setStateHash, getLatestRootHash])
 
     return (
