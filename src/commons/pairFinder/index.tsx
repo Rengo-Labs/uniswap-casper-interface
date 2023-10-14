@@ -117,7 +117,7 @@ export const pairFinder = (pairState: PairState, tokenState?: TokenState) => {
           tA,
           tB,
           Object.values(tokenState.tokens),
-          Object.values(pairState)
+          Object.values(overrideReserves)
         )
 
         if (!path || !path.length) {

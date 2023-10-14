@@ -1,6 +1,6 @@
 import { findPairChartData, findDailyGlobalChart, getPairData } from "../api/ApolloQueries";
 import store from "store2";
-import {convertBigNumberToUIString, log, sleep} from "../utils";
+import {convertBigNumberToUIString, convertToUSDCurrency, log, sleep} from "../utils";
 import BigNumber from "bignumber.js";
 import { PairActions, PairData, PairState } from "../../reducers/PairsReducer";
 import { apiClient, PairReserves } from "../../contexts/ConfigContext";
@@ -10,6 +10,8 @@ import { pairFinder } from "../pairFinder";
 import {ROUTER_PACKAGE_HASH} from "../../constant";
 
 export interface PairTotalReserves {
+  token0Symbol: string,
+  token1Symbol: string,
   totalReserve0: BigNumber.Value,
   totalReserve1: BigNumber.Value,
 }
@@ -41,7 +43,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         const price0USD = instance.findUSDRateBySymbol(p.token0Symbol, pairTotalReserves, updateNotification).toString()
         const price1USD = instance.findUSDRateBySymbol(p.token1Symbol, pairTotalReserves, updateNotification).toString()
 
-        // console.log('AAA', p.token0Symbol, p.token1Symbol, price0USD, price1USD)
+        //console.log('AAA', p.token0Symbol, p.token1Symbol, price0USD, price1USD)
 
         pairDispatch({
           type: PairActions.LOAD_PAIR_USD,
@@ -50,7 +52,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
             token0Price: price0USD,
             token1Price: price1USD,
             decimals0: tokenState.tokens[p.token0Symbol].decimals,
-            decimals1: tokenState.tokens[p.token1Symbol].decimals
+            decimals1: tokenState.tokens[p.token1Symbol].decimals,
           },
         })
       }
@@ -93,8 +95,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     //console.log('loadLatestPairsData from PairsResponsibility')
     const infoResultMap: Record<string, any> = {}
     try {
-      const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
-      infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
+      //const infoResults = await getPairData(pairs.map(pl => pl.packageHash.substr(5)))
+      //infoResults.map(pl => infoResultMap[`hash-${pl.id}`] = pl)
 
       return infoResultMap
     } catch (e) {
@@ -141,16 +143,14 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
       return {
         name: pl.name,
         orderedName: pl.orderedName,
+        token0Symbol: pl.token0Symbol,
+        token1Symbol: pl.token1Symbol,
         totalReserve0: reserve0,
         totalReserve1: reserve1,
         volume7d: new BigNumber(infoResult.oneWeekVolumeUSD).div(10 ** pl.decimals).toFixed(2),
         volume1d: new BigNumber(infoResult.oneDayVolumeUSD).div(10 ** pl.decimals).toFixed(2),
         totalSupply: convertBigNumberToUIString(
           new BigNumber(pairDataResponse.totalSupply),
-          pl.decimals
-        ),
-        totalLiquidityUSD: convertBigNumberToUIString(
-          new BigNumber(infoResult ? infoResult.reserveUSD : 0),
           pl.decimals
         )
       }
@@ -171,12 +171,13 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
           volume1d: pl.volume1d,
           totalReserve0: pl.totalReserve0,
           totalReserve1: pl.totalReserve1,
-          totalSupply: pl.totalSupply,
-          totalLiquidityUSD: pl.totalLiquidityUSD
+          totalSupply: pl.totalSupply
         },
       })
 
       pairTotalReserves[pl.orderedName] = {
+        token0Symbol: pl.token0Symbol,
+        token1Symbol: pl.token1Symbol,
         totalReserve0: pl.totalReserve0,
         totalReserve1: pl.totalReserve1,
       }
@@ -209,6 +210,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     const pairTotalReserves: Record<string, PairTotalReserves> = {}
     for (const pl of pairs) {
       pairTotalReserves[pl.orderedName] = {
+        token0Symbol: pl.token0Symbol,
+        token1Symbol: pl.token1Symbol,
         totalReserve0: pl.totalReserve0,
         totalReserve1: pl.totalReserve1,
       }
@@ -358,7 +361,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
         tokenContractHash
       )
       .then((response) => {
-        console.log("Accumulated Reward", name, response)
         pairDispatch({
           type: PairActions.LOAD_TOTAL_REWARD_FOR_PAIR,
           payload: {
@@ -455,6 +457,16 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     })
   }
 
+  const getTVL = (pairState: Record<string, PairData>): string => {
+    const pairs = Object.values(pairState)
+
+    const tvl = pairs.reduce((acc, pl) => {
+      return acc += parseFloat(pl.totalLiquidityUSD)
+    }, 0).toFixed(2)
+
+    return convertToUSDCurrency(parseFloat(tvl))
+  };
+
   return {
     loadPairs,
     loadPairsBalanceUSD,
@@ -471,7 +483,8 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
     loadGralRewards,
     getAllowanceUpdated,
     getPairBalance,
-    getTotalRewardAccumulated
+    getTotalRewardAccumulated,
+    getTVL
   }
 }
 

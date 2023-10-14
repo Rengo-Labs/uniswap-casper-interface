@@ -1,7 +1,7 @@
 import React from "react";
 import { TokenActions, TokenState} from "../../reducers/TokenReducers";
 import BigNumber from "bignumber.js";
-import {convertBigNumberToUIString, log} from "../utils";
+import {convertBigNumberToUIString, convertToUSDCurrency, log} from "../utils";
 import {apiClient, casperClient} from "../../contexts/ConfigContext";
 import {Wallet} from "../wallet";
 import {Token} from "../api";
@@ -17,18 +17,29 @@ import {
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
+    const getCSTMarket = () => {
+        const cstToken = tokenState.tokens['CST']
+        const market = BigNumber(cstToken.totalSupply ?? 0).multipliedBy(cstToken.priceUSD)
+        return convertToUSDCurrency(market.toNumber())
+    }
+
     const loadTokenUSD = async (pairTotalReserves, pairsState, updateNotification) => {
         const tokenPrices: Record<string, string> = {}
         const tokens = Object.values(tokenState.tokens)
 
         for (const t of tokens) {
             const priceUSD = pairFinder(pairsState, tokenState).findUSDRateBySymbol(t.symbolPair, pairTotalReserves, updateNotification).toString()
+            const totalSupply = t.symbol === 'CST' ? await getCSTTotalSupply(t.contractHash) : '0'
 
             tokenDispatch({
                 type: TokenActions.LOAD_PRICE_USD,
                 payload: {
                     name: t.symbol,
                     priceUSD,
+                    totalSupply: convertBigNumberToUIString(
+                      BigNumber(totalSupply.toString()),
+                      t.decimals
+                    ),
                 },
             })
 
@@ -314,6 +325,10 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         })
     }
 
+    const getCSTTotalSupply = async (contractHash: string): Promise<string> => {
+        return apiClient.getERC20TotalSupply(contractHash)
+    }
+
     return {
         loadTokenUSD,
         updateBalances,
@@ -329,7 +344,9 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         getTokensChartData,
         getPercentChangeByTokens,
         getAllowance,
-        getTokenBalance
+        getTokenBalance,
+        getCSTTotalSupply,
+        getCSTMarket
     }
 
 }

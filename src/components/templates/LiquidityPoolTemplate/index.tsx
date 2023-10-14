@@ -1,5 +1,5 @@
 import { SingleColumn } from "../../../layout/SingleColumn";
-import { PoolTable, LPSearch, PoolItemDetails, RemoveLiquidityDialog } from "rengo-ui-kit";
+import { PoolTable, LPSearch, PoolItemDetails, RemoveLiquidityDialog, PlatformBalance } from "rengo-ui-kit";
 import { Container, SubHeader } from "./styles";
 import { useTheme } from "styled-components";
 import { PairsContextProvider } from "../../../contexts/PairsContext";
@@ -64,7 +64,7 @@ const poolDetailsRowDefault = {
 
 export const LiquidityPoolTemplate = ({ isMobile }) => {
   const theme = useTheme();
-  const { getPoolList, pairState } = useContext(PairsContextProvider);
+  const { getPoolList, pairState, getTVL } = useContext(PairsContextProvider);
   const { refresh } = useContext(StateHashProviderContext);
   const { progressBar, clearProgress, getProgress } = useContext(
     ProgressBarProviderContext
@@ -74,7 +74,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
     onRemoveLiquidity} = useContext(LiquidityProviderContext)
 
   const {
-      tokenState
+      tokenState,
+      getCSTMarket
     } = useContext(TokensProviderContext)
 
   const {
@@ -125,6 +126,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [removeLiquidityButtonDisabled, setRemoveLiquidityButtonDisabled] = useState(true)
   const [showRemovingToggle, setShowRemovingToggle] = useState(true)
   const [removeLiquidityAllowanceEnabled, setRemoveLiquidityAllowanceEnabled] = useState(false)
+  const [tvl, setTVL] = useState('$0.00')
+  const [cstMarket, setCSTMarket] = useState('$0.00')
 
   useEffect(() => {
     const gaugeAmount = Object.values(pairState).filter(p => !!p.gaugeToken).length
@@ -154,6 +157,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
       })
     );
 
+    setCSTMarket(getCSTMarket())
   }, [pairState]);
 
   useEffect(() => {
@@ -171,6 +175,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
         }))
     }
 
+    setTVL(getTVL())
   }, [tokenState])
 
   const handleShowPoolDetails = () => {
@@ -423,6 +428,8 @@ const handleActionRemoval = async () => {
 
   return (
     <div>
+      <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+      <PlatformBalance title='Total Value Locked:' value={tvl}/>
       <SingleColumn isMobile={isMobile} title="Liquidity Pool">
         <Container isMobile={isMobile}>
           <SubHeader theme={theme}>

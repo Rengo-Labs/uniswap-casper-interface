@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {SingleColumn} from "../../../layout/SingleColumn";
-import {BalanceTable} from "rengo-ui-kit";
+import {BalanceTable, PlatformBalance} from "rengo-ui-kit";
 import {TokensProviderContext} from "../../../contexts/TokensContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
 import {PairsContextProvider} from "../../../contexts/PairsContext";
@@ -10,10 +10,11 @@ import {PairData} from "../../../reducers/PairsReducer";
 
 export const BalanceTemplate = ({isMobile}) => {
     const {isConnected} = useContext(WalletProviderContext)
-    const {tokenState, getBalancesProfit} = useContext(TokensProviderContext)
-    const {getPoolList} = useContext(PairsContextProvider)
-    const {getGlobalChart} = useContext(PairsContextProvider)
+    const {tokenState, getBalancesProfit, getCSTMarket} = useContext(TokensProviderContext)
+    const {getPoolList, getTVL} = useContext(PairsContextProvider)
     const [data, setData] = useState([])
+    const [tvl, setTVL] = useState('$0.00')
+    const [cstMarket, setCSTMarket] = useState('$0.00')
 
     const getBalance = async (tokenState) => {
         const pairs = getPoolList()
@@ -57,13 +58,17 @@ export const BalanceTemplate = ({isMobile}) => {
         //getGlobalChart()
         setData(r)
       })
+      setTVL(getTVL())
+      setCSTMarket(getCSTMarket())
     }, [tokenState, isConnected])
 
     return (
         <>
-            <SingleColumn isMobile={isMobile} title="Your Balance">
-                <BalanceTable networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`} data={data}/>
-            </SingleColumn>
+          <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+          <PlatformBalance title='Total Value Locked:' value={tvl}/>
+          <SingleColumn isMobile={isMobile} title="Your Balance">
+              <BalanceTable networkLink={`${SUPPORTED_NETWORKS.blockExplorerUrl}/contract-package/`} data={data}/>
+          </SingleColumn>
         </>
     );
 }

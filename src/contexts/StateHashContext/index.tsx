@@ -13,15 +13,15 @@ interface StateHashContext {
     stateHash: string,
     setStateHash: (hash: string) => void,
     getLatestRootHash: () => Promise<string>,
-    refresh: (wallet?) => Promise<void>
+    refresh: (wallet?) => Promise<void>,
 }
 
 export const StateHashProviderContext = createContext<StateHashContext>({} as any)
 
 export const StateHashContext = ({children}: StateHashContextProps) => {
     const [stateHash, setStateHash] = useState<string>('')
-    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, resetPairs, loadRewards} = useContext(PairsContextProvider)
-    const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance, resetTokens} = useContext(TokensProviderContext)
+    const {loadPairs, loadPairsUSD, loadUserPairsData, clearUserPairsData, pairState, loadRewards, getTVL} = useContext(PairsContextProvider)
+    const {tokenState, loadTokensBalance, loadTokensUSD, clearTokensBalance, getCSTMarket} = useContext(TokensProviderContext)
     const {walletState} = useContext(WalletProviderContext)
 
     const {previousQuery} = useContext(PoolProviderContext)

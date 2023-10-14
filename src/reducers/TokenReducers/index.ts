@@ -64,6 +64,7 @@ export type TokenAction = {
   payload: {
     name: string,
     priceUSD: string,
+    totalSupply: string
   },
 } | {
   type: TokenActions.SWITCH_TOKENS,
@@ -115,6 +116,7 @@ export function TokenReducer(state: TokenState, action: TokenAction) {
           [action.payload.name]: {
             ...state.tokens[action.payload.name],
             priceUSD: action.payload.priceUSD,
+            totalSupply: action.payload.totalSupply
           },
         },
       };

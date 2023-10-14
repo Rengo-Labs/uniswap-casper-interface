@@ -145,8 +145,7 @@ export type PairActionLoadPairPayLoad = {
   volume1d: string,
   totalReserve0: string,
   totalReserve1: string,
-  totalSupply: string,
-  totalLiquidityUSD: string
+  totalSupply: string
 }
 
 export type PairActionLoadAPRRewardPayLoad = {
@@ -303,7 +302,6 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             volume1d: action.payload.volume1d,
             //reserve0,
             //reserve1,
-            totalLiquidityUSD: action.payload.totalLiquidityUSD,
             totalReserve0: action.payload.totalReserve0,//convertBigNumberToUIString(totalReserve0, action.payload.decimals0),
             totalReserve1: action.payload.totalReserve1,//convertBigNumberToUIString(totalReserve1, action.payload.decimals1),
             totalSupply: action.payload.totalSupply//convertBigNumberToUIString(totalSupply, oldState.decimals),
@@ -390,7 +388,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .times(APR_AMOUNT_WEEKS)
             .div(action.payload.gaugeAmount)
 
-          const globalRewardsAPR = yearlyWeightedReward
+          const globalRewardsAPR = parseFloat(action.payload.totalLiquidityUSD) == 0 ? BigNumber(0) : yearlyWeightedReward
             .div(action.payload.totalLiquidityUSD)
             .times(100)
 
@@ -412,7 +410,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .times(oldState.gaugeCSTWeight)
             .div(action.payload.gaugeTotalWeight)
 
-          const globalRewardsAPR = yearlyWeightedReward
+          const globalRewardsAPR = parseFloat(action.payload.totalLiquidityUSD) == 0 ? BigNumber(0) : yearlyWeightedReward
             .div(action.payload.totalLiquidityUSD)
             .times(100)
 

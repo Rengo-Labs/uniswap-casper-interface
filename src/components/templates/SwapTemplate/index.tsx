@@ -16,6 +16,7 @@ import {globalStore} from "../../../store/store";
 import {PLATFORM_GAS_FEE} from '../../../constant'
 import BigNumber from "bignumber.js";
 import {CSPRPackageHash} from '../../../constant/bootEnvironmet'
+import {PlatformBalance} from "rengo-ui-kit";
 
 export const SwapTemplate = ({isMobile}) => {
     const {
@@ -31,7 +32,7 @@ export const SwapTemplate = ({isMobile}) => {
     const {onConfirmSwapConfig, getSwapDetails} =
         useContext(SwapProviderContext);
     const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext);
-    const {calculateUSDtokens, pairState, findReservesBySymbols} = useContext(PairsContextProvider)
+    const {calculateUSDtokens, pairState, findReservesBySymbols, getTVL} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {
         firstTokenSelected,
@@ -41,7 +42,8 @@ export const SwapTemplate = ({isMobile}) => {
         tokenState,
         onSwitchTokens,
         filterPopupTokens,
-        getPercentChangeByTokens
+        getPercentChangeByTokens,
+        getCSTMarket
     } = useContext(TokensProviderContext)
     // Details requirements
     const { handleValidate, showNotification } =
@@ -77,10 +79,18 @@ export const SwapTemplate = ({isMobile}) => {
 
     const [platformGas, setPlatformGas] = useState(PLATFORM_GAS_FEE)
     const [disableSecondToken, setDisableSecondToken] = useState(true)
+    const [tvl, setTVL] = useState('$0.00')
+    const [cstMarket, setCSTMarket] = useState('$0.00')
 
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
     }, [firstTokenSelected, secondTokenSelected, showChart0])
+
+    useEffect(() => {
+
+        setTVL(getTVL())
+        setCSTMarket(getCSTMarket())
+    }, [tokenState.tokens, pairState])
 
     const handleChangeGasFee = (value) => {
         const gasFeeValue = value ? parseFloat(value) : 0;
@@ -302,6 +312,8 @@ export const SwapTemplate = ({isMobile}) => {
 
     return (
         <>
+            <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+            <PlatformBalance title='Total Value Locked:' value={tvl}/>
             <DoubleColumn isMobile={isMobile} title="Swap">
                 <SwapDetail
                     firstTokenImg={firstTokenSelected.logoURI || ''}

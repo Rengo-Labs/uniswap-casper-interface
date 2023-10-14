@@ -13,7 +13,7 @@ import { DoubleColumn } from "../../../layout/DoubleColumn";
 import { useSearchParams } from "react-router-dom";
 import { globalStore } from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
-import { LPContainer, RemoveLiquidityDialog, StakeDialog } from 'rengo-ui-kit';
+import {LPContainer, PlatformBalance, RemoveLiquidityDialog, StakeDialog} from 'rengo-ui-kit';
 import { useNavigate } from "react-router";
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
@@ -56,7 +56,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
   } = useContext(StakingProviderContext)
 
   const { progressBar, getProgress, clearProgress } = useContext(ProgressBarProviderContext)
-  const { calculateUSDtokens, pairState, findReservesBySymbols, getPoolList } = useContext(PairsContextProvider)
+  const { calculateUSDtokens, pairState, findReservesBySymbols, getPoolList, getTVL } = useContext(PairsContextProvider)
   const { refresh } = useContext(StateHashProviderContext)
   const {
     firstTokenSelected,
@@ -65,7 +65,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
     onSelectSecondToken,
     tokenState,
     onSwitchTokens,
-    filterTokenPairsByToken
+    filterTokenPairsByToken,
+    getCSTMarket
   } = useContext(TokensProviderContext)
   const { showNotification } = isCSPRValid();
   const [searchParams, setSearchParams] = useSearchParams()
@@ -129,6 +130,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const [actionSelected, setActionSelected] = useState('')
   const [showClaimedNotification, setShowClaimedNotification] = useState(false)
   const [counterUpdateForClaims, setCounterUpdateForClaims] = useState(0)
+  const [tvl, setTVL] = useState('$0.00')
+  const [cstMarket, setCSTMarket] = useState('$0.00')
 
   const handleChangeInput = (value) => {
     if (value == 0) {
@@ -538,6 +541,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
       await refresh()
     })
 
+    setTVL(getTVL())
   }, [isConnected, pairState, stakingToggle])
 
   useEffect(() => {
@@ -597,6 +601,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
       setCounterUpdateForClaims(counterUpdateForClaims => counterUpdateForClaims + 1)
     }
+
+    setCSTMarket(getCSTMarket())
   }, [tokenState])
 
   async function onLiquidity(amountA, amountB) {
@@ -713,6 +719,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
   return (
     <>
+      <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+      <PlatformBalance title='Total Value Locked:' value={tvl}/>
       <RemoveLiquidityDialog
         showToggle={showRemovingToggle}
         firstRate={removeLiquidityData.firstRate}

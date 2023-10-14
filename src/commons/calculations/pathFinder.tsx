@@ -231,7 +231,7 @@ export const getPath = (
   token0Symbol: string, 
   token1Symbol: string, 
   tokenList = Object.values(initialTokenState.tokens),
-  pairList = Object.values(initialPairsState),
+  pairList: any[] = Object.values(initialPairsState),
 ): PathItem[] => {
 
   const graph = new DijkstraCalculator();
