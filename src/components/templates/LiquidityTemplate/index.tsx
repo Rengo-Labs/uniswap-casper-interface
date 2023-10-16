@@ -311,8 +311,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
       setRewardToken(item.gaugeToken)
       setRewardAmount(parseFloat(tokenState.tokens[item.gaugeToken].amount))
-      await onClaimAction(item)
-      setShowClaimedNotification(true)
+      const result = await onClaimAction(item)
+      if (result) setShowClaimedNotification(true)
     }
 
     if (action === 'ClaimLPCST') {
@@ -322,8 +322,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
       }
       setRewardToken('CST')
       setRewardAmount(parseFloat(tokenState.tokens['CST'].amount))
-      await onClaimCSTAction(item)
-      setShowClaimedNotification(true)
+      const result = await onClaimCSTAction(item)
+      if (result) setShowClaimedNotification(true)
     }
   }
 
@@ -464,13 +464,9 @@ export const LiquidityTemplate = ({ isMobile }) => {
     setStakePopup(true)
   }
 
-  const onClaimAction = async (item) => {
-    await onClaimRewards(item.gaugeContractHash)
-  }
+  const onClaimAction = async (item) => await onClaimRewards(item.gaugeContractHash)
 
-  const onClaimCSTAction = async (item) => {
-    await onClaimCSTRewards(item.gaugePackageHash)
-  }
+  const onClaimCSTAction = async (item) => onClaimCSTRewards(item.gaugePackageHash)
 
   const loadUserLP = () => {
     const userPairs = Object.values(pairState).filter(
