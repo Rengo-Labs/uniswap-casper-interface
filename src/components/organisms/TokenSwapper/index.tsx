@@ -160,8 +160,8 @@ const TokenSwapper = ({
     }
 
     const filteredValue = 1
-    const firstTokenOnMount = tokenState.tokens[firstInitialToken]
-    const twoTokenOnMount = tokenState.tokens[secondInitialToken]
+    const firstTokenOnMount = firstTokenSelected ?? tokenState.tokens[firstInitialToken]
+    const twoTokenOnMount = secondTokenSelected ?? tokenState.tokens[secondInitialToken]
 
     const handleExchangeCalculation = async () => {
       const {tokensToTransfer, exchangeRateA, exchangeRateB, priceImpact} = await updateDetail(
