@@ -297,13 +297,16 @@ const LiquiditySwapper = ({
 
     onSelectFirstToken(token)
 
-    const {tokensToTransfer} = await updateDetail(
+    const {tokensToTransfer, exchangeRateA, exchangeRateB} = await updateDetail(
       token,
       secondTokenSelected,
       amountSwapTokenA,
       token
     )
     amountSwapTokenBSetter(tokensToTransfer);
+
+    exchangeRateASetter(exchangeRateB)
+    exchangeRateBSetter(exchangeRateA)
   }
 
   async function selectAndCloseTokenB(token: Token): Promise<void> {
@@ -313,13 +316,16 @@ const LiquiditySwapper = ({
 
     onSelectSecondToken(token)
 
-    const {tokensToTransfer} = await updateDetail(
+    const {tokensToTransfer, exchangeRateA, exchangeRateB} = await updateDetail(
       firstTokenSelected,
       token,
       amountSwapTokenB,
       token
     )
     amountSwapTokenASetter(tokensToTransfer)
+
+    exchangeRateASetter(exchangeRateA)
+    exchangeRateBSetter(exchangeRateB)
   }
 
   const amountA = isNaN(amountSwapTokenA) ? 0 : amountSwapTokenA;
