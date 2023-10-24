@@ -74,7 +74,7 @@ export const tokenList: Record<string, Token> = {
     symbolPair: "WCSPR",
     decimals: 9,
     contractHash:
-      "hash-99baafab995cab68ca622edcb29fee7b83e1245ac0a3218444e996f561cba8f9",
+      "hash-aa4d81fd8c4fa89b20827330a0b23c841bec510afeb9a6c150d77c38426396da",
     packageHash:
       "hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a",
     logoURI: wcsprIcon,
