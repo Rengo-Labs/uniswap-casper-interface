@@ -51,10 +51,10 @@ export enum SwapEntryPoint {
 
 /**
  * Determine which swap endpoint should be used
- * 
+ *
  * @param tokenASymbol tokenA symbol
  * @param tokenBSymbol tokenB symbol
- * 
+ *
  * @returns which swap endpoint should be used
  */
 export const selectSwapEntryPoint = (tokenASymbol: string, tokenBSymbol: string): SwapEntryPoint => {
@@ -73,11 +73,11 @@ export const selectSwapEntryPoint = (tokenASymbol: string, tokenBSymbol: string)
 }
 
 /**
- * Sign and deploy swap 
- * 
+ * Sign and deploy swap
+ *
  * @param apiClient APIClient
  * @param casperClient Casper Client
- * @param wallet current Casper Wallet 
+ * @param wallet current Casper Wallet
  * @param deadline length of time before giving up
  * @param amountIn desired amount in
  * @param amountOut desired amount out
@@ -85,8 +85,8 @@ export const selectSwapEntryPoint = (tokenASymbol: string, tokenBSymbol: string)
  * @param tokenBSymbol tokenB symbol
  * @param slippage amount of slippage to abort if exceeded
  * @param mainPurse uref of main purse to send/receive funds
- * 
- * @returns an array containing the deploy hash and deploy result 
+ *
+ * @returns an array containing the deploy hash and deploy result
  */
 export const signAndDeploySwap = async (
   apiClient: APIClient,
@@ -108,7 +108,7 @@ export const signAndDeploySwap = async (
     const response = await apiClient.getPath(tokenA.symbolPair, tokenB.symbolPair)
     const path = response.pathwithcontractHash.map((x) => new CLString(x))
 
-    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountIn.toString(), amountOut.toString())
+    log.debug("EntryPoint", entryPoint, tokenA.symbol, tokenB.symbol, amountIn.toString(), amountOut.toString(), gasFee)
 
     switch (entryPoint) {
       case SwapEntryPoint.SWAP_EXACT_TOKENS_FOR_TOKENS:

@@ -7,11 +7,12 @@ import {WalletName} from "../../../commons";
 import torusWallet from "../../../assets/newDesignIcons/torus-wallet.svg";
 import {globalStore} from "../../../store/store";
 import lineBreakIcon from "../../../assets/newDesignIcons/linkbreak.svg";
+import metamaskFlask from '../../../assets/newDesignIcons/metaMaskFlask.svg';
 import {useNavigate} from 'react-router-dom'
 
 export const PopupsContainer = () => {
   const navigate = useNavigate()
-  
+
     const {
         showSettings,
         setShowSettings,
@@ -42,6 +43,12 @@ export const PopupsContainer = () => {
             icon: casperWallet,
             onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
         },
+        {
+            id: 3,
+            name: 'CasperDash',
+            icon: casperWallet,
+            onConnect: () => onConnectWallet(WalletName.CASPER_DASH)
+        },
         // {
         //     id: 3,
         //     name: 'Ledger',
@@ -49,10 +56,16 @@ export const PopupsContainer = () => {
         //     onConnect: () => onConnectWallet(WalletName.CASPER_SIGNER)
         // },
         {
-            id: 3,
+            id: 4,
             name: 'Torus Wallet',
             icon: torusWallet,
             onConnect: () => onConnectWallet(WalletName.TORUS)
+        },
+        {
+            id: 5,
+            name: 'Metamask Flask',
+            icon: metamaskFlask,
+            onConnect: () => onConnectWallet(WalletName.METAMASK_FLASK)
         },
     ]
 
@@ -119,7 +132,7 @@ export const PopupsContainer = () => {
             handleClose={handleShowSettingsOnClose}
             handleSave={handleSaveSettings}
             customNodeUrlValue={nodeUrl}
-            slippageToleranceValue={slippageTolerance}
+            slippageToleranceValue={slippageTolerance.toString()}
           />
 
           <WalletConnectedOptions

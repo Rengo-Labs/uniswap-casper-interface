@@ -28,7 +28,7 @@ export const TitleContainer = styled.div<{ isMobile: boolean }>`
   display: grid;
   grid-template-columns: ${({isMobile}) => isMobile ? 'repeat(1, 1fr)' : 'repeat(2, 1fr)'};
   gap: ${({isMobile}) => isMobile ? '40px' : '20px'};
-  padding-top: ${({isMobile}) => isMobile ? '27px' : '23px'};
+  padding-top: ${({isMobile}) => isMobile ? '10px' : '10px'};
   padding-bottom: ${({isMobile}) => isMobile ? '16px' : '32px'};
 
 `;

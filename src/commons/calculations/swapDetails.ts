@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
-import { APIClient, Token } from '../api'
-import { log, fixAmountOfZeros } from '../utils'
+import { Token } from '../api'
+import { log } from '../utils'
 import {PLATFORM_GAS_FEE} from "../../constant";
 
 /**
@@ -41,13 +41,18 @@ export const calculateSwapDetails = async (
     token: Token,
     fee = PLATFORM_GAS_FEE
 ): Promise<SwapDetails> => {
-  try {     
+  try {
       const isA2B = token.symbol == tokenA.symbol
+
+      // console.log('xyz-reserve0', reserve0.toString())
+      // console.log('xyz-reserve1', reserve1.toString())
 
       const liquidityA = new BigNumber(reserve0)
       const liquidityB = new BigNumber(reserve1)
       const inputValue = new BigNumber(inputValueRaw).times(10 ** (isA2B ? tokenA.decimals : tokenB.decimals))
       const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
+
+      // console.log('xyz-inputValue', inputValue.toString())
       // console.log(inputValueRaw.toString(), inputValue.toString(), reserve0.toString(), reserve1.toString())
 
       const inputLiquidity = isA2B ? liquidityA : liquidityB
@@ -87,17 +92,22 @@ export const calculateSwapDetails = async (
       const exchangeRateA = isA2B ? inputExchangeRate : outputExchangeRate
       const exchangeRateB = isA2B ? outputExchangeRate : inputExchangeRate
 
-      // console.log("exchangeRateA", exchangeRateA, "exchangeRateB", exchangeRateB)
+      // console.log("exchangeRateA", exchangeRateA.toString(), "exchangeRateB", exchangeRateB.toString())
 
       const priceImpact = inputValueMinusFee.div(inputLiquidity.plus(inputValueMinusFee)).times(100).toNumber()
       // console.log("priceImpact", priceImpact)
 
+//      console.log('xyz-tokensToTransfer', inputValue.times(inputExchangeRate).div(10 ** (isA2B ? tokenB.decimals : tokenA.decimals)).toString())
+
+      const decimalDiff = tokenA.decimals - tokenB.decimals
+      // console.log('decimalDiff', decimalDiff, exchangeRateA.toNumber() * 10 ** decimalDiff, exchangeRateB.toNumber() / 10 ** decimalDiff)
+
       return {
-          tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** (isA2B ? tokenA.decimals : tokenB.decimals)).toFixed((isA2B ? tokenB.decimals : tokenA.decimals)),
+          tokensToTransfer: inputValue.times(inputExchangeRate).div(10 ** (isA2B ? tokenB.decimals : tokenA.decimals)).toFixed((isA2B ? tokenB.decimals : tokenA.decimals)),
           //tokensToTransfer: tokensToTransfer.div(10 ** 9).toNumber().toFixed(9),
           priceImpact: priceImpact >= 0.01 ? priceImpact.toFixed(2) : '<0.01',
-          exchangeRateA: exchangeRateA.toNumber(),
-          exchangeRateB : exchangeRateB.toNumber()
+          exchangeRateA: exchangeRateA.toNumber() * 10 ** decimalDiff,
+          exchangeRateB : exchangeRateB.toNumber() / 10 ** decimalDiff,
       }
   } catch (err) {
       log.error(`getSwapDetail error: ${err}`)

@@ -15,6 +15,8 @@ import isCSPRValid from "../../../hooks/isCSPRValid";
 import {globalStore} from "../../../store/store";
 import {PLATFORM_GAS_FEE} from '../../../constant'
 import BigNumber from "bignumber.js";
+import {CSPRPackageHash} from '../../../constant/bootEnvironmet'
+import {PlatformBalance} from "rengo-ui-kit";
 
 export const SwapTemplate = ({isMobile}) => {
     const {
@@ -30,7 +32,7 @@ export const SwapTemplate = ({isMobile}) => {
     const {onConfirmSwapConfig, getSwapDetails} =
         useContext(SwapProviderContext);
     const {progressBar, getProgress, clearProgress} = useContext(ProgressBarProviderContext);
-    const {calculateUSDtokens, pairState, findReservesBySymbols} = useContext(PairsContextProvider)
+    const {calculateUSDtokens, pairState, findReservesBySymbols, getTVL} = useContext(PairsContextProvider)
     const {refresh} = useContext(StateHashProviderContext)
     const {
         firstTokenSelected,
@@ -40,7 +42,8 @@ export const SwapTemplate = ({isMobile}) => {
         tokenState,
         onSwitchTokens,
         filterPopupTokens,
-        getPercentChangeByTokens
+        getPercentChangeByTokens,
+        getCSTMarket
     } = useContext(TokensProviderContext)
     // Details requirements
     const { handleValidate, showNotification } =
@@ -66,8 +69,8 @@ export const SwapTemplate = ({isMobile}) => {
             token1price: 0
         }
     ])
-    const [valueAUSD, setValueAUSD] = useState('0.00');
-    const [valueBUSD, setValueBUSD] = useState('0.00');
+    const [valueAUSD, setValueAUSD] = useState('0.0000');
+    const [valueBUSD, setValueBUSD] = useState('0.0000');
 
     const [priceAndPercentage, setPriceAndPercentage] = useState({
         priceUSD: 0,
@@ -75,10 +78,19 @@ export const SwapTemplate = ({isMobile}) => {
     })
 
     const [platformGas, setPlatformGas] = useState(PLATFORM_GAS_FEE)
+    const [disableSecondToken, setDisableSecondToken] = useState(true)
+    const [tvl, setTVL] = useState('$0.00')
+    const [cstMarket, setCSTMarket] = useState('$0.00')
 
     useEffect(() => {
         handleGetChartData().then(() => console.log('chart updated'))
     }, [firstTokenSelected, secondTokenSelected, showChart0])
+
+    useEffect(() => {
+
+        setTVL(getTVL())
+        setCSTMarket(getCSTMarket())
+    }, [tokenState.tokens, pairState])
 
     const handleChangeGasFee = (value) => {
         const gasFeeValue = value ? parseFloat(value) : 0;
@@ -91,7 +103,6 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const setPackageHashIfSymbolIsCSPR = (token) => {
-        const CSPRPackageHash = 'hash-0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a'
         if (token.symbol === 'CSPR') {
             token.packageHash = CSPRPackageHash;
         }
@@ -138,8 +149,8 @@ export const SwapTemplate = ({isMobile}) => {
     const resetTokenValues =  () => {
         amountSwapTokenASetter(0);
         amountSwapTokenBSetter(0);
-        setValueAUSD('0')
-        setValueBUSD('0')
+        setValueAUSD('0.0000')
+        setValueBUSD('0.0000')
     }
 
     const setPriceImpact = (priceImpact = 0) => {
@@ -211,6 +222,8 @@ export const SwapTemplate = ({isMobile}) => {
 
         let getSwapDetailResponse = null;
         let nextTokensToTransfer = value
+        let exchangeRateA = BigNumber(1)
+        let exchangeRateB = BigNumber(1)
 
         if (pairExist) {
             const {reserve0, reserve1} = findReservesBySymbols(
@@ -226,6 +239,8 @@ export const SwapTemplate = ({isMobile}) => {
                 value,
                 token
             );
+            exchangeRateA = getSwapDetailResponse.exchangeRateA
+            exchangeRateB = getSwapDetailResponse.exchangeRateB
             setPairPath([tokenA.symbol, tokenB.symbol])
         } else {
             const pairListPaths = listPath
@@ -239,7 +254,7 @@ export const SwapTemplate = ({isMobile}) => {
                     tokenState
                 );
                 const token0 = tokenState.tokens[symbol0]
-                const token1 = tokenState.tokens[symbol0]
+                const token1 = tokenState.tokens[symbol1]
                 getSwapDetailResponse = await getSwapDetails(
                     token0,
                     token1,
@@ -254,6 +269,8 @@ export const SwapTemplate = ({isMobile}) => {
                 getSwapDetailResponse.priceImpact = isNaN(priceImpactAcm) ? priceImpactAcm : priceImpactAcm.toFixed(2)
                 nextTokensToTransfer = parseFloat(tokensToTransfer.toString())
                 pairPath.push(symbol0, symbol1)
+                exchangeRateA = exchangeRateA.times(getSwapDetailResponse.exchangeRateA)
+                exchangeRateB = exchangeRateB.times(getSwapDetailResponse.exchangeRateB)
             }
             setPairPath([...new Set(pairPath)])
         }
@@ -263,7 +280,13 @@ export const SwapTemplate = ({isMobile}) => {
         }
 
         return {
-            getSwapDetailResponse
+            getSwapDetailResponse: Object.assign(
+              getSwapDetailResponse,
+              {
+                exchangeRateA,
+                exchangeRateB,
+              }
+            )
         }
     }
 
@@ -278,10 +301,10 @@ export const SwapTemplate = ({isMobile}) => {
         if (isValid) {
             updateSlippageTolerance(0)
             setPairPath([tokenA.symbol, tokenB.symbol])
-        }
-        if (isSwitched) {
+            gasFeeSetter(9)
+        } else if (isSwitched) {
             updateSlippageTolerance(0.5)
-            gasFeeSetter(isValid ? 9 : adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol, 0))
+            gasFeeSetter(adjustedGas(gasPriceSelectedForSwapping, tokenA.symbol, tokenB.symbol, 0))
         }
 
         return isValid
@@ -289,6 +312,8 @@ export const SwapTemplate = ({isMobile}) => {
 
     return (
         <>
+            <PlatformBalance title='CST Market Cap:' value={cstMarket} paddingTop='10px'/>
+            <PlatformBalance title='Total Value Locked:' value={tvl}/>
             <DoubleColumn isMobile={isMobile} title="Swap">
                 <SwapDetail
                     firstTokenImg={firstTokenSelected.logoURI || ''}
@@ -348,6 +373,7 @@ export const SwapTemplate = ({isMobile}) => {
                     valueBUSD={valueBUSD}
                     setValueAUSD={setValueAUSD}
                     setValueBUSD={setValueBUSD}
+                    disableSecondToken={disableSecondToken}
                 />
             </DoubleColumn>
         </>

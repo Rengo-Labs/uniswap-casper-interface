@@ -1,7 +1,7 @@
 import React from "react";
 import { TokenActions, TokenState} from "../../reducers/TokenReducers";
 import BigNumber from "bignumber.js";
-import {convertBigNumberToUIString, log} from "../utils";
+import {convertBigNumberToUIString, convertToUSDCurrency, log} from "../utils";
 import {apiClient, casperClient} from "../../contexts/ConfigContext";
 import {Wallet} from "../wallet";
 import {Token} from "../api";
@@ -17,25 +17,36 @@ import {
 
 const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
+    const getCSTMarket = () => {
+        const cstToken = tokenState.tokens['CST']
+        const market = BigNumber(cstToken.totalSupply ?? 0).multipliedBy(cstToken.priceUSD)
+        return convertToUSDCurrency(market.toNumber())
+    }
+
     const loadTokenUSD = async (pairTotalReserves, pairsState, updateNotification) => {
         const tokenPrices: Record<string, string> = {}
         const tokens = Object.values(tokenState.tokens)
 
         for (const t of tokens) {
             const priceUSD = pairFinder(pairsState, tokenState).findUSDRateBySymbol(t.symbolPair, pairTotalReserves, updateNotification).toString()
+            const totalSupply = t.symbol === 'CST' ? await getCSTTotalSupply(t.contractHash) : '0'
 
             tokenDispatch({
                 type: TokenActions.LOAD_PRICE_USD,
                 payload: {
                     name: t.symbol,
                     priceUSD,
+                    totalSupply: convertBigNumberToUIString(
+                      BigNumber(totalSupply.toString()),
+                      t.decimals
+                    ),
                 },
             })
 
             tokenPrices[t.symbol] = priceUSD
         }
 
-        return tokens
+        return tokenPrices
     }
 
     const updateBalances = async (wallet: Wallet, isConnected: boolean): Promise<void> => {
@@ -49,71 +60,12 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
 
                 if (token.contractHash) {
                     return Promise.all([
-                        apiClient
-                          .getERC20Allowance(
-                            wallet,
-                            token.contractHash
-                          )
-                          .then((response) => {
-                              //console.log('allowance', token, response)
-                              tokenDispatch({
-                                  type: TokenActions.LOAD_ALLOWANCE,
-                                  payload: {
-                                      name: x,
-                                      allowance: convertBigNumberToUIString(
-                                        new BigNumber(response),
-                                        token.decimals
-                                      ),
-                                  },
-                              });
-                          }).catch(e => {
-                              console.log("Error loading pair allowance", x)
-                              tokenDispatch({
-                                  type: TokenActions.LOAD_ALLOWANCE,
-                                  payload: {
-                                      name: x,
-                                      allowance: convertBigNumberToUIString(
-                                        new BigNumber(0),
-                                        token.decimals
-                                      ),
-                                  },
-                              })
-                          }),
-                        apiClient
-                          .getERC20Balance(
-                            wallet,
-                            token.contractHash
-                          )
-                          .then((response) => {
-                              //console.log('balance', token, response)
-                              console.log(x, convertBigNumberToUIString(new BigNumber(response), token.decimals).toString())
-                              tokenDispatch({
-                                  type: TokenActions.LOAD_BALANCE,
-                                  payload: {
-                                      name: x,
-                                      amount: convertBigNumberToUIString(
-                                        new BigNumber(response),
-                                        token.decimals
-                                      ),
-                                  },
-                              });
-                          }).catch(e => {
-                              console.log("Error loading pair balance", x)
-                              tokenDispatch({
-                                  type: TokenActions.LOAD_BALANCE,
-                                  payload: {
-                                      name: x,
-                                      amount: convertBigNumberToUIString(
-                                        new BigNumber(0),
-                                        token.decimals
-                                      ),
-                                  },
-                            })
-                          }),
+                        getAllowance(wallet, x, token.decimals, token.contractHash),
+                        getTokenBalance(wallet, x, token.decimals, token.contractHash),
                     ]);
                 } else {
                     return casperClient.getBalance(wallet).then((balance) => {
-                        console.log('balance', convertBigNumberToUIString(balance, token.decimals))
+                        //console.log('balance', convertBigNumberToUIString(balance, token.decimals))
                         tokenDispatch({
                             type: TokenActions.LOAD_BALANCE,
                             payload: {
@@ -307,6 +259,76 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         return getBalanceProfitByContractHash(packageHash)
     }
 
+    const getAllowance = async (wallet, name, decimals, contractHash): Promise<void> => {
+        apiClient
+          .getERC20Allowance(
+            wallet,
+            contractHash
+          )
+          .then((response) => {
+              //console.log('allowance', token, response)
+              tokenDispatch({
+                  type: TokenActions.LOAD_ALLOWANCE,
+                  payload: {
+                      name: name,
+                      allowance: convertBigNumberToUIString(
+                        new BigNumber(response),
+                        decimals
+                      ),
+                  },
+              });
+          }).catch(e => {
+            console.log("Error loading pair allowance", name, e)
+            tokenDispatch({
+                type: TokenActions.LOAD_ALLOWANCE,
+                payload: {
+                    name: name,
+                    allowance: convertBigNumberToUIString(
+                      new BigNumber(0),
+                      decimals
+                    ),
+                },
+            })
+        })
+    }
+
+    const getTokenBalance = async (wallet, name, decimals, contractHash): Promise<void> => {
+        apiClient
+          .getERC20Balance(
+            wallet,
+            contractHash
+          )
+          .then((response) => {
+              console.log(convertBigNumberToUIString(new BigNumber(response), 9).toString())
+              tokenDispatch({
+                  type: TokenActions.LOAD_BALANCE,
+                  payload: {
+                      name: name,
+                      amount: convertBigNumberToUIString(
+                        new BigNumber(response),
+                        decimals
+                      ),
+                  },
+              });
+          }).catch(e => {
+            console.log("Error loading pair balance", name, e)
+            tokenDispatch({
+                type: TokenActions.LOAD_BALANCE,
+                payload: {
+                    name: name,
+                    amount: convertBigNumberToUIString(
+                      new BigNumber(0),
+                      decimals
+                    ),
+                },
+            })
+        })
+    }
+
+    const getCSTTotalSupply = async (contractHash: string): Promise<string> => {
+        return apiClient.getERC20TotalSupply(contractHash)
+    }
+
     return {
         loadTokenUSD,
         updateBalances,
@@ -320,7 +342,11 @@ const TokenResponsibilities = (tokenState: TokenState, tokenDispatch) => {
         getBalancesProfit,
         getHistoricalTokensChartPrices,
         getTokensChartData,
-        getPercentChangeByTokens
+        getPercentChangeByTokens,
+        getAllowance,
+        getTokenBalance,
+        getCSTTotalSupply,
+        getCSTMarket
     }
 
 }

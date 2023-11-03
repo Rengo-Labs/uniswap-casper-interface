@@ -1,7 +1,8 @@
 import BigNumber from "bignumber.js";
-import { Logger } from "./log";
+import {Logger} from "./log";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import {GEOLOCATION_URL, NODE_PROXY} from "../../constant";
 
 dayjs.extend(relativeTime);
 
@@ -11,7 +12,7 @@ export const ONE_BILLION_E = 9;
 
 export const convertBigNumberToUIString = (
   amount: BigNumber,
-  decimals
+  decimals: number
 ): string => amount.div(10 ** decimals).toString();
 export const convertUIStringToBigNumber = (
   amount: BigNumber.Value,
@@ -68,3 +69,26 @@ export const dateConverter = (date: string) => {
 };
 
 export { createRecipientAddress } from "./keys";
+
+export const getIPfromUser = async () => {
+    const response = await fetch("https://api.ipify.org?format=json");
+    const data = await response.json();
+    return data.ip;
+};
+
+export const getCountryFromIP = async (ip: string) => {
+    try {
+        const response = await fetch(`${NODE_PROXY}${GEOLOCATION_URL}`, {
+            method: "POST",
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ip})
+        });
+        return await response.json();
+    }catch (error) {
+        console.log("Error getting information for Geolocation", error)
+    }
+}

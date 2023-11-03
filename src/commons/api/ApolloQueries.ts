@@ -42,12 +42,15 @@ interface ChartData {
 // keys are lowercase token addresses <--------
 const TOKEN_OVERRIDES: { [address: string]: { name: string; symbol: string } } =
   {
+    'c6649901da894d4ac2c77c0ae217190f79cabc8c0c91788ee997f670b8bdd05e': {
+      name: 'Casper (Wrapped)',
+      symbol: 'CSPR',
+    },
     '0885c63f5f25ec5b6f3b57338fae5849aea5f1a2c96fc61411f2bfc5e432de5a': {
       name: 'Casper (Wrapped)',
       symbol: 'CSPR',
     },
   };
-
 const defaultOptions: DefaultOptions = {
   watchQuery: {
     fetchPolicy: 'no-cache',

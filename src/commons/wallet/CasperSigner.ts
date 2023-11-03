@@ -101,6 +101,7 @@ export class CasperSignerWallet implements Wallet{
       // if it is connected then set connect to true
       if (signerIsConnected) {
         this._isConnected = true
+        await this.getActiveKey();
         return
       }
 
