@@ -4,7 +4,13 @@ import React, {
   ReactNode, useContext,
   useState,
 } from 'react';
-import {NODE_ADDRESS, NotificationType, ROUTER_PACKAGE_HASH, SUPPORTED_NETWORKS} from '../../constant';
+import {
+  GAS_FEE_FOR_CST_CLAIM, GAS_FEE_FOR_GAUGE_CLAIM,
+  NODE_ADDRESS,
+  NotificationType,
+  ROUTER_PACKAGE_HASH,
+  SUPPORTED_NETWORKS
+} from '../../constant';
 
 import {networkName} from '../../constant/bootEnvironmet'
 const NETWORK_NAME = networkName
@@ -23,6 +29,7 @@ import {StateHashProviderContext} from "../StateHashContext";
 import {PairsContextProvider} from "../PairsContext";
 import {PairActions} from "../../reducers/PairsReducer";
 import {TokensProviderContext} from "../TokensContext";
+import store from "store2";
 
 export interface ConfigContext {
   slippageToleranceSelected?: number;
@@ -50,6 +57,10 @@ export interface ConfigContext {
   setShowSettings?: (visible: boolean) => void
   showWalletOptions?: boolean
   setShowWalletOptions?: (visible: boolean) => void
+  gasFeeCST?: number
+  gasFeeETH?: number
+  setGasFeeCST?: (value) => void
+  setGasFeeETH?: (value) => void
 }
 export interface PairReserves {
   reserve0: BigNumber.Value
@@ -80,6 +91,8 @@ export const ConfigContextWithReducer = ({
   const [linkExplorer, setLinkExplorer] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [showWalletOptions, setShowWalletOptions] = useState(false);
+  const [gasFeeCST, setGasFeeCST] = useState(store.get('handleCSTNetworkGasFee') ?? GAS_FEE_FOR_CST_CLAIM);
+  const [gasFeeETH, setGasFeeETH] = useState(store.get('handleETHNetworkGasFee') ?? GAS_FEE_FOR_GAUGE_CLAIM);
 
   const { updateNotification } = notificationStore();
 
@@ -193,7 +206,11 @@ export const ConfigContextWithReducer = ({
         showSettings,
         setShowSettings,
         showWalletOptions,
-        setShowWalletOptions
+        setShowWalletOptions,
+        gasFeeCST,
+        gasFeeETH,
+        setGasFeeCST,
+        setGasFeeETH
       }}
     >
       {children}
