@@ -11,10 +11,10 @@ import {StateHashProviderContext} from "../StateHashContext";
 import BigNumber from "bignumber.js";
 import {TokensProviderContext} from "../TokensContext";
 interface StakingContextProps {
-    onAddStake: (contractHash: string, amount: BigNumber, decimals: number) => Promise<any>,
-    onRemoveStake: (contractHash: string, amount: BigNumber, decimals: number, rewardSymbol: string) =>  Promise<any>
-    onClaimRewards: (contractHash: string) =>  Promise<any>
-    onClaimCSTRewards: (contractHash: string) =>  Promise<any>
+    onAddStake: (networkGasFeeStake: number, contractHash: string, amount: BigNumber, decimals: number) => Promise<any>,
+    onRemoveStake: (networkGasFeeStake: number, contractHash: string, amount: BigNumber, decimals: number, rewardSymbol: string) =>  Promise<any>
+    onClaimRewards: (gasFee, contractHash: string) =>  Promise<any>
+    onClaimCSTRewards: (gasFee, contractHash: string) =>  Promise<any>
     getStakeBalance: (contractHash: string) =>  Promise<any>
     onGetStakeRewards: (accountHash: string, deployHash: string) =>  Promise<any>,
     showRewardNotification: (newBalance, retryCounter: number) => Promise<void>,
@@ -43,7 +43,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
   const [rewardToken, setRewardToken] = useState('')
   const [rewardAmount, setRewardAmount] = useState(0.00)
 
-  async function onAddStake(contractHash: string, amount: BigNumber, decimals: number): Promise<boolean> {
+  async function onAddStake(networkGasFeeStake: number, contractHash: string, amount: BigNumber, decimals: number): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
       title: 'Add Stake',
@@ -55,6 +55,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
 
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).onAddStake(
+        networkGasFeeStake,
         contractHash,
         convertUIStringToBigNumber(amount, decimals)
       )
@@ -108,7 +109,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
-  async function onRemoveStake(contractHash: string, amount: BigNumber, decimals: number, rewardSymbol: string): Promise<boolean> {
+  async function onRemoveStake(networkGasFee: number, contractHash: string, amount: BigNumber, decimals: number, rewardSymbol: string): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
       title: 'Removing Stake',
@@ -120,6 +121,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
 
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet}).onRemoveStake(
+        networkGasFee,
         contractHash,
         convertUIStringToBigNumber(amount, decimals)
       )
@@ -173,7 +175,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
-  async function onClaimRewards(contractHash: string): Promise<boolean> {
+  async function onClaimRewards(gasFee, contractHash: string): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
       title: 'Claim Rewards',
@@ -185,7 +187,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
 
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet})
-        .onClaimRewards(contractHash)
+        .onClaimRewards(gasFee, contractHash)
 
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);
@@ -263,7 +265,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     }
   }
 
-  async function onClaimCSTRewards(contractHash: string): Promise<boolean> {
+  async function onClaimCSTRewards(gasFee, contractHash: string): Promise<boolean> {
     updateNotification({
       type: NotificationType.Info,
       title: 'Claim Rewards',
@@ -275,7 +277,7 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
 
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet})
-        .onClaimCSTRewards(contractHash)
+        .onClaimCSTRewards(gasFee, contractHash)
 
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);

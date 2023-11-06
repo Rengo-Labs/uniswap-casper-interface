@@ -49,6 +49,7 @@ export enum GaugeV3EntryPoint {
  * @returns an array containing the deploy hash and deploy result 
  */
 export const signAndDeployClaim = async (
+  gasFee,
   casperClient: CasperClient,
   wallet: Wallet,
   contractHash: string
@@ -63,7 +64,7 @@ export const signAndDeployClaim = async (
         addr:  CLValueBuilder.option(None, new CLKeyType()),
         receiver: CLValueBuilder.option(None, new CLKeyType()),
       }),
-      new BigNumber(GAS_FEE_FOR_GAUGE_CLAIM).times(10**9),
+      new BigNumber(gasFee).times(10**9),
     )    
   } catch (err) {
       log.error(`signAndDeployClaim error: ${err}`)
@@ -80,6 +81,7 @@ export const signAndDeployClaim = async (
  * @returns an array containing the deploy hash and deploy result
  */
 export const signAndDeployDeposit = async (
+  networkGasFeeStake: number,
   casperClient: CasperClient,
   wallet: Wallet,
   contractHash: string,
@@ -96,7 +98,7 @@ export const signAndDeployDeposit = async (
         addr: CLValueBuilder.option(Some(createRecipientAddress(wallet.publicKey))),
         claim_rewards: CLValueBuilder.option(Some(CLValueBuilder.bool(false)))
       }),
-      new BigNumber(GAS_FEE_FOR_GAUGE_STAKE).times(10**9),
+      new BigNumber(networkGasFeeStake).times(10**9),
     )
   } catch (err) {
     log.error(`signAndDeployDeposit error: ${err}`)
@@ -113,6 +115,7 @@ export const signAndDeployDeposit = async (
  * @returns an array containing the deploy hash and deploy result
  */
 export const signAndDeployWithdraw = async (
+  networkGasFee: number,
   casperClient: CasperClient,
   wallet: Wallet,
   contractHash: string,
@@ -128,7 +131,7 @@ export const signAndDeployWithdraw = async (
         value: CLValueBuilder.u256(amount.toFixed(0, BigNumber.ROUND_DOWN)),
         claim_rewards: CLValueBuilder.option(None, new CLBoolType())
       }),
-      new BigNumber(GAS_FEE_FOR_GAUGE_UNSTAKE).times(10**9),
+      new BigNumber(networkGasFee).times(10**9),
     )
   } catch (err) {
     log.error(`signAndDeployClaim error: ${err}`)
@@ -145,6 +148,7 @@ export const signAndDeployWithdraw = async (
  * @returns an array containing the deploy hash and deploy result
  */
 export const signAndDeployCSTClaim = async (
+  gasFee,
   casperClient: CasperClient,
   wallet: Wallet,
   gaugePackageHash: string
@@ -160,7 +164,7 @@ export const signAndDeployCSTClaim = async (
           new CLByteArray(Uint8Array.from(Buffer.from(gaugePackageHash.slice(5), 'hex')))
         )
       }),
-      new BigNumber(GAS_FEE_FOR_CST_CLAIM).times(10**9),
+      new BigNumber(gasFee).times(10**9),
     )
   } catch (err) {
     log.error(`signAndDeployClaim error: ${err}`)
