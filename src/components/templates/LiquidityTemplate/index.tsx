@@ -25,10 +25,14 @@ import {
 } from "../../../constant";
 import { convertToUSDCurrency } from '../../../commons/utils';
 import { StakingProviderContext } from "../../../contexts/StakingContext";
+import store from "store2";
+
 export const LiquidityTemplate = ({ isMobile }) => {
   const {
     onIncreaseAllow,
     gasPriceSelectedForLiquidity,
+    gasFeeCST,
+    gasFeeETH
   } = useContext(ConfigProviderContext)
 
   const {
@@ -132,6 +136,7 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const [counterUpdateForClaims, setCounterUpdateForClaims] = useState(0)
   const [tvl, setTVL] = useState('$0.00')
   const [cstMarket, setCSTMarket] = useState('$0.00')
+  const [networkGasFeeStake, setNetworkGasFeeStake] = useState(parseInt(store.get('networkGasFeeStake') ?? GAS_FEE_FOR_GAUGE_UNSTAKE))
 
   const handleChangeInput = (value) => {
     if (value == 0) {
@@ -235,13 +240,13 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
     if (actionSelected === 'StakeLP') {
       if (parseFloat(GAS_FEE_FOR_GAUGE_STAKE) <= parseFloat(tokenState.tokens['CSPR'].amount)) {
-        result = await onAddStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
+        result = await onAddStake(networkGasFeeStake, removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals)
       } else {
         showNotification()
       }
     } else {
       if (parseFloat(GAS_FEE_FOR_GAUGE_UNSTAKE) <= parseFloat(tokenState.tokens['CSPR'].amount)) {
-        result = await onRemoveStake(removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals, removeLiquidityData.gaugeToken)
+        result = await onRemoveStake(networkGasFeeStake, removeLiquidityCalculation.gaugeContractHash, removeLiquidityCalculation.lpAmount, removeLiquidityData.decimals, removeLiquidityData.gaugeToken)
       } else {
         showNotification()
       }
@@ -464,9 +469,9 @@ export const LiquidityTemplate = ({ isMobile }) => {
     setStakePopup(true)
   }
 
-  const onClaimAction = async (item) => await onClaimRewards(item.gaugeContractHash)
+  const onClaimAction = async (item) => await onClaimRewards(gasFeeETH, item.gaugeContractHash)
 
-  const onClaimCSTAction = async (item) => onClaimCSTRewards(item.gaugePackageHash)
+  const onClaimCSTAction = async (item) => onClaimCSTRewards(gasFeeCST, item.gaugePackageHash)
 
   const loadUserLP = () => {
     const userPairs = Object.values(pairState).filter(
@@ -752,6 +757,11 @@ export const LiquidityTemplate = ({ isMobile }) => {
         handleAction={onStakeAndUnstakeAction}
         handleAllowance={() => {setRemoveLiquidityAllowanceEnabled(true); onActionGaugeAllowance()}}
         calculatedAmounts={removeLiquidityCalculation}
+        networkGasFee={networkGasFeeStake}
+        networkGasFeeSetter={(value) => {
+          setNetworkGasFeeStake(value)
+          store.set('networkGasFeeStake', value)
+        }}
       />
       <DoubleColumn isMobile={isMobile} title="Liquidity" subTitle='If you staked your LP tokens in a farm, unstake them to see them here'>
         <LiquidityDetail

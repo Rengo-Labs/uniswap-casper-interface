@@ -1,19 +1,25 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext} from "react";
 import { ConfigProviderContext } from "../../../contexts/ConfigContext";
 import {WalletProviderContext} from "../../../contexts/WalletContext";
-import {Settings, WalletConnectedOptions, WalletConnection, Notification} from "rengo-ui-kit";
+import {Settings, WalletConnectedOptions, WalletConnection} from "rengo-ui-kit";
 import casperWallet from "../../../assets/newDesignIcons/casper-wallet.svg";
 import metamaskFlask from "../../../assets/newDesignIcons/metaMaskFlask.svg";
 import {WalletName} from "../../../commons";
 import torusWallet from "../../../assets/newDesignIcons/torus-wallet.svg";
 import {globalStore, notificationStore} from "../../../store/store";
 import lineBreakIcon from "../../../assets/newDesignIcons/linkbreak.svg";
+import store from "store2";
+import {TOKEN_SYMBOL_GAUGE} from "../../../constant";
 export const PopupsContainer = () => {
     const {
         showSettings,
         setShowSettings,
         showWalletOptions,
         setShowWalletOptions,
+        gasFeeCST,
+        gasFeeETH,
+        setGasFeeCST,
+        setGasFeeETH
     } = useContext(ConfigProviderContext);
 
     const {
@@ -140,6 +146,20 @@ export const PopupsContainer = () => {
                 handleSave={handleSaveSettings}
                 customNodeUrlValue={nodeUrl}
                 slippageToleranceValue={slippageTolerance.toString()}
+                handleCSTNetworkGasFee={(value) => {
+                    setGasFeeCST(value)
+                    store.set('handleCSTNetworkGasFee', value)
+                }}
+                handleETHNetworkGasFee={(value) => {
+                    setGasFeeETH(value)
+                    store.set('handleETHNetworkGasFee', value)
+                }}
+                networkGasFeeCSTValue={gasFeeCST}
+                networkGasFeeETHValue={gasFeeETH}
+                placeholderForCST={`Gas Fee`}
+                placeholderForETH={`Gas Fee`}
+                titleForCST={`Network Gas Fee CST`}
+                titleForETH={`Network Gas Fee ${TOKEN_SYMBOL_GAUGE}`}
             />
 
             <WalletConnectedOptions
