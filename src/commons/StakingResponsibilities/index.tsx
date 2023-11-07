@@ -18,20 +18,20 @@ const client = new BlockchainAPI()
 const StakingResponsibilities = ({casperClient, wallet}: StakingResponsibilitiesProps) => {
     // TODO Add params
 
-    const onAddStake = (contractHash: string, amount: BigNumber) => {
-        return signAndDeployDeposit(casperClient, wallet, contractHash, amount)
+    const onAddStake = (networkGasFeeStake: number, contractHash: string, amount: BigNumber) => {
+        return signAndDeployDeposit(networkGasFeeStake, casperClient, wallet, contractHash, amount)
     }
 
-    const onRemoveStake = (contractHash: string, amount: BigNumber) => {
-        return signAndDeployWithdraw(casperClient, wallet, contractHash, amount)
+    const onRemoveStake = (networkGasFee: number, contractHash: string, amount: BigNumber) => {
+        return signAndDeployWithdraw(networkGasFee, casperClient, wallet, contractHash, amount)
     }
 
-    const onClaimRewards = (contractHash: string) => {
-        return signAndDeployClaim(casperClient, wallet, contractHash)
+    const onClaimRewards = (gasFee, contractHash: string) => {
+        return signAndDeployClaim(gasFee, casperClient, wallet, contractHash)
     }
 
-    const onClaimCSTRewards = (contractHash: string) => {
-        return signAndDeployCSTClaim(casperClient, wallet, contractHash)
+    const onClaimCSTRewards = (gasFee, contractHash: string) => {
+        return signAndDeployCSTClaim(gasFee, casperClient, wallet, contractHash)
     }
 
     const getBalance = (contractHash: string) => {
