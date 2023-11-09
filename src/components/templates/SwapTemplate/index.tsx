@@ -51,8 +51,8 @@ export const SwapTemplate = ({isMobile}) => {
     const [pairPath, setPairPath] = useState([])
     const [gasFee, gasFeeSetter] = useState<number>(gasPriceSelectedForSwapping);
     const [currentValue, setCurrentValue] = useState<number>(0);
-    const [amountSwapTokenA, amountSwapTokenASetter] = useState<number>(0);
-    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<number>(0);
+    const [amountSwapTokenA, amountSwapTokenASetter] = useState<string>('0');
+    const [amountSwapTokenB, amountSwapTokenBSetter] = useState<string>('0');
     const [defaultPriceImpactLabel, defaultPriceImpactLabelSetter] =
         useState<string>('Low Price Impact');
     const [priceImpact, priceImpactSetter] = useState<number | string>(0);
@@ -147,8 +147,8 @@ export const SwapTemplate = ({isMobile}) => {
     }
 
     const resetTokenValues =  () => {
-        amountSwapTokenASetter(0);
-        amountSwapTokenBSetter(0);
+        amountSwapTokenASetter('0');
+        amountSwapTokenBSetter('0');
         setValueAUSD('0.0000')
         setValueBUSD('0.0000')
     }
@@ -324,14 +324,14 @@ export const SwapTemplate = ({isMobile}) => {
                     slippageTolerance={slippageTolerance}
                     calculateMinimumTokenReceived={calculateMinimumTokenReceived}
                     firstSymbolToken={firstTokenSelected.symbol}
-                    firstTokenAmount={amountSwapTokenA}
+                    firstTokenAmount={parseFloat(amountSwapTokenA)}
                     networkGasFee={gasFee}
                     networkGasFeeSetter={handleChangeGasFee}
                     pairPath={pairPath}
                     priceImpact={priceImpact}
                     priceImpactMessage={defaultPriceImpactLabel}
                     secondSymbolToken={secondTokenSelected.symbol}
-                    secondTokenAmount={amountSwapTokenB}
+                    secondTokenAmount={parseFloat(amountSwapTokenB)}
                     slippageSetter={updateSlippageTolerance}
                     //chart
                     chartData={chartData}
