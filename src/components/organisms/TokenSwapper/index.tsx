@@ -78,7 +78,7 @@ const TokenSwapper = ({
   const [exchangeRateA, exchangeRateASetter] = useState<number>(0);
   const [exchangeRateB, exchangeRateBSetter] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [currentValue, setCurrentValue] = useState<number>(0);
+  const [currentValue, setCurrentValue] = useState<string>('0');
   const { disableButton, setDisableButton, handleValidate, showNotification, dismissNotification, cleanValidationState } =
       isCSPRValid();
   const [lastChanged, setLastChanged] = useState('A');
@@ -120,6 +120,7 @@ const TokenSwapper = ({
     progressBar(async () => {
       await refresh();
     });
+    console.log("amountSwapTokenA", amountSwapTokenA)
   }, [amountSwapTokenA, amountSwapTokenB]);
 
   function onSwitchTokensHandler() {
@@ -189,7 +190,7 @@ const TokenSwapper = ({
     handleExchangeCalculation()
   }, [firstTokenSelected])
 
-  async function changeTokenA(value:  number, isSwitched = false) {
+  async function changeTokenA(value:  string, isSwitched = false) {
     setLastChanged('A');
     setCurrentValue(value)
 
@@ -225,7 +226,7 @@ const TokenSwapper = ({
   }
 
   const handleTokenInputsValidation = (amountSwapTokenA, amountSwapTokenB) => {
-    const isFirstTokenValueInvalid = handleValidate(currentValue, parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0, firstTokenSelected.symbol)
+    const isFirstTokenValueInvalid = handleValidate(parseFloat(currentValue), parseFloat(firstTokenSelected.amount), gasPriceSelectedForSwapping || 0, firstTokenSelected.symbol)
 
     if (!isFirstTokenValueInvalid) {
       onActionConfirm(amountSwapTokenA, amountSwapTokenB)
@@ -273,12 +274,14 @@ const TokenSwapper = ({
   }
 
   const handleChangeA = async (e) => {
-    let filteredValue = formatNaN(e);
-    if (filteredValue < 0) {
-      filteredValue = Math.abs(filteredValue);
+    console.log("handleChangeA", e)
+    let filteredValue = BigNumber(e).isNaN() ? '0' : BigNumber(e).toString();
+    if (parseFloat(filteredValue) < 0) {
+      filteredValue = BigNumber(filteredValue).abs().toString();
     }
 
-    await changeTokenA(filteredValue)
+    console.log("filteredValue", filteredValue)
+    await changeTokenA(filteredValue.toString())
   };
 
   const handleChangeB = async (e) => {
@@ -418,10 +421,10 @@ const TokenSwapper = ({
               <Button type={"large"} props={{disabled: disableAllowanceButton, style: {width: 'auto'}, onClick: async () => {
                   setDisableAllowanceButton(true);
                   await requestIncreaseAllowance(
-                      Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ),
+                      BigNumber(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ).abs().toString(),
                       firstTokenSelected.contractHash
                   );
-                }}}>Approve {Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance )} {firstTokenSelected.symbol}</Button>
+                }}}>Approve {BigNumber(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ).abs().toString()} {firstTokenSelected.symbol}</Button>
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{
