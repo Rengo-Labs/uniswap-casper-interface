@@ -14,8 +14,6 @@ input[type=range] {
     display: block;
     height: 20px;
     appearance: none;
-    background-color: transparent;
-    border: none;
 }
 
 input[type=range]:focus {

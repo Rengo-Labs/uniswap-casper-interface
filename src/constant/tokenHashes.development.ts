@@ -7,7 +7,6 @@ import wcsprIcon from "../assets/swapIcons/wrappedCasperIcon.png";
 import usdtIcon from "../assets/swapIcons/tether.png";
 import usdcIcon from "../assets/swapIcons/usdc.png";
 import dwbtc from "../assets/swapIcons/dwbtc.png";
-import nfi from "../assets/swapIcons/nfi.svg";
 
 export const tokenList: Record<string, Token> = {
   CSPR: {
@@ -124,22 +123,6 @@ export const tokenList: Record<string, Token> = {
     packageHash:
       "hash-a3bce716f129605e5c47147976b0053b5632106d184fb6903ae63aa883905af9",
     logoURI: dwbtc,
-    amount: "0.0000",
-    allowance: "0.0000",
-    priceUSD: "0.00",
-    optApproval: "approve"
-  },
-  NFI: {
-    name: "NexFi Token",
-    chainId: 1,
-    symbol: "NFI",
-    symbolPair: "NFI",
-    decimals: 3,
-    contractHash:
-      "hash-4a31d64f1c5c09ce791083db791303f1f2cf83c208efc0a37ee1a3bf7422d9a7",
-    packageHash:
-      "hash-04ff7ad6975508fffb5a2f364323503fb045b6d1eaeb9aeaa7283c046e0b6710",
-    logoURI: nfi,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00",
