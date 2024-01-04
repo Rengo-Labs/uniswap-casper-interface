@@ -96,6 +96,7 @@ const SwapDetail = ({
                 charHeight={225}
                 tabDefault={2}
                 editableSlippage={!(firstSymbolToken === 'CSPR' && secondSymbolToken === 'WCSPR' || firstSymbolToken === 'WCSPR' && secondSymbolToken === 'CSPR')}
+                feeSymbol={secondSymbolToken}
                 />
         </>
     )

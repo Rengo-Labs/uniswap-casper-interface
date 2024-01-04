@@ -319,7 +319,7 @@ export const SwapTemplate = ({isMobile}) => {
                     firstTokenImg={firstTokenSelected.logoURI || ''}
                     secondTokenImg={secondTokenSelected.logoURI || ''}
                     firstSelectedToken={firstTokenSelected}
-                    platformGasFee={platformGas}
+                    platformGasFee={platformGas * parseFloat(amountSwapTokenB)}
                     secondSelectedToken={secondTokenSelected}
                     slippageTolerance={slippageTolerance}
                     calculateMinimumTokenReceived={calculateMinimumTokenReceived}
