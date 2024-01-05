@@ -41,6 +41,7 @@ export type PairData = {
   decimals: number,
   gaugeBalance?: string,
   gaugeTotalStake?: string,
+  gaugeTotalStakeUSD?: string,
   gaugeAllowance?: string,
   gaugeContractHash?: string,
   gaugePackageHash?: string,
@@ -156,7 +157,8 @@ export type PairActionLoadAPRRewardPayLoad = {
   totalLiquidityUSD: string,
   gaugeAmount: number,
   gaugeTotalWeight: number,
-  gaugeBalance: string
+  gaugeBalance: string,
+  gaugeTotalStakeUSD: string
 }
 
 export type PairActionLoadPairUSDPayLoad = {
@@ -370,11 +372,12 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
 
       let apr = 0
       let userAPR = 0
+      let totalStakeUSD = BigNumber(0)
       if (!!action.payload.tokenRewardPriceUSD && oldState.gaugeContractHash) {
         const pricePerLPToken = new BigNumber(action.payload.totalLiquidityUSD)
           .div(oldState.totalSupply)
 
-        const totalStakeUSD = new BigNumber(oldState.gaugeTotalStake)
+        totalStakeUSD = new BigNumber(oldState.gaugeTotalStake)
           .times(pricePerLPToken)
 
         const percentStake = new BigNumber(action.payload.gaugeBalance)
@@ -429,7 +432,8 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         [`${action.payload.name}`]: {
           ...oldState,
           apr: `${apr.toFixed(2)}`,
-          userApr: `${userAPR.toFixed(2)}`
+          userApr: `${userAPR.toFixed(2)}`,
+          gaugeTotalStakeUSD: totalStakeUSD.toFixed(2)
         },
       }
     }

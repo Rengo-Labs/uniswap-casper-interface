@@ -502,7 +502,6 @@ export const LiquidityTemplate = ({ isMobile }) => {
         return `${((yourStake / gaugeTotalStake) * 100).toFixed(2)} %`
       }
 
-      console.log("TotalStake", i.gaugeTotalStake)
       return {
         contractPackage: i.packageHash.slice(5),
         firstTokenIcon: i.token0Icon,
@@ -518,11 +517,11 @@ export const LiquidityTemplate = ({ isMobile }) => {
         totalLP: i.totalSupply,
         yourShare: `${(ratio.toNumber() * 100).toFixed(2)} %`,
         apr: `${i.apr} %`,
-        totalStake: i.gaugeTotalStake ? `${i.gaugeTotalStake}` : 0,
+        totalStake: `$ ${i.gaugeTotalStakeUSD}`,
         onOptionClick: (action: string, firstSymbol: string, secondSymbol: string) => actions(i, action, firstSymbol, secondSymbol),
         hasStake: parseFloat(i.gaugeBalance) > 0,
         hasGauge: i.gaugeContractHash != null,
-        lpStaked: i.gaugeBalance ? `${i.gaugeBalance} (${getStakePercentage(i)})` : 0,
+        lpStaked: parseFloat(i.gaugeBalance) > 0 ? `$ ${(parseFloat(i.gaugeBalance) * parseFloat(i.gaugeTotalStakeUSD)/parseFloat(i.gaugeTotalStake)).toFixed(2)} (${getStakePercentage(i)})` : '$ 0.00',
         hasBalance: parseFloat(i.balance) > 0,
         hasClaimWETH: !!i.gaugeToken,
         hasClaimCST: !!i.gaugeCSTRewards,
