@@ -293,6 +293,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
       }
       return hasGauge
     }).length
+    console.log("Gauge Total Weight:", gaugeTotalWeight, "Amount of Gauge", gaugeCounter)
 
     await Promise.all(pairs.map(async pl => {
 

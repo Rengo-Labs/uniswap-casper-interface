@@ -18,7 +18,7 @@ import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { TokensProviderContext } from "../../../contexts/TokensContext";
 import {REWARD_CST_WEEKLY_INFLATION_RATE, SUPPORTED_NETWORKS} from "../../../constant";
-import { convertToUSDCurrency } from "../../../commons/utils";
+import {convertBigNumberToUIString, convertToUSDCurrency, convertUIStringToBigNumber} from "../../../commons/utils";
 
 interface IPoolDetailRow {
   contractPackage: string,
@@ -143,8 +143,8 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
           token0Icon: item.token0Icon,
           token1Icon: item.token1Icon,
           yourLiquidity: isNaN(item.totalLiquidityUSD)? '$0.00':convertToUSDCurrency(Number(item.totalLiquidityUSD)),
-          volume7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(item.volume7d)),
-          fees7d: convertToUSDCurrency(isNaN(item.volume7d) ? 0 : Number(new BigNumber(item.volume7d).times(0.003).toFixed(2))),
+          totalStaked: isNaN(item.gaugeTotalStake) ? "0": item.gaugeTotalStake,
+          yourLPStaked: isNaN(item.gaugeBalance) ? "0" : item.gaugeBalance,
           balance: combinedBalance.isNaN() ? '0' : combinedBalance.toFixed(item.decimals),
           isFavorite: getLocalStorageData("pool")?.includes(item.name),
           assetsPoolToken0: `${isNaN(item.totalReserve0) ? 0 : item.totalReserve0} ${item.token0Symbol}`,
