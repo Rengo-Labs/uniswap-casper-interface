@@ -438,7 +438,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
           payload: {
             name,
             totalStake: convertBigNumberToUIString(
-              new BigNumber(response.toNumber()),
+              new BigNumber(response.toString()),
               decimals
             ),
           },
