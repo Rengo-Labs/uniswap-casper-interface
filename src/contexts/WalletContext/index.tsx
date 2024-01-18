@@ -33,6 +33,11 @@ import {CasperWallet} from "../../commons/wallet/CasperWallet";
 import { MetamaskSnapWallet } from '../../commons/wallet/MetamaskSnap';
 import useConnectionPopUp from "../../hooks/useConnectionPopUp";
 import {CasperDash} from "../../commons/wallet/CasperDash";
+import { 
+  CONTENT_MODE,
+} from '@make-software/csprclick-core-types';
+import { ClickTopBar, Lang, ThemeModeType } from '@make-software/csprclick-ui';
+
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
 
 type MaybeWallet = Wallet | undefined;
@@ -437,6 +442,7 @@ export const WalletContext = ({
       });
     }
   }
+  const [themeMode, setThemeMode] = useState<ThemeModeType>(ThemeModeType.light);
 
   return (
     <WalletProviderContext.Provider
@@ -449,6 +455,10 @@ export const WalletContext = ({
         showConnectionPopup
       }}
     >
+      <ClickTopBar
+				themeMode={themeMode}
+				onThemeSwitch={() => setThemeMode(themeMode === ThemeModeType.light ? ThemeModeType.dark : ThemeModeType.light)}
+      />
       {children}
     </WalletProviderContext.Provider>
   );
