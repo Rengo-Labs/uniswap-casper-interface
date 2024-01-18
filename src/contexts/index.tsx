@@ -33,41 +33,43 @@ export const BigContext = ({ children }: { children: ReactNode }) => {
   
   return (
     <UiProvider>
-      <ClickProvider options={clickOptions}>
-        <TokensContext>
-          <PairsContext>
-            <PoolContext>
-              <WalletContext>
-                <StateHashContext>
-                  <ConfigContextWithReducer>
-                    <SwapContext>
-                      <LiquidityContext>
-                        <StakingContext>
-                          <ProgressBarContextWithReducer>
-                            <NotificationSystem />
-                            <TorusContext>
-                              <InitialContext>
-                                <TokensContext2>
-                                  <LiquidityContext>
-                                    <LoadingProvider>
-                                      {children}
-                                    </LoadingProvider>
-                                  </LiquidityContext>
-                                </TokensContext2>
-                              </InitialContext>
-                            </TorusContext>
-                          </ProgressBarContextWithReducer>
-                        </StakingContext>
-                      </LiquidityContext>
-                    </SwapContext>
-                    <PopupsContainer />
-                  </ConfigContextWithReducer>
-                </StateHashContext>
-              </WalletContext>
-            </PoolContext>
-          </PairsContext>
-        </TokensContext>
-      </ClickProvider>
+      <ThemeContext>
+        <ClickProvider options={clickOptions}>
+          <TokensContext>
+            <PairsContext>
+              <PoolContext>
+                <WalletContext>
+                  <StateHashContext>
+                    <ConfigContextWithReducer>
+                      <SwapContext>
+                        <LiquidityContext>
+                          <StakingContext>
+                            <ProgressBarContextWithReducer>
+                              <NotificationSystem />
+                              <TorusContext>
+                                <InitialContext>
+                                  <TokensContext2>
+                                    <LiquidityContext>
+                                      <LoadingProvider>
+                                        {children}
+                                      </LoadingProvider>
+                                    </LiquidityContext>
+                                  </TokensContext2>
+                                </InitialContext>
+                              </TorusContext>
+                            </ProgressBarContextWithReducer>
+                          </StakingContext>
+                        </LiquidityContext>
+                      </SwapContext>
+                      <PopupsContainer />
+                    </ConfigContextWithReducer>
+                  </StateHashContext>
+                </WalletContext>
+              </PoolContext>
+            </PairsContext>
+          </TokensContext>
+        </ClickProvider>
+      </ThemeContext>
     </UiProvider>
   )
 }

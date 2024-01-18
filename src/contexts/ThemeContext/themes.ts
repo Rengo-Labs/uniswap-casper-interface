@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+import { CsprClickThemes } from '@make-software/csprclick-ui';
 import "../../index.css";
 
 export interface LightThemeInterface {
@@ -24,6 +25,8 @@ export interface LightThemeInterface {
 }
 
 export const lightTheme = {
+    ...CsprClickThemes.light,
+
     PrimaryColor: "rgba(255,255,255,1)",
     PrimaryColor2: "rgba(255,255,255,.5)",
     MainColor: "rgba(0,62,145,1)",
@@ -54,6 +57,8 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
+  ...CsprClickThemes.dark,
+
   PrimaryColor: "rgba(255,255,255,1)",
 };
 
