@@ -18,29 +18,19 @@ import {networkName} from '../../constant/bootEnvironmet'
 const NETWORK_NAME = networkName
 
 import {
-  CasperSignerWallet,
-  TorusWallet,
-  Network,
   Wallet,
-  convertUIStringToBigNumber,
   log,
-  WalletName, Client as CasperClient, ONE_BILLION_E,
+  WalletName, Client as CasperClient
 } from '../../commons';
 
 import { ConfigState } from '../../reducers/ConfigReducers';
 import { notificationStore } from '../../store/store';
-import {CasperWallet} from "../../commons/wallet/CasperWallet";
-import { MetamaskSnapWallet } from '../../commons/wallet/MetamaskSnap';
 import useConnectionPopUp from "../../hooks/useConnectionPopUp";
-import {CasperDash} from "../../commons/wallet/CasperDash";
-import { 
-  CONTENT_MODE,
-} from '@make-software/csprclick-core-types';
-import { ClickTopBar, Lang, ThemeModeType } from '@make-software/csprclick-ui';
+import {ClickUI, ThemeModeType, TopBarSettings, useClickRef} from '@make-software/csprclick-ui';
+import {ClickWallet} from "../../commons/wallet/ClickWallet";
+import store from "store2";
 
 export const casperClient = new CasperClient(NETWORK_NAME, NODE_ADDRESS);
-
-type MaybeWallet = Wallet | undefined;
 
 export interface WalletContextProps {
   onConnectWallet?: (name?: WalletName, ignoreError?: boolean) => Promise<void>;
@@ -86,217 +76,22 @@ export const WalletContext = ({
   const { updateNotification, dismissNotification } = notificationStore();
   const {showConnectionPopup, setShowConnectionPopup} = useConnectionPopUp();
 
-
-  const [requestConnectWallet, setRequestConnectWallet] = useState(0);
-
-  let debounceConnect = false;
-
-  /**
-   * return value for connect()
-   */
-  type ConnectReturn = {
-    // wallet
-    wallet?: Wallet;
-    // balance of wallet
-    balance: BigNumber;
-    // main purse of wallet's address
-    mainPurse: string;
-    // wallet accountHashString
-    walletAddress: string;
-    // was the connection successful?
-    isConnected: boolean;
-  };
-
-  /**
-   * Connect to the currently selected wallet
-   *
-   * @param name name of wallet to connect
-   *
-   * @returns wallet, balance, mainPurse, and walletAddress
-   */
-  async function connect(
-    name: WalletName = WalletName.NONE,
-    amount,
-    dispatch = null
-  ): Promise<ConnectReturn> {
-    if (debounceConnect) {
-      return {
-        wallet: state.wallet,
-        mainPurse: state.mainPurse,
-        walletAddress: state.wallet?.accountHashString ?? '',
-        balance: convertUIStringToBigNumber(amount, ONE_BILLION_E),
-        isConnected: state.wallet?.isConnected ?? false,
-      };
-    }
-
-    debounceConnect = true;
-    let w: MaybeWallet;
-
-    switch (name) {
-      case WalletName.METAMASK_FLASK:
-        try {
-          if (state.wallet?.isConnected) {
-            await state.wallet.disconnect();
-          }
-
-          w = new MetamaskSnapWallet(NETWORK_NAME);
-          await w.connect();
-        } catch (e) {
-          debounceConnect = false;
-          throw e;
-        }
-
-        if (!w?.publicKey) {
-          debounceConnect = false;
-          throw new Error('metamask error');
-        }
-        break;
-      case WalletName.CASPER_SIGNER:
-        try {
-          if (state.wallet?.isConnected) {
-            await state.wallet.disconnect();
-          }
-
-          w = new CasperSignerWallet(NETWORK_NAME);
-          await w.connect();
-        } catch (e) {
-          debounceConnect = false;
-          throw e;
-        }
-
-        if (!w?.publicKey) {
-          debounceConnect = false;
-          throw new Error('casper signer error');
-        }
-        break;
-      case WalletName.TORUS:
-        try {
-          if (state.wallet?.isConnected) {
-            await state.wallet.disconnect();
-          }
-
-          w = new TorusWallet(NETWORK_NAME);
-          await w.connect();
-        } catch (e) {
-          debounceConnect = false;
-          throw e;
-        }
-
-        if (!w?.publicKey) {
-          debounceConnect = false;
-          throw new Error('torus wallet error');
-        }
-        break;
-      case WalletName.CASPER_WALLET:
-
-        if (state.wallet?.isConnected) {
-          await state.wallet.disconnect();
-        }
-        w = new CasperWallet(NETWORK_NAME)
-        await w.connect(dispatch)
-        break
-      case WalletName.CASPER_DASH:
-
-        if (state.wallet?.isConnected) {
-          await state.wallet.disconnect();
-        }
-        w = new CasperDash(NETWORK_NAME)
-        await w.connect(dispatch)
-        break
-      default:
-        setShowConnectionPopup(true);
-        return {
-          mainPurse: '',
-          walletAddress: '',
-          balance: convertUIStringToBigNumber(amount, ONE_BILLION_E),
-          isConnected: false,
-        };
-    }
-
-    try {
-      const { balance, mainPurse } = await getStatus(w);
-
-      debounceConnect = false;
-
-      return {
-        wallet: w,
-        balance,
-        mainPurse,
-        walletAddress: w.accountHashString,
-        isConnected: w.isConnected,
-      };
-    } catch {
-      updateNotification({
-        type: NotificationType.Error,
-        title: 'No main purse detected',
-        subtitle: 'Add CSPR to the wallet before proceeding.',
-        show: true,
-        isOnlyNotification: true,
-        timeToClose: 5000,
-      });
-
-      debounceConnect = false;
-
-      return {
-        wallet: w,
-        balance: new BigNumber(0),
-        mainPurse,
-        walletAddress: w.accountHashString,
-        isConnected: w.isConnected,
-      };
-    }
-
-  }
+  const [requestConnectWallet, setRequestConnectWallet] = useState("");
+  const clickRef = useClickRef()
 
   const onConnectWallet = async (
     name: WalletName = WalletName.NONE,
     ignoreError = false
   ): Promise<void> => {
-    if (state.wallet?.isConnected) {
-      return;
-    }
 
-    if (debounceConnect) {
+    if (isConnected) {
       return;
     }
 
     try {
-      updateNotification({
-        type: NotificationType.Info,
-        title: 'Connecting to your wallet...',
-        subtitle: '',
-        show: true,
-        isOnlyNotification: true,
-        closeManually: true,
-      });
-
-      const ret = await connect(name, new BigNumber(0), dispatch);
-
-      if (!ret.isConnected) {
-        return;
-      }
-
-      dispatch({
-        type: ConfigActions.SELECT_MAIN_PURSE,
-        payload: { mainPurse: ret.mainPurse },
-      });
-      dispatch({
-        type: ConfigActions.CONNECT_WALLET,
-        payload: { wallet: ret.wallet },
-      });
-
-      //await refresh(ret.wallet);
-      updateNotification({
-        type: NotificationType.Success,
-        title: 'Connected',
-        subtitle: '',
-        show: true,
-        timeToClose: 5000,
-        isOnlyNotification: true
-      });
+      clickRef.signIn()
     } catch (err) {
       log.error(`onConnectWallet error: ${err}`);
-      dismissNotification();
       if (ignoreError) {
         return
       }
@@ -360,54 +155,46 @@ export const WalletContext = ({
     }
   }
 
-  const { isConnected, mainPurse } = state;
+  const { isConnected } = state;
+
+  useEffect(() => {
+    clickRef?.on('csprclick:signed_in', async (evt) => {
+      store.set("wallet_provider", evt.account.provider)
+      store.set("cw-pubk", evt.account.public_key)
+
+      const w = new ClickWallet(NETWORK_NAME)
+      w.setClickRef(clickRef)
+      w.connect()
+      dispatch({
+        type: ConfigActions.CONNECT_WALLET,
+        payload: {
+          wallet: w,
+          mainPurse: requestConnectWallet,
+          walletAddress: w.accountHashString ?? '',
+          isConnected: true
+        }
+      })
+
+      console.log("csprclick:signed_in", evt);
+    });
+
+    clickRef?.on('csprclick:disconnected', async (evt) => {
+      store.remove("wallet_provider")
+      store.remove("cw-pubk")
+      setRequestConnectWallet("")
+      console.log("csprclick:disconnected", evt);
+    });
+  }, [clickRef?.on]);
 
   useEffect(() => {
     const fn = async () => {
-      //refresh()
-    };
-
-    fn().catch((e) => log.error(`UPDATE_TOKENS error": ${e}`));
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('signer:connected', (msg) => {
-      console.log('signer:connected', msg);
-    });
-    window.addEventListener('signer:disconnected', (msg) => {
-      console.log('signer:disconnected', msg);
-      //onDisconnectWallet()
-    });
-    window.addEventListener('signer:tabUpdated', (msg) => {
-      //console.log('signer:tabUpdated', msg);
-      //onConnectConfig()
-    });
-    window.addEventListener('signer:activeKeyChanged', async (msg) => {
-      console.log('signer:activeKeyChanged', msg);
-      setRequestConnectWallet(Math.random() * 1 ** 9);
-    });
-    window.addEventListener('signer:locked', (msg) => {
-      console.log('signer:locked', msg);
-    });
-    window.addEventListener('signer:unlocked', (msg) => {
-      //console.log('signer:unlocked', msg);
-      //onConnectConfig()
-    });
-
-    window.addEventListener('signer:initialState', (msg) => {
-      //console.log('signer:initialState', msg);
-      //connect()
-    });
-  }, []);
-
-  useEffect(() => {
-    const fn = async () => {
-      //console.log('wat', state)
+      console.log('wat', state)
       if (state?.wallet) {
-        await state.wallet.getActiveKey();
+        state.wallet.setClickRef(clickRef)
+        await state.wallet.getActiveKey()
         dispatch({
           type: ConfigActions.CONNECT_WALLET,
-          payload: { wallet: state.wallet },
+          payload: { wallet: state.wallet, clickRef },
         });
         //refresh(state.wallet);
       }
@@ -419,17 +206,17 @@ export const WalletContext = ({
   async function onDisconnectWallet(): Promise<void> {
     try {
       if (state.wallet) {
-        await state.wallet.disconnect();
+        clickRef.signOut();
 
-        dispatch({ type: ConfigActions.DISCONNECT_WALLET, payload: {} }),
-          updateNotification({
-            type: NotificationType.Success,
-            title: 'Your wallet is disconnected',
-            subtitle: '',
-            show: true,
-            timeToClose: 5000,
-            isOnlyNotification: true
-          });
+        dispatch({ type: ConfigActions.DISCONNECT_WALLET, payload: {} })
+        updateNotification({
+          type: NotificationType.Success,
+          title: 'Your wallet is disconnected',
+          subtitle: '',
+          show: true,
+          timeToClose: 3000,
+          isOnlyNotification: true
+        });
       }
     } catch (error) {
       updateNotification({
@@ -444,6 +231,10 @@ export const WalletContext = ({
   }
   const [themeMode, setThemeMode] = useState<ThemeModeType>(ThemeModeType.light);
 
+  const topBarSettings: TopBarSettings = {
+    onThemeSwitch: () => {setThemeMode(themeMode === ThemeModeType.light ? ThemeModeType.dark : ThemeModeType.light)},
+  };
+
   return (
     <WalletProviderContext.Provider
       value={{
@@ -455,10 +246,14 @@ export const WalletContext = ({
         showConnectionPopup
       }}
     >
-      <ClickTopBar
-				themeMode={themeMode}
-				onThemeSwitch={() => setThemeMode(themeMode === ThemeModeType.light ? ThemeModeType.dark : ThemeModeType.light)}
-      />
+      <div id={"app-click"} style={{}}>
+        <ClickUI
+          themeMode={themeMode}
+          rootAppElement={"#app-click"}
+          show1ClickModal={false}
+          topBarSettings={topBarSettings}
+        />
+      </div>
       {children}
     </WalletProviderContext.Provider>
   );

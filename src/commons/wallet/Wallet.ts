@@ -1,13 +1,11 @@
 import {
   CLPublicKey,
   DeployUtil,
-  GetDeployResult,
-  RuntimeArgs,
 } from 'casper-js-sdk'
-import { Deploy } from 'casper-js-sdk/dist/lib/DeployUtil'
 
-import BigNumber from 'bignumber.js'
 import { WalletName, Network } from './types'
+import CSPRClickSDK from "@make-software/csprclick-core-client/sdk";
+import {SendResult, SignResult} from "@make-software/csprclick-core-client/types";
 
 /**
  * Wallet interface for all CasperSwap wallets
@@ -27,13 +25,17 @@ export interface Wallet {
   accountHash: Uint8Array | undefined
   // (getter) account hash string for UI
   accountHashString: string
-  
+
+  clickRef?: CSPRClickSDK
+
+  setClickRef?: (clickRef: CSPRClickSDK) => void
+
   /** 
    * Async try and connect to the current wallet
    * 
    * @returns the the public key on success or throw error
    */
-  connect: (dispatch?) => Promise<string>
+  connect: (dispatch?) => Promise<string>|void
 
   /** 
    * Async try and read the active key
@@ -56,7 +58,7 @@ export interface Wallet {
    * 
    * @returns a signed deploy
    */
-  sign: (deploy: DeployUtil.Deploy) => Promise<DeployUtil.Deploy>
+  sign: (deploy: DeployUtil.Deploy) => Promise<DeployUtil.Deploy | SendResult>
 
   /**
    * Deploy a signed deploy
