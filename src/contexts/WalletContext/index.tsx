@@ -246,7 +246,7 @@ export const WalletContext = ({
         showConnectionPopup
       }}
     >
-      <div id={"app-click"} style={{}}>
+      <div id={"app-click"} style={{position: "absolute", visibility: "hidden"}}>
         <ClickUI
           themeMode={themeMode}
           rootAppElement={"#app-click"}
