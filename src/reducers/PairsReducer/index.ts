@@ -380,8 +380,15 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         totalStakeUSD = new BigNumber(oldState.gaugeTotalStake)
           .times(pricePerLPToken)
 
+        console.log("----------------")
+        console.log("total liquidity usd", action.payload.totalLiquidityUSD, "/", oldState.totalSupply, "->", pricePerLPToken.toString())
+        console.log("total staked", oldState.gaugeTotalStake, "price per LP Token", pricePerLPToken, "->", totalStakeUSD.toString())
+
         const percentStake = new BigNumber(action.payload.gaugeBalance)
           .div(oldState.gaugeTotalStake)
+
+        console.log("percent stake", action.payload.gaugeBalance, "/", oldState.gaugeTotalStake)
+        console.log("----------------")
 
         if (oldState.gaugeToken != null) {
           const rewardPriceXWeekly = new BigNumber(action.payload.tokenRewardPriceUSD)
@@ -400,6 +407,11 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .times(100)
             .times(percentStake)
 
+          console.log("---------------- BEGIN - APR Gauge Reward -------")
+          console.log("Token Reward Price USD:", action.payload.tokenRewardPriceUSD, "Reward token weekly emission", REWARD_TOKEN_WEEKLY_EMISSIONS)
+          console.log("Amount of Gauges:", action.payload.gaugeAmount, "APR AMOUNT WEEKS", APR_AMOUNT_WEEKS)
+          console.log("APR -> (", APR_AMOUNT_WEEKS, "/", action.payload.gaugeAmount, ")/", action.payload.totalLiquidityUSD, "* 100 =", globalRewardsAPR.toString())
+          console.log("---------------- END - APR Gauge Reward ---------")
           apr += (globalRewardsAPR.isNaN() || parseFloat(action.payload.totalLiquidityUSD) == 0) ? 0 : globalRewardsAPR.toNumber()
           userAPR += userRewardsAPR.isNaN() ? 0 : userRewardsAPR.toNumber()
         }
@@ -421,6 +433,11 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .div(totalStakeUSD)
             .times(100)
             .times(percentStake)
+          console.log("---------------- BEGIN - APR CST REWARD -------------")
+          console.log("Token CST Rewards Price USD:", action.payload.tokenCSTRewardsPriceUSD, "Reward CST Weekly inflation rate", REWARD_CST_WEEKLY_INFLATION_RATE)
+          console.log("Gauge Total Weight:", action.payload.gaugeTotalWeight, "Gauge CST Weight", oldState.gaugeCSTWeight)
+          console.log("APR -> ", APR_AMOUNT_WEEKS, "*", oldState.gaugeCSTWeight, "/", action.payload.gaugeTotalWeight, "=", globalRewardsAPR.toString())
+          console.log("---------------- END - APR CST REWARD ---------------")
 
           apr += globalRewardsAPR.isNaN() ? 0 : globalRewardsAPR.toNumber()
           userAPR += userRewardsAPR.isNaN() ? 0 : userRewardsAPR.toNumber()

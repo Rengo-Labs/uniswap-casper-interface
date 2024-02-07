@@ -30,13 +30,13 @@ const PoolResponsibilities = (pairState, pairDispatch) => {
             },
             {
                 id: 3,
-                Header: 'Volume 7D',
-                accessor: 'volume7d',
+                Header: 'Total Staked',
+                accessor: 'gaugeTotalStake',
             },
             {
                 id: 4,
-                Header: 'Fees 7d',
-                accessor: 'fees24h',
+                Header: 'Your LP Staked',
+                accessor: 'gaugeBalance',
             },
             {
                 id: 5,
