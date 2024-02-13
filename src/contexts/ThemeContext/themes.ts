@@ -51,6 +51,7 @@ export const lightTheme = {
     NewBlackColor: "#080808",
     NewWhiteColor: "#f7fcfe",
     SecondBlackColor: "#545454",
+    mediaText: '#FFFFFF',
     OPEN_WIDTH: "280px",
     CLOSED_WIDTH: "108px",
     NewNavigationCCBG: "rgb(120,100,244)",
@@ -60,6 +61,7 @@ export const darkTheme = {
   ...CsprClickThemes.dark,
 
   PrimaryColor: "rgba(255,255,255,1)",
+  mediaText: "#715FF5"
 };
 
  const sizeScreen = {

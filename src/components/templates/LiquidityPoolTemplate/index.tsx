@@ -18,7 +18,7 @@ import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import { TokensProviderContext } from "../../../contexts/TokensContext";
 import {REWARD_CST_WEEKLY_INFLATION_RATE, SUPPORTED_NETWORKS} from "../../../constant";
-import {convertBigNumberToUIString, convertToUSDCurrency, convertUIStringToBigNumber} from "../../../commons/utils";
+import { convertToUSDCurrency } from "../../../commons/utils";
 
 interface IPoolDetailRow {
   contractPackage: string,

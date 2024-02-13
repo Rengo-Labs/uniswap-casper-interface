@@ -188,7 +188,6 @@ export const WalletContext = ({
 
   useEffect(() => {
     const fn = async () => {
-      console.log('wat', state)
       if (state?.wallet) {
         state.wallet.setClickRef(clickRef)
         await state.wallet.getActiveKey()
