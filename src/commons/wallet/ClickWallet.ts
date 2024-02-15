@@ -15,7 +15,7 @@ import { Network, WalletName } from './types'
 import { NODE_ADDRESS } from '../../constant'
 import {globalStore} from "../../store/store"
 import CSPRClickSDK from "@make-software/csprclick-core-client/sdk"
-import {SendResult, SignResult} from "@make-software/csprclick-core-client/types";
+import {SendResult} from "@make-software/csprclick-core-client/types";
 
 export const CASPER_WALLET_PUB_KEY = 'cw-pubk'
 
@@ -104,7 +104,6 @@ export class ClickWallet implements Wallet{
     try {
 
       this._isConnected = true
-      console.log("Wallet connected", this._isConnected, this._clickRef)
       // return the connect promise
       return this._connectPromise
     } catch (err) {

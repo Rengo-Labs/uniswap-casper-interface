@@ -76,7 +76,6 @@ export const WalletContext = ({
   const { updateNotification, dismissNotification } = notificationStore();
   const {showConnectionPopup, setShowConnectionPopup} = useConnectionPopUp();
 
-  const [requestConnectWallet, setRequestConnectWallet] = useState("");
   const clickRef = useClickRef()
 
   const onConnectWallet = async (
@@ -169,38 +168,26 @@ export const WalletContext = ({
         type: ConfigActions.CONNECT_WALLET,
         payload: {
           wallet: w,
-          mainPurse: requestConnectWallet,
+          mainPurse: w.publicKeyHex,
           walletAddress: w.accountHashString ?? '',
-          isConnected: true
+          isConnected: true,
+          clickRef
         }
       })
 
       console.log("csprclick:signed_in", evt);
     });
 
-    clickRef?.on('csprclick:disconnected', async (evt) => {
+    clickRef?.on('csprclick:signed_out', async (evt) => {
       store.remove("wallet_provider")
       store.remove("cw-pubk")
-      setRequestConnectWallet("")
+      dispatch({
+        type: ConfigActions.DISCONNECT_WALLET,
+        payload: {}
+      })
       console.log("csprclick:disconnected", evt);
     });
   }, [clickRef?.on]);
-
-  useEffect(() => {
-    const fn = async () => {
-      if (state?.wallet) {
-        state.wallet.setClickRef(clickRef)
-        await state.wallet.getActiveKey()
-        dispatch({
-          type: ConfigActions.CONNECT_WALLET,
-          payload: { wallet: state.wallet, clickRef },
-        });
-        //refresh(state.wallet);
-      }
-    };
-
-    fn();
-  }, [requestConnectWallet]);
 
   async function onDisconnectWallet(): Promise<void> {
     try {
