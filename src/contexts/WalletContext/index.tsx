@@ -164,11 +164,15 @@ export const WalletContext = ({
       const w = new ClickWallet(NETWORK_NAME)
       w.setClickRef(clickRef)
       w.connect()
+      const { mainPurse } = await getStatus(w);
+      dispatch({
+        type: ConfigActions.SELECT_MAIN_PURSE,
+        payload: { mainPurse: mainPurse },
+      })
       dispatch({
         type: ConfigActions.CONNECT_WALLET,
         payload: {
           wallet: w,
-          mainPurse: w.publicKeyHex,
           walletAddress: w.accountHashString ?? '',
           isConnected: true,
           clickRef
