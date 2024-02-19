@@ -8,7 +8,6 @@ export const Container = styled.section<{ isMobile: boolean }>`
 `;
 
 export const SubHeader = styled.p`
-  font-family: 'Myriad Pro';
   font-style: normal;
   font-weight: 400;
   font-size: 18px;
