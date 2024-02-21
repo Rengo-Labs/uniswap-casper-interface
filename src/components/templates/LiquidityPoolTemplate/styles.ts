@@ -17,7 +17,7 @@ export const SubHeader = styled.p`
   /* color: #715FF5; */
 
   font-family: ${({theme}) => theme.typography.secondaryFont};
-  color: ${(props) => props.theme.mediaText};
+  color: ${({theme}) => theme.color.modalText};
   text-align: left;
   font-style: normal;
   font-weight: 800;

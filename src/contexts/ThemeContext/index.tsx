@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
 import { ThemeProvider } from 'styled-components'
-import { lightTheme, darkTheme, GlobalStyles } from './themes'
+import { lightTheme, darkTheme } from './themes'
 export const ThemeProviderContext = createContext({})
 
 export const ThemeContext = (props:any) => {
@@ -11,7 +11,6 @@ export const ThemeContext = (props:any) => {
   return (
     <ThemeProviderContext.Provider value={{ themeToggler: themeToggler }}>
       <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
-        <GlobalStyles />
         {props.children}
       </ThemeProvider>
     </ThemeProviderContext.Provider>
