@@ -1,4 +1,5 @@
 import { Wallet, WalletName } from '../../commons/wallet'
+import CSPRClickSDK from "@make-software/csprclick-core-client/sdk";
 
 export type ConfigState = {
   isConnected?: boolean,
@@ -12,7 +13,8 @@ export type ConfigState = {
   gasPriceSelectedForSwapping?: number,
   gasPriceSelectedForLiquidity?: number,
   wasmGasFee?: number,
-  gasFeeHop?: number
+  gasFeeHop?: number,
+  clickRef?: CSPRClickSDK
 }
 
 export const initialConfigState: ConfigState = {
@@ -61,6 +63,7 @@ export function ConfigReducer(state: ConfigState, action: ConfigAction) {
         ...state,
         isConnected: false,
         walletAddress: "",
+        mainPurse: '',
         //walletSelected: undefined,
         wallet: undefined,
       };

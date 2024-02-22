@@ -418,7 +418,7 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
 
         if (oldState.gaugeCSTRewards) {
           const rewardPriceXWeekly = new BigNumber(action.payload.tokenCSTRewardsPriceUSD)
-            .times(REWARD_CST_WEEKLY_INFLATION_RATE)
+            .times(REWARD_CST_WEEKLY_INFLATION_RATE).div(action.payload.gaugeAmount)
           // (CST price usd * CST Yearly * cst gauge weight) / total gauge weight / total supply usd
           const yearlyWeightedReward = rewardPriceXWeekly
             .times(APR_AMOUNT_WEEKS)
@@ -434,8 +434,9 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
             .times(100)
             .times(percentStake)
           console.log("---------------- BEGIN - APR CST REWARD -------------")
-          console.log("Token CST Rewards Price USD:", action.payload.tokenCSTRewardsPriceUSD, "Reward CST Weekly inflation rate", REWARD_CST_WEEKLY_INFLATION_RATE)
+          console.log("Token CST Rewards Price USD:", action.payload.tokenCSTRewardsPriceUSD, "Reward CST Weekly inflation rate", REWARD_CST_WEEKLY_INFLATION_RATE, "Amount of gauges", action.payload.gaugeAmount)
           console.log("Gauge Total Weight:", action.payload.gaugeTotalWeight, "Gauge CST Weight", oldState.gaugeCSTWeight)
+          console.log("Reward Price Weekly: (", action.payload.tokenCSTRewardsPriceUSD, "*", REWARD_CST_WEEKLY_INFLATION_RATE, ") /", action.payload.gaugeAmount, "=", rewardPriceXWeekly.toString())
           console.log("APR -> ", APR_AMOUNT_WEEKS, "*", oldState.gaugeCSTWeight, "/", action.payload.gaugeTotalWeight, "=", globalRewardsAPR.toString())
           console.log("---------------- END - APR CST REWARD ---------------")
 

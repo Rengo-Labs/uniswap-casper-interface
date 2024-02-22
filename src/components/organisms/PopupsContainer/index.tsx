@@ -8,12 +8,10 @@ import torusWallet from "../../../assets/newDesignIcons/torus-wallet.svg";
 import {globalStore} from "../../../store/store";
 import lineBreakIcon from "../../../assets/newDesignIcons/linkbreak.svg";
 import metamaskFlask from '../../../assets/newDesignIcons/metaMaskFlask.svg';
-import {useNavigate} from 'react-router-dom'
 import store from "store2";
-import {TOKEN_SYMBOL_GAUGE} from "../../../constant";
+import {CSPR_NETWORK_URL, TOKEN_SYMBOL_GAUGE} from "../../../constant";
 
 export const PopupsContainer = () => {
-  const navigate = useNavigate()
 
     const {
         showSettings,
@@ -89,7 +87,7 @@ export const PopupsContainer = () => {
             name: 'Recent Transactions',
             iconName: 'Clock',
             type: 'redirect',
-            onClick: () => navigate('/account', { state: { accountDefaultTab: 'transfer' }})
+            onClick: () => window.open(`${CSPR_NETWORK_URL}${walletState.walletAddress}`)
         },
         {
             id: '0zokxj8h82nndl',

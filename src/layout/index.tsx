@@ -12,7 +12,7 @@ import casperWallet from "../assets/newDesignIcons/casper-wallet.svg";
 import casperLogo from "../assets/newDesignIcons/type_logo.svg";
 import {ChildrenContainer, Container} from "./styles";
 import {WalletProviderContext} from "../contexts/WalletContext";
-import {OptAction} from "rengo-ui-kit/lib/components/molecules/Menu/types";
+import {OptActionProps} from "rengo-ui-kit/lib/components/molecules/Menu/types";
 import {ConfigProviderContext} from "../contexts/ConfigContext";
 import CasperLoader from "../components/organisms/CasperLoader";
 import {useLocation} from 'react-router-dom'
@@ -43,6 +43,13 @@ const GlobalStyle = createGlobalStyle<{ selectedTheme: string }>`
 const LOCAl_STORAGE_THEME_KEY = 'current-theme'
 
 const Layout = ({children}: ILayoutProps) => {
+
+    const {
+        isConnected,
+        setShowConnectionPopup,
+        walletState,
+        onConnectWallet
+    } = useContext(WalletProviderContext);
     const menuRef = useRef(null);
     const location = useLocation()
     const {setLoader, loading} = useLoader()
@@ -51,24 +58,25 @@ const Layout = ({children}: ILayoutProps) => {
     const [menuHeight, setMenuHeight] = useState(0);
     const rightActionInit = {
         startIcon: casperWallet,
-        title: "Connect Wallet",
+        title: "ConnectWallet",
         background: "#7AEDD4",
         color: "#715FF5",
-        onAction: () => setShowConnectionPopup(true),
+        onAction: () => handleWalletOptions(),
         isWalletConnected: false,
-        walletAddress: null,
-        onActionConnected: null,
         endIcon: balanceIcon,
-    } as OptAction
-    const [rightAction, setRightAction] = useState(rightActionInit);
+    } as OptActionProps
+    const rightConnectionActionInit = {
+        startIcon: casperWallet,
+        title: "ConnectWallet",
+        background: "#7AEDD4",
+        color: "#715FF5",
+        onAction: () => onConnectWallet(),
+        isWalletConnected: false,
+        endIcon: balanceIcon,
+    } as OptActionProps
+    const [rightAction, setRightAction] = useState(rightActionInit)
     const [pathName, setPathName] = useState('')
     const [isSanctionedCounty, setIsSanctionedCountry] = useState(false)
-
-    const {
-        isConnected,
-        setShowConnectionPopup,
-        walletState
-    } = useContext(WalletProviderContext);
 
     const {
         showSettings,
@@ -133,8 +141,7 @@ const Layout = ({children}: ILayoutProps) => {
             setRightAction(prevState => ({
                 ...prevState,
                 isWalletConnected: isConnected,
-                walletAddress: walletState.walletAddress,
-                onActionConnected: () => handleWalletOptions()
+                walletAddress: walletState.walletAddress
             }))
             setShowConnectionPopup(false)
         } else {
@@ -199,7 +206,8 @@ const Layout = ({children}: ILayoutProps) => {
                                 links={routes}
                                 menuIcon={casperIcon}
                                 casperIcon={casperLogo}
-                                rightAction={rightAction}
+                                rightOptionAction={rightConnectionActionInit}
+                                rightConnectionAction={rightAction}
                                 toggle={{
                                     isActive: selectedTheme === AvailableThemes.Dark,
                                     toggle: () => handleThemeSwitch(),
