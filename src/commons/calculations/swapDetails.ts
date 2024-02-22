@@ -50,7 +50,7 @@ export const calculateSwapDetails = async (
       const liquidityA = new BigNumber(reserve0)
       const liquidityB = new BigNumber(reserve1)
       const inputValue = new BigNumber(inputValueRaw).times(10 ** (isA2B ? tokenA.decimals : tokenB.decimals))
-      const inputValueMinusFee = new BigNumber(inputValue).times(1 - fee)
+      const inputValueMinusFee = new BigNumber(inputValue)
 
       // console.log('xyz-inputValue', inputValue.toString())
       // console.log(inputValueRaw.toString(), inputValue.toString(), reserve0.toString(), reserve1.toString())
@@ -77,7 +77,7 @@ export const calculateSwapDetails = async (
 
       // console.log("new_liquidity_a_pool", newLiquidityAPool.toNumber(), "new_liquidity_b_pool", newLiquidityBPool.toNumber())
 
-      const tokensToTransfer = (outputLiquidity.minus(newLiquidityOutputPool))
+      const tokensToTransfer = (outputLiquidity.minus(newLiquidityOutputPool)).times(1 - fee)
       // console.log("tokensToTransfer", tokensToTransfer)
 
       let inputExchangeRate = tokensToTransfer.div(inputValue)

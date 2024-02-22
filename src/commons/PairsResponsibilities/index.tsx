@@ -1,9 +1,9 @@
-import { findPairChartData, findDailyGlobalChart, getPairData } from "../api/ApolloQueries";
+import { findDailyGlobalChart } from "../api/ApolloQueries";
 import store from "store2";
-import {convertBigNumberToUIString, convertToUSDCurrency, log, sleep} from "../utils";
+import {convertBigNumberToUIString, convertToUSDCurrency, log} from "../utils";
 import BigNumber from "bignumber.js";
 import { PairActions, PairData, PairState } from "../../reducers/PairsReducer";
-import { apiClient, PairReserves } from "../../contexts/ConfigContext";
+import { apiClient } from "../../contexts/ConfigContext";
 import { Wallet } from "../wallet";
 import { TokenState } from "../../reducers/TokenReducers";
 import { pairFinder } from "../pairFinder";
@@ -293,12 +293,24 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
       }
       return hasGauge
     }).length
+    console.log("Gauge Total Weight:", gaugeTotalWeight, "Amount of Gauge", gaugeCounter)
 
     await Promise.all(pairs.map(async pl => {
 
       let balance = '0'
       if (wallet?.isConnected) {
         balance = await getPairBalance(wallet, pl.name, pl.decimals, pl.gaugeContractHash, PairActions.ADD_GAUGE_BALANCE_TO_PAIR)
+      } else {
+        pairDispatch({
+          type: PairActions.ADD_GAUGE_BALANCE_TO_PAIR,
+          payload: {
+            name: pl.name,
+            balance: convertBigNumberToUIString(
+              new BigNumber(0),
+              pl.decimals
+            )
+          },
+        });
       }
       const tokenRewardPrice = tokenUSDPrices[pl.gaugeToken] ?? '0'
       const tokenCSTRewardsPrice = tokenUSDPrices['CST'] ?? '0'
@@ -437,7 +449,7 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
           payload: {
             name,
             totalStake: convertBigNumberToUIString(
-              new BigNumber(response.toNumber()),
+              new BigNumber(response.toString()),
               decimals
             ),
           },
