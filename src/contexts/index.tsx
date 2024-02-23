@@ -21,12 +21,15 @@ import { StakingContext } from "./StakingContext";
 import { CsprClickInitOptions } from '@make-software/csprclick-core-client';
 import { ClickProvider } from '@make-software/csprclick-ui';
 import { CONTENT_MODE } from '@make-software/csprclick-core-types';
+import {casperNode, networkName} from "../constant/bootEnvironmet";
 
 const clickOptions: CsprClickInitOptions = {
   appName: 'CSPR.app',
   contentMode: CONTENT_MODE.IFRAME,
   providers: ['casper-wallet', 'ledger', 'torus-wallet', 'casperdash', 'metamask-snap', 'casper-signer'],
   appId: 'csprclick-template',
+  chainName: networkName,
+  casperNode: casperNode
 };
 
 export const BigContext = ({ children }: { children: ReactNode }) => {

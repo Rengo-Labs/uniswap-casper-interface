@@ -17,6 +17,7 @@ let CSPRPackageHash
 let networkName: Network
 let USDT_SYMBOL: string
 let USDC_SYMBOL: string
+let casperNode: string
 
 switch (process.env.REACT_APP_NETWORK_KEY) {
   case 'casper-testing':
@@ -28,6 +29,7 @@ switch (process.env.REACT_APP_NETWORK_KEY) {
     networkName = Network.CASPER_TESTNET
     USDT_SYMBOL = 'USDT'
     USDC_SYMBOL = 'USDC'
+    casperNode = 'https://casper-node-proxy.dev.make.services/'
     break
   case 'integration-test':
     pairData = pairInt.pairList
@@ -38,6 +40,7 @@ switch (process.env.REACT_APP_NETWORK_KEY) {
     networkName = Network.CASPER_INTEGRATION
     USDT_SYMBOL = 'dUSDT'
     USDC_SYMBOL = 'dUSDC'
+    casperNode = 'https://casper-node-proxy.dev-integration.make.services/'
     break
   case 'casper':
     pairData = pairProd.pairList
@@ -48,6 +51,7 @@ switch (process.env.REACT_APP_NETWORK_KEY) {
     networkName = Network.CASPER_MAINNET
     USDT_SYMBOL = 'dUSDT'
     USDC_SYMBOL = 'dUSDC'
+    casperNode = 'https://casper-node-proxy.make.services/'
     break
   default:
     pairData = pairDev.pairList
@@ -58,6 +62,7 @@ switch (process.env.REACT_APP_NETWORK_KEY) {
     networkName = Network.CASPER_TESTNET
     USDT_SYMBOL = 'USDT'
     USDC_SYMBOL = 'USDC'
+    casperNode = 'https://casper-node-proxy.dev.make.services/'
 }
 
 export {
@@ -68,5 +73,6 @@ export {
   CSPRPackageHash,
   networkName,
   USDT_SYMBOL,
-  USDC_SYMBOL
+  USDC_SYMBOL,
+  casperNode
 }

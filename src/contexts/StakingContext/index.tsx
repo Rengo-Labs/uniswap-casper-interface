@@ -60,6 +60,19 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
         convertUIStringToBigNumber(amount, decimals)
       )
 
+      if (!deployHash) {
+        setProgressModal(false)
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'Transaction was cancelled',
+          subtitle: '',
+          show: true,
+          timeToClose: 3000,
+          isOnlyNotification: true
+        });
+        return false
+      }
+
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true)
       setLinkExplorer(deployUrl)
@@ -125,6 +138,18 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
         contractHash,
         convertUIStringToBigNumber(amount, decimals)
       )
+      if (!deployHash) {
+        setProgressModal(false)
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'Transaction was cancelled',
+          subtitle: '',
+          show: true,
+          timeToClose: 3000,
+          isOnlyNotification: true
+        });
+        return false
+      }
 
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);
@@ -188,6 +213,18 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet})
         .onClaimRewards(gasFee, contractHash)
+      if (!deployHash) {
+        setProgressModal(false)
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'Transaction was cancelled',
+          subtitle: '',
+          show: true,
+          timeToClose: 3000,
+          isOnlyNotification: true
+        });
+        return false
+      }
 
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);
@@ -278,6 +315,18 @@ export const StakingContext = ({children}: { children: ReactNode }) => {
     try {
       const [deployHash, deployResult] = await StakingResponsibilities({casperClient, wallet: walletState.wallet})
         .onClaimCSTRewards(gasFee, contractHash)
+      if (!deployHash) {
+        setProgressModal(false)
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'Transaction was cancelled',
+          subtitle: '',
+          show: true,
+          timeToClose: 3000,
+          isOnlyNotification: true
+        });
+        return false
+      }
 
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);
