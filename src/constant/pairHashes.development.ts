@@ -132,8 +132,8 @@ export const pairList: PairState = {
     decimals: 9,
     gaugeBalance: '0',
     gaugeAllowance: '0',
-    gaugeContractHash: "hash-647bd1ead4ec8aeda0e5247f5981e5f7d7558104e7deda86345ed05855b774d0",
-    gaugePackageHash: "hash-cabb28ccbe73f2bf969637025f186f02782109081a9394d4b654639f21245dbe",
+    gaugeContractHash: "hash-f2e6fa7776c2c3e0a271ae62dc976f53117b83c1bf72194325907ca180ddf3eb",
+    gaugePackageHash: "hash-52a08a001a56b5b26f6d41a4df72c6bd21b11f8b7ec19defa5c7ee46e8be129f",
     gaugeToken: 'WETH',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
@@ -196,8 +196,8 @@ export const pairList: PairState = {
     decimals: 9,
     gaugeBalance: '0',
     gaugeAllowance: '0',
-    gaugeContractHash: "hash-1d7dd728b375f7c31881b3b23cacfe1330b75b8b364c088f7c7babb795f28255",
-    gaugePackageHash: "hash-648327fef686dff93b3a1e95e12cd07700eb7adbf3e78db1d386c2056b15c462",
+    gaugeContractHash: "hash-67a746d85ce5de8c1dff616ad71d3e37161067008bc8224bbf071f232c444fec",
+    gaugePackageHash: "hash-07b4040ef84311fa37f1f3b2d82efad072cb7b87a4e6a838783d48bbc2e9aca0",
     gaugeToken: 'WETH',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100

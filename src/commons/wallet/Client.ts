@@ -13,6 +13,7 @@ import { Wallet } from './Wallet'
 import { Network } from './types'
 import { log, sleep } from '../utils'
 import {ROUTER_PACKAGE_HASH} from "../../constant";
+import {SendResult, SignResult} from "@make-software/csprclick-core-client/types";
 
 /**
  * Client for working with Casper network
@@ -212,10 +213,10 @@ export class Client {
       )
 
       // Convert the signed deploy json to a deploy
-      const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
+      const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas) as SendResult
 
       // Put and confirm deploy
-      return this.putAndConfirmDeploy(wallet, signedDeploy)
+      return [signedDeploy.deployHash, null]
     } catch (err) {
       log.error(`Casper Client - signAndDeployContractCall error: ${err}`)
 
@@ -248,9 +249,9 @@ export class Client {
       )
       // Convert the signed deploy json to a deploy
 
-      const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas)
+      const signedDeploy = await this.makeAndSignDeploy(wallet, deployItem, gas) as SendResult
       // Put and confirm deploy
-      return this.putAndConfirmDeploy(wallet, signedDeploy)
+      return [signedDeploy.deployHash, null]
     } catch (err) {
       log.error(`Casper Client - signAndDeployWasm error: ${err}`)
 
@@ -268,7 +269,7 @@ export class Client {
    *
    * @returns a signed deploy
    */
-  async makeAndSignDeploy(wallet: Wallet, deployItem: DeployUtil.ExecutableDeployItem, gas: BigNumber): Promise<DeployUtil.Deploy> {
+  async makeAndSignDeploy(wallet: Wallet, deployItem: DeployUtil.ExecutableDeployItem, gas: BigNumber): Promise<DeployUtil.Deploy | SendResult> {
     try {
       // Create the Deploy using wasm + args
       const deploy = DeployUtil.makeDeploy(

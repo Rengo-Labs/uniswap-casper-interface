@@ -418,10 +418,10 @@ const TokenSwapper = ({
               <Button type={"large"} props={{disabled: disableAllowanceButton, style: {width: 'auto'}, onClick: async () => {
                   setDisableAllowanceButton(true);
                   await requestIncreaseAllowance(
-                      Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ),
+                      BigNumber(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ).abs().toString(),
                       firstTokenSelected.contractHash
                   );
-                }}}>Approve {Math.abs(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance )} {firstTokenSelected.symbol}</Button>
+                }}}>Approve {BigNumber(firstTokenSelected.optApproval ? amountSwapTokenA : freeAllowance ).abs().toString()} {firstTokenSelected.symbol}</Button>
           )}
           {isApproved && isConnected && (
               <Button type={"large"} props={{

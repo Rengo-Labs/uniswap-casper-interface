@@ -82,6 +82,18 @@ export const SwapContext = ({ children }: { children: ReactNode }) => {
         gasFee
       );
 
+      if (!deployHash) {
+        setProgressModal(false)
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'Transaction was cancelled',
+          subtitle: '',
+          show: true,
+          timeToClose: 3000,
+          isOnlyNotification: true
+        });
+        return false
+      }
       setProgressModal(true);
 
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`

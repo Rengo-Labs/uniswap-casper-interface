@@ -107,7 +107,19 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         walletState.mainPurse,
         gasFee,
         pairHash
-      );
+      )
+      if (!deployHash) {
+        setProgressModal(false)
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'Transaction was cancelled',
+          subtitle: '',
+          show: true,
+          timeToClose: 3000,
+          isOnlyNotification: true
+        });
+        return false
+      }
 
       setProgressModal(true);
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
@@ -192,7 +204,19 @@ export const LiquidityContext = ({ children }: { children: ReactNode }) => {
         walletState.mainPurse,
         gasFee,
         refundCSPR
-      );
+      )
+      if (!deployHash) {
+        setProgressModal(false)
+        updateNotification({
+          type: NotificationType.Error,
+          title: 'Transaction was cancelled',
+          subtitle: '',
+          show: true,
+          timeToClose: 3000,
+          isOnlyNotification: true
+        });
+        return false
+      }
 
       const deployUrl = SUPPORTED_NETWORKS.blockExplorerUrl + `/deploy/${deployHash}`
       setProgressModal(true);
