@@ -393,6 +393,8 @@ export function PairsReducer(state: PairState, action: PairAction): PairState {
         if (oldState.gaugeToken != null) {
           const rewardPriceXWeekly = new BigNumber(action.payload.tokenRewardPriceUSD)
             .times(REWARD_TOKEN_WEEKLY_EMISSIONS)
+            .times(oldState.gaugeCSTWeight)
+            .div(action.payload.gaugeTotalWeight)
           // (ETH price usd * ETH gauge weight) / (total number of gauge * eth weekly)  / total supply usd
           const yearlyWeightedReward = rewardPriceXWeekly
             .times(APR_AMOUNT_WEEKS)
