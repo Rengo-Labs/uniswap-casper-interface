@@ -3,6 +3,7 @@ import csprIcon from "../assets/swapIcons/casperIcon.png";
 import cstIcon from "../assets/swapIcons/casperswap.png";
 import wbtcIcon from "../assets/swapIcons/btc.png";
 import wethIcon from "../assets/swapIcons/wethIcon.svg";
+import nfiIcon from "../assets/swapIcons/nfiIcon.svg";
 import wcsprIcon from "../assets/swapIcons/wrappedCasperIcon.png";
 import usdtIcon from "../assets/swapIcons/tether.png";
 import usdcIcon from "../assets/swapIcons/usdc.png";
@@ -114,5 +115,21 @@ export const tokenList: Record<string, Token> = {
     allowance: "0.0000",
     priceUSD: "0.00",
     optApproval: "approve",
+  },
+  NFI: {
+    name: "NEXFI Token",
+    chainId: 1,
+    symbol: "NFI",
+    symbolPair: "NFI",
+    decimals: 4,
+    contractHash:
+      "hash-d8ab2eb3d2af9b78b5fddb12e3af356af65141667f85c6d3607f546152fb064e",
+    packageHash:
+      "hash-923ab5033b6c1ea8f0663d3f2282f1da5fa6838d8368564de7843162a3c57365",
+    logoURI: nfiIcon,
+    amount: "0.0000",
+    allowance: "0.0000",
+    priceUSD: "0.00",
+    //optApproval: "approve",
   }
 }
