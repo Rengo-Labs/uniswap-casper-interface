@@ -218,8 +218,10 @@ export const pairList: PairState = {
     decimals: 9,
     gaugeBalance: '0',
     gaugeAllowance: '0',
-    gaugeToken: null,
+    gaugeContractHash: "hash-7b6477cbded57e26005e227ae6ed8334eb762801154d5db6eb7ffab30eef6630",
+    gaugePackageHash: "hash-180080cd8a5798623713fd90a4530a57ff9db26b6c0a564a100904debd7b4dc7",
+    gaugeToken: 'NFI',
     gaugeCSTRewards: false,
-    gaugeCSTWeight: 0
+    gaugeCSTWeight: 100
   }
 }
