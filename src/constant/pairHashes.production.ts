@@ -221,7 +221,7 @@ export const pairList: PairState = {
     gaugeContractHash: "hash-7b6477cbded57e26005e227ae6ed8334eb762801154d5db6eb7ffab30eef6630",
     gaugePackageHash: "hash-180080cd8a5798623713fd90a4530a57ff9db26b6c0a564a100904debd7b4dc7",
     gaugeToken: 'NFI',
-    gaugeCSTRewards: false,
+    gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   }
 }
