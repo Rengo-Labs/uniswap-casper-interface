@@ -130,7 +130,7 @@ export const LiquidityPoolTemplate = ({ isMobile }) => {
   const [cstMarket, setCSTMarket] = useState('$0.00')
 
   useEffect(() => {
-    const gaugeAmount = Object.values(pairState).filter(p => !!p.gaugeToken).length
+    const gaugeAmount = Object.values(pairState).filter(p => !!p.gaugeCSTWeight).length
     setTableData(
       getPoolList().map((item) => {
         const combinedBalance = new BigNumber(item.balance || 0).plus(item.gaugeBalance || 0)
