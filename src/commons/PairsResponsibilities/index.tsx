@@ -106,13 +106,20 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
   }
 
   const getGeneralPairData = async (pairs, pairsMap) => {
+    const tokens = tokenState.tokens
+
     //console.log('getGeneralPairData from PairsResponsibility')
     const results = await Promise.all(pairs.map(async (pl) => {
 
       if (pl.gaugeContractHash) {
         await getTotalGaugeSupply(pl.name, pl.decimals, pl.gaugeContractHash)
         if (pl.gaugeToken) {
-          await getTotalRewardAccumulated(pl.name, pl.decimals, tokenState.tokens[pl.gaugeToken].contractHash, pl.gaugeContractHash)
+          await getTotalRewardAccumulated(
+            pl.name, 
+            tokens[pl.gaugeToken].decimals, 
+            tokens[pl.gaugeToken].contractHash, 
+            pl.gaugeContractHash
+          )
         }
       }
 
@@ -120,8 +127,6 @@ const PairsResponsibilities = (pairState: PairState, pairDispatch, tokenState?: 
       changeRowPriority(pl.name, pairChecked)
 
       const pairDataResponse = await apiClient.getPairData(pl.contractHash)
-
-      const tokens = tokenState.tokens
 
       const token0Decimals = tokens[pl.token0Symbol].decimals;
       const token1Decimals = tokens[pl.token1Symbol].decimals;
