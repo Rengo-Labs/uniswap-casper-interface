@@ -7,6 +7,7 @@ import nfiIcon from "../assets/swapIcons/nfiIcon.svg";
 import wcsprIcon from "../assets/swapIcons/wrappedCasperIcon.png";
 import usdtIcon from "../assets/swapIcons/tether.png";
 import usdcIcon from "../assets/swapIcons/usdc.png";
+import placeholder from "../assets/placeholder.svg";
 
 export const tokenList: Record<string, Token> = {
   CSPR: {
@@ -127,6 +128,22 @@ export const tokenList: Record<string, Token> = {
     packageHash:
       "hash-923ab5033b6c1ea8f0663d3f2282f1da5fa6838d8368564de7843162a3c57365",
     logoURI: nfiIcon,
+    amount: "0.0000",
+    allowance: "0.0000",
+    priceUSD: "0.00",
+    //optApproval: "approve",
+  },
+  CSPRUSD: {
+    name: "Casper USD",
+    chainId: 1,
+    symbol: "CSPRUSD",
+    symbolPair: "CSPRUSD",
+    decimals: 4,
+    contractHash:
+      "hash-8046106bbc9c5ef8d3c838621d84d0936dfa5040efc9c0ad28ccc4b418edeb9b",
+    packageHash:
+      "hash-e52b29ee39b989bfa982f18049b772b41af814c8209466cd3a3970aaac2dd71e",
+    logoURI: placeholder,
     amount: "0.0000",
     allowance: "0.0000",
     priceUSD: "0.00",
