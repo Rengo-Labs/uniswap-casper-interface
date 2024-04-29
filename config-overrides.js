@@ -14,6 +14,7 @@ module.exports = function override(config) {
     url: require.resolve("url"),
     zlib: require.resolve('browserify-zlib'),
     fs: false,
+    vm: require.resolve('vm-browserify'),
   });
   config.module.rules.unshift({
     test: /\.m?js$/,
