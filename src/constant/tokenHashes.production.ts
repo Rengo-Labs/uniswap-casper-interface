@@ -123,7 +123,7 @@ export const tokenList: Record<string, Token> = {
     symbolPair: "NFI",
     decimals: 4,
     contractHash:
-      "hash-d8ab2eb3d2af9b78b5fddb12e3af356af65141667f85c6d3607f546152fb064e",
+      "hash-aa9e18f21c8058aebed3c5177b6d810d78f2dd95c8ebfff179c0ec98bb0dc7a8",
     packageHash:
       "hash-923ab5033b6c1ea8f0663d3f2282f1da5fa6838d8368564de7843162a3c57365",
     logoURI: nfiIcon,
