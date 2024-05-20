@@ -145,7 +145,7 @@ export class ClickWallet implements Wallet{
 
     try {
       this._isConnected = false
-      return this._clickRef.disconnect()
+      return this._clickRef.disconnect(store.get(CASPER_WALLET_PUB_KEY))
     } catch (err) {
       log.error(`Casper Signer - disconnect error, probably disconnecting from a disconnected signer: ${err}`)
 
