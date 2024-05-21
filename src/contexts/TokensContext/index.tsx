@@ -78,7 +78,7 @@ export const TokensContext = ({children}: { children: ReactNode }) => {
     }
 
     const getHistoricalTokenPrices = async (packageHash: string): Promise<any> => {
-      return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokenPrices(packageHash)
+      //return TokenResponsibilities(tokenState, tokenDispatch).getHistoricalTokenPrices(packageHash)
     }
 
     const getPercentChangeByTokens = async (packageHash0: string, packageHash1: string): Promise<any> => {

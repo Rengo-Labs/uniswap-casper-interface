@@ -31,7 +31,6 @@ const clickOptions: CsprClickInitOptions = {
   providers: ['casper-wallet', 'ledger', 'torus-wallet', 'casperdash', 'metamask-snap', 'casper-signer'],
   appId: '2792e6f1-7307-4137-99a6-28b2746e',
   chainName: networkName,
-  //casperNode: casperNode
 };
 
 export const BigContext = ({ children }: { children: ReactNode }) => {
