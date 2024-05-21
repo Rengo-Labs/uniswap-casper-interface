@@ -23,6 +23,8 @@ import { ClickProvider } from '@make-software/csprclick-ui';
 import { CONTENT_MODE } from '@make-software/csprclick-core-types';
 import {casperNode, networkName} from "../constant/bootEnvironmet";
 
+console.log('network name', networkName)
+
 const clickOptions: CsprClickInitOptions = {
   appName: 'CasperSwap',
   contentMode: CONTENT_MODE.IFRAME,
