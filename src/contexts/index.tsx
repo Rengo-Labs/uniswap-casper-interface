@@ -23,13 +23,15 @@ import { ClickProvider } from '@make-software/csprclick-ui';
 import { CONTENT_MODE } from '@make-software/csprclick-core-types';
 import {casperNode, networkName} from "../constant/bootEnvironmet";
 
+console.log('network name', networkName)
+
 const clickOptions: CsprClickInitOptions = {
   appName: 'CasperSwap',
   contentMode: CONTENT_MODE.IFRAME,
   providers: ['casper-wallet', 'ledger', 'torus-wallet', 'casperdash', 'metamask-snap', 'casper-signer'],
   appId: '2792e6f1-7307-4137-99a6-28b2746e',
   chainName: networkName,
-  casperNode: casperNode
+  //casperNode: casperNode
 };
 
 export const BigContext = ({ children }: { children: ReactNode }) => {
