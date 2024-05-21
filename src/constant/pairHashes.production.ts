@@ -29,7 +29,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-e095576e36a87129e10e53410105c62b5d47218d27d6f5064be18cc3170bc715",
     gaugePackageHash: "hash-ae3cc2460c953222c03b393017a2f0f03ca63e15abfb0423e75c2bcde7ef94c0",
-    //gaugeToken: 'WCSPR',
+    gaugeToken: 'WCSPR',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -61,7 +61,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-7c9a8c5280beda1cd6edfa97f202bc056e1c88cfcebbaa533f222a32effd97ed",
     gaugePackageHash: "hash-721ae7189ce3ea70fbd45321c874447bac351d76350f4e13bf95d4717a7e7863",
-    //gaugeToken: 'WCSPR',
+    gaugeToken: 'WCSPR',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -92,7 +92,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-5a0575ea1eafe6ed814e7acb50ef69e6f87b56823e06699ebf0a516a35a96460",
     gaugePackageHash: "hash-c8985547282ec469ac7dd11107acbf170859bd7ede68e31f1a2ad7dd2bebfadc",
-    //gaugeToken: 'WCSPR',
+    gaugeToken: 'WCSPR',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -124,7 +124,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-85e96bad8ff557bbcdb52e4c7550dfefb3b108a5fdfefd46cac7f32d4905ed24",
     gaugePackageHash: "hash-fe33afff2d93fe6f2a7154254687001628bde9292c8f5f54717866008112136e",
-    //gaugeToken: 'WCSPR',
+    gaugeToken: 'WCSPR',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
@@ -156,7 +156,7 @@ export const pairList: PairState = {
     gaugeAllowance: '0',
     gaugeContractHash: "hash-116a10b108466973b96e29ba5d2f0a0e4c2c46df2141d846061d5ffd944c6d1b",
     gaugePackageHash: "hash-93e991d261b6395e400ba58a0024fc2eb29e05cff5f347ee20d192a10ac0a630",
-    //gaugeToken: 'WCSPR',
+    gaugeToken: 'WCSPR',
     gaugeCSTRewards: true,
     gaugeCSTWeight: 100
   },
