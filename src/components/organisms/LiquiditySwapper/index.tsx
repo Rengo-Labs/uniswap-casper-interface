@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Token} from '../../../commons';
 import isCSPRValid from '../../../hooks/isCSPRValid';
-import {CoinCard, ExchangeRates, Button, CreatePoolDialog} from 'rengo-ui-kit'
+import {CoinCard, ExchangeRates, Button, CreatePoolDialog, ClaimDialog} from 'rengo-ui-kit'
 import BigNumber from 'bignumber.js';
 import arrowIcon from '../../../assets/newDesignIcons/chevron-down.svg'
 import {PairState} from "../../../reducers/PairsReducer";
@@ -74,6 +74,7 @@ const LiquiditySwapper = ({
                           }: LiquiditySwapperProps) => {
 
   const [openPoolDialog, setOpenPoolDialog] = useState({firstSelector: true, open: false})
+  const [openClaimDialog, setOpenClaimDialog] = useState({firstSelector: true, open: false})
 
   const [excludedA, setExcludedA] = useState<string[]>([
     secondTokenSelected.symbolPair,
@@ -510,6 +511,19 @@ const LiquiditySwapper = ({
           isOpen={openPoolDialog.open}
         />
       )}
+      {
+        <ClaimDialog
+          titleDialog={`Claim rewards`}
+          titleConfirmButton={`Claim`}
+          closeCallback={() => setOpenClaimDialog(prevState => ({...prevState, open: false}))}
+          handleAction={() => console.log('confirm')}
+          isOpen={openClaimDialog.open}
+          disabledButton={false}
+          networkGasFee={0.5}
+          networkGasFeeSetter={() => console.log('Gas fee')}>
+
+        </ClaimDialog>
+      }
     </div>
   );
 };

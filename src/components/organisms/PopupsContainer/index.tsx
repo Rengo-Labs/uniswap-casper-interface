@@ -149,8 +149,8 @@ export const PopupsContainer = () => {
             networkGasFeeETHValue={gasFeeETH}
             placeholderForCST={`Gas Fee`}
             placeholderForETH={`Gas Fee`}
-            titleForCST={`Network Gas Fee CST`}
-            titleForETH={`Network Gas Fee ${TOKEN_SYMBOL_GAUGE}`}
+            titleForCST={`Network Gas Fee for CST claim`}
+            titleForETH={`Network Gas Fee for ${TOKEN_SYMBOL_GAUGE} claim`}
           />
 
           <WalletConnectedOptions

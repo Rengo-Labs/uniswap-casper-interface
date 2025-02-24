@@ -13,13 +13,15 @@ import { DoubleColumn } from "../../../layout/DoubleColumn";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { globalStore } from "../../../store/store";
 import LiquiditySwapper from "../../organisms/LiquiditySwapper";
-import {LPContainer, PlatformBalance, RemoveLiquidityDialog, StakeDialog} from 'rengo-ui-kit';
+import {ClaimDialog, LPContainer, PlatformBalance, RemoveLiquidityDialog, StakeDialog} from 'rengo-ui-kit';
 import wcsprIcon from "../../../assets/swapIcons/wrappedCasperIcon.png";
 import csprIcon from "../../../assets/swapIcons/casperIcon.png";
 import isCSPRValid from "../../../hooks/isCSPRValid";
 import {
+  GAS_FEE_FOR_CST_CLAIM,
   GAS_FEE_FOR_GAUGE_CLAIM,
-  GAS_FEE_FOR_GAUGE_STAKE, GAS_FEE_FOR_GAUGE_UNSTAKE,
+  GAS_FEE_FOR_GAUGE_STAKE,
+  GAS_FEE_FOR_GAUGE_UNSTAKE,
   SUPPORTED_NETWORKS
 } from "../../../constant";
 import { convertToUSDCurrency } from '../../../commons/utils';
@@ -136,6 +138,8 @@ export const LiquidityTemplate = ({ isMobile }) => {
   const [tvl, setTVL] = useState('$0.00')
   const [cstMarket, setCSTMarket] = useState('$0.00')
   const [networkGasFeeStake, setNetworkGasFeeStake] = useState(parseInt(store.get('networkGasFeeStake') ?? GAS_FEE_FOR_GAUGE_UNSTAKE))
+  const [networkGasFeeForClaim, setNetworkGasFeeForClaim] = useState(0.5)
+  const [openClaimDialog, setOpenClaimDialog] = useState({isCSTClaim: true, open: false, action: () => {}})
 
   const handleChangeInput = (value) => {
     if (value == 0) {
@@ -315,21 +319,37 @@ export const LiquidityTemplate = ({ isMobile }) => {
 
       setRewardToken(item.gaugeToken)
       setRewardAmount(parseFloat(tokenState.tokens[item.gaugeToken].amount))
-      const result = await onClaimAction(item)
-      if (result) setShowClaimedNotification(true)
+      setNetworkGasFeeForClaim(parseInt(store.get('handleCSTNetworkGasFee') ?? GAS_FEE_FOR_GAUGE_CLAIM))
+      setOpenClaimDialog({
+        isCSTClaim: false,
+        open: true,
+        action: async () => {
+          const result = await onClaimAction(item)
+          if (result) setShowClaimedNotification(true)
+        }
+      })
     }
 
     if (action === 'ClaimLPCST') {
-      if (parseFloat(GAS_FEE_FOR_GAUGE_CLAIM) > parseFloat(tokenState.tokens['CSPR'].amount)) {
+      if (parseFloat(GAS_FEE_FOR_CST_CLAIM) > parseFloat(tokenState.tokens['CSPR'].amount)) {
         showNotification()
         return;
       }
       setRewardToken('CST')
       setRewardAmount(parseFloat(tokenState.tokens['CST'].amount))
-      const result = await onClaimCSTAction(item)
-      if (result) setShowClaimedNotification(true)
+      setNetworkGasFeeForClaim(parseInt(store.get('handleETHNetworkGasFee') ?? GAS_FEE_FOR_CST_CLAIM))
+      setOpenClaimDialog({
+        isCSTClaim: true,
+        open: true,
+        action: async () => {
+          const result = await onClaimCSTAction(item)
+          if (result) setShowClaimedNotification(true)
+        }
+      })
     }
   }
+
+  const handleClaimAction = () => openClaimDialog.action()
 
   const handleStakeClose = () => {
     setRemoveLiquidityButtonDisabled(true)
@@ -816,6 +836,20 @@ export const LiquidityTemplate = ({ isMobile }) => {
             toggleAction={onStakeToggleHandler}
           />
         </SingleColumn>
+      }
+      {
+        isConnected &&
+        <ClaimDialog
+          titleDialog={`Claim rewards`}
+          titleConfirmButton={`Claim`}
+          closeCallback={() => setOpenClaimDialog(prevState => ({...prevState, open: false}))}
+          handleAction={handleClaimAction}
+          isOpen={openClaimDialog.open}
+          disabledButton={false}
+          networkGasFee={networkGasFeeForClaim}
+          networkGasFeeSetter={setNetworkGasFeeForClaim}>
+          <div>You can proceed with the claim or adjust the slippage before claiming.</div>
+        </ClaimDialog>
       }
     </>
   )
