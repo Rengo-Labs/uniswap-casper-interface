@@ -5,18 +5,15 @@ const NewTokenDetailItems1Styled = styled.section`
     grid-row: 1/2;
     justify-self: center;
     cursor: pointer;
-<<<<<<< HEAD
     font-family: 'MyriadProLight';
     font-weight: 400;
     font-size: 1rem;
     letter-spacing: 0.02em
-=======
     font-family: 'MyriadPro';
     font-weight: 400;
     font-size: 16px;
     letter-spacing: 0.02em;
     align-self: center;
->>>>>>> develop
 `
 
 interface NewTokenDetailItems1NSMProps {
