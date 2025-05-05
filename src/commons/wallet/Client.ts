@@ -78,8 +78,9 @@ export class Client {
    */
   async getStateRootHash(): Promise<string> {
     const casperService = this.casperClient.nodeClient
-
-    return casperService.getStateRootHash();
+    const latestBlock = await casperService.getLatestBlockInfo();
+    console.log('latestBlock', latestBlock.block.header.state_root_hash, 'timestamp', latestBlock.block.header.timestamp);
+    return latestBlock.block.header.state_root_hash;
   }
 
   /**
